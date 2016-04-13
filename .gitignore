@@ -36,6 +36,9 @@ node_modules
 www/libs/**
 
 .DS_Store
+**/.DS_Store
 
 hooks
 hooks/**
+
+.remote-sync.json
