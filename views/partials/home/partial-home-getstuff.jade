@@ -1,0 +1,8 @@
+.search-stuff-container
+    input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
+    i#filter-button.stuff-button.fa.fa-sliders(tabindex="0" ng-click='toggleFilterPane()')
+ul
+    li(ng-repeat="list in listItems" style="background-image: url({{ list.img }});") {{ item.title }}
+#filter-pane.animate-250
+    ul.filter-options
+        li(ng-repeat="options in filterOptions")

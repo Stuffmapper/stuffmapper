@@ -1,0 +1,97 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var open = require('open');
+
+var app = require('../app');
+var debug = require('debug')('stuffmapper:server');
+var http = require('http');
+var https = require('https');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var ports = [normalizePort(process.env.PORT || '3000'), normalizePort(process.env.SSL_PORT || '3001')];
+app.set('port', ports[0]);
+app.set('ssl_port', ports[0]);
+
+/**
+ * Create HTTP(S) server.
+ */
+
+var server = [http.createServer(app), https.createServer(app)];
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+server.forEach(function(s,i){
+    s.listen(ports[i]);
+    s.on('error', onError);
+    s.on('listening', onListening);
+});
+
+open('http://localhost:3000', function(err) {
+  if (err) console.log(err);
+  // that's fine.
+});
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof ports[0] === 'string'
+    ? 'Pipe ' + ports[0]
+    : 'Port ' + ports[0];
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server[0].address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

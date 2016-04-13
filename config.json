@@ -1,0 +1,18 @@
+{
+    "global" : {},
+    "test" : {},
+    "development" : {
+        "db" : {
+            "host" : "localhost",
+            "port" : 5432,
+            "pass" : "Password1!"
+        }
+    },
+    "production" : {
+        "db" : {
+            "host" : "localhost",
+            "port" : 5432,
+            "pass" : "Password1!"
+        }
+    }
+}

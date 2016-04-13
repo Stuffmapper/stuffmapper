@@ -1,0 +1,36 @@
+doctype html
+- var ionicClass = ionic?'ionic':'';
+html(lang="en" class= ionicClass ng-app="stuffMapp")
+    head
+        meta(charset="utf-8")
+        meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width")
+        base(href="/")
+        title Stuffmapper
+        link(href="/css/style.css" rel="stylesheet")
+        link(href="/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet")
+        script(src="/lib/jquery/dist/jquery.min.js")
+        if ionic
+            link(href="lib/ionic/css/ionic.css" rel="stylesheet")
+            script(src="lib/ionic/js/ionic.bundle.js")
+            script(src="cordova.js")
+        else
+            script(src="/lib/angular/angular.js")
+        script(src="/lib/angular-ui-router/release/angular-ui-router.min.js")
+        script(src="/lib/angular-animate/angular-animate.min.js")
+        script(src="https://maps.googleapis.com/maps/api/js")
+        script(src="/js/app.js")
+    body(ng-controller="MainController")
+        #modal-bg
+        #modal-windows
+            #modal-windows-bg
+            #sign-in.modal-window
+                .modal-header Sign in to Stuffmapper!
+            #sign-up.modal-window
+                .modal-header Sign up for Stuffmapper!
+        #container
+            #header
+                img#logo(src="/img/stuffmapper-logo.png")
+                #user-portal
+                    a#sign-in-button.user-portal-buttons Sign In
+                    a#sign-up-button.user-portal-buttons Sign Up
+            #content(ui-view)
