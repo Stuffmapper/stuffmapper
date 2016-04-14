@@ -230,7 +230,7 @@ body, div {
     width: 100%;
     position: fixed;
     z-index: 999999;
-    display: block;
+    display: none;
 }
 
 #modal-windows-bg {
@@ -262,6 +262,18 @@ body, div {
     line-height: 48px;
     text-align: center;
     position: relative;
+}
+
+.reveal-modals {
+    display: block;
+}
+
+.reveal-modal-window-bg {
+
+}
+
+.reveal-modal-window {
+
 }
 
 /* Modal Windows -  END  */
