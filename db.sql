@@ -4,6 +4,17 @@ CREATE DATABASE stuffmapper WITH OWNER stuffmapper;
 
 \c stuffmapper;
 
+CREATE TABLE social_login (
+
+);
+
+CREATE TABLE pick_up_success (
+    id BIGSERIAL PRIMARY KEY,
+    dibber_id interger REFERENCES users(id),
+    lister_id interger REFERENCES users(id),
+    pick_up_success boolean DEFAULT FALSE
+);
+
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     fname varchar(32) NOT NULL,
@@ -14,16 +25,22 @@ CREATE TABLE users (
     password_reset_token text NOT NULL,
     status varchar(32),
     phone_number varchar(10),
-    verify_email_url varchar(64),
+    verify_email_token varchar(64),
     verified_email boolean DEFAULT false,
     admin boolean DEFAULT false,
     date_created timestamp DEFAULT current_timestamp,
-    last_sign_in timestamp DEFAULT current_timestamp
+    last_sign_in timestamp DEFAULT current_timestamp,
+    image_url text
 );
 
 CREATE TABLE categories (
     id BIGSERIAL PRIMARY KEY,
     category varchar(32) UNIQUE NOT NULL
+);
+
+CREATE TABLE status (
+    id BIGSERIAL PRIMARY KEY,
+    name varchar(32)
 );
 
 CREATE TABLE posts (
@@ -38,8 +55,7 @@ CREATE TABLE posts (
     category integer REFERENCES categories(id),
     dibbed boolean DEFAULT false,
     dibber integer REFERENCES users(id),
-    on_the_curb boolean,
-    address varchar(64)
+    on_the_curb boolean NOT NULL
 );
 
 CREATE TABLE images (
@@ -84,3 +100,12 @@ CREATE TABLE watchlist_items (
     tag_id integer REFERENCES tags(id),
     category_id integer REFERENCES categories(id)
 );
+
+WATCHLIST think of
+    geolaction (radius), incl max radius
+    max items on list (10)
+
+
+emails
+    appropriate flagging
+    match search for (terms)
