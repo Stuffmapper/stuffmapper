@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var session = require('express-session');
 
 var index = require('./routes/index');
 var api_v1 = require('./routes/api/v1/index');
@@ -17,6 +18,16 @@ app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
+
+var sess = {
+    secret: 'SuperSecretPassword1!',
+    cookie: {}
+};
+if (app.get('env') === 'production') {
+    app.set('trust proxy', 1);
+    sess.cookie.secure = true;
+}
+app.use(session(sess));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -40,9 +51,9 @@ app.use(function(req, res, next) {
             {fname:'someone',lname:'else',uname:'someoneelse',passwd:'SecretPassword1!',id:2}
         ],
         stuff: [
-            {userID:1, id:1, new:true, title:'asdf1',lat: 47.608013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Furniture & Crap'},
-            {userID:1, id:2, new:false, title:'asdf2',lat: 47.508013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Food'},
-            {userID:2, id:3, new:false, title:'asdf3',lat: 47.408013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Electronics'}
+            {userId:1, id:1, status:'undibbed', title:'asdf1',lat: 47.608013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Furniture & Crap'},
+            {userId:1, id:2, status:'undibbed', title:'asdf2',lat: 47.508013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Food'},
+            {userId:2, id:3, status:'undibbed', title:'asdf3',lat: 47.408013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Electronics'}
         ]
     };
     req.db = {
@@ -52,25 +63,26 @@ app.use(function(req, res, next) {
             done(err, result);
         },
         insert : function(table, data, done) {
-            // !tempDB[table] && done('Error: Table "' + table + '" does not exist', null) && return;
-            // if(columns.length < Object.keys(tempDB[table]).length) done('Error: More columns requested than there are in table "' + table + '"', null) && return;
             tempDB[table].push(data);
             var result = 'data added successfully';
             var err = null;
             done(err, result);
         },
         get : function(table, columns, where, done) {
+            columns = columns || {};
+            where = where || {};
+            done = done || {};
             if(typeof where === "function") done = where;
             if(typeof columns === "function") done = columns;
             var result = [];
             var add = false;
             var keys = '';
             tempDB[table].forEach(function(e) {
-                add = false;
-                key = Object.keys(where);
+                add = true;
+                keys = Object.keys(where);
                 if(keys.length > 0) {
                     keys.forEach(function(f) {
-                        if(e[f] === where[f]) add = true;
+                        if(parseInt(e[f]) !== parseInt(where[f])) add = false;
                     });
                 }
                 else add = true;

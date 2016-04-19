@@ -106,6 +106,8 @@ body, div {
 
 #logo {
     height: 40px;
+    padding-left: 15px;
+    display: inline-block;
 }
 
 #user-portal {
@@ -220,6 +222,13 @@ body, div {
     background-size: cover;
     background-position: 50% 50%;
     cursor: pointer;
+    position: relative;
+}
+
+#tab-content ul li a {
+    width: 100%;
+    height: 100%;
+    position: absolute;
 }
 
 
@@ -231,11 +240,12 @@ body, div {
     position: fixed;
     z-index: 999999;
     display: none;
+    perspective: 500px;
 }
 
 #modal-windows-bg {
     background-color: rgba(25,25,25,0.45);
-    opacity: 1;
+    opacity: 0.0001;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -243,15 +253,34 @@ body, div {
     z-index: 1;
 }
 
+.modal-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+.close-modal-bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
 .modal-window {
     background-color: #efefef;
     width: 500px;
     height: 300px;
-    position: absolute;
+    position: relative;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    opacity: 0.0001;
     z-index: 2;
+    display: inline-block;
 }
 
 .modal-header {
@@ -264,16 +293,94 @@ body, div {
     position: relative;
 }
 
-.reveal-modals {
+.modal-title {
+    position: absolute;
+    width: 100%;
+    height: 48px;
+    text-align: center;
+}
+
+.modal-close {
+    position: relative;
+    width: 48px;
+    text-align: center;
+    cursor: pointer;
+    position: absolute;
+    height: 100%;
+    right: 0px;
+    top: 0px;
+    display: inline-block;
+    line-height: 48px !important;
+}
+
+#modal-windows.modal-windows-open {
     display: block;
 }
 
-.reveal-modal-window-bg {
-
+#modal-windows-bg.modal-windows-bg-open {
+    opacity: 1;
 }
 
-.reveal-modal-window {
+.modal-window.modal-window-open {
+    opacity: 1;
+}
 
+.modal-content {
+    height: calc(100% - 48px);
+}
+
+.modal-steps {
+    width: 100%;
+    position: absolute;
+    opacity: 1;
+    display: block;
+    height: 50px;
+    transform: translateY(-50%);
+    top: 50%;
+}
+
+/* Sign In Content - START */
+.social-media-sign-in-container {
+    width: 50%;
+    position: relative;
+    display: inline-block;
+    text-align: center;
+}
+.social-media-sign-in-container a {
+    text-decoration: none;
+    width: 200px;
+    height: 36px;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 3px;
+    color: white;
+}
+.social-media-sign-in-container a i {
+    line-height: 36px !important;
+    float: left;
+    font-size: 34px;
+    margin-left: 4px;
+}
+#google-plus-sign-in {
+    background-color: #DC4E41;
+}
+
+#facebook-sign-in {
+    background: #4c69ba;
+    background: -moz-linear-gradient(top,  #4c69ba 0%, #3b55a0 100%);
+    background: -webkit-linear-gradient(top,  #4c69ba 0%,#3b55a0 100%);
+    background: linear-gradient(to bottom,  #4c69ba 0%,#3b55a0 100%);
+}
+
+.sign-in-message {
+    color: blue;
+    width: 100%;
+    text-align: center;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 /* Modal Windows -  END  */

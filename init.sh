@@ -2,7 +2,7 @@ cd ~
 # grab the newest version of node 4.x
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 # install dependencies from apt-get
-sudo apt-get install git nodejs postgresql nginx -y
+sudo apt-get install git nodejs postgresql nginx g++ -y
 # install global dependencies from npm
 sudo npm i -g cordova ionic bower pm2 gulp
 # clone the code from github into the stuffmapper folder
