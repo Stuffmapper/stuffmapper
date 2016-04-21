@@ -109,3 +109,17 @@ WATCHLIST think of
 emails
     appropriate flagging
     match search for (terms)
+
+tax writable stuff
+    fair market cost
+
+div & deliver
+
+
+------------------------------------------------------
+
+brainstormed IP stuff mentioned
+
+trademarking stuffmapper, dibs, and landfill tracker
+trademark circle S logo
+make a trademarkable logo delaney please
