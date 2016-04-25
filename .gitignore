@@ -40,6 +40,9 @@ www/libs/**
 
 hooks
 hooks/**
+www/css/**/*
+www/**/*.html
+plugins/**/*
 
 .remote-sync.json
 

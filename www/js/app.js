@@ -34,13 +34,61 @@ if(config.ionic.isIonic) {
     });
 }
 
-function MainController($scope, $http) {
-
+function MainController($scope, $http, $timeout) {
+    $scope.popUpOpen = false;
+    $scope.signInOrUp = function(type) {
+        if(config.html5) location.hash = 'sign'+type.charAt(0).toUpperCase()+type.slice(1);
+        $('.modal-window').removeClass('modal-window-open');
+        requestAnimationFrame(function(){
+            $scope.$apply(function() {
+                if($scope.popUpOpen === false) {
+                    $scope.popUpOpen = true;
+                    $('#modal-windows').addClass('modal-windows-open');
+                    $('.modal-container').css({'z-index':''});
+                    requestAnimationFrame(function() {
+                        $('#modal-windows-bg').addClass('modal-windows-bg-open');
+                        $('#sign-'+type).addClass('modal-window-open');
+                        $('#sign-'+type).addClass('modal-window-open');
+                        $('#sign-'+type).parent().css({'z-index':'3'});
+                    });
+                } else {
+                    requestAnimationFrame(function() {
+                        $('#modal-windows-bg').addClass('modal-windows-bg-open');
+                        $('#sign-'+type).addClass('modal-window-open');
+                    });
+                }
+            });
+        });
+    };
+    $scope.closePopups = function() {
+        if(config.html5) history.pushState("", document.title, window.location.pathname + window.location.search);
+        else console.log('this should close popups... not sure what to do without html5 :<');
+    };
+    if(config.html5) {
+        $scope.$watch(function () {
+            return location.hash;
+        }, function (value) {
+            if(value) {
+                clearTimeout($scope.popUpTimeout);
+                var hash = value.split('#').pop();
+                if(/signIn|signUp/.test(hash)) $scope.signInOrUp(hash.slice(-2).toLowerCase());
+            }
+            else if($scope.popUpOpen) {
+                clearTimeout($scope.popUpTimeout);
+                $scope.popUpOpen = false;
+                $('#modal-windows-bg').removeClass('modal-windows-bg-open');
+                $('.modal-window').removeClass('modal-window-open');
+                $scope.popUpTimeout = setTimeout(function() {
+                    $('#modal-windows').removeClass('modal-windows-open');
+                }, 250);
+            }
+        });
+    }
 }
 
 function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/menu/getstuff');
-    $locationProvider.html5Mode(!!window.history && !!window.history.pushState);
+    $locationProvider.html5Mode(config.html5);
     $stateProvider
     .state('menu', {
         url: '/menu',
@@ -63,7 +111,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
             $('#getstuff a').addClass('selected');
             $http({
                 method: 'GET',
-                url: config.api.host + 'api/' + config.api.version + '/stuff/' + $userData.getUserId()
+                url: config.api.host + 'api/' + config.api.version + '/stuff/'
             }).then(function(data) {
                 $scope.listItems = data.data;
                 $scope.markers = [];
@@ -75,7 +123,6 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
                 $scope.filterPaneOpen = false;
                 $scope.toggleFilterPane = function() {
                     $('#filter-pane').toggleClass('open-filter-pane');
-                    console.log('toggleFilterPane');
                 };
                 var tempSearchText = '';
                 var searchTextTimeout;
@@ -92,7 +139,6 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
                         if(tempSearchText) {
                             $scope.filterText = tempSearchText;
                             if(tempSearchText !== lastSearch) {
-                                console.log('Searching for:', val);
                                 lastSearch = tempSearchText;
                             }
                         }
@@ -142,12 +188,13 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     .state('menu.getItem', {
         url: '/getstuff/:id',
         templateUrl: '/partials/home/partial-home-getstuff-id' + config.ext,
-        controller: function($scope, $http, $userData) {
+        controller: function($scope, $http, $stateParams, $userData) {
             $http({
                 method: 'GET',
-                url: config.api.host + 'api/' + config.api.version + '/stuff/' + $userData.getUserId() + '/' + 1
+                url: config.api.host + 'api/' + config.api.version + '/stuff/' + $stateParams.id
             }).then(function(data) {
-                $scope.listItem = data.data;
+                $scope.listItem = data.data[0];
+                console.log($scope.listItem);
                 $scope.marker = {};
                 $scope.infowindow = {};
                 $scope.marker = new google.maps.Marker({
@@ -160,8 +207,8 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
                 });
                 var contentString = [
                     '<div style="width: 180px; height: 300px;">',
-                    '   <div style="font-size: 16px">'+$scope.listeItem.title+'</div>',
-                    '   <div style="background-image: url('+$scope.listeItem.img+');position:absolute;width: 200px; height: 270px;top:25px"></div>',
+                    '   <div style="font-size: 16px">'+$scope.listItem.title+'</div>',
+                    '   <div style="background-image: url('+$scope.listItem.img+');position:absolute;width: 200px; height: 270px;top:25px"></div>',
                     '</div>'
                 ].join('\n');
                 $scope.infowindow = new google.maps.InfoWindow({
@@ -170,6 +217,11 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
                 $scope.marker.addListener('click', function() {
                     $scope.infowindow.open($scope.map, this);
                 });
+            });
+            $scope.$on("$destroy", function() {
+                $('#getstuff a').removeClass('selected');
+                $scope.infowindow.close();
+                $scope.marker.setMap(null);
             });
         }
     })
@@ -263,6 +315,7 @@ function setDefaultConfig() {
             '//www.stuffmapper.com/':
             '/',
             version : 'v1'
-        }
+        },
+        html5 : !!window.history && !!window.history.pushState
     };
 }

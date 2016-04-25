@@ -21,15 +21,33 @@ html(lang="en" class= ionicClass ng-app="stuffMapp")
         script(src="/js/app.js")
     body(ng-controller="MainController")
         #modal-windows
-            #modal-windows-bg
-            #sign-in.modal-window
-                .modal-header Sign in to Stuffmapper!
-            #sign-up.modal-window
-                .modal-header Sign up for Stuffmapper!
+            #modal-windows-bg.animate-250
+            .modal-container
+                .close-modal-bg(ng-click="closePopups()")
+                #sign-in.modal-window.animate-250
+                    .modal-header
+                        .modal-title Sign in to Stuffmapper!
+                        i.fa.fa-close.modal-close(ng-click="closePopups()")
+                    .modal-content
+                        #sign-in-step-one.modal-steps
+                            .social-media-sign-in-container
+                                a#google-plus-sign-in.sign-in-buttons
+                                    i.fa.fa-google-plus
+                            .social-media-sign-in-container
+                                a#facebook-sign-in.sign-in-buttons
+                                    i.fa.fa-facebook-square
+                            a#custom-sign-in.sign-in-message or sign in with your email
+                        //- #sign-in-step-one-point-five.modal-steps
+            .modal-container
+                .close-modal-bg(ng-click="closePopups()")
+                #sign-up.modal-window.animate-250
+                    .modal-header
+                        .modal-title Sign up for Stuffmapper!
+                        i.fa.fa-close.modal-close(ng-click="closePopups()")
         #container
             #header
                 img#logo(src="/img/stuffmapper-logo.png")
                 #user-portal
-                    a#sign-in-button.user-portal-buttons Sign In
-                    a#sign-up-button.user-portal-buttons Sign Up
+                    a#sign-in-button.user-portal-buttons(ng-click="signInOrUp('in')") Sign In
+                    a#sign-up-button.user-portal-buttons(ng-click="signInOrUp('up')") Sign Up
             #content(ui-view)
