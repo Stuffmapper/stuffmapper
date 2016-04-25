@@ -312,7 +312,7 @@ function setDefaultConfig() {
             host : isIonic?
             isDev?
             '//localhost/':
-            '//www.stuffmapper.com/':
+            /*'//www.stuffmapper.com/'*/'//localhost:3000/':
             '/',
             version : 'v1'
         },

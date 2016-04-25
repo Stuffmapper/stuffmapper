@@ -1,8 +1,8 @@
-cd ~
+cd /home/ryan/
 # grab the newest version of node 4.x
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 # install dependencies from apt-get
-sudo apt-get install git nodejs postgresql nginx g++ -y
+sudo apt-get install git nodejs postgresql nginx g++ python -y
 # install global dependencies from npm
 sudo npm i -g cordova ionic bower pm2 gulp
 # clone the code from github into the stuffmapper folder
@@ -25,6 +25,7 @@ touch .bash_aliases
 echo 'alias devStuff="cd ~/stuffmapper && node ~/stuffmapper/bin/www"' >> ~/.bash_aliases
 echo 'alias runStuff="cd ~/stuffmapper && pm2 bin/www"' >> ~/.bash_aliases
 echo 'alias appStuff="cd ~/stuffmapper && ionic serve --lab"' >> ~/.bash_aliases
+echo 'alias gulpStuff="cd ~/stuffmapper && gulp && gulp watch"' >> ~/.bash_aliases
 # remove default nginx sites-enabled file
 sudo rm /etc/nginx/sites-enabled/default
 # make our own sites-available file and link it to sites-enabled
@@ -36,6 +37,25 @@ server {\n\
     server_name stuffmapper.com www.stuffmapper.com;\n\
 \n\
     location / {\n\
+        if (\$request_method = 'OPTIONS') {\n\
+            add_header 'Access-Control-Allow-Origin' '*';\n\
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';\n\
+            add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';\n\
+            add_header 'Access-Control-Max-Age' 1728000;\n\
+            add_header 'Content-Type' 'text/plain charset=UTF-8';\n\
+            add_header 'Content-Length' 0;\n\
+            return 204;\n\
+         }\n\
+         if (\$request_method = 'POST') {\n\
+            add_header 'Access-Control-Allow-Origin' '*';\n\
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';\n\
+            add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';\n\
+         }\n\
+         if (\$request_method = 'GET') {\n\
+            add_header 'Access-Control-Allow-Origin' '*';\n\
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';\n\
+            add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';\n\
+         }\n\
         proxy_set_header Upgrade \$http_upgrade;\n\
         proxy_set_header Connection \"upgrade\";\n\
         proxy_http_version 1.1;\n\
@@ -50,6 +70,25 @@ server {\n\
     server_name stuffmapper.com www.stuffmapper.com;\n\
 \n\
     location / {\n\
+    if (\$request_method = 'OPTIONS') {\n\
+        add_header 'Access-Control-Allow-Origin' '*';\n\
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';\n\
+        add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';\n\
+        add_header 'Access-Control-Max-Age' 1728000;\n\
+        add_header 'Content-Type' 'text/plain charset=UTF-8';\n\
+        add_header 'Content-Length' 0;\n\
+        return 204;\n\
+     }\n\
+     if (\$request_method = 'POST') {\n\
+        add_header 'Access-Control-Allow-Origin' '*';\n\
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';\n\
+        add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';\n\
+     }\n\
+     if (\$request_method = 'GET') {\n\
+        add_header 'Access-Control-Allow-Origin' '*';\n\
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';\n\
+        add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';\n\
+     }\n\
         proxy_set_header Upgrade \$http_upgrade;\n\
         proxy_set_header Connection \"upgrade\";\n\
         proxy_http_version 1.1;\n\

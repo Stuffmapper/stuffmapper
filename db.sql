@@ -33,8 +33,8 @@ CREATE TABLE users (
 
 CREATE TABLE pick_up_success (
     id BIGSERIAL PRIMARY KEY,
-    dibber_id interger REFERENCES users(id),
-    lister_id interger REFERENCES users(id),
+    dibber_id integer REFERENCES users(id),
+    lister_id integer REFERENCES users(id),
     pick_up_success boolean DEFAULT FALSE
 );
 
@@ -49,7 +49,8 @@ CREATE TABLE posts (
     title char(32) NOT NULL,
     description text,
     date_created timestamp DEFAULT current_timestamp,
-    date_edited timestamp DEFAULT current_timestamp,
+    date_edited timestamp,
+    date_picked_up timestamp,
     lat FLOAT NOT NULL,
     lng FLOAT NOT NULL,
     status integer REFERENCES status(id),
@@ -98,29 +99,13 @@ CREATE TABLE watchlist (
 
 CREATE TABLE watchlist_items (
     id BIGSERIAL PRIMARY KEY,
-    tag_id integer REFERENCES tags(id),
-    category_id integer REFERENCES categories(id)
+    watchlist_id integer REFERENCES watchlist(id)
 );
 
-WATCHLIST think of
-    geolaction (radius), incl max radius
-    max items on list (10)
-
-
-emails
-    appropriate flagging
-    match search for (terms)
-
-tax writable stuff
-    fair market cost
-
-div & deliver
-
-
-------------------------------------------------------
-
-brainstormed IP stuff mentioned
-
-trademarking stuffmapper, dibs, and landfill tracker
-trademark circle S logo
-make a trademarkable logo delaney please
+CREATE TABLE watchlist_keys (
+    id BIGSERIAL PRIMARY KEY,
+    watchlist_item integer REFERENCES watchlist_items(id),
+    tag_id integer REFERENCES tags(id),
+    category_id integer REFERENCES categories(id),
+    radius_miles FLOAT DEFAULT 15.0 NOT NULL
+);
