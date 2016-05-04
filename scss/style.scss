@@ -5,21 +5,32 @@
 *
 *  Table of Contents:
 *   1. Variables
-*   2. Global Styling
-*   3.
+*   2. Main Styling
+*   3. Tabs
+*   4. Search Bar
 *
 *
 *   X. Modal Windows
-*
+*   Y. Landfill Tracker
 \*****************************************************************/
 
 /* Variables - START */
 
-$primary-color: #445d75;
+    $primary-color: #445d75;
+
+    /* Landfill Tracker - START */
+
+    $landfill-tracker-width: 180px;
+    $landfill-tracker-color-base: #3d3d3d;
+    $landfill-tracker-color-fold: #000000;
+    $landfill-tracker-font-color: #ffffff;
+    $landfill-tracker-font-family: Arial;
+
+    /* Landfill Tracker -  END  */
 
 /* Variables -  END  */
 
-/* Gobal Styling - START */
+/* Main Styling - START */
 
 html, body, #container {
     margin: 0;
@@ -41,8 +52,25 @@ body, div {
     transition: all 250ms;
 }
 
-/* Global Styling -  END  */
+/* Main Styling -  END  */
 
+.side-menu {
+    position: absolute;
+    width: 200px;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    list-style: none;
+    background-color: #efefef;
+    z-index: 100;
+    margin: 0;
+    padding: 0;
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    transform: translateX(-100%);
+}
 
 .search-stuff-container {
     padding: 8px;
@@ -123,61 +151,64 @@ body, div {
     display: inline-block;
 }
 
+/* Tabs - Start */
+
 #tab-container {
-    display: inline-block;
-    position: relative;
+    position: absolute;
     top: 0px;
+    right: 0px;
     height: 100%;
     width: 30%;
-    float: right;
+    display: inline-block;
 }
 
-#tabs {
+.tabs {
     margin: 0;
     padding: 0;
     list-style: none;
     width: 100%;
     height: 45px;
-    background-color: $primary-color;
+    background-color: #DEDEDE;
+    border-bottom: 2px solid #3d3d3d;
 }
 
-#tabs li {
-    width: 33.3%;
+.tabs .logo-tab, .tabs .my-stuff-tab {
+    display: none;
+}
+
+.tabs li {
+    width: 50%;
     height: 100%;
     display: inline-block;
     position: relative;
     float: left;
     line-height: 45px;
-    color: white;
+    color: #3d3d3d;
     text-decoration: none;
     text-align: center;
 }
 
-#tabs li a {
-    color: white;
+
+.tabs li a {
+    color: #3d3d3d;
     text-decoration: none;
     text-align: center;
-    height: calc(100% - 4px);
-    width: calc(100% - 4px);
+    height: calc(100% - 5px);
+    width: 100%;
     text-align: center;
     display: block;
     background-color: transparent;
     position: relative;
-    border-top: $primary-color 2px solid;
-    border-bottom: $primary-color 2px solid;
-    border-left: $primary-color 2px solid;
-    border-right: $primary-color 2px solid;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
 }
 
-#tabs li a.selected {
+
+.tabs li a.selected {
     background-color: #fff;
     color: #3d3d3d;
     height: 100%;
-    border-bottom: #fff 2px solid;
-
+    font-weight: 700;
 }
+
 
 #tab-content {
     background-color: #fff;
@@ -214,6 +245,8 @@ body, div {
     height: 100%;
     position: absolute;
 }
+
+/* Tabs -  End  */
 
 
 /* Modal Windows - START */
@@ -373,3 +406,30 @@ body, div {
 }
 
 /* Modal Windows -  END  */
+
+/* Landfill Tracker - START */
+
+#landfill-tracker {
+    width: $landfill-tracker-width;
+    height: calc(100% - 10px);
+    display: inline-block;
+    margin: 5px;
+}
+.topElement {
+    background-color: $landfill-tracker-color-base;
+    color: $landfill-tracker-font-color;
+    font-family: $landfill-tracker-font-family;
+}
+.bottomElement {
+    background-color: $landfill-tracker-color-base;
+    color: $landfill-tracker-font-color;
+    font-family: $landfill-tracker-font-family;
+}
+.topElementEnter {
+    background-color: $landfill-tracker-color-fold;
+}
+.bottomElementEnter {
+    background-color: $landfill-tracker-color-fold;
+}
+
+/* Landfill Tracker -  END  */

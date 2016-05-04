@@ -57,7 +57,8 @@ CREATE TABLE posts (
     category integer REFERENCES categories(id),
     dibbed boolean DEFAULT false,
     dibber integer REFERENCES users(id),
-    on_the_curb boolean NOT NULL
+    on_the_curb boolean NOT NULL,
+    views #- figure this out 
 );
 
 CREATE TABLE images (
