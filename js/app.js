@@ -40,7 +40,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     $stateProvider
     .state('menu', {
         url: '/menu',
-        templateUrl: '/partials/home/partial-home' + config.ext,
+        templateUrl: '/partials/home/partial-home.html',
         controller: function($scope, $userData) {
             $scope.map = new google.maps.Map($('#map-view')[0], {
                 center: {
@@ -54,7 +54,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     })
     .state('menu.get', {
         url: '/getstuff',
-        templateUrl: '/partials/home/partial-home-getstuff' + config.ext,
+        templateUrl: '/partials/home/partial-home-getstuff.html',
         controller: GetStuffController
     })
     .state('menu.get.item', {
@@ -63,12 +63,12 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     })
     .state('menu.give', {
         url: '/givestuff',
-        templateUrl: '/partials/home/partial-home-givestuff' + config.ext,
+        templateUrl: '/partials/home/partial-home-givestuff.html',
         controller: GiveStuffController
     })
     .state('menu.my', {
         url: '/mystuff',
-        templateUrl: '/partials/home/partial-home-mystuff' + config.ext,
+        templateUrl: '/partials/home/partial-home-mystuff.html',
         controller: MyStuffController
     })
     .state('menu.my.item', {
@@ -89,7 +89,6 @@ function setDefaultConfig() {
             isIonic : isIonic
         },
         modules : modules,
-        ext : isIonic?'.html':'',
         api : {
             host : isIonic?
             isDev?

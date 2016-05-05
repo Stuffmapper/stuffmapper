@@ -5,7 +5,7 @@ if [[ $1 == '' || $1 == 'init' ]]; then
     # install dependencies from apt-get
     sudo apt-get install git nodejs postgresql nginx g++ python -y
     # install global dependencies from npm
-    sudo npm i -g cordova ionic bower pm2 gulp
+    sudo npm i -g cordova ionic bower pm2 gulp electron-prebuilt
     # clone the code from github into the stuffmapper folder
     git clone https://github.com/RyantheFarmer/stuffmapper.git
     # move into ~/stuffmapper to perform next tasks

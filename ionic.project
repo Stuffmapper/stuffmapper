@@ -1,4 +1,5 @@
 {
     "name": "stuffmapper",
-    "app_id": ""
+    "app_id": "",
+    "documentRoot": "ionic"
 }

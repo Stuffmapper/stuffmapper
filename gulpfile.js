@@ -4,8 +4,11 @@ var bower = require('bower');
 var concat = require('gulp-concat');
 var sass = require('gulp-sass');
 var jade = require('gulp-jade');
+var uglify = require('gulp-uglify');
+var sourcemaps = require('gulp-sourcemaps');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
+var multistream = require('gulp-multistream');
 var sh = require('shelljs');
 
 var paths = {
@@ -24,8 +27,24 @@ gulp.task('sass', function(done) {
         keepSpecialComments: 0
     }))
     .pipe(rename({ extname: '.min.css' }))
-    .pipe(gulp.dest('./www/css/'))
+    .pipe(multistream(
+        gulp.dest('./projects/web/css/'),
+        gulp.dest('./projects/ionic/css/'),
+        gulp.dest('./projects/electron/css/')
+    ))
     .on('end', done);
+    gulp.src('./js/lib/font-awesome/css/*', {base: './js/lib/font-awesome/css/'})
+    .pipe(multistream(
+        gulp.dest('./projects/web/css'),
+        gulp.dest('./projects/ionic/css'),
+        gulp.dest('./projects/electron/css')
+    ));
+    gulp.src('./js/lib/font-awesome/fonts/*', {base: './js/lib/font-awesome/fonts/'})
+    .pipe(multistream(
+        gulp.dest('./projects/web/fonts'),
+        gulp.dest('./projects/ionic/fonts'),
+        gulp.dest('./projects/electron/fonts')
+    ));
 });
 gulp.task('jade', function(done) {
     gulp.src('./views/**/**/*.jade')
@@ -36,15 +55,75 @@ gulp.task('jade', function(done) {
         pretty : true,
         doctype: 'html'
     }))
-    .pipe(gulp.dest('./www/'))
+    .pipe(gulp.dest('./projects/ionic/'))
     .on('end', done);
+    gulp.src('./views/**/**/*.jade')
+    .pipe(jade({
+        locals : {
+            ionic: true,
+            dev: true
+        },
+        pretty : true,
+        doctype: 'html'
+    }))
+    .pipe(multistream(
+        gulp.dest('./projects/web/'),
+        gulp.dest('./projects/ionic/'),
+        gulp.dest('./projects/electron/')
+    ));
+});
+
+gulp.task('images', function(){
+    gulp.src('./img/*', {base: './img/'})
+    .pipe(multistream(
+        gulp.dest('./projects/web/img'),
+        gulp.dest('./projects/ionic/img'),
+        gulp.dest('./projects/electron/img')
+    ));
+});
+
+gulp.task('js', function(done) {
+    gulp.src([
+        './js/lib/jquery/dist/jquery.min.js',
+        './js/lib/counter_flipper.js',
+        './js/lib/angular-ui-router/release/angular-ui-router.min.js',
+        './js/lib/angular-animate/angular-animate.min.js',
+        './js/lib/google_api.js',
+        './js/controllers/*.js',
+        './js/app.js'
+    ])
+    .pipe(sourcemaps.init())
+    .pipe(concat('all.js'))
+    .pipe(sourcemaps.write())
+    .pipe(multistream(
+        gulp.dest('./projects/web/js'),
+        gulp.dest('./projects/ionic/js'),
+        gulp.dest('./projects/electron/js')
+    ))
+    .pipe(rename('all.min.js'))
+    .pipe(uglify({
+        mangle: false
+    }))
+    .pipe(multistream(
+        gulp.dest('./projects/web/js'),
+        gulp.dest('./projects/ionic/js'),
+        gulp.dest('./projects/electron/js')
+    ))
+    .on('end', done);
+    gulp.src('./js/lib/angular/angular.*', {base: './js/lib/angular/'})
+    .pipe(multistream(
+        gulp.dest('./projects/web/js'),
+        gulp.dest('./projects/electron/js')
+    ));
+});
+gulp.task('build', function() {
 });
 
 gulp.task('watch', function() {
-    gulp.watch(
-        ['./scss/**/**/*.scss', './views/**/**/*.jade'],
-        ['sass', 'jade']
-    );
+    gulp.watch(['./views/**/**/*.jade'],['jade']);
+    gulp.watch(['./scss/**/**/*.scss'], ['sass']);
+    gulp.watch(['./js/**/**/*.js'],     ['js']);
+    gulp.watch(['./img/*'],             ['images']);
 });
 
 gulp.task('install', ['git-check'], function() {

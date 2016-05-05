@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var bcrypt = require('bcrypt');
+var upload = require('multer')({ dest: 'uploads/' });
 
 var authenticator = function(res,req,next){
     if(req.session.userData && req.session.userData.loggedIn) next();
@@ -93,7 +94,7 @@ router.get('/views', function() {
     sess.views = sess.views?sess.views+1:1;
     res.send({
         err : null,
-        data : {
+        res : {
             views : views
         }
     });
@@ -103,7 +104,7 @@ router.get('/views', function() {
 
 /* USER ACCOUNT MANAGEMENT - START */
 
-router.get('/account/register', function(req, res) {
+router.post('/account/register', function(req, res) {
     var client = new pg.Client(conString);
     var body = req.body;
     // validate body inputs
@@ -143,7 +144,7 @@ router.get('/account/register', function(req, res) {
                     console.log(result);
                     res.send({
                         err : null,
-                        data : {
+                        res : {
                             fname : 'You did it!',
                             lname : 'Yaaaaay!',
                             uname : 'Woohoo!'
