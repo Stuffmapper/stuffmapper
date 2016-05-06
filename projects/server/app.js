@@ -94,31 +94,13 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use('/api/v1', require('../../routes/api/v1/index'));
-app.use('*', require('../../routes/index'));
+app.use('/api/v1', require('./routes/api/v1/index'));
+app.use('*', function(req,res){res.render('index');});
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
-});
-
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-}
-
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
 });
 
 var server = app.listen(port);
@@ -131,7 +113,7 @@ process.on('SIGTERM', function() {
     setTimeout(function() {
         console.error('Could not close connections in time, forcefully shutting down');
         process.exit(1);
-    }, 30000);
+    }, 5000);
 });
 process.on('SIGINT', function() {
     console.log('\nAttempting to close all connections...');

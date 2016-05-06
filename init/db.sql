@@ -16,7 +16,7 @@ CREATE TABLE users (
     uname varchar(32) UNIQUE NOT NULL,
     email varchar(64) UNIQUE NOT NULL,
     password text NOT NULL,
-    password_reset_token text NOT NULL,
+    password_reset_token text,
     status integer REFERENCES status(id),
     phone_number varchar(10),
     verify_email_token varchar(64),
@@ -57,14 +57,20 @@ CREATE TABLE posts (
     category integer REFERENCES categories(id),
     dibbed boolean DEFAULT false,
     dibber integer REFERENCES users(id),
-    on_the_curb boolean NOT NULL,
-    views #- figure this out 
+    on_the_curb boolean NOT NULL
+);
+
+CREATE TABLE orientation(
+    id BIGSERIAL PRIMARY KEY,
+    name varchar(8) NOT NULL
 );
 
 CREATE TABLE images (
     id BIGSERIAL PRIMARY KEY,
     post_id integer REFERENCES posts(id),
-    image_url varchar(255) NOT NULL
+    image_url varchar(255) NOT NULL,
+    orientation integer REFERENCES orientation(name),
+    main boolean DEFAULT false
 );
 
 CREATE TABLE tag_names (

@@ -2,6 +2,7 @@
 var app = require('app');
 
 // Module to create native browser window.
+
 var BrowserWindow = require('browser-window');
 var mainWindow = null;
 

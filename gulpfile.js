@@ -50,27 +50,36 @@ gulp.task('jade', function(done) {
     gulp.src('./views/**/**/*.jade')
     .pipe(jade({
         locals : {
-            ionic: true
-        },
-        pretty : true,
-        doctype: 'html'
-    }))
-    .pipe(gulp.dest('./projects/ionic/'))
-    .on('end', done);
-    gulp.src('./views/**/**/*.jade')
-    .pipe(jade({
-        locals : {
             ionic: true,
             dev: true
         },
         pretty : true,
         doctype: 'html'
     }))
-    .pipe(multistream(
-        gulp.dest('./projects/web/'),
-        gulp.dest('./projects/ionic/'),
-        gulp.dest('./projects/electron/')
-    ));
+    .pipe(gulp.dest('./projects/ionic/'))
+    .on('end', done);
+
+    gulp.src('./views/**/**/*.jade')
+    .pipe(jade({
+        locals : {
+            electron: true,
+            dev: true
+        },
+        pretty : true,
+        doctype: 'html'
+    }))
+    .pipe(gulp.dest('./projects/electron/'))
+    .on('end', done);
+
+    gulp.src('./views/**/**/*.jade')
+    .pipe(jade({
+        locals : {
+            dev: true
+        },
+        pretty : true,
+        doctype: 'html'
+    }))
+    .pipe(gulp.dest('./projects/web/'));
 });
 
 gulp.task('images', function(){
@@ -116,6 +125,7 @@ gulp.task('js', function(done) {
         gulp.dest('./projects/electron/js')
     ));
 });
+
 gulp.task('build', function() {
 });
 

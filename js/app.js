@@ -35,11 +35,11 @@ if(config.ionic.isIonic) {
 }
 
 function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise('/menu/getstuff');
+    $urlRouterProvider.otherwise('/stuff/get');
     $locationProvider.html5Mode(config.html5);
     $stateProvider
-    .state('menu', {
-        url: '/menu',
+    .state('stuff', {
+        url: '/stuff',
         templateUrl: '/partials/home/partial-home.html',
         controller: function($scope, $userData) {
             $scope.map = new google.maps.Map($('#map-view')[0], {
@@ -52,26 +52,26 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
             $userData.setUserId(1);
         }
     })
-    .state('menu.get', {
-        url: '/getstuff',
+    .state('stuff.get', {
+        url: '/get',
         templateUrl: '/partials/home/partial-home-getstuff.html',
         controller: GetStuffController
     })
-    .state('menu.get.item', {
+    .state('stuff.get.item', { //  http://www.stuffmapper.com/stuff/get/232
         url: '/:id',
         controller: GetItemController
     })
-    .state('menu.give', {
-        url: '/givestuff',
+    .state('stuff.give', { //  http://www.stuffmapper.com/stuff/give#step1
+        url: '/give',
         templateUrl: '/partials/home/partial-home-givestuff.html',
         controller: GiveStuffController
     })
-    .state('menu.my', {
-        url: '/mystuff',
+    .state('stuff.my', {
+        url: '/my',
         templateUrl: '/partials/home/partial-home-mystuff.html',
         controller: MyStuffController
     })
-    .state('menu.my.item', {
+    .state('stuff.my.item', {
         url: '/:id',
         controller: MyStuffController
     })

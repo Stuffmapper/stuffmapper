@@ -3,7 +3,7 @@ if [[ $1 == '' || $1 == 'init' ]]; then
     # grab the newest version of node 4.x
     curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
     # install dependencies from apt-get
-    sudo apt-get install git nodejs postgresql nginx g++ python -y
+    sudo apt-get install git nodejs postgresql nginx g++ python wine -y
     # install global dependencies from npm
     sudo npm i -g cordova ionic bower pm2 gulp electron-prebuilt
     # clone the code from github into the stuffmapper folder
@@ -104,15 +104,14 @@ if [[ $1 == '' || $1 == 'init' ]]; then
     sudo ln -s /etc/nginx/sites-available/node /etc/nginx/sites-enabled/node
     # update nginx config
     sudo service nginx restart
+    # init the db
     # bam.  All done.
     echo ""
     echo "All done!"
 elif [[ $1 == 'reset' ]]; then
     cd ~/stuffmapper/
-    git fetch --all
-    git reset --hard origin/master
     sudo su postgres -c "psql -c \"DROP DATABASE stuffmapper;\""
-    sudo su postgres -c "psql -f db.sql"
+    sudo su postgres -c "psql -f /home/ryan/stuffmapper/init/db.sql"
 elif [[ $1 == 'update' ]]; then
     cd ~/stuffmapper/
     git fetch --all
