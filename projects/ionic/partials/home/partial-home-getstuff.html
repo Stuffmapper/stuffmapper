@@ -1,0 +1,12 @@
+
+<div class="search-stuff-container">
+  <input id="searchStuff" type="search" placeholder="Search..." ng-model="searchStuff" class="stuff-input"><i id="filter-button" tabindex="0" ng-click="toggleFilterPane()" class="stuff-button fa fa-sliders"></i>
+</div>
+<ul>
+  <li ng-repeat="list in listItems" style="background-image: url({{ list.img }});"><a ui-sref="stuff.get.item({id:list.id})">{{ item.title }}</a></li>
+</ul>
+<div id="filter-pane" class="animate-250">
+  <ul class="filter-options">
+    <li ng-repeat="options in filterOptions"></li>
+  </ul>
+</div>

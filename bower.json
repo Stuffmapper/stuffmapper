@@ -1,15 +1,19 @@
 {
-    "name": "stuffmapper",
-    "description": "",
-    "license": "MIT",
-    "private": true,
-    "devDependencies": {
-        "ionic": "driftyco/ionic-bower#1.2.4",
-        "font-awesome": "^4.5.0",
-        "jquery": "^2.2.2",
-        "angular": "^1.5.3"
-    },
-    "resolutions": {
-        "angular": "1.4.3"
-    }
+  "name": "stuffmapper",
+  "description": "",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "ionic": "driftyco/ionic-bower#1.2.4",
+    "font-awesome": "^4.5.0",
+    "jquery": "^2.2.2",
+    "angular": "^1.5.3"
+  },
+  "resolutions": {
+    "angular": "1.4.3"
+  },
+  "dependencies": {
+    "tween.js": "tweenjs#^16.3.4",
+    "animateCSS": "^1.2.1"
+  }
 }

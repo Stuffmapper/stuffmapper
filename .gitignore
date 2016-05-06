@@ -40,7 +40,11 @@ www/libs/**
 
 hooks
 hooks/**
+www/css/**/*
+www/**/*.html
+plugins/**/*
 
 .remote-sync.json
 
 sftp-config.json
+.bash_aliases

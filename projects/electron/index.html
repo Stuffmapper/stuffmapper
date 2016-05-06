@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="stuffMapp">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <base href="/">
+    <title>Stuffmapper</title>
+    <link href="/css/style.min.css" rel="stylesheet">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <script src="./js/angular.js"></script>
+    <script src="/js/all.min.js"></script>
+  </head>
+  <body ng-controller="MainController">
+    <div id="modal-windows">
+      <div id="modal-windows-bg" class="animate-250"></div>
+      <div class="modal-container">
+        <div ng-click="closePopups()" class="close-modal-bg"></div>
+        <div id="sign-in" class="modal-window animate-250">
+          <div class="modal-header">
+            <div class="modal-title">Sign in to Stuffmapper!</div><i ng-click="closePopups()" class="fa fa-close modal-close"></i>
+          </div>
+          <div class="modal-content">
+            <div id="sign-in-step-one" class="modal-steps">
+              <div class="social-media-sign-in-container"><a id="google-plus-sign-in" class="sign-in-buttons"><i class="fa fa-google-plus"></i><span>Google Plus</span></a></div>
+              <div class="social-media-sign-in-container"><a id="facebook-sign-in" class="sign-in-buttons"><i class="fa fa-facebook-square"></i><span>Facebook</span></a></div><a id="custom-sign-in" class="sign-in-message">or sign in with your email</a>
+            </div>
+            <div id="sign-in-step-one-point-five" class="modal-steps"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-container">
+        <div ng-click="closePopups()" class="close-modal-bg"></div>
+        <div id="sign-up" class="modal-window animate-250">
+          <div class="modal-header">
+            <div class="modal-title">Sign up for Stuffmapper!</div><i ng-click="closePopups()" class="fa fa-close modal-close"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul class="side-menu animate-250">
+      <li class="side-menu-header">
+        <div class="profile"></div>
+      </li>
+      <li class="side-menu-item"></li>
+      <li class="side-menu-item"></li>
+    </ul>
+    <div id="container">
+      <div id="header"><img id="logo" src="/img/stuffmapper-logo.png">
+        <div id="landfill-tracker"></div>
+        <div id="user-portal"><a id="sign-in-button" ng-click="signInOrUp('in')" class="user-portal-buttons">Sign In</a><a id="sign-up-button" ng-click="signInOrUp('up')" class="user-portal-buttons">Sign Up</a></div>
+      </div>
+      <div id="content" ui-view></div>
+    </div>
+  </body>
+</html>
