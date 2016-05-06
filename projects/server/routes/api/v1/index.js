@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var bcrypt = require('bcrypt');
+var saltRounds = 10;
+var upload = require('multer')({ dest: 'uploads/' });
+
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
 
 var authenticator = function(res,req,next){
     if(req.session.userData && req.session.userData.loggedIn) next();
@@ -93,7 +97,7 @@ router.get('/views', function() {
     sess.views = sess.views?sess.views+1:1;
     res.send({
         err : null,
-        data : {
+        res : {
             views : views
         }
     });
@@ -103,20 +107,25 @@ router.get('/views', function() {
 
 /* USER ACCOUNT MANAGEMENT - START */
 
-router.get('/account/register', function(req, res) {
+router.post('/account/register', function(req, res) {
+
+});
+
+router.post('/account/register2', function(req, res) {
     var client = new pg.Client(conString);
     var body = req.body;
-    // validate body inputs
-    bcrypt.hashPassword(body.password, function(err, hashedPassword) {
+    bcrypt.hash(body.password, saltRounds, function(err, hashedPassword) {
         client.connect(function(err) {
             if(err) {
                 console.log(err);
                 client.end();
+                return;
             }
             var query = [
                 'INSERT INTO users (',
-                'fname, lname, uname, email, password, phone_number, status, veryify_email_url',
-                ') VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+                'fname, lname, uname, email, password, ',
+                'verify_email_token, phone_number) ',
+                'VALUES ($1, $2, $3, $4, $5, $6, $7) ',
                 'RETURNING *'
             ].join('');
             var values = [
@@ -125,9 +134,8 @@ router.get('/account/register', function(req, res) {
                 body.uname,
                 body.email,
                 hashedPassword,
-                body.phone_number || null,
-                'active',
-                'supersecretemailthing'
+                'supersecretemailthing',
+                body.phone_number
             ];
             client.query(query, values, function(err, result) {
                 if(err) {
@@ -140,13 +148,16 @@ router.get('/account/register', function(req, res) {
                     });
                     client.end();
                 } else {
-                    console.log(result);
+                    req.session.uname = result.rows[0].uname;
+                    req.session.fname = result.rows[0].fname;
+                    req.session.lname = result.rows[0].lname;
                     res.send({
                         err : null,
-                        data : {
-                            fname : 'You did it!',
-                            lname : 'Yaaaaay!',
-                            uname : 'Woohoo!'
+                        res : {
+                            uname : req.session.uname,
+                            fname : req.session.fname,
+                            lname : req.session.lname,
+                            redirect: true
                         }
                     });
                 }

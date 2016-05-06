@@ -1,10 +1,12 @@
 #map-view
 #tab-container
-    ul#tabs
-        li#getstuff
+    ul.tabs
+        li.logo-tab
+            a(ng-click)
+        li.get-stuff-tab
             a(ui-sref="menu.get") Get Stuff
-        li#givestuff
+        li.give-stuff-tab
             a(ui-sref="menu.give") Give Stuff
-        li#mystuff
+        li.my-stuff-tab
             a(ui-sref="menu.my") My Stuff
     #tab-content(ui-view)

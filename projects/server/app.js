@@ -1,4 +1,5 @@
 var express = require('express');
+var port = process.env.PORT || 3000;
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -6,9 +7,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var session = require('express-session');
-
-var index = require('./routes/index');
-var api_v1 = require('./routes/api/v1/index');
 
 var app = express();
 
@@ -23,26 +21,24 @@ var sess = {
     secret: 'SuperSecretPassword1!',
     cookie: {}
 };
+
 if (app.get('env') === 'production') {
     app.set('trust proxy', 1);
     sess.cookie.secure = true;
 }
 app.use(session(sess));
 
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../../views'));
 app.set('view engine', 'jade');
 
-app.use(favicon(path.join(__dirname, 'www', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'favicon.ico')));
 app.use(logger('dev'));
 //app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 app.use(methodOverride());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use('/css', express.static(path.join(__dirname, 'www/css')));
-app.use('/lib', express.static(path.join(__dirname, 'www/lib')));
-app.use('/img', express.static(path.join(__dirname, 'www/img')));
-app.use('/js', express.static(path.join(__dirname, 'www/js')));
+app.use('/', express.static(path.join(__dirname, '../web')));
 
 app.use(function(req, res, next) {
     var tempDB = {
@@ -51,9 +47,12 @@ app.use(function(req, res, next) {
             {fname:'someone',lname:'else',uname:'someoneelse',passwd:'SecretPassword1!',id:2}
         ],
         stuff: [
-            {userId:1, id:1, status:'undibbed', title:'asdf1',lat: 47.608013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Furniture & Crap'},
-            {userId:1, id:2, status:'undibbed', title:'asdf2',lat: 47.508013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Food'},
-            {userId:2, id:3, status:'undibbed', title:'asdf3',lat: 47.408013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',category:'Electronics'}
+            {userId:1, id:1, status:'undibbed', title:'asdf1',lat: 47.608013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'portait',category:'Furniture & Crap'},
+            {userId:1, id:2, status:'undibbed', title:'asdf2',lat: 47.508013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'landscape',category:'Food'},
+            {userId:2, id:3, status:'undibbed', title:'asdf3',lat: 47.408013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'portait',category:'Electronics'},
+            {userId:2, id:4, status:'undibbed', title:'asdf4',lat: 47.308013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'portait',category:'For BABIES'},
+            {userId:1, id:5, status:'undibbed', title:'asdf5',lat: 47.208013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'landscape',category:'Decoration'},
+            {userId:2, id:6, status:'undibbed', title:'asdf6',lat: 47.108013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'landscape',category:'Auto'}
         ]
     };
     req.db = {
@@ -95,41 +94,35 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use('/api/v1', api_v1);
-
-['', '-getstuff', '-getstuff-id', '-givestuff', '-mystuff'].forEach(function(e) {
-    var page = 'partials/home/partial-home'+e;
-    app.get('/' + page, function(req, res, next) {
-        res.render(page, {'doctype': 'html'});
-    });
-});
-
-app.get('/partials/about/', function(req, res, next) {
-    res.render(page, {'doctype': 'html'});
-});
-
-app.use('*', index);
+app.use('/api/v1', require('./routes/api/v1/index'));
+app.use('*', function(req,res){res.render('index');});
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-}
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
-});
 
-module.exports = app;
+var server = app.listen(port);
+console.log('Listening on port ' + port);
+process.on('SIGTERM', function() {
+    server.close(function() {
+        console.log('Closed all connections');
+        process.exit();
+    });
+    setTimeout(function() {
+        console.error('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+    }, 5000);
+});
+process.on('SIGINT', function() {
+    console.log('\nAttempting to close all connections...');
+    server.close(function() {
+        console.log('Closed all connections');
+        process.exit();
+    });
+    setTimeout(function() {
+        console.error('Could not close connections in time, forcefully shutting down');
+        process.exit(1);
+    }, 5000);
+});
