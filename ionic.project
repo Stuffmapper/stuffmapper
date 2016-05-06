@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 {
     "name": "stuffmapper",
     "app_id": "",
     "documentRoot": "projects/ionic"
 }
+=======
+{
+    "name": "stuffmapper",
+    "app_id": "",
+    "documentRoot": "projects/ionic"
+}
+>>>>>>> 165b547c0bf52b4867c71861d2922c16df238a50

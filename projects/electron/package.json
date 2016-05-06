@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 {
   "name"    : "stuffmapper",
   "version" : "0.1.0",
   "main"    : "app.js"
 }
+=======
+{
+  "name"    : "stuffmapper",
+  "version" : "0.1.0",
+  "main"    : "app.js"
+}
+>>>>>>> 165b547c0bf52b4867c71861d2922c16df238a50

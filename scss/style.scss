@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*****************************************************************\
 *
 *  Stuffmapper Stylesheet
@@ -433,3 +434,440 @@ body, div {
 }
 
 /* Landfill Tracker -  END  */
+=======
+/*****************************************************************\
+*
+*  Stuffmapper Stylesheet
+*
+*
+*  Table of Contents:
+*   1. Variables
+*   2. Main Styling
+*   3. Tabs
+*   4. Search Bar
+*
+*
+*   X. Modal Windows
+*   Y. Landfill Tracker
+\*****************************************************************/
+
+/* Variables - START */
+
+    $primary-color: #445d75;
+
+    /* Landfill Tracker - START */
+
+    $landfill-tracker-width: 180px;
+    $landfill-tracker-color-base: #3d3d3d;
+    $landfill-tracker-color-fold: #000000;
+    $landfill-tracker-font-color: #ffffff;
+    $landfill-tracker-font-family: Arial;
+
+    /* Landfill Tracker -  END  */
+
+/* Variables -  END  */
+
+/* Main Styling - START */
+
+html, body, #container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body, div {
+    font-family: Arial;
+}
+
+.animate-250 {
+    -webkit-transition: all 250ms;
+    -moz-transition: all 250ms;
+    -ms-transition: all 250ms;
+    -o-transition: all 250ms;
+    transition: all 250ms;
+}
+
+/* Main Styling -  END  */
+
+.side-menu {
+    position: absolute;
+    width: 200px;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    list-style: none;
+    background-color: #efefef;
+    z-index: 100;
+    margin: 0;
+    padding: 0;
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    transform: translateX(-100%);
+}
+
+.search-stuff-container {
+    padding: 8px;
+    height: 24px;
+}
+
+.stuff-input {
+    height: 24px;
+    padding: 13px 0px;
+    border: 1px solid black;
+    left: 0px;
+    display: inline-block;
+    position: relative;
+    font-size: 18px;
+    width: calc(100% - 36px);
+}
+
+.stuff-button {
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    padding: 4px;
+    display: inline-block;
+    position: absolute;
+    border: 1px solid black;
+    background-color: white;
+    margin: 0px;
+    right: 8px;
+    cursor: pointer;
+}
+
+#filter-dropdown {
+
+}
+
+#header {
+    width: 100%;
+    height: 40px;
+    background-color: $primary-color;
+}
+
+#logo {
+    height: 40px;
+    padding-left: 15px;
+    display: inline-block;
+}
+
+#user-portal {
+    float: right;
+    position: relative;
+    display: inline-block;
+    height: 100%;
+}
+
+.user-portal-buttons {
+    position: relative;
+    display: inline-block;
+    padding: 0px 5px;
+    margin-right: 15px;
+    color: white;
+    height: 100%;
+    line-height: 40px;
+    cursor: pointer;
+}
+
+#content {
+    height: calc(100% - 40px);
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: block;
+}
+
+#map-view {
+    height: 100%;
+    width: 70%;
+    display: inline-block;
+}
+
+/* Tabs - Start */
+
+#tab-container {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    height: 100%;
+    width: 30%;
+    display: inline-block;
+}
+
+.tabs {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    height: 45px;
+    background-color: #DEDEDE;
+    border-bottom: 2px solid #3d3d3d;
+}
+
+.tabs .logo-tab, .tabs .my-stuff-tab {
+    display: none;
+}
+
+.tabs li {
+    width: 50%;
+    height: 100%;
+    display: inline-block;
+    position: relative;
+    float: left;
+    line-height: 45px;
+    color: #3d3d3d;
+    text-decoration: none;
+    text-align: center;
+}
+
+
+.tabs li a {
+    color: #3d3d3d;
+    text-decoration: none;
+    text-align: center;
+    height: calc(100% - 5px);
+    width: 100%;
+    text-align: center;
+    display: block;
+    background-color: transparent;
+    position: relative;
+}
+
+
+.tabs li a.selected {
+    background-color: #fff;
+    color: #3d3d3d;
+    height: 100%;
+    font-weight: 700;
+}
+
+
+#tab-content {
+    background-color: #fff;
+    height: calc(100% - 45px);
+    width: 100%;
+    position: relative;
+}
+
+#tab-content ul {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#tab-content ul li {
+    width: calc(50% - 15px);
+    margin-left: 10px;
+    margin-right: 5px;
+    margin-top: 10px;
+    padding-bottom: 70%;
+    display: inline-block;
+    background-size: cover;
+    background-position: 50% 50%;
+    cursor: pointer;
+    position: relative;
+}
+
+#tab-content ul li a {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+/* Tabs -  End  */
+
+
+/* Modal Windows - START */
+
+#modal-windows {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 999999;
+    display: none;
+    perspective: 500px;
+}
+
+#modal-windows-bg {
+    background-color: rgba(25,25,25,0.45);
+    opacity: 0.0001;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: block;
+    z-index: 1;
+}
+
+.modal-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+.close-modal-bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.modal-window {
+    background-color: #efefef;
+    width: 500px;
+    height: 300px;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.0001;
+    z-index: 2;
+    display: inline-block;
+}
+
+.modal-header {
+    background-color: #cccccc;
+    color: #3d3d3d;
+    width: 100%;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    position: relative;
+}
+
+.modal-title {
+    position: absolute;
+    width: 100%;
+    height: 48px;
+    text-align: center;
+}
+
+.modal-close {
+    position: relative;
+    width: 48px;
+    text-align: center;
+    cursor: pointer;
+    position: absolute;
+    height: 100%;
+    right: 0px;
+    top: 0px;
+    display: inline-block;
+    line-height: 48px !important;
+}
+
+#modal-windows.modal-windows-open {
+    display: block;
+}
+
+#modal-windows-bg.modal-windows-bg-open {
+    opacity: 1;
+}
+
+.modal-window.modal-window-open {
+    opacity: 1;
+}
+
+.modal-content {
+    height: calc(100% - 48px);
+}
+
+.modal-steps {
+    width: 100%;
+    position: absolute;
+    opacity: 1;
+    display: block;
+    height: 50px;
+    transform: translateY(-50%);
+    top: 50%;
+}
+
+/* Sign In Content - START */
+.social-media-sign-in-container {
+    width: 50%;
+    position: relative;
+    display: inline-block;
+    text-align: center;
+}
+.social-media-sign-in-container a {
+    text-decoration: none;
+    width: 200px;
+    height: 36px;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 3px;
+    color: white;
+}
+.social-media-sign-in-container a i {
+    line-height: 36px !important;
+    float: left;
+    font-size: 34px;
+    margin-left: 4px;
+}
+
+.social-media-sign-in-container a span {
+    line-height: 36px;
+}
+
+#google-plus-sign-in {
+    background-color: #DC4E41;
+}
+
+#facebook-sign-in {
+    background: #4c69ba;
+    background: -moz-linear-gradient(top,  #4c69ba 0%, #3b55a0 100%);
+    background: -webkit-linear-gradient(top,  #4c69ba 0%,#3b55a0 100%);
+    background: linear-gradient(to bottom,  #4c69ba 0%,#3b55a0 100%);
+}
+
+.sign-in-message {
+    color: blue;
+    width: 100%;
+    text-align: center;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Modal Windows -  END  */
+
+/* Landfill Tracker - START */
+
+#landfill-tracker {
+    width: $landfill-tracker-width;
+    height: calc(100% - 10px);
+    display: inline-block;
+    margin: 5px;
+}
+.topElement {
+    background-color: $landfill-tracker-color-base;
+    color: $landfill-tracker-font-color;
+    font-family: $landfill-tracker-font-family;
+}
+.bottomElement {
+    background-color: $landfill-tracker-color-base;
+    color: $landfill-tracker-font-color;
+    font-family: $landfill-tracker-font-family;
+}
+.topElementEnter {
+    background-color: $landfill-tracker-color-fold;
+}
+.bottomElementEnter {
+    background-color: $landfill-tracker-color-fold;
+}
+
+/* Landfill Tracker -  END  */
+>>>>>>> 165b547c0bf52b4867c71861d2922c16df238a50

@@ -16,7 +16,7 @@ var paths = {
     jade: ['./scss/**/*.jade']
 };
 
-gulp.task('default', ['sass', 'jade', 'js', 'images']);
+gulp.task('default', ['sass', 'jade']);
 
 gulp.task('sass', function(done) {
     gulp.src('./scss/**/**/*.scss')
@@ -68,7 +68,8 @@ gulp.task('jade', function(done) {
         pretty : true,
         doctype: 'html'
     }))
-    .pipe(gulp.dest('./projects/electron/'));
+    .pipe(gulp.dest('./projects/electron/'))
+    .on('end', done);
 
     gulp.src('./views/**/**/*.jade')
     .pipe(jade({
