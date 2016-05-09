@@ -40,7 +40,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     $stateProvider
     .state('stuff', {
         url: '/stuff',
-        templateUrl: '/partials/home/partial-home.html',
+        templateUrl: 'templates/partial-home.html',
         controller: function($scope, $userData) {
             $scope.map = new google.maps.Map($('#map-view')[0], {
                 center: {
@@ -54,7 +54,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     })
     .state('stuff.get', {
         url: '/get',
-        templateUrl: '/partials/home/partial-home-getstuff.html',
+        templateUrl: 'templates/partial-home-getstuff.html',
         controller: GetStuffController
     })
     .state('stuff.get.item', { //  http://www.stuffmapper.com/stuff/get/232
@@ -63,12 +63,12 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
     })
     .state('stuff.give', { //  http://www.stuffmapper.com/stuff/give#step1
         url: '/give',
-        templateUrl: '/partials/home/partial-home-givestuff.html',
+        templateUrl: 'templates/partial-home-givestuff.html',
         controller: GiveStuffController
     })
     .state('stuff.my', {
         url: '/my',
-        templateUrl: '/partials/home/partial-home-mystuff.html',
+        templateUrl: 'templates/partial-home-mystuff.html',
         controller: MyStuffController
     })
     .state('stuff.my.item', {
