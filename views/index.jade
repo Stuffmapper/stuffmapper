@@ -1,59 +1,91 @@
 doctype html
 - var ionicClass = ionic?'ionic':'';
 html(lang="en" class= ionicClass ng-app="stuffMapp")
-    head
-        meta(charset="utf-8")
-        meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width")
-        base(href="/")
-        //- if not electron, do the href="/"
-        //- if electron, you have to do the fancy stuff.
-        title Stuffmapper
-        link(href="/css/style.min.css" rel="stylesheet")
-        link(href="/css/font-awesome.min.css" rel="stylesheet")
-        if ionic
-            link(href="lib/ionic/css/ionic.css" rel="stylesheet")
-            script(src="lib/ionic/js/ionic.bundle.js")
-            script(src="cordova.js")
-        else
-            script(src="./js/angular.js")
-        script(src="/js/all.min.js")
-    body(ng-controller="MainController")
-        #modal-windows
-            #modal-windows-bg.animate-250
-            .modal-container
-                .close-modal-bg(ng-click="closePopups()")
-                #sign-in.modal-window.animate-250
-                    .modal-header
-                        .modal-title Sign in to Stuffmapper!
-                        i.fa.fa-close.modal-close(ng-click="closePopups()")
-                    .modal-content
-                        #sign-in-step-one.modal-steps
-                            .social-media-sign-in-container
-                                a#google-plus-sign-in.sign-in-buttons
-                                    i.fa.fa-google-plus
-                                    span Google Plus
-                            .social-media-sign-in-container
-                                a#facebook-sign-in.sign-in-buttons
-                                    i.fa.fa-facebook-square
-                                    span Facebook
-                            a#custom-sign-in.sign-in-message or sign in with your email
-                        #sign-in-step-one-point-five.modal-steps
-            .modal-container
-                .close-modal-bg(ng-click="closePopups()")
-                #sign-up.modal-window.animate-250
-                    .modal-header
-                        .modal-title Sign up for Stuffmapper!
-                        i.fa.fa-close.modal-close(ng-click="closePopups()")
-        ul.side-menu.animate-250
-            li.side-menu-header
-                .profile
-            li.side-menu-item
-            li.side-menu-item
-        #container
-            #header
-                img#logo(src="/img/stuffmapper-logo.png")
-                #landfill-tracker
-                #user-portal
-                    a#sign-in-button.user-portal-buttons(ng-click="signInOrUp('in')") Sign In
-                    a#sign-up-button.user-portal-buttons(ng-click="signInOrUp('up')") Sign Up
-            #content(ui-view)
+	head
+		meta(charset="utf-8")
+		meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width")
+		base(href="/")
+		//- if not electron, do the href="/"
+		//- if electron, you have to do the fancy stuff.
+		title Stuffmapper
+		link(href="/css/style.min.css" rel="stylesheet")
+		link(href="/css/font-awesome.min.css" rel="stylesheet")
+		script(src="https://maps.googleapis.com/maps/api/js")
+		if ionic
+			link(href="lib/ionic/css/ionic.css" rel="stylesheet")
+			script(src="lib/ionic/js/ionic.bundle.js")
+			script(src="cordova.js")
+		else
+			script(src="./js/angular.js")
+		script(src="/js/all.min.js")
+		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
+			include ./partials/home/partial-home-getstuff
+		script(id="templates/partial-home-givestuff.html" type="text/ng-template")
+			include ./partials/home/partial-home-givestuff
+		script(id="templates/partial-home-mystuff.html" type="text/ng-template")
+			include ./partials/home/partial-home-mystuff
+		script(id="templates/partial-home.html" type="text/ng-template")
+			include ./partials/home/partial-home
+	body(ng-controller="MainController")
+		#modal-windows
+			.modal-windows-bg.animate-250
+			.modal-container.modal-container.animate-500
+				.close-modal-bg(ng-click="hideModal()")
+				.modal-window
+					.modal-header
+						.modal-close(ng-click="hideModal()")
+							i.fa.fa-close
+					.modal-content
+						.modal-steps
+							#sign-in-step.modal-step.active
+								h2.modal-title Sign In
+								button.sign-in-up-input.social-button.google-plus-sign-in(ng-click="socialSignIn('google')")
+									span.social-sign-in-icon.social-sign-in-icon-google
+										i.fa.fa-google-plus
+									span.social-sign-in-text Sign in with Google
+								button.sign-in-up-input.social-button.facebook-sign-in(ng-click="socialSignIn('facebook')")
+									span.social-sign-in-icon.social-sign-in-icon-facebook
+										i.fa.fa-facebook
+									span.social-sign-in-text Sign in with Facebook
+								hr
+								span.sign-in-local-text or sign in with your email address 
+								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
+								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
+								hr
+								input#sign-in-sign-in-button.sign-in-up-input(type="button" value="Sign In")
+								input#sign-in-sign-up-button.sign-in-up-input(type="button" value="Sign Up")
+							#sign-up-step.modal-step.hidden-modal.modal-off
+								h2.modal-title Sign Up
+								input#sign-up-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
+								input#sign-up-password1.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
+								input#sign-up-password2.sign-in-up-input.local-sign-in-up(type="password again" placeholder="password")
+							#authorizing-step.modal-step.hidden-modal.modal-off
+								h2.modal-title Authorizing...
+								div loading...
+		#popups
+					#profile-popup.popups.popups-top-right.animate-250.hidden-popup
+						li
+							i.fa.fa-archive
+							span My Stuff
+						li
+							i.fa.fa-envelope
+							span Messages
+						li
+							i.fa.fa-cog
+							span Settings
+						li
+							i.fa.fa-sign-out
+							span Sign Out
+				ul.side-menu.animate-250
+			li.side-menu-header
+				.profile
+			li.side-menu-item
+			li.side-menu-item
+		#container
+			#header
+				img#logo(src="/img/stuffmapper-logo.png")
+				#landfill-tracker
+				#user-portal
+					a#sign-in-button(ng-click="showModal()")
+						i.fa.fa-user
+			#content(ui-view)

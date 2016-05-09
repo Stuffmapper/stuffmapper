@@ -18,6 +18,7 @@
     "gulp-multistream": "^0.1.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
+    "gulp-sourcemaps": "^2.0.0-alpha",
     "gulp-uglify": "^1.5.3",
     "jade": "~1.11.0",
     "method-override": "^2.3.5",
