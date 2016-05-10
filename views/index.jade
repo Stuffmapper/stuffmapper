@@ -1,6 +1,11 @@
 doctype html
-- var ionicClass = ionic?'ionic':'';
-html(lang="en" class= ionicClass ng-app="stuffMapp")
+-
+	var htmlClassList = [];
+	if(ionic) htmlClassList.push('ionic');
+	if(loggedIn) htmlClassList.push('loggedIn');
+	if(electron) htmlClassList.push('electron');
+	htmlClassList = htmlClassList.join(' ');
+html(lang="en" class= htmlClassList ng-app="stuffMapp")
 	head
 		meta(charset="utf-8")
 		meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width")
@@ -75,7 +80,7 @@ html(lang="en" class= ionicClass ng-app="stuffMapp")
 							span Settings
 						li
 							i.fa.fa-sign-out
-							span Sign Out
+							span(ng-click="logOut") Sign Out
 				ul.side-menu.animate-250
 			li.side-menu-header
 				.profile

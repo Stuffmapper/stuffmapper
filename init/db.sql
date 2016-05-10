@@ -69,7 +69,7 @@ CREATE TABLE images (
     id BIGSERIAL PRIMARY KEY,
     post_id integer REFERENCES posts(id),
     image_url varchar(255) NOT NULL,
-    orientation integer REFERENCES orientation(name),
+    orientation integer REFERENCES orientation(id),
     main boolean DEFAULT false
 );
 
@@ -97,6 +97,13 @@ CREATE TABLE messages (
     messages text NOT NULL,
     date_created timestamp DEFAULT current_timestamp,
     date_edited timestamp DEFAULT current_timestamp
+);
+
+CREATE TABLE last_message_read (
+    id BIGSERIAL PRIMARY KEY,
+    message_read integer REFERENCES messages(id),
+    user_id integer REFERENCES users(id),
+    conversation_id integer REFERENCES conversation(id)
 );
 
 CREATE TABLE watchlist (

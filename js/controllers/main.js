@@ -48,6 +48,12 @@ function MainController($scope, $http, $timeout, $userData) {
 		if(url) open(url, 'Social Login', 'menubar=1,resizable=1,scrollbars=1,width=350,height=250');
 	};
 	if(config.html5) {
+		var value = location.hash;
+		if(value) {
+			clearTimeout($scope.popUpTimeout);
+			var hash = value.split('#').pop();
+			if(hash === "signin") $scope.showModal();
+		}
 		$(window).on('hashchange', function(event) {
 			var value = location.hash;
 			if(value) {
@@ -60,6 +66,14 @@ function MainController($scope, $http, $timeout, $userData) {
 			}
 		});
 	}
+	$scope.showPopup = function() {
+		requestAnimationFrame(function() {
+			$('#profile-popup').removeClass('hidden-popup');
+			requestAnimationFrame(function() {
+				$('body').one('click',function(){$('#profile-popup').addClass('hidden-popup');});
+			});
+		});
+	};
 	$scope.userButton = function() {
 		if($userData.isLoggedIn()) {
 			$scope.showPopup();
@@ -99,9 +113,10 @@ function MainController($scope, $http, $timeout, $userData) {
 		});
 	};
 	$scope.logOut = function() {
+		console.log('asdfasdfasdf');
 		$http.post("/api/v1/account/logout")
 		.success(function(data) {
-			console.log(data);
+			$('html').removeClass('loggedIn');
 		});
 	};
 }
