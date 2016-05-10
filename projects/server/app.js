@@ -95,7 +95,7 @@ app.use(function(req, res, next) {
 });
 
 app.use('/api/v1', require('./routes/api/v1/index'));
-app.use('*', function(req,res){res.render('index');});
+app.use('*', function(req,res){res.render('index', { loggedIn : req.session.loggedIn});});
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

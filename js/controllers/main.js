@@ -1,4 +1,4 @@
-function MainController($scope, $http, $timeout) {
+function MainController($scope, $http, $timeout, $userData) {
 	//TODO: loading http://tobiasahlin.com/spinkit/ http://projects.lukehaas.me/css-loaders/
 	$scope.counterFlipper = new CounterFlipper('landfill-tracker', 0, 7);
 	$scope.counterFlipper.setCounter(1283746);
@@ -31,35 +31,79 @@ function MainController($scope, $http, $timeout) {
 		});
 	};
 	$scope.hideModal = function() {
-		if(config.html5) history.pushState("", document.title, window.location.pathname + window.location.search);
+		if(config.html5) history.pushState("", document.title, window.location.pathname + window.location.search + '#');
 		else console.log('this should close popups... not sure what to do without html5 :<');
+		clearTimeout($scope.popUpTimeout);
+		$scope.popUpOpen = false;
+		$('#modal-windows .modal-windows-bg').removeClass('modal-windows-bg-open');
+		$('#modal-windows .modal-container').removeClass('modal-window-open');
+		$scope.popUpTimeout = setTimeout(function() {
+			$('#modal-windows').removeClass('modal-windows-open');
+		}, 250);
 	};
 	$scope.socialSignIn = function(type) {
 		var url = '';
 		if(type==='google') url='https://www.google.com';
 		else if(type==='facebook') url='https://www.facebook.com';
-		if(url) open(url, 'Window Thing', 'menubar=1,resizable=1,scrollbars=1,width=350,height=250');
+		if(url) open(url, 'Social Login', 'menubar=1,resizable=1,scrollbars=1,width=350,height=250');
 	};
 	if(config.html5) {
-		$scope.$watch(function () {
-			return location.hash;
-		}, function (value) {
+		$(window).on('hashchange', function(event) {
+			var value = location.hash;
 			if(value) {
 				clearTimeout($scope.popUpTimeout);
 				var hash = value.split('#').pop();
 				if(hash === "signin") $scope.showModal();
 			}
 			else if($scope.popUpOpen) {
-				clearTimeout($scope.popUpTimeout);
-				$scope.popUpOpen = false;
-				$('#modal-windows .modal-windows-bg').removeClass('modal-windows-bg-open');
-				$('#modal-windows .modal-container').removeClass('modal-window-open');
-				$scope.popUpTimeout = setTimeout(function() {
-					$('#modal-windows').removeClass('modal-windows-open');
-				}, 250);
+				$scope.hideModal();
 			}
 		});
 	}
+	$scope.userButton = function() {
+		if($userData.isLoggedIn()) {
+			$scope.showPopup();
+		}
+		else {
+			$scope.showModal();
+		}
+	};
+	$scope.logIn = function() {
+		// set step to loading
+		$http.post("/api/v1/account/login",
+		{
+			email: $('#sign-in-email').val(),
+			password: $('#sign-in-password').val()
+		},{
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			transformRequest: function(data){
+				return $.param(data);
+			}
+		}).then(function(data) {
+			data = data.data;
+			console.log(data);
+			if(data.err) {
+				console.log(data);
+			}
+			if(data.res.isValid) {
+				// show login success, add badges
+				location.hash = '';
+				console.log(data);
+				$('html').addClass('loggedIn');
+				$userData.setLoggedIn(true);
+			} else {
+				// go back to sign in step and red highlight the email address and password for one second
+			}
+		});
+	};
+	$scope.logOut = function() {
+		$http.post("/api/v1/account/logout")
+		.success(function(data) {
+			console.log(data);
+		});
+	};
 }
 
 var working = false;

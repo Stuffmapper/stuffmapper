@@ -185,7 +185,7 @@ body, div {
 	display: inline-block;
 }
 
-.tabs {
+.stuff-tabs {
 	margin: 0;
 	padding: 0;
 	list-style: none;
@@ -195,11 +195,11 @@ body, div {
 	border-bottom: 2px solid #3d3d3d;
 }
 
-.tabs .logo-tab, .tabs .my-stuff-tab {
+.stuff-tabs .logo-tab, .stuff-tabs .my-stuff-tab {
 	display: none;
 }
 
-.tabs li {
+.stuff-tabs li {
 	width: 50%;
 	height: 100%;
 	display: inline-block;
@@ -212,7 +212,7 @@ body, div {
 }
 
 
-.tabs li a {
+.stuff-tabs li a {
 	color: #3d3d3d;
 	text-decoration: none;
 	text-align: center;
@@ -225,7 +225,7 @@ body, div {
 }
 
 
-.tabs li a.selected {
+.stuff-tabs li a.selected {
 	background-color: #fff;
 	color: #3d3d3d;
 	height: 100%;
@@ -349,17 +349,17 @@ body, div {
 }
 
 .modal-close {
-	position: relative;
 	width: 48px;
 	text-align: center;
 	cursor: pointer;
 	position: absolute;
-	height: 100%;
-	right: 0px;
-	top: 0px;
+	height: 48px;
+	right: 0;
+	top: 0;
 	display: inline-block;
-	line-height: 48px !important;
+	line-height: 48px!important;
 	color: #3d3d3d;
+	z-index: 3;
 }
 
 #modal-windows.modal-windows-open {

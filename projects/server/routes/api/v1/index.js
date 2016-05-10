@@ -148,15 +148,13 @@ router.post('/account/register', function(req, res) {
 					});
 					client.end();
 				} else {
+					req.session.loggedIn = true;
 					req.session.uname = result.rows[0].uname;
 					req.session.fname = result.rows[0].fname;
 					req.session.lname = result.rows[0].lname;
 					res.send({
 						err : null,
 						res : {
-							uname : req.session.uname,
-							fname : req.session.fname,
-							lname : req.session.lname,
 							redirect: true
 						}
 					});
@@ -166,27 +164,31 @@ router.post('/account/register', function(req, res) {
 	});
 });
 
-router.get('/account/login', function(req, res) {
-	if(req.session.userData && req.session.userData.loggedIn) {
+router.post('/account/login', function(req, res) {
+	if(req.session.loggedIn) {
 		res.send({
 			err : {
 				message : 'A user is already logged in.'
 			}
 		});
+		return;
 	}
+	var client = new pg.Client(conString);
 	var body = req.body;
+	console.log(req.body);
 	client.connect(function(err) {
 		if(err) {
 			console.log(err);
 			client.end();
 			return;
 		}
-		var query = 'SELECT * FROM users WHERE uname = $1';
+		var query = 'SELECT * FROM users WHERE email = $1';
 		var values = [
-			body.uname,
+			body.email
 		];
 		client.query(query, values, function(err, result) {
 			var row = result.rows[0];
+			console.log(row);
 			bcrypt.compare(body.password, row.password, function(err, isValid) {
 				if(err) {
 					res.send({
