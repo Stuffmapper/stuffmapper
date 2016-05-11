@@ -15,8 +15,13 @@ function GetStuffController($scope, $http, $timeout, $userData) {
         $scope.toggleFilterPane = function() {
             $('#filter-pane').toggleClass('open-filter-pane');
         };
+
         $scope.toggleSwitch = function() {
             $('.toggle-button').toggleClass('toggle-button-selected');
+        };
+
+        $scope.mapToggle = function() {
+            $('#tab-content ul').toggleClass('slideMap');
         };
         var tempSearchText = '';
         var searchTextTimeout;
