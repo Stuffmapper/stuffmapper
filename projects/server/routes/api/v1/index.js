@@ -148,10 +148,11 @@ router.post('/account/register', function(req, res) {
 					});
 					client.end();
 				} else {
-					req.session.loggedIn = true;
-					req.session.uname = result.rows[0].uname;
-					req.session.fname = result.rows[0].fname;
-					req.session.lname = result.rows[0].lname;
+					req.session.userData = {};
+					req.session.userData.loggedIn = true;
+					req.session.userData.uname = result.rows[0].uname;
+					req.session.userData.fname = result.rows[0].fname;
+					req.session.userData.lname = result.rows[0].lname;
 					res.send({
 						err : null,
 						res : {
@@ -165,7 +166,7 @@ router.post('/account/register', function(req, res) {
 });
 
 router.post('/account/login', function(req, res) {
-	if(req.session.loggedIn) {
+	if(req.session.userData && req.session.userData.loggedIn) {
 		res.send({
 			err : {
 				message : 'A user is already logged in.'
@@ -175,10 +176,8 @@ router.post('/account/login', function(req, res) {
 	}
 	var client = new pg.Client(conString);
 	var body = req.body;
-	console.log(req.body);
 	client.connect(function(err) {
 		if(err) {
-			console.log(err);
 			client.end();
 			return;
 		}
@@ -188,7 +187,6 @@ router.post('/account/login', function(req, res) {
 		];
 		client.query(query, values, function(err, result) {
 			var row = result.rows[0];
-			console.log(row);
 			bcrypt.compare(body.password, row.password, function(err, isValid) {
 				if(err) {
 					res.send({
@@ -198,6 +196,11 @@ router.post('/account/login', function(req, res) {
 					return;
 				}
 				else {
+					req.session.userData = {};
+					req.session.userData.loggedIn = true;
+					req.session.userData.uname = row.uname;
+					req.session.userData.fname = row.fname;
+					req.session.userData.lname = row.lname;
 					res.send({
 						err: null,
 						res: {
@@ -210,13 +213,14 @@ router.post('/account/login', function(req, res) {
 	});
 });
 
-router.get('/account/logout', function(req, res) {
+router.post('/account/logout', function(req, res) {
 	if(req.session.userData && req.session.userData.loggedIn) {
 		var userName = req.session.userData.uname;
+		req.session.userData = null;
 		req.session.userData = {};
 		res.send({
 			err : null,
-			data : {
+			res : {
 				message : 'User ' + userName + ' has been logged out.'
 			}
 		});

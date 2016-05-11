@@ -54,10 +54,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									span.social-sign-in-text Sign in with Facebook
 								hr
 								span.sign-in-local-text or sign in with your email address 
-								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
-								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
+								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address" value="ryan.the.farmer@gmail.com")
+								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password" value="Password1!")
 								hr
-								input#sign-in-sign-in-button.sign-in-up-input(type="button" value="Sign In" ng-click="logIn()")
+								input#sign-in-sign-in-button.sign-in-up-input(type="button" value="Sign In" ng-click="login()")
 								input#sign-in-sign-up-button.sign-in-up-input(type="button" value="Sign Up")
 							#sign-up-step.modal-step.hidden-modal.modal-off
 								h2.modal-title Sign Up
@@ -68,20 +68,20 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								h2.modal-title Authorizing...
 								div loading...
 		#popups
-					#profile-popup.popups.popups-top-right.animate-250.hidden-popup
-						li
-							i.fa.fa-archive
-							span My Stuff
-						li
-							i.fa.fa-envelope
-							span Messages
-						li
-							i.fa.fa-cog
-							span Settings
-						li
-							i.fa.fa-sign-out
-							span(ng-click="logOut") Sign Out
-				ul.side-menu.animate-250
+			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
+				li
+					i.fa.fa-archive
+					span My Stuff
+				li
+					i.fa.fa-envelope
+					span Messages
+				li
+					i.fa.fa-cog
+					span Settings
+				li
+					i.fa.fa-sign-out
+					span(ng-click="logout()") Sign Out
+		ul.side-menu.animate-250
 			li.side-menu-header
 				.profile
 			li.side-menu-item

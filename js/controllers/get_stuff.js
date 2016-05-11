@@ -1,10 +1,10 @@
 function GetStuffController($scope, $http, $timeout, $userData) {
-    $('#tab-container .tabs .get-stuff-tab a').addClass('selected');
+    $('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
     $http({
         method: 'GET',
         url: config.api.host + 'api/' + config.api.version + '/stuff/'
-    }).then(function(data) {
-        $scope.listItems = data.data;
+    }).success(function(data) {
+        $scope.listItems = data;
         $scope.markers = [];
         $scope.infowindows = [];
         $scope.filterOptions = [
@@ -65,7 +65,7 @@ function GetStuffController($scope, $http, $timeout, $userData) {
             });
         });
         $scope.$on("$destroy", function() {
-            $('#tab-container .tabs .get-stuff-tab a').removeClass('selected');
+            $('#tab-container .stuff-tabs .get-stuff-tab a').removeClass('selected');
             $scope.infowindows.forEach(function(e) {
                 e.close();
             });

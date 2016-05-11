@@ -66,13 +66,17 @@ function MainController($scope, $http, $timeout, $userData) {
 			}
 		});
 	}
+	var popupOpen = false;
 	$scope.showPopup = function() {
-		requestAnimationFrame(function() {
-			$('#profile-popup').removeClass('hidden-popup');
+		if(!popupOpen) {
+			popupOpen = true;
 			requestAnimationFrame(function() {
-				$('body').one('click',function(){$('#profile-popup').addClass('hidden-popup');});
+				$('#profile-popup').removeClass('hidden-popup');
+				requestAnimationFrame(function() {
+					$('body').one('click',function(){popupOpen = false;$('#profile-popup').addClass('hidden-popup');});
+				});
 			});
-		});
+		}
 	};
 	$scope.userButton = function() {
 		if($userData.isLoggedIn()) {
@@ -82,7 +86,7 @@ function MainController($scope, $http, $timeout, $userData) {
 			$scope.showModal();
 		}
 	};
-	$scope.logIn = function() {
+	$scope.login = function() {
 		// set step to loading
 		$http.post("/api/v1/account/login",
 		{
@@ -112,12 +116,15 @@ function MainController($scope, $http, $timeout, $userData) {
 			}
 		});
 	};
-	$scope.logOut = function() {
-		console.log('asdfasdfasdf');
+	$scope.logout = function() {
 		$http.post("/api/v1/account/logout")
 		.success(function(data) {
 			$('html').removeClass('loggedIn');
+			$userData.setLoggedIn(false);
 		});
+	};
+	$scope.toGiveStuff = function() {
+		$window.location.href = '';
 	};
 }
 
