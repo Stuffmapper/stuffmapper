@@ -545,7 +545,7 @@ body, div {
 
 /* Landfill Tracker -  END  */
 
-@media screen and (max-width: 435px) {
+@media screen and (max-width: 436px) {
 	#tab-container {
 		width: 100%;
 	}
@@ -581,11 +581,11 @@ body, div {
 			left: 0;
 			top: 0;
 			border-radius: 100%;
-			width: 2.5em;
-			height: 2.5em;
+			width: 1.2em;
+			height: 1.2em;
 			background-color: white;
 			float: left;
-			margin: -.1em 0 0 -.1em;
+			margin: 0.05em 0 0 0.05em;
 			border: 1px black solid;
 			transition: left 0.3s;
 	}
