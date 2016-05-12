@@ -18,7 +18,10 @@ function GetStuffController($scope, $http, $timeout, $userData) {
 
         $scope.toggleSwitch = function() {
             $('.toggle-button').toggleClass('toggle-button-selected');
-            $('#map-view').toggle().css('z-index', '2');
+        };
+
+        $scope.toggleMap = function() {
+          $('#map-view').toggle().css('z-index', '2');
         };
 
         var tempSearchText = '';

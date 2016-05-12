@@ -1,5 +1,5 @@
 .search-stuff-container
-    div.toggle(ng-click='toggleSwitch()')
+    div.toggle(ng-click='toggleSwitch();toggleMap()')
         div.toggle-button.toggle-button-selected
             button
     input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
