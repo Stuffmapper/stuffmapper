@@ -237,6 +237,7 @@ body, div {
 	background-color: #fff;
 	height: calc(100% - 45px);
 	width: 100%;
+	z-index: 1;
 	position: relative;
 }
 
@@ -248,10 +249,6 @@ body, div {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-}
-
-.slideMap {
-	transform: translate3d(0, 100%, 0);
 }
 
 #tab-content ul li {
@@ -554,6 +551,14 @@ body, div {
 		width: 100%;
 	}
 
+	.search-stuff-container {
+    position: relative;
+    padding: 8px;
+    height: 24px;
+    z-index: 2;
+    background-color: #fff;
+	}
+
 	.stuff-input {
 		width: calc(100% - 3.9em);
 		left: 2em;
@@ -605,6 +610,17 @@ body, div {
 		height: 1.2em;
 		margin: 0.05em 0 0 0.05em;
 		box-shadow: 0 0 4px rgba(0,0,0,.1);
+	}
+	#tab-content ul li {
+		margin-top: 3px;
+	}
+
+	#map-view {
+    height: calc(100% - 85px);
+    width: 100%;
+    margin-top: 85px;
+    z-index: 0;
+    display: inline-block;
 	}
 }
 
