@@ -24,6 +24,17 @@ function GetStuffController($scope, $http, $timeout, $userData) {
           $('#map-view').toggle().css('z-index', '2');
         };
 
+        $scope.mason = function() {
+          $window.onload(function() {
+            $('.masonry-grid').masonry({
+             columnWidth: 400,
+             itemSelector: '.masonry-grid-item'
+            }).imagesLoaded(function() {
+             $('.masonry-grid').masonry('reload');
+            });
+          });
+        };
+
         var tempSearchText = '';
         var searchTextTimeout;
         var lastSearch;
