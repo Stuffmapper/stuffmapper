@@ -1,6 +1,7 @@
-ul
+.search-stuff-container
+	input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
+	i#filter-button.stuff-button.fa.fa-filter(tabindex="0" ng-click='toggleFilterPane()')
+#filter-dropdown.animate-250
+ul#give-stuff-list.stuff-list
 	li(ng-repeat="list in listItems" style="background-image: url({{ list.img }});")
 		a(ui-sref="stuff.get.item({id:list.id})") {{ item.title }}
-#filter-pane.animate-250
-	ul.filter-options
-		li(ng-repeat="options in filterOptions")

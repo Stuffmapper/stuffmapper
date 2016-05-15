@@ -43,12 +43,12 @@ app.use(function(req, res, next) {
 			{fname:'someone',lname:'else',uname:'someoneelse',passwd:'SecretPassword1!',id:2}
 		],
 		stuff: [
-			{userId:1, id:1, status:'undibbed', title:'asdf1',lat: 47.608013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'portait',category:'Furniture & Crap'},
-			{userId:1, id:2, status:'undibbed', title:'asdf2',lat: 47.508013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'landscape',category:'Food'},
-			{userId:2, id:3, status:'undibbed', title:'asdf3',lat: 47.408013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'portait',category:'Electronics'},
-			{userId:2, id:4, status:'undibbed', title:'asdf4',lat: 47.308013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'portait',category:'For BABIES'},
-			{userId:1, id:5, status:'undibbed', title:'asdf5',lat: 47.208013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'landscape',category:'Decoration'},
-			{userId:2, id:6, status:'undibbed', title:'asdf6',lat: 47.108013, lng: -122.335167,img:'http://s3.amazonaws.com/stuffmapper-1/images/images/000/000/040/medium/data?1454702614',orientation:'landscape',category:'Auto'}
+			{userId:1, id:1, status:'undibbed', title:'asdf1',lat: 47.608013, lng: -122.335167,img:'//s3.amazonaws.com/stuffmapper-ottoman/images/images/000/000/106/medium/data',orientation:'portait',category:'Furniture & Crap'},
+			{userId:1, id:2, status:'undibbed', title:'asdf2',lat: 47.508013, lng: -122.335167,img:'//s3.amazonaws.com/stuffmapper-ottoman/images/images/000/000/106/medium/data',orientation:'landscape',category:'Food'},
+			{userId:2, id:3, status:'undibbed', title:'asdf3',lat: 47.408013, lng: -122.335167,img:'//s3.amazonaws.com/stuffmapper-ottoman/images/images/000/000/106/medium/data',orientation:'portait',category:'Electronics'},
+			{userId:2, id:4, status:'undibbed', title:'asdf4',lat: 47.308013, lng: -122.335167,img:'//s3.amazonaws.com/stuffmapper-ottoman/images/images/000/000/106/medium/data',orientation:'portait',category:'For BABIES'},
+			{userId:1, id:5, status:'undibbed', title:'asdf5',lat: 47.208013, lng: -122.335167,img:'//s3.amazonaws.com/stuffmapper-ottoman/images/images/000/000/106/medium/data',orientation:'landscape',category:'Decoration'},
+			{userId:2, id:6, status:'undibbed', title:'asdf6',lat: 47.108013, lng: -122.335167,img:'//s3.amazonaws.com/stuffmapper-ottoman/images/images/000/000/106/medium/data',orientation:'landscape',category:'Auto'}
 		]
 	};
 	req.db = {

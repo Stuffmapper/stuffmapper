@@ -9,9 +9,6 @@
 			a(ng-click="toGiveStuff()") Give Stuff
 		li.my-stuff-tab
 			a(ui-sref="stuff.my") My Stuff
-	.search-stuff-container
-		input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
-		i#filter-button.stuff-button.fa.fa-sliders(tabindex="0" ng-click='toggleFilterPane()')
 	#tab-content(ui-view)
 
 

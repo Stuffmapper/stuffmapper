@@ -1,4 +1,4 @@
-function MainController($scope, $http, $timeout, $userData) {
+function MainController($scope, $http, $timeout, $userData, $state) {
 	//TODO: loading http://tobiasahlin.com/spinkit/ http://projects.lukehaas.me/css-loaders/
 	$scope.counterFlipper = new CounterFlipper('landfill-tracker', 0, 7);
 	$scope.counterFlipper.setCounter(1283746);
@@ -39,7 +39,7 @@ function MainController($scope, $http, $timeout, $userData) {
 		$('#modal-windows .modal-container').removeClass('modal-window-open');
 		$scope.popUpTimeout = setTimeout(function() {
 			$('#modal-windows').removeClass('modal-windows-open');
-		}, 250);
+		}, 550);
 	};
 	$scope.socialSignIn = function(type) {
 		var url = '';
@@ -88,8 +88,7 @@ function MainController($scope, $http, $timeout, $userData) {
 	};
 	$scope.login = function() {
 		// set step to loading
-		$http.post("/api/v1/account/login",
-		{
+		$http.post("/api/v1/account/login", {
 			email: $('#sign-in-email').val(),
 			password: $('#sign-in-password').val()
 		},{
@@ -124,7 +123,11 @@ function MainController($scope, $http, $timeout, $userData) {
 		});
 	};
 	$scope.toGiveStuff = function() {
-		$window.location.href = '';
+		if($userData.isLoggedIn()) {
+			$state.go('stuff.give');
+		} else {
+			location.hash = 'signin';
+		}
 	};
 }
 
