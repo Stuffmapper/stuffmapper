@@ -1,12 +1,17 @@
 .search-stuff-container
-    div.toggle(ng-click='toggleSwitch();toggleMap()')
-        div.toggle-button.toggle-button-selected
-            button
-    input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
-    i#filter-button.stuff-button.fa.fa-sliders(tabindex="0" ng-click='toggleFilterPane()')
-ul.masonry-grid(ng-init='mason()')
-    li.masonry-grid-item(ng-repeat="list in listItems" style="background-image: url({{ list.img }});")
-        a(ui-sref="stuff.get.item({id:list.id})") {{ item.title }}
+	div.toggle(ng-click='toggleSwitch();toggleMap()')
+		div.toggle-button.toggle-button-selected
+			button
+	input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
+	i#filter-button.stuff-button.fa.fa-sliders(tabindex="0" ng-click='toggleFilterPane()')
+#masonry-container.animate-250.hide-masonry-container
+	ul.masonry-grid
+		li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
+			.list-item-img-container
+				img(src="{{ list.img }}")
+				.item-info
+					div {{ list.title }}
+			a(ui-sref="stuff.get.item({id:list.id})") {{ item.title }}
 #filter-pane.animate-250
-    ul.filter-options
-        li(ng-repeat="options in filterOptions")
+	ul.filter-options
+		li(ng-repeat="options in filterOptions")
