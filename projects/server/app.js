@@ -47,7 +47,7 @@ app.use(function(req, res, next) {
             {fname:'someone',lname:'else',uname:'someoneelse',passwd:'SecretPassword1!',id:2}
         ],
         stuff: [
-            {userId:1, id:1, status:'undibbed', title:'asdf1',lat: 47.608013, lng: -122.335167,img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Adirondack2.jpg/220px-Adirondack2.jpg',orientation:'portait',category:'Furniture & Crap'},
+            {userId:1, id:1, status:'undibbed', title:'asdf1',lat: 47.608013, lng: -122.335167,img:'http://cache4.asset-cache.net/gc/535056645-children-desk-on-street-gettyimages.jpg?v=1&c=IWSAsset&k=2&d=K0aQnK4HZJgMGfREKt3s9o8SkV6p%2BUu%2Bc3uhDGP5VBegyZymDVNFNQAgheUV7ywx943awWzmsZp3AR%2FJahoOiA%3D%3D',orientation:'portait',category:'Furniture & Crap'},
             {userId:1, id:2, status:'undibbed', title:'asdf2',lat: 47.508013, lng: -122.335167,img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Adirondack2.jpg/220px-Adirondack2.jpg',orientation:'landscape',category:'Food'},
             {userId:2, id:3, status:'undibbed', title:'asdf3',lat: 47.408013, lng: -122.335167,img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Adirondack2.jpg/220px-Adirondack2.jpg',orientation:'portait',category:'Electronics'},
             {userId:2, id:4, status:'undibbed', title:'asdf4',lat: 47.308013, lng: -122.335167,img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Adirondack2.jpg/220px-Adirondack2.jpg',orientation:'portait',category:'For BABIES'},
