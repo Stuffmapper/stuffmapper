@@ -249,16 +249,14 @@ body, div {
 	margin-top: 0;
 	overflow: auto;
 }
-
+.list-item-img-container img {
+	width: 100%;
+}
 #masonry-container {
 	background-color: #ffffff;
 	height: 100%;
 	width: 100%;
 	overflow: auto;
-	transform: translate3d(0px, 0%, 0);
-}
-#masonry-container.hide-masonry-container {
-	transform: translate3d(0px, 100%, 0);
 }
 
 .masonry-grid-item {
@@ -270,27 +268,7 @@ body, div {
 	display: inline-block;
 	position: relative;
 }
-#masonry-container ul {
-	display: inline-block;
-	width: 100%;
-	height: 100%;
-	overflow: auto;
-	list-style: none;
-	padding: 0;
-}
 
-#masonry-container ul li a {
-	width: 100%;
-	height: 100%;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-}
-#masonry-container ul li img {
-	width: 100%;
-  position: relative;
-  display: inline-block;
-}
 /* Tabs -  END  */
 
 
@@ -633,8 +611,33 @@ body, div {
 		box-shadow: 0 0 4px rgba(0,0,0,.1);
 	}
 
-	.masonry-grid-item {
-		outline: 1px solid black;
+	#masonry-container {
+		transform: translate3d(0px, 0%, 0);
+	}
+	#masonry-container.hide-masonry-container {
+		transform: translate3d(0px, 100%, 0);
+	}
+
+	#masonry-container ul {
+		display: inline-block;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		list-style: none;
+		padding: 0;
+	}
+
+	#masonry-container ul li a {
+		width: 100%;
+		height: 100%;
+	  position: absolute;
+	  left: 0px;
+	  top: 0px;
+	}
+	#masonry-container ul li img {
+		width: 100%;
+	  position: relative;
+	  display: inline-block;
 	}
 
 	#map-view {
