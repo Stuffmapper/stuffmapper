@@ -20,7 +20,20 @@ var stuffMapp = angular
 			data = { FirstName: '', LastName: '', email: '', userId: 0 };
 		}
 	};
-});
+})
+.service('things', ['$http', '$q', function ($http, $q) {
+	var deferred = $q.defer();
+	$http({
+		method: 'POST',
+		url: '/api/v1/account/status',
+		cache: true
+	}).success(function (data) {
+		deferred.resolve(data);
+	}).error(function (msg) {
+		deferred.reject(msg);
+	});
+	return deferred.promise;
+}]);
 
 if(config.ionic.isIonic) {
 	stuffMapp.run(function($ionicPlatform) {
@@ -66,16 +79,37 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 	.state('stuff.give', { //  http://www.stuffmapper.com/stuff/give#step1
 		url: '/give',
 		templateUrl: 'templates/partial-home-givestuff.html',
-		controller: GiveStuffController
+		controller: GiveStuffController,
+		resolve: {
+			loginStatus: function($http, $location) {
+				return $http.post('/api/v1/account/status').success(function(data){
+					if(!data.res.loggedIn){
+						$location.path('/stuff/get');
+					} else{
+						return data;
+					}
+				});
+			}
+		}
 	})
 	.state('stuff.my', {
 		url: '/my',
 		templateUrl: 'templates/partial-home-mystuff.html',
-		controller: MyStuffController
+		controller: MyStuffController,
+		resolve: {
+			thingsData: ['things', function (things) {
+				return things;
+			}]
+		}
 	})
 	.state('stuff.my.item', {
 		url: '/:id',
-		controller: MyStuffController
+		controller: MyStuffController,
+		resolve: {
+			thingsData: ['things', function (things) {
+				return things;
+			}]
+		}
 	})
 	.state('about', {
 	});

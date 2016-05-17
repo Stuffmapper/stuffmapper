@@ -14,9 +14,9 @@
 						i.give-image-icon-2.fa.fa-arrow-down
 				canvas#give-image-canvas.give-image-canvas
 			.give-image-options
-				button.give-image-capture.give-image-buttons
+				button#give-camera-button.give-image-capture.give-image-buttons(ng-click="getCamera()")
 					i.fa.fa-camera
-				button.give-image-select-container.give-image-buttons
+				button#give-photo-button.give-image-select-container.give-image-buttons(ng-click="getPhoto()")
 					input#give-image-select.give-image-select(type="file" name="imageFiles")
 					i.fa.fa-photo
 		li#give-step2.give-steps step2

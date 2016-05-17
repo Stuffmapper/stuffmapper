@@ -107,6 +107,19 @@ router.get('/views', function() {
 
 /* USER ACCOUNT MANAGEMENT - START */
 
+router.post('/account/status', function(req, res) {
+	res.send({
+		err: null,
+		res: {
+			loggedIn: req.session.userData && req.session.userData.loggedIn || false,
+			admin: req.session.userData && req.session.userData.admin || null,
+			uname: req.session.userData && req.session.userData.uname || null,
+			fname: req.session.userData && req.session.userData.fname || null,
+			lname: req.session.userData && req.session.userData.lname || null
+		}
+	});
+});
+
 router.post('/account/register_oauth_test', function(req, res) {
 
 });
@@ -153,6 +166,7 @@ router.post('/account/register', function(req, res) {
 					req.session.userData.uname = result.rows[0].uname;
 					req.session.userData.fname = result.rows[0].fname;
 					req.session.userData.lname = result.rows[0].lname;
+					req.session.userData.admin = false;
 					res.send({
 						err : null,
 						res : {

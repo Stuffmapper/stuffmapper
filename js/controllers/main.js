@@ -1,4 +1,4 @@
-function MainController($scope, $http, $timeout, $userData, $state) {
+function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	//TODO: loading http://tobiasahlin.com/spinkit/ http://projects.lukehaas.me/css-loaders/
 	$scope.counterFlipper = new CounterFlipper('landfill-tracker', 0, 7);
 	$scope.counterFlipper.setCounter(1283746);
@@ -110,6 +110,8 @@ function MainController($scope, $http, $timeout, $userData, $state) {
 				console.log(data);
 				$('html').addClass('loggedIn');
 				$userData.setLoggedIn(true);
+				if($scope.redirectState) $state.go($scope.redirectState);
+				$scope.redirectState = '';
 			} else {
 				// go back to sign in step and red highlight the email address and password for one second
 			}
@@ -120,12 +122,16 @@ function MainController($scope, $http, $timeout, $userData, $state) {
 		.success(function(data) {
 			$('html').removeClass('loggedIn');
 			$userData.setLoggedIn(false);
+			if(/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
+				$location.path('/stuff/get')
+			}
 		});
 	};
 	$scope.toGiveStuff = function() {
 		if($userData.isLoggedIn()) {
 			$state.go('stuff.give');
 		} else {
+			$scope.redirectState = 'stuff.give';
 			location.hash = 'signin';
 		}
 	};
