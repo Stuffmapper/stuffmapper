@@ -4,19 +4,19 @@ var pg = require('pg');
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
 var upload = require('multer')({ dest: 'uploads/' });
+var passport = require('passport');
 
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
 
-var authenticator = function(res,req,next){
-	if(req.session.userData && req.session.userData.loggedIn) next();
-	else {
-		res.send({
-			err : {
-				message : 'Permission Denied.  Please log in and try again',
-				redirect : true
-			}
-		});
-	}
+function ensureAuthenticated(req, res, next) {
+	if (req.isAuthenticated()) { return next(); }
+	res.send('unauthorized access');
+}
+
+var verifier = function(template, body) {
+	var templateKeys = Object.keys(template);
+	var bodyKeys = Object.keys(body);
+
 };
 //var authenticator = require('stuff_authenticator');
 
@@ -56,7 +56,7 @@ router.post('/stuff', function(req, res) {
 	}
 });
 
-router.put('/stuff/:id', authenticator, function(req, res) {
+router.put('/stuff/:id', ensureAuthenticated, function(req, res) {
 	var stuff = [];
 	if(req.params.id <= db.users.length) {
 		var uname = db.users[req.params.id-1].uname;
@@ -72,7 +72,7 @@ router.put('/stuff/:id', authenticator, function(req, res) {
 	}
 });
 
-router.delete('/stuff/:id', authenticator, function(req, res) {
+router.delete('/stuff/:id', ensureAuthenticated, function(req, res) {
 	var stuff = [];
 	if(req.params.id <= db.users.length) {
 		var uname = db.users[req.params.id-1].uname;
@@ -108,6 +108,7 @@ router.get('/views', function() {
 /* USER ACCOUNT MANAGEMENT - START */
 
 router.post('/account/status', function(req, res) {
+	console.log(req.session);
 	res.send({
 		err: null,
 		res: {
@@ -127,18 +128,17 @@ router.post('/account/register_oauth_test', function(req, res) {
 router.post('/account/register', function(req, res) {
 	var client = new pg.Client(conString);
 	var body = req.body;
+	console.log(body);
 	bcrypt.hash(body.password, saltRounds, function(err, hashedPassword) {
 		client.connect(function(err) {
 			if(err) {
-				console.log(err);
 				client.end();
 				return;
 			}
 			var query = [
-				'INSERT INTO users (',
-				'fname, lname, uname, email, password, ',
-				'verify_email_token, phone_number) ',
-				'VALUES ($1, $2, $3, $4, $5, $6, $7) ',
+				'INSERT INTO users ',
+				'(fname, lname, uname, email, password, phone_number) ',
+				'VALUES ($1, $2, $3, $4, $5, $6) ',
 				'RETURNING *'
 			].join('');
 			var values = [
@@ -147,12 +147,10 @@ router.post('/account/register', function(req, res) {
 				body.uname,
 				body.email,
 				hashedPassword,
-				'supersecretemailthing',
 				body.phone_number
 			];
 			client.query(query, values, function(err, result) {
 				if(err) {
-					console.log(err);
 					res.send({
 						err : {
 							message : err,
@@ -161,12 +159,6 @@ router.post('/account/register', function(req, res) {
 					});
 					client.end();
 				} else {
-					req.session.userData = {};
-					req.session.userData.loggedIn = true;
-					req.session.userData.uname = result.rows[0].uname;
-					req.session.userData.fname = result.rows[0].fname;
-					req.session.userData.lname = result.rows[0].lname;
-					req.session.userData.admin = false;
 					res.send({
 						err : null,
 						res : {
@@ -179,73 +171,110 @@ router.post('/account/register', function(req, res) {
 	});
 });
 
-router.post('/account/login', function(req, res) {
-	if(req.session.userData && req.session.userData.loggedIn) {
-		res.send({
-			err : {
-				message : 'A user is already logged in.'
-			}
+router.post('/account/login', function(req, res, next) {
+	passport.authenticate('local', function(err, user, info) {
+		console.log(err, user, info);
+		if (err) { return res.send('local login error' + err); }
+		if (!user) { return res.send('user does not exist'); }
+		req.logIn(user, function(err) {
+			if (err) { return res.send(err); }
+			return res.send(user);
 		});
-		return;
-	}
-	var client = new pg.Client(conString);
-	var body = req.body;
-	client.connect(function(err) {
-		if(err) {
-			client.end();
-			return;
-		}
-		var query = 'SELECT * FROM users WHERE email = $1';
-		var values = [
-			body.email
-		];
-		client.query(query, values, function(err, result) {
-			var row = result.rows[0];
-			bcrypt.compare(body.password, row.password, function(err, isValid) {
-				if(err) {
-					res.send({
-						err: err,
-						res: null
-					});
-					return;
-				}
-				else {
-					req.session.userData = {};
-					req.session.userData.loggedIn = true;
-					req.session.userData.uname = row.uname;
-					req.session.userData.fname = row.fname;
-					req.session.userData.lname = row.lname;
-					res.send({
-						err: null,
-						res: {
-							isValid: isValid
-						}
-					});
-				}
-			});
-		});
+	})(req, res, next);
+});
+
+router.post('/account/logout', ensureAuthenticated, function(req, res) {
+	req.logout();
+	res.send({
+		err : null,
+		res : true
 	});
 });
 
-router.post('/account/logout', function(req, res) {
-	if(req.session.userData && req.session.userData.loggedIn) {
-		var userName = req.session.userData.uname;
-		req.session.userData = null;
-		req.session.userData = {};
-		res.send({
-			err : null,
-			res : {
-				message : 'User ' + userName + ' has been logged out.'
-			}
+/* OAUTH2.0 - START */
+/* GOOGLE OAUTH - START */
+
+router.get('/account/login/google', function(req, res, next){
+	passport.authenticate('google', {
+		scope: [
+			'https://www.googleapis.com/auth/plus.login',
+			'https://www.googleapis.com/auth/plus.profile.emails.read'
+		]
+	}, function(err, user, profile, done) {
+		console.log(arguments);
+		if (err) { return res.send('local login error' + err); }
+		if (!user) { return res.send('user does not exist'); }
+		req.logIn(user, function(err) {
+			if (err) { return res.send(err); }
+			return res.send(user);
 		});
-	} else {
-		res.send({
-			err : 'User not logged in, can\'t log out.'
-		});
-	}
-});
+	})(req, res, next);
+}
+);
+
+router.get('/auth/google_oauth2/callback', passport.authenticate( 'google', {
+	successRedirect: '/auth/google/success',
+	failureRedirect: '/auth/google/failure'
+}));
+
+/* GOOGLE OAUTH -  END  */
+
+/* OAUTH2.0 -  END  */
+
 
 /* USER ACCOUNT MANAGEMENT -  END  */
 
+/* DIBS MANAGEMENT - START */
+
+router.post('/dibs/:id', ensureAuthenticated, function(req, res) {
+
+});
+
+/* DIBS MANAGEMENT -  END  */
+
+/* MESSAGING MANAGEMENT - START */
+
+router.get('/messages', ensureAuthenticated, function(req, res) {
+
+});
+
+router.post('/messages', ensureAuthenticated, function(req, res) {
+
+});
+
+router.put('/messages/:id', ensureAuthenticated, function(req, res) {
+
+});
+
+router.delete('/messages/:id', ensureAuthenticated, function(req, res) {
+
+});
+
+/* MESSAGING MANAGEMENT -  END  */
+
+
+/* WATCHLIST MANAGEMENT - START */
+
+router.get('/watchlist/:userid', ensureAuthenticated, function(req, res) {
+	//return all watchlist items
+});
+
+router.get('/watchlist/:userid/:id', ensureAuthenticated, function(req, res) {
+	//return watchlist item
+});
+
+router.post('/watchlist/:userid', ensureAuthenticated, function(req, res) {
+	//add watchlist item
+});
+
+router.put('/watchlist/:userid/:id', ensureAuthenticated, function(req, res) {
+	//update watchlist item
+});
+
+router.delete('/watchlist/:userid/:id', ensureAuthenticated, function(req, res) {
+	//archive watchlist item
+});
+
+/* WATCHLIST MANAGEMENT -  END  */
 
 module.exports = router;

@@ -7,6 +7,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var session = require('express-session');
+var passport = require('passport');
+
 
 var app = express();
 
@@ -22,20 +24,32 @@ app.use(session({
 		maxAge: 36000000
 	},
 	secret: 'SuperSecretPassword1!',
-  saveUninitialized: true,
-  resave: true
+	saveUninitialized: true,
+	resave: true
 }));
 app.set('views', path.join(__dirname, '../../views'));
 app.set('view engine', 'jade');
 
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
 app.use(logger('dev'));
-//app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 app.use(methodOverride());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', express.static(path.join(__dirname, '../web')));
 
+require(path.join(__dirname, '/routes/api/v1/config/passport'));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.get('/auth/google_oauth2/callback', function(req, res) {
+	passport.authenticate('google', {
+		successRedirect: '/stuff/get',
+		failureRedirect: '/stuff/get#signin'
+	});
+});
+// app.get('/auth/google_oauth2/callback', function(req, res) {
+// 	res.send('yay!');
+// });
 app.use(function(req, res, next) {
 	var tempDB = {
 		users: [
