@@ -21,6 +21,7 @@ var stuffMapp = angular
 		}
 	};
 })
+<<<<<<< HEAD
 .service('things', ['$http', '$q', function ($http, $q) {
 	var deferred = $q.defer();
 	$http({
@@ -33,7 +34,13 @@ var stuffMapp = angular
 		deferred.reject(msg);
 	});
 	return deferred.promise;
-}]);
+}])
+.directive('repeatDone', function() {
+	return function(scope, element, attrs) {
+		if(scope.$last) scope.$eval(attrs.repeatDone);
+	};
+});
+
 
 if(config.ionic.isIonic) {
 	stuffMapp.run(function($ionicPlatform) {
@@ -95,6 +102,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 	.state('stuff.my', {
 		url: '/my',
 		templateUrl: 'templates/partial-home-mystuff.html',
+<<<<<<< HEAD
 		controller: MyStuffController,
 		resolve: {
 			thingsData: ['things', function (things) {
