@@ -21,7 +21,6 @@ var stuffMapp = angular
 		}
 	};
 })
-<<<<<<< HEAD
 .service('things', ['$http', '$q', function ($http, $q) {
 	var deferred = $q.defer();
 	$http({
@@ -102,7 +101,6 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 	.state('stuff.my', {
 		url: '/my',
 		templateUrl: 'templates/partial-home-mystuff.html',
-<<<<<<< HEAD
 		controller: MyStuffController,
 		resolve: {
 			thingsData: ['things', function (things) {

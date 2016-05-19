@@ -33,7 +33,7 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	$scope.hideModal = function() {
 		if(config.html5) history.pushState("", document.title, window.location.pathname + window.location.search + '#');
 		else console.log('this should close popups... not sure what to do without html5 :<');
-		if($scope.popUpTimeout) $scope.popUpTimeout.cancel();
+		if($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 		$scope.popUpOpen = false;
 		$('#modal-windows .modal-windows-bg').removeClass('modal-windows-bg-open');
 		$('#modal-windows .modal-container').removeClass('modal-window-open');
@@ -54,15 +54,14 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	if(config.html5) {
 		var value = location.hash;
 		if(value) {
-			$scope.popUpTimeout
-			if($scope.popUpTimeout) $scope.popUpTimeout.cancel();
+			if($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 			var hash = value.split('#').pop();
 			if(hash === "signin") $scope.showModal();
 		}
 		$(window).on('hashchange', function(event) {
 			var value = location.hash;
 			if(value) {
-				if($scope.popUpTimeout) $scope.popUpTimeout.cancel();
+				if($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 				var hash = value.split('#').pop();
 				if(hash === "signin") $scope.showModal();
 			}
