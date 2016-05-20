@@ -41,15 +41,7 @@ require(path.join(__dirname, '/routes/api/v1/config/passport'));
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.get('/auth/google_oauth2/callback', function(req, res) {
-	passport.authenticate('google', {
-		successRedirect: '/stuff/get',
-		failureRedirect: '/stuff/get#signin'
-	});
-});
-// app.get('/auth/google_oauth2/callback', function(req, res) {
-// 	res.send('yay!');
-// });
+
 app.use(function(req, res, next) {
 	var tempDB = {
 		users: [
@@ -104,7 +96,11 @@ app.use(function(req, res, next) {
 	next();
 });
 app.use('/api/v1', require('./routes/api/v1/index'));
-app.use('*', function(req,res){console.log(req.session.userData);res.render('index', { loggedIn : req.session.userData?req.session.userData.loggedIn:false});});
+app.use('*', function(req,res){
+	res.render('index', {
+		loggedIn : req.isAuthenticated()
+	});
+});
 
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
