@@ -47,8 +47,8 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	};
 	$scope.socialSignIn = function(type) {
 		var url = '';
-		if(type==='google') url='/api/v1/account/login/google';
-		else if(type==='facebook') url='/api/v1/account/login/facebook';
+		if(type === 'google') url = '/api/v1/account/login/google';
+		else if(type === 'facebook') url = '/api/v1/account/login/facebook';
 		if(url) open(url, 'Social Login', 'menubar=1,resizable=1,scrollbars=1,width=800,height=600');
 	};
 	if(config.html5) {
@@ -93,7 +93,7 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	$scope.login = function() {
 		// set step to loading
 		$http.post("/api/v1/account/login", {
-			email: $('#sign-in-email').val(),
+			username: $('#sign-in-email').val(),
 			password: $('#sign-in-password').val()
 		},{
 			headers: {
@@ -102,22 +102,17 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 			transformRequest: function(data){
 				return $.param(data);
 			}
-		}).then(function(data) {
-			data = data.data;
-			if(data.err) {
+		}).success(function(data) {
+			if(data.err || !data.res.isValid) {
 				console.log(data.err);
+				return;
 			}
-			if(data.res.isValid) {
-				// show login success, add badges
-				location.hash = '';
-				console.log(data);
-				$('html').addClass('loggedIn');
-				$userData.setLoggedIn(true);
-				if($scope.redirectState) $state.go($scope.redirectState);
-				$scope.redirectState = '';
-			} else {
-				// go back to sign in step and red highlight the email address and password for one second
-			}
+			console.log(data);
+			location.hash = '';
+			$('html').addClass('loggedIn');
+			$userData.setLoggedIn(true);
+			if($scope.redirectState) $state.go($scope.redirectState);
+			// $scope.redirectState = '';
 		});
 	};
 	$scope.logout = function() {
