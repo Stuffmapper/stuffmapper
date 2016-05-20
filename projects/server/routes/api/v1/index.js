@@ -120,10 +120,6 @@ router.post('/account/status', function(req, res) {
 	});
 });
 
-router.post('/account/register_oauth_test', function(req, res) {
-
-});
-
 router.post('/account/register', function(req, res) {
 	var client = new pg.Client(conString);
 	var body = req.body;
@@ -170,6 +166,7 @@ router.post('/account/register', function(req, res) {
 });
 
 router.post('/account/login', function(req, res, next) {
+	var passport = req._passport.instance;
 	passport.authenticate('local', function(err, user, info) {
 		if (err) {
 			return res.send({
@@ -218,55 +215,16 @@ router.post('/account/logout', ensureAuthenticated, function(req, res) {
 /* OAUTH2.0 - START */
 /* GOOGLE OAUTH - START */
 
-router.get('/account/login/google', function(req, res, next){
-	// passport.authenticate('google', {
-	// 	scope: [
-	// 		'https://www.googleapis.com/auth/plus.login',
-	// 		'https://www.googleapis.com/auth/plus.profile.emails.read'
-	// 	]
-	// }, function(err, user, profile, done) {
-	// 	if (err) { return res.send('local login error' + err); }
-	// 	if (!user) { return res.send('user does not exist'); }
-	// 	req.logIn(user, function(err) {
-	// 		if (err) { return res.send(err); }
-	// 		return res.send(user);
-	// 	});
-	// })(req, res, next);
-	passport = req._passport.instance;
-	passport.authenticate('google', {
-		scope: [
-			'https://www.googleapis.com/auth/plus.login',
-			'https://www.googleapis.com/auth/plus.profile.emails.read'
-		]
-	}, function(err, user, profile, done) {
-		if (err) { return res.send('local login error' + err); }
-		if (!user) { return res.send('user does not exist'); }
-		req.logIn(user, function(err) {
-			if (err) { return res.send(err); }
-			return res.send(user);
-		});
-	})(req, res, next);
-});
+router.get('/account/login/google', passport.authenticate('google', {
+	scope: [
+		'https://www.googleapis.com/auth/plus.login',
+		'https://www.googleapis.com/auth/plus.profile.emails.read'
+	]
+}));
 
-router.get('/auth/google_oauth2/callback', function(req, res, next) {
-	passport = req._passport.instance;
-	passport.authenticate('google',function(err, user, info) {
-		console.log(err);
-		console.log(user);
-		console.log(info);
-		if(err) {
-			return next(err);
-		}
-		if(!user) {
-			//return res.redirect('http://localhost:3000');
-			return res.send('pants');
-		}
-		console.log(user);
-		UserDB.findOne({email: user._json.email},function(err,usr) {
-			res.send(usr);
-		});
-	})(req,res,next);
-});
+router.get('/account/login/facebook', passport.authenticate('facebook', {
+	scope: 'email'
+}));
 
 /* GOOGLE OAUTH -  END  */
 

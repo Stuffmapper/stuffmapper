@@ -15,7 +15,7 @@ CREATE TABLE users (
 	lname varchar(32) NOT NULL,
 	uname varchar(32) UNIQUE NOT NULL,
 	email varchar(64) UNIQUE NOT NULL,
-	password text NOT NULL,
+	password text,
 	password_reset_token text,
 	status integer REFERENCES status(id),
 	phone_number varchar(10),
@@ -35,7 +35,8 @@ CREATE TABLE pick_up_success (
 	id BIGSERIAL PRIMARY KEY,
 	dibber_id integer REFERENCES users(id),
 	lister_id integer REFERENCES users(id),
-	pick_up_success boolean DEFAULT FALSE
+	pick_up_success boolean DEFAULT FALSE,
+	pick_up_date timestamp
 );
 
 CREATE TABLE categories (
@@ -57,20 +58,16 @@ CREATE TABLE posts (
 	category integer REFERENCES categories(id),
 	dibbed boolean DEFAULT false,
 	dibber integer REFERENCES users(id),
-	on_the_curb boolean NOT NULL
-);
-
-CREATE TABLE orientation(
-	id BIGSERIAL PRIMARY KEY,
-	name varchar(8) NOT NULL
+	on_the_curb boolean NOT NULL,
+	quality integer
 );
 
 CREATE TABLE images (
 	id BIGSERIAL PRIMARY KEY,
 	post_id integer REFERENCES posts(id),
 	image_url varchar(255) NOT NULL,
-	orientation integer REFERENCES orientation(id),
-	main boolean DEFAULT false
+	main boolean DEFAULT false,
+	quality integer
 );
 
 CREATE TABLE tag_names (
@@ -123,4 +120,21 @@ CREATE TABLE watchlist_keys (
 	watchlist_item integer REFERENCES watchlist_items(id),
 	tag_id integer REFERENCES tags(id),
 	category_id integer REFERENCES categories(id)
+);
+
+CREATE TABLE tracker (
+	id BIGSERIAL PRIMARY KEY,
+	user_id integer REFERENCES users(id)
+);
+
+CREATE TABLE tracker_action (
+	id BIGSERIAL PRIMARY KEY,
+	action varchar(16) NOT NULL
+);
+
+CREATE TABLE tracker_item (
+	id BIGSERIAL PRIMARY KEY,
+	tracker_id integer REFERENCES tracker(id),
+	tracker_action integer REFERENCES tracker_action(id),
+	tracker_time timestamp default current_timestamp
 );
