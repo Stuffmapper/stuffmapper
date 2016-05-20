@@ -1,2 +1,32 @@
-#givestuffnow Give Stuff right meow!
-    #stusutsustustusut stuff!
+.give-stuff-container
+	ul.give-stuff-steps
+		li#give-step1.give-steps.active
+			.give-image-container
+				.give-image-bg
+					.give-image-bg-top-left.give-image-bg-corner
+					.give-image-bg-top-right.give-image-bg-corner
+					.give-image-bg-bottom-left.give-image-bg-corner
+					.give-image-bg-bottom-right.give-image-bg-corner
+					.give-image-bg-content
+						.give-image-take-a-pic Take a Picture!
+						i.give-image-icon-1.fa.fa-camera
+						.give-image-choose-option Choose one of the options below
+						i.give-image-icon-2.fa.fa-arrow-down
+				canvas#give-image-canvas.give-image-canvas
+			.give-image-options
+				button#give-camera-button.give-image-capture.give-image-buttons(ng-click="getCamera()")
+					i.fa.fa-camera
+				button#give-photo-button.give-image-select-container.give-image-buttons(ng-click="getPhoto()")
+					input#give-image-select.give-image-select(type="file" name="imageFiles")
+					i.fa.fa-photo
+		li#give-step2.give-steps step2
+		li#give-step3.give-steps step3
+		li#give-step4.give-steps step4
+		li#give-step5.give-steps step5
+	ul#give-stuff-tabs
+		li#give-step1-tab.give-steps-tab.active(ng-click="setGiveStep(1)") step1
+		li#give-step2-tab.give-steps-tab(ng-click="setGiveStep(2)") step2
+		li#give-step3-tab.give-steps-tab(ng-click="setGiveStep(3)") step3
+		li#give-step4-tab.give-steps-tab(ng-click="setGiveStep(4)") step4
+		li#give-step5-tab.give-steps-tab(ng-click="setGiveStep(5)") step5
+	

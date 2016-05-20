@@ -1,6 +1,11 @@
 doctype html
-- var ionicClass = ionic?'ionic':'';
-html(lang="en" class= ionicClass ng-app="stuffMapp")
+-
+	var htmlClassList = [];
+	if(ionic) htmlClassList.push('ionic');
+	if(loggedIn) htmlClassList.push('loggedIn');
+	if(electron) htmlClassList.push('electron');
+	htmlClassList = htmlClassList.join(' ');
+html(lang="en" class= htmlClassList ng-app="stuffMapp")
 	head
 		meta(charset="utf-8")
 		meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width")
@@ -33,12 +38,12 @@ html(lang="en" class= ionicClass ng-app="stuffMapp")
 				.close-modal-bg(ng-click="hideModal()")
 				.modal-window
 					.modal-header
-						.modal-close(ng-click="hideModal()")
-							i.fa.fa-close
+					.modal-close(ng-click="hideModal()")
+						i.fa.fa-close
 					.modal-content
 						.modal-steps
-							#sign-in-step.modal-step.active
-								h2.modal-title Sign In
+							#sign-in-step.modal-step.animate-250.active
+								h2.modal-title.animate-250 Sign In
 								button.sign-in-up-input.social-button.google-plus-sign-in(ng-click="socialSignIn('google')")
 									span.social-sign-in-icon.social-sign-in-icon-google
 										i.fa.fa-google-plus
@@ -49,43 +54,52 @@ html(lang="en" class= ionicClass ng-app="stuffMapp")
 									span.social-sign-in-text Sign in with Facebook
 								hr
 								span.sign-in-local-text or sign in with your email address 
-								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
-								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
+								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address" value="ryan.the.farmer@gmail.com")
+								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password" value="Password1!")
 								hr
-								input#sign-in-sign-in-button.sign-in-up-input(type="button" value="Sign In")
-								input#sign-in-sign-up-button.sign-in-up-input(type="button" value="Sign Up")
-							#sign-up-step.modal-step.hidden-modal.modal-off
+								input#sign-in-sign-in-button.sign-in-up-input(type="button" value="Sign In" ng-click="login()")
+								input#sign-in-sign-up-button.sign-in-up-input(type="button" value="Sign Up" ng-click="signUpStep()")
+							#sign-up-step.modal-step.animate-250.hidden-modal
 								h2.modal-title Sign Up
+								.modal-back-button(ng-click="signUpBack()")
+								input#sign-up-uname.sign-in-up-input.local-sign-in-up(type="text" placeholder="username")
 								input#sign-up-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
 								input#sign-up-password1.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
-								input#sign-up-password2.sign-in-up-input.local-sign-in-up(type="password again" placeholder="password")
-							#authorizing-step.modal-step.hidden-modal.modal-off
+								input#sign-up-password2.sign-in-up-input.local-sign-in-up(type="password" placeholder="confirm password")
+								input#sign-up-fname.sign-in-up-input.local-sign-in-up(type="text" placeholder="first name")
+								input#sign-up-lname.sign-in-up-input.local-sign-in-up(type="text" placeholder="last name")
+								hr
+								input#-sign-up-button.sign-in-up-input(type="button" value="Sign Up" ng-click="signUp()")
+							#authorizing-step.modal-step.animate-250.hidden-modal
 								h2.modal-title Authorizing...
 								div loading...
 		#popups
-					#profile-popup.popups.popups-top-right.animate-250.hidden-popup
-						li
-							i.fa.fa-archive
-							span My Stuff
-						li
-							i.fa.fa-envelope
-							span Messages
-						li
-							i.fa.fa-cog
-							span Settings
-						li
-							i.fa.fa-sign-out
-							span Sign Out
-				ul.side-menu.animate-250
+			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
+				li
+					i.fa.fa-archive
+					span My Stuff
+				li
+					i.fa.fa-envelope
+					span Messages
+				li
+					i.fa.fa-clock-o
+					span Watchlist
+				li
+					i.fa.fa-cog
+					span Settings
+				li
+					i.fa.fa-sign-out
+					span(ng-click="logout()") Sign Out
+		ul.side-menu.animate-250
 			li.side-menu-header
 				.profile
 			li.side-menu-item
 			li.side-menu-item
 		#container
 			#header
-				img#logo(src="/img/stuffmapper-logo.png")
+				img#logo(src="/img/logo-txt-only-bold.png")
 				#landfill-tracker
 				#user-portal
-					a#sign-in-button(ng-click="showModal()")
+					a#sign-in-button(ng-click="userButton()")
 						i.fa.fa-user
 			#content(ui-view)

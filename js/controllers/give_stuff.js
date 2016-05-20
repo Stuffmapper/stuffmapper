@@ -1,6 +1,6 @@
-function GiveStuffController($scope) {
-    $('#tab-container .tabs .give-stuff-tab a').addClass('selected');
+function GiveStuffController($scope,loginStatus) {
+    $('#tab-container .stuff-tabs .give-stuff-tab a').addClass('selected');
     $scope.$on("$destroy", function() {
-        $('#tab-container .tabs .give-stuff-tab a').removeClass('selected');
+        $('#tab-container .stuff-tabs .give-stuff-tab a').removeClass('selected');
     });
 }

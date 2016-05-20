@@ -1,4 +1,4 @@
-function MainController($scope, $http, $timeout) {
+function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	//TODO: loading http://tobiasahlin.com/spinkit/ http://projects.lukehaas.me/css-loaders/
 	$scope.counterFlipper = new CounterFlipper('landfill-tracker', 0, 7);
 	$scope.counterFlipper.setCounter(1283746);
@@ -31,35 +31,159 @@ function MainController($scope, $http, $timeout) {
 		});
 	};
 	$scope.hideModal = function() {
-		if(config.html5) history.pushState("", document.title, window.location.pathname + window.location.search);
+		if(config.html5) history.pushState("", document.title, window.location.pathname + window.location.search + '#');
 		else console.log('this should close popups... not sure what to do without html5 :<');
+		if($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
+		$scope.popUpOpen = false;
+		$('#modal-windows .modal-windows-bg').removeClass('modal-windows-bg-open');
+		$('#modal-windows .modal-container').removeClass('modal-window-open');
+		$scope.popUpTimeout = $timeout(function() {
+			$('#modal-windows').removeClass('modal-windows-open');
+			$('#sign-in-step').css({'transform':''});
+			$('#sign-in-step .modal-title').css({'transform':''});
+			$('#sign-in-step .modal-title').removeClass('visible');
+			$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+		}, 550);
 	};
 	$scope.socialSignIn = function(type) {
 		var url = '';
-		if(type==='google') url='https://www.google.com';
-		else if(type==='facebook') url='https://www.facebook.com';
-		if(url) open(url, 'Window Thing', 'menubar=1,resizable=1,scrollbars=1,width=350,height=250');
+		if(type==='google') url='/api/v1/account/login/google';
+		else if(type==='facebook') url='/api/v1/account/login/facebook';
+		if(url) open(url, 'Social Login', 'menubar=1,resizable=1,scrollbars=1,width=800,height=600');
 	};
 	if(config.html5) {
-		$scope.$watch(function () {
-			return location.hash;
-		}, function (value) {
+		var value = location.hash;
+		if(value) {
+			if($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
+			var hash = value.split('#').pop();
+			if(hash === "signin") $scope.showModal();
+		}
+		$(window).on('hashchange', function(event) {
+			var value = location.hash;
 			if(value) {
-				clearTimeout($scope.popUpTimeout);
+				if($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 				var hash = value.split('#').pop();
 				if(hash === "signin") $scope.showModal();
 			}
 			else if($scope.popUpOpen) {
-				clearTimeout($scope.popUpTimeout);
-				$scope.popUpOpen = false;
-				$('#modal-windows .modal-windows-bg').removeClass('modal-windows-bg-open');
-				$('#modal-windows .modal-container').removeClass('modal-window-open');
-				$scope.popUpTimeout = setTimeout(function() {
-					$('#modal-windows').removeClass('modal-windows-open');
-				}, 250);
+				$scope.hideModal();
 			}
 		});
 	}
+	var popupOpen = false;
+	$scope.showPopup = function() {
+		if(!popupOpen) {
+			popupOpen = true;
+			requestAnimationFrame(function() {
+				$('#profile-popup').removeClass('hidden-popup');
+				requestAnimationFrame(function() {
+					$('body').one('click',function(){popupOpen = false;$('#profile-popup').addClass('hidden-popup');});
+				});
+			});
+		}
+	};
+	$scope.userButton = function() {
+		if($userData.isLoggedIn()) {
+			$scope.showPopup();
+		}
+		else {
+			$scope.showModal();
+		}
+	};
+	$scope.login = function() {
+		// set step to loading
+		$http.post("/api/v1/account/login", {
+			email: $('#sign-in-email').val(),
+			password: $('#sign-in-password').val()
+		},{
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			transformRequest: function(data){
+				return $.param(data);
+			}
+		}).then(function(data) {
+			data = data.data;
+			if(data.err) {
+				console.log(data.err);
+			}
+			if(data.res.isValid) {
+				// show login success, add badges
+				location.hash = '';
+				console.log(data);
+				$('html').addClass('loggedIn');
+				$userData.setLoggedIn(true);
+				if($scope.redirectState) $state.go($scope.redirectState);
+				$scope.redirectState = '';
+			} else {
+				// go back to sign in step and red highlight the email address and password for one second
+			}
+		});
+	};
+	$scope.logout = function() {
+		$http.post("/api/v1/account/logout")
+		.success(function(data) {
+			$('html').removeClass('loggedIn');
+			$userData.setLoggedIn(false);
+			if(/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
+				$location.path('/stuff/get');
+			}
+		});
+	};
+	$scope.toGiveStuff = function() {
+		if($userData.isLoggedIn()) {
+			$state.go('stuff.give');
+		} else {
+			$scope.redirectState = 'stuff.give';
+			location.hash = 'signin';
+		}
+	};
+	$scope.signUpStep = function() {
+		$('#sign-in-step').css({
+			'transform':'translate3d(-100%, 0%, 0)'
+		});
+		$('#sign-in-step .modal-title').css({
+			'transform':'translate3d(65%, 0%, 0) scale3d(0.75, 0.75, 1)'
+		});
+		$('#sign-in-step .modal-title').addClass('visible');
+		$('#sign-up-step').removeClass('hidden-modal').addClass('active');
+	};
+	$scope.signUpBack = function() {
+		$('#sign-in-step').css({'transform':''});
+		$('#sign-in-step .modal-title').css({'transform':''});
+		$('#sign-in-step .modal-title').removeClass('visible');
+		$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+	};
+	$scope.signUp = function() {
+		var fd = {
+			uname : $('#sign-up-uname').val(),
+			email : $('#sign-up-email').val(),
+			password : $('#sign-up-password1').val(),
+			fname : $('#sign-up-fname').val(),
+			lname : $('#sign-up-lname').val()
+		};
+		$http.post('/api/v1/account/register', fd,{
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			transformRequest: function(data){
+				return $.param(data);
+			}
+		})
+		.success(function(data) {
+			if(data.err) {
+				console.log(data.err);
+				return;
+			}
+			location.hash = '';
+		});
+	};
+	$scope.resetModal = function() {
+		$('#sign-in-step').css({'transform':''});
+		$('#sign-in-step .modal-title').css({'transform':''});
+		$('#sign-in-step .modal-title').removeClass('visible');
+		$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+	};
 }
 
 var working = false;
@@ -85,7 +209,7 @@ function closeModalWindow(windowName) {
 		requestAnimationFrame(function() {
 			$('#modal-window-bg').removeClass('reveal-modal-window-bg');
 			$('#'+windowName+'.modal-window').removeClass('reveal-modal-window');
-			setTimeout(function() {
+			$timeout(function() {
 				requestAnimationFrame(function() {
 					$('#modal-windows').removeClass('reveal-modals');
 					requestAnimationFrame(function() {

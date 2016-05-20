@@ -34,7 +34,6 @@
 		'	width: 80%;',
 		'	height: 100%;',
 		'	margin: 0 auto;',
-		'	background-color: #6495ED;',
 		'	-webkit-transform: translateX(-50%) rotateX(0deg);',
 		'	-moz-transform: translateX(-50%) rotateX(0deg);',
 		'	-ms-transform: translateX(-50%) rotateX(0deg);',
@@ -71,7 +70,6 @@
 		'	-ms-transform: translateX(-50%) rotateX(-91deg);',
 		'	-o-transform: translateX(-50%) rotateX(-91deg);',
 		'	transform: translateX(-50%) rotateX(-91deg);',
-		'	background-color: #42639E;',
 		'}',
 		'.bottomElementEnter {',
 		'	-webkit-transform: translateX(-50%) rotateX(91deg);',
@@ -79,7 +77,6 @@
 		'	-ms-transform: translateX(-50%) rotateX(91deg);',
 		'	-o-transform: translateX(-50%) rotateX(91deg);',
 		'	transform: translateX(-50%) rotateX(91deg);',
-		'	background-color: #42639E;',
 		'}'
 	].join('\n');
 	var counterFlipperStyle = document.createElement('style');
