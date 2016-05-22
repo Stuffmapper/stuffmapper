@@ -823,6 +823,79 @@ body, div {
 		@include transform(translate3d(-50%, 0%, 0px));
 	}
 }
+/* Temporary about us - START */
+
+.about-us-main {
+	height: 100%;
+	max-width: 1020px;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: Verdana;
+}
+#about-us-wrapper {
+	width: 100%;
+	height: 100%;
+}
+.about-us-ul {
+	padding: 0;
+}
+#about-us-wrapper li {
+	list-style: square;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 1.2em;
+}
+
+#about-us-image-div {
+	text-align: center;
+	margin-bottom: 2em;
+	height: 25em;
+	width: 64em;
+}
+
+#about-us-image-div img {
+	height: 100%;
+}
+
+#about-us-benefit {
+	width: 33%;
+	padding: 2em;
+	background-color: rgb(139, 195, 74);
+}
+#benefit p {
+	padding: 0;
+}
+#about-us-last{
+	width: 33%;
+	padding: 2em;
+	background-color: rgb(159, 214, 97);
+}
+.about-us-img {
+	width: 100%;
+}
+.about-us-section {
+	border-top: 1px black solid;
+	height: calc(100% - 27.1em);
+}
+.about-us-blockquote {
+	width: 33%;
+	margin: 0;
+	padding: 2em;
+}
+.about-us-article {
+	height: 100%;
+	display: flex;
+	align-items: stretch;
+	flex-direction: row;
+}
+.about-us-p {
+	margin: 0;
+}
+.about-us-a {
+	text-decoration: none;
+}
+
+		/* Temporary about us - END */
 
 @media screen and (max-width: 436px) {
 	#tab-container {
@@ -930,82 +1003,39 @@ body, div {
 		}
 	}
 
-	/* Modal - START */
-
-	.modal-window {
-		width: 100%;
-		height: 100%;
-	}
-
-	/* Modal -  END */
-
 	/* Temporary about us - START */
 
-	.about-us-main {
-		height: 100%;
-		max-width: 1020px;
-		margin-left: auto;
-		margin-right: auto;
-		font-family: Verdana;
-	}
-	#about-us-wrapper {
-		width: 100%;
-		height: 100%;
-	}
-	.about-us-ul {
-		padding: 0;
-	}
-	#about-us-wrapper li {
-		list-style: none;
-		margin-top: 1em;
-		margin-bottom: 1em;
-	}
-
 	#about-us-image-div {
-		text-align: center;
+		height: 43em;
 	}
 
 	#about-us-benefit {
-		width: 33%;
-		padding: 2em;
-		background-color: rgb(139, 195, 74);
+		width: 100%;
 	}
 	#benefit p {
 		padding: 0;
 	}
 	#about-us-last{
-
-		width: 33%;
-		padding: 2em;
-		background-color: rgb(159, 214, 97);
+		width: 100%;
 	}
 	.about-us-img {
 		width: 100%;
 	}
 	.about-us-section {
-		margin-top: 0;
-		height: 100%;
-
+		font-size: 1.8em;
 	}
 	.about-us-blockquote {
-		width: 33%;
+		width: 100%;
 		margin: 0;
 		padding: 2em;
 	}
 	.about-us-article {
-		height: 100%;
-		display: flex;
-		align-items: stretch;
-		flex-direction: row;
+		flex-direction: column;
 	}
-	.about-us-p {
-		margin: 0;
-	}
-	.about-us-a {
-		text-decoration: none;
-	}
+
 		/* Temporary about us - END */
 }
+
 
 @media screen and (min-width: 437px){
 	.toggle{
