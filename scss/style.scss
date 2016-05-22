@@ -11,7 +11,7 @@
 *   5. Tabs                *
 *   6. Search Bar          *
 *   7. Give Stuff          *
-*                          *
+*   8. About Us            *
 *   X. Modal Windows       *
 *       - Steps            *
 *       - Sign In Content  *
@@ -823,7 +823,8 @@ body, div {
 		@include transform(translate3d(-50%, 0%, 0px));
 	}
 }
-/* Temporary about us - START */
+
+/* About Us - START */
 
 .about-us-main {
 	height: 100%;
@@ -895,7 +896,7 @@ body, div {
 	text-decoration: none;
 }
 
-		/* Temporary about us - END */
+		/* About Us - END */
 
 @media screen and (max-width: 436px) {
 	#tab-container {
@@ -1003,7 +1004,7 @@ body, div {
 		}
 	}
 
-	/* Temporary about us - START */
+	/* About Us - START */
 
 	#about-us-image-div {
 		height: 43em;
@@ -1033,7 +1034,7 @@ body, div {
 		flex-direction: column;
 	}
 
-		/* Temporary about us - END */
+		/* About Us - END */
 }
 
 
