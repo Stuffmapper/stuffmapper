@@ -7,8 +7,11 @@ var User = require('./user.js');
 
 var GOOGLE_CLIENT_ID = '11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com';
 var GOOGLE_CLIENT_SECRET = 't7-XA3IXfFZs3q3_5h1hxQwv';
-var FACEBOOK_CLIENT_ID = '1497795170480964';
-var FACEBOOK_CLIENT_SECRET = '79eb3898f556146e5645f666cbb27f6b';
+// var FACEBOOK_CLIENT_ID = '1497795170480964';
+// var FACEBOOK_CLIENT_SECRET = '79eb3898f556146e5645f666cbb27f6b';
+
+var FACEBOOK_CLIENT_ID = '455657511303315';
+var FACEBOOK_CLIENT_SECRET = '323f3bea3a85163cf52f8e710fa00852';
 
 passport.serializeUser(function(user, done) {
 	done(null, user);
@@ -39,25 +42,20 @@ function(accessToken, refreshToken, profile, done) {
 	User.findOrCreateOne('google', profile, function (err, user) {
 		if (err) return done(err);
 		if (!user) return done(null, false);
-		User.validatePassword(password, user.password, function(err, res) {
-			if(err || !res) return done(null, false);
-			return done(null, user);
-		});
+		return done(null, user);
 	});
 }));
 
 passport.use(new FacebookStrategy({
 	clientID:     FACEBOOK_CLIENT_ID,
 	clientSecret: FACEBOOK_CLIENT_SECRET,
-	callbackURL: 'http://localhost:3000/auth/callback'
+	callbackURL: 'http://localhost:3000/auth/facebook_oauth2/callback',
+  profileFields: ['id', 'displayName', 'photos', 'email', 'name']
 },
 function(accessToken, refreshToken, profile, done) {
 	User.findOrCreateOne('facebook', profile, function (err, user) {
 		if (err) return done(err);
 		if (!user) return done(null, false);
-		User.validatePassword(password, user.password, function(err, res) {
-			if(err || !res) return done(null, false);
-			return done(null, user);
-		});
+		return done(null, user);
 	});
 }));

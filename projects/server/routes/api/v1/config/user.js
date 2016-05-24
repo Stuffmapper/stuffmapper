@@ -21,7 +21,6 @@ module.exports = (function() {
 			else if(login.uname) loginType = 'uname';
 			else if(login.google) loginType = 'google';
 			else if(login.facebook) loginType = 'facebook';
-			console.log(login[loginType], loginType);
 			var client = new pg.Client(conString);
 			client.connect(function(err) {
 				if(err) {
@@ -53,8 +52,8 @@ module.exports = (function() {
 		if(profile) {
 			client.connect(function(err) {
 				if(err) {
-					cb(err, null);
-					return client.end();
+					client.end();
+					return cb(err, null);
 				}
 				var query = 'SELECT * FROM users WHERE '+type+'_id = $1 OR email = $2';
 				var values = [
@@ -63,30 +62,48 @@ module.exports = (function() {
 				];
 				client.query(query, values, function(err, result) {
 					if(result.rows.length !== 0) {
-						cb(null, result.rows[0]);
-						return client.end();
+						var rows = result.rows[0];
+						if(!rows[type+'_id']) {
+							query = 'UPDATE users SET '+type+'_id = $1 where email = $2 RETURNING *';
+							values = [
+								profile.id,
+								profile.email
+							];
+							client.query(query, values, function(err, result) {
+								if(err) {
+									client.end();
+									return cb(err, null);
+								}
+								cb(null, result.rows[0]);
+							});
+						}
+						else {
+							client.end();
+							return cb(null, rows);
+						}
 					}
 					else {
 						query = [
 							'INSERT INTO users ',
-							'(fname, lname, uname, email, '+type+'_id, '+type+'_token) ',
-							'VALUES ($1, $2, $3, $4, $6, $7) ',
+							'(fname, lname, uname, email, '+type+'_id) ',
+							'VALUES ($1, $2, $3, $4, $5) ',
 							'RETURNING *'
 						].join('');
 						values = [
 							profile.name.givenName,
 							profile.name.familyName,
 							profile.displayName,
-							profile.email,
+							profile.email || profile.emails[0].value,
 							profile.id
 						];
 						client.query(query, values, function(err, result) {
+							console.log(result);
 							if(err) {
-								cb(err, null);
-								return client.end();
+								client.end();
+								return cb(err, null);
 							} else {
-								cb(null, result.rows[0])
-								return client.end();
+								client.end();
+								return cb(null, result.rows[0]);
 							}
 						});
 					}

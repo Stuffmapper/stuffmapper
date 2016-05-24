@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var session = require('express-session');
 var passport = require('passport');
+var User = require('./routes/api/v1/config/user');
 
 
 var app = express();
@@ -41,6 +42,16 @@ require(path.join(__dirname, '/routes/api/v1/config/passport'));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.get('/auth/google_oauth2/callback', passport.authenticate('google', {
+	successRedirect: '/stuff/get',
+	failureRedirect: '/api/v1/account/login/google'
+}));
+
+app.get('/auth/facebook_oauth2/callback', passport.authenticate('facebook', {
+	successRedirect: '/stuff/get',
+	failureRedirect: '/api/v1/account/login/facebook'
+}));
 
 app.use(function(req, res, next) {
 	var tempDB = {
