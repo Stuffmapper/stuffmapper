@@ -90,6 +90,9 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 			$scope.showModal();
 		}
 	};
+	$scope.aboutUs = function() {
+		$('.about-us-main').toggleClass('hide-about-us');
+	};
 	$scope.login = function() {
 		// set step to loading
 		$http.post("/api/v1/account/login", {

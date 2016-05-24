@@ -11,7 +11,7 @@
 *   5. Tabs                *
 *   6. Search Bar          *
 *   7. Give Stuff          *
-*                          *
+*   8. About Us            *
 *   X. Modal Windows       *
 *       - Steps            *
 *       - Sign In Content  *
@@ -1087,7 +1087,85 @@ body, div {
 	}
 }
 
+/* About Us - START */
+
+.about-us-main {
+	display: block;
+	height: 100%;
+	max-width: 1020px;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: Verdana;
+	overflow: auto;
+}
+.hide-about-us {
+	display: none;
+}
+#about-us-wrapper {
+	width: 100%;
+	height: 100%;
+}
+.about-us-ul {
+	padding: 0;
+}
+#about-us-wrapper li {
+	list-style: square;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	margin-left: 1.2em;
+}
+
+#about-us-image-div {
+	background-image: url('/img/team-photo.JPG');
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	height: 38em;
+}
+#about-us-benefit {
+	width: 33%;
+	padding: 2em;
+	background-color: rgb(139, 195, 74);
+}
+#benefit p {
+	padding: 0;
+}
+#about-us-last{
+	width: 33%;
+	padding: 2em;
+	background-color: rgb(159, 214, 97);
+}
+.about-us-img {
+	width: 100%;
+}
+.about-us-section {
+	border-top: 1px black solid;
+	height: calc(100% - 27.1em);
+}
+.about-us-blockquote {
+	width: 33%;
+	margin: 0;
+	padding: 2em;
+}
+.about-us-article {
+	height: 100%;
+	display: flex;
+	align-items: stretch;
+	flex-direction: row;
+}
+.about-us-p {
+	margin: 0;
+}
+.about-us-a {
+	text-decoration: none;
+}
+
+		/* About Us - END */
+
 @media screen and (max-width: 436px) {
+	#landfill-tracker {
+		width: 112px;
+	}
 	#tab-container {
 		width: 100%;
 	}
@@ -1198,73 +1276,82 @@ body, div {
 
 
 	/* Modal - START */
-
-	.modal-window {
-		width: 100%;
-		height: 100%;
-	}
-
-	/* Modal -  END */
-
-	/* Temporary about us - START */
-
-	.about-us-main {
-		height: 100%;
-		max-width: 1040px;
-		margin-left: auto;
-		margin-right: auto;
-		font-family: Verdana;
-	}
-	#about-us-wrapper {
-		width: 100%;
-		height: 100%;
-	}
-	.about-us-ul {
-		padding: 0;
-	}
-	#about-us-wrapper li {
-		list-style: none;
-		margin-top: 1em;
-		margin-bottom: 1em;
-	}
+	/* About Us - START */
 
 	#about-us-image-div {
-		text-align: center;
+		height: 16em;
+		margin-bottom: 0;
+		text-align: left;
 	}
 
 	#about-us-benefit {
-		order: 2;
-		padding-top: 1em;
-		padding-left: 3em;
-		padding-right: 3em;
+		width: 91%;
+	}
+	#benefit {
+		padding: 1em;
 	}
 	#benefit p {
 		padding: 0;
 	}
 	#about-us-last{
-		order: 3;
+		width: 95%;
 		padding: 1em;
-		background-color: rgb(159, 214, 97);
+		height: 100%;
 	}
 	.about-us-img {
 		width: 100%;
 	}
 	.about-us-section {
-		margin-top: 0;
-		height: 100%;
-
+		font-size: .7em;
+		height: calc(100% - 21em);
 	}
 	.about-us-blockquote {
-		background-color: rgb(139, 195, 74);
-		order: 1;
+		width: 94%;
 		margin: 0;
-		padding: 2em;
-		/*text-shadow: -2px -2px 3px rgba(150, 150, 150, 0.54);*/
+		padding: 1em;
 	}
 	.about-us-article {
+		flex-direction: column;
+	}
+
+		/* About Us - END */
+}
+
+@media screen and (min-width: 767px) {
+	/* About Us - START */
+
+	#about-us-image-div {
+		height: 32em;
+		margin-bottom: 0;
+		text-align: left;
+	}
+
+	#about-us-benefit {
+		width: 95%;
+	}
+	#benefit {
+		padding: 1em;
+	}
+	#benefit p {
+		padding: 0;
+	}
+	#about-us-last{
+		width: 99%;
+		padding: 1em;
 		height: 100%;
-		display: flex;
-		align-items: stretch;
+	}
+	.about-us-img {
+		width: 100%;
+	}
+	.about-us-section {
+		height: calc(100% - 21em);
+	}
+	.about-us-blockquote {
+		width: 94%;
+		margin: 0;
+		padding: 1em;
+	}
+	.about-us-article {
 		flex-direction: column;
 	}
 	.about-us-p {
@@ -1276,6 +1363,7 @@ body, div {
 	}
 	/* Temporary about us - END */
 }
+
 
 @media screen and (min-width: 437px){
 	.toggle{
