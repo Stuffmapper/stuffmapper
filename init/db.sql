@@ -15,7 +15,7 @@ CREATE TABLE users (
 	lname varchar(32) NOT NULL,
 	uname varchar(32) UNIQUE NOT NULL,
 	email varchar(64) UNIQUE NOT NULL,
-	password text NOT NULL,
+	password text,
 	password_reset_token text,
 	status integer REFERENCES status(id),
 	phone_number varchar(10),
@@ -25,17 +25,15 @@ CREATE TABLE users (
 	date_created timestamp DEFAULT current_timestamp,
 	last_sign_in timestamp DEFAULT current_timestamp,
 	google_id varchar(64),
-	google_token varchar(64),
 	facebook_id varchar(64),
-	facebook_token varchar(64),
-	image_url text
-);
-
-CREATE TABLE pick_up_success (
-	id BIGSERIAL PRIMARY KEY,
-	dibber_id integer REFERENCES users(id),
-	lister_id integer REFERENCES users(id),
-	pick_up_success boolean DEFAULT FALSE
+	image_url text,
+	date_archived timestamp DEFAULT current_timestamp,
+	archived boolean DEFAULT false,
+	country varchar(32),
+	city varchar(32),
+	state varchar(32),
+	zip_code varchar(10),
+	address varchar(64)
 );
 
 CREATE TABLE categories (
@@ -50,27 +48,45 @@ CREATE TABLE posts (
 	description text,
 	date_created timestamp DEFAULT current_timestamp,
 	date_edited timestamp,
-	date_picked_up timestamp,
 	lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
+	attended boolean NOT NULL,
 	status integer REFERENCES status(id),
 	category integer REFERENCES categories(id),
 	dibbed boolean DEFAULT false,
 	dibber integer REFERENCES users(id),
-	on_the_curb boolean NOT NULL
+	on_the_curb boolean NOT NULL,
+	quality integer,
+	date_archived timestamp DEFAULT current_timestamp,
+	archived boolean DEFAULT false,
+	static_map_url varchar(64)
 );
 
-CREATE TABLE orientation(
+CREATE TABLE pick_up_success (
 	id BIGSERIAL PRIMARY KEY,
-	name varchar(8) NOT NULL
+	post_id integer REFERENCES posts(id),
+	dibber_id integer REFERENCES users(id),
+	lister_id integer REFERENCES users(id),
+	pick_up_success boolean DEFAULT FALSE,
+	pick_up_date timestamp,
+	rejected boolean,
+	rejection_date timestamp,
+	omw boolean DEFAULT FALSE,
+	omw_time timestamp,
+	omw_lat FLOAT,
+	omw_lng FLOAT,
+	dib_lat FLOAT,
+	dib_lng FLOAT
 );
 
 CREATE TABLE images (
 	id BIGSERIAL PRIMARY KEY,
 	post_id integer REFERENCES posts(id),
 	image_url varchar(255) NOT NULL,
-	orientation integer REFERENCES orientation(id),
-	main boolean DEFAULT false
+	main boolean DEFAULT false,
+	quality integer,
+	date_archived timestamp DEFAULT current_timestamp,
+	archived boolean DEFAULT false
 );
 
 CREATE TABLE tag_names (
@@ -123,4 +139,23 @@ CREATE TABLE watchlist_keys (
 	watchlist_item integer REFERENCES watchlist_items(id),
 	tag_id integer REFERENCES tags(id),
 	category_id integer REFERENCES categories(id)
+);
+
+
+-- user does not have to be logged in
+CREATE TABLE tracker (
+	id BIGSERIAL PRIMARY KEY,
+	user_id integer REFERENCES users(id)
+);
+
+CREATE TABLE tracker_action (
+	id BIGSERIAL PRIMARY KEY,
+	action varchar(16) NOT NULL
+);
+
+CREATE TABLE tracker_item (
+	id BIGSERIAL PRIMARY KEY,
+	tracker_id integer REFERENCES tracker(id),
+	tracker_action integer REFERENCES tracker_action(id),
+	tracker_time timestamp default current_timestamp
 );
