@@ -32,7 +32,6 @@ var stuffMapp = angular
 	}).error(function (msg) {
 		deferred.reject(msg);
 	});
-	console.log('IN DAT PROMISE THING');
 	return deferred.promise;
 }])
 .directive('repeatDone', function() {
@@ -40,7 +39,6 @@ var stuffMapp = angular
 		if(scope.$last) scope.$eval(attrs.repeatDone);
 	};
 });
-
 
 if(config.ionic.isIonic) {
 	stuffMapp.run(function($ionicPlatform) {
@@ -154,6 +152,9 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 		}
 	})
 	.state('about', {
+		url: '/about',
+		templateUrl: 'templates/partial-about.html',
+		controller: AboutController
 	});
 }
 

@@ -91,7 +91,7 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 		}
 	};
 	$scope.aboutUs = function() {
-		$('.about-us-main').toggleClass('hide-about-us');
+		$state.go('about');
 	};
 	$scope.login = function() {
 		// set step to loading
