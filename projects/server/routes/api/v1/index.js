@@ -8,7 +8,7 @@ var passport = require('passport');
 
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
 
-function ensureAuthenticated(req, res, next) {
+function isAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) { return next(); }
 	res.send('unauthorized access');
 }
@@ -56,7 +56,7 @@ router.post('/stuff', function(req, res) {
 	}
 });
 
-router.put('/stuff/:id', ensureAuthenticated, function(req, res) {
+router.put('/stuff/:id', isAuthenticated, function(req, res) {
 	var stuff = [];
 	if(req.params.id <= db.users.length) {
 		var uname = db.users[req.params.id-1].uname;
@@ -72,7 +72,7 @@ router.put('/stuff/:id', ensureAuthenticated, function(req, res) {
 	}
 });
 
-router.delete('/stuff/:id', ensureAuthenticated, function(req, res) {
+router.delete('/stuff/:id', isAuthenticated, function(req, res) {
 	var stuff = [];
 	if(req.params.id <= db.users.length) {
 		var uname = db.users[req.params.id-1].uname;
@@ -111,11 +111,8 @@ router.post('/account/status', function(req, res) {
 	res.send({
 		err: null,
 		res: {
-			loggedIn: req.session.userData && req.session.userData.loggedIn || false,
-			admin: req.session.userData && req.session.userData.admin || null,
-			uname: req.session.userData && req.session.userData.uname || null,
-			fname: req.session.userData && req.session.userData.fname || null,
-			lname: req.session.userData && req.session.userData.lname || null
+			loggedIn: req.isAuthenticated(),
+			admin: false
 		}
 	});
 });
@@ -204,7 +201,7 @@ router.post('/account/login', function(req, res, next) {
 	})(req, res, next);
 });
 
-router.post('/account/logout', ensureAuthenticated, function(req, res) {
+router.post('/account/logout', isAuthenticated, function(req, res) {
 	req.logout();
 	res.send({
 		err : null,
@@ -235,7 +232,7 @@ router.get('/account/login/facebook', passport.authenticate('facebook', {
 
 /* DIBS MANAGEMENT - START */
 
-router.post('/dibs/:id', ensureAuthenticated, function(req, res) {
+router.post('/dibs/:id', isAuthenticated, function(req, res) {
 
 });
 
@@ -243,19 +240,19 @@ router.post('/dibs/:id', ensureAuthenticated, function(req, res) {
 
 /* MESSAGING MANAGEMENT - START */
 
-router.get('/messages', ensureAuthenticated, function(req, res) {
+router.get('/messages', isAuthenticated, function(req, res) {
 
 });
 
-router.post('/messages', ensureAuthenticated, function(req, res) {
+router.post('/messages', isAuthenticated, function(req, res) {
 
 });
 
-router.put('/messages/:id', ensureAuthenticated, function(req, res) {
+router.put('/messages/:id', isAuthenticated, function(req, res) {
 
 });
 
-router.delete('/messages/:id', ensureAuthenticated, function(req, res) {
+router.delete('/messages/:id', isAuthenticated, function(req, res) {
 
 });
 
@@ -264,23 +261,23 @@ router.delete('/messages/:id', ensureAuthenticated, function(req, res) {
 
 /* WATCHLIST MANAGEMENT - START */
 
-router.get('/watchlist/:userid', ensureAuthenticated, function(req, res) {
+router.get('/watchlist/:userid', isAuthenticated, function(req, res) {
 	//return all watchlist items
 });
 
-router.get('/watchlist/:userid/:id', ensureAuthenticated, function(req, res) {
+router.get('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
 	//return watchlist item
 });
 
-router.post('/watchlist/:userid', ensureAuthenticated, function(req, res) {
+router.post('/watchlist/:userid', isAuthenticated, function(req, res) {
 	//add watchlist item
 });
 
-router.put('/watchlist/:userid/:id', ensureAuthenticated, function(req, res) {
+router.put('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
 	//update watchlist item
 });
 
-router.delete('/watchlist/:userid/:id', ensureAuthenticated, function(req, res) {
+router.delete('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
 	//archive watchlist item
 });
 

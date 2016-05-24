@@ -25,18 +25,15 @@ CREATE TABLE users (
 	date_created timestamp DEFAULT current_timestamp,
 	last_sign_in timestamp DEFAULT current_timestamp,
 	google_id varchar(64),
-	google_token varchar(64),
 	facebook_id varchar(64),
-	facebook_token varchar(64),
-	image_url text
-);
-
-CREATE TABLE pick_up_success (
-	id BIGSERIAL PRIMARY KEY,
-	dibber_id integer REFERENCES users(id),
-	lister_id integer REFERENCES users(id),
-	pick_up_success boolean DEFAULT FALSE,
-	pick_up_date timestamp
+	image_url text,
+	date_archived timestamp DEFAULT current_timestamp,
+	archived boolean DEFAULT false,
+	country varchar(32),
+	city varchar(32),
+	state varchar(32),
+	zip_code varchar(10),
+	address varchar(64)
 );
 
 CREATE TABLE categories (
@@ -51,15 +48,35 @@ CREATE TABLE posts (
 	description text,
 	date_created timestamp DEFAULT current_timestamp,
 	date_edited timestamp,
-	date_picked_up timestamp,
 	lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
+	attended boolean NOT NULL,
 	status integer REFERENCES status(id),
 	category integer REFERENCES categories(id),
 	dibbed boolean DEFAULT false,
 	dibber integer REFERENCES users(id),
 	on_the_curb boolean NOT NULL,
-	quality integer
+	quality integer,
+	date_archived timestamp DEFAULT current_timestamp,
+	archived boolean DEFAULT false,
+	static_map_url varchar(64)
+);
+
+CREATE TABLE pick_up_success (
+	id BIGSERIAL PRIMARY KEY,
+	post_id integer REFERENCES posts(id),
+	dibber_id integer REFERENCES users(id),
+	lister_id integer REFERENCES users(id),
+	pick_up_success boolean DEFAULT FALSE,
+	pick_up_date timestamp,
+	rejected boolean,
+	rejection_date timestamp,
+	omw boolean DEFAULT FALSE,
+	omw_time timestamp,
+	omw_lat FLOAT,
+	omw_lng FLOAT,
+	dib_lat FLOAT,
+	dib_lng FLOAT
 );
 
 CREATE TABLE images (
@@ -67,7 +84,9 @@ CREATE TABLE images (
 	post_id integer REFERENCES posts(id),
 	image_url varchar(255) NOT NULL,
 	main boolean DEFAULT false,
-	quality integer
+	quality integer,
+	date_archived timestamp DEFAULT current_timestamp,
+	archived boolean DEFAULT false
 );
 
 CREATE TABLE tag_names (
@@ -122,6 +141,8 @@ CREATE TABLE watchlist_keys (
 	category_id integer REFERENCES categories(id)
 );
 
+
+-- user does not have to be logged in
 CREATE TABLE tracker (
 	id BIGSERIAL PRIMARY KEY,
 	user_id integer REFERENCES users(id)
