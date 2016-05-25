@@ -132,19 +132,39 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 			}]
 		}
 	})
-	.state('stuff.my.messages', {
-		url: '/messages',
-		templateUrl: 'templates/partial-home-messages.html',
-		controller: MyStuffController,
+	.state('stuff.my.item', {
+		url: '/:id',
+		controller: MyStuffItemController,
 		resolve: {
 			authenticated: ['authenticator', function (authenticated) {
 				return authenticated;
 			}]
 		}
 	})
-	.state('stuff.my.item', {
-		url: '/:id',
-		controller: MyStuffController,
+	.state('stuff.messages', {
+		url: '/messages',
+		templateUrl: 'templates/partial-home-messages.html',
+		controller: MessagesController,
+		resolve: {
+			authenticated: ['authenticator', function (authenticated) {
+				return authenticated;
+			}]
+		}
+	})
+	.state('stuff.watchlist', {
+		url: '/watchlist',
+		templateUrl: 'templates/partial-home-watchlist.html',
+		controller: WatchlistController,
+		resolve: {
+			authenticated: ['authenticator', function (authenticated) {
+				return authenticated;
+			}]
+		}
+	})
+	.state('stuff.settings', {
+		url: '/watchlist',
+		templateUrl: 'templates/partial-home-settings.html',
+		controller: SettingsController,
 		resolve: {
 			authenticated: ['authenticator', function (authenticated) {
 				return authenticated;

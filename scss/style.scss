@@ -227,6 +227,15 @@ body, div {
 
 /* Header -  END  */
 
+
+
+#get-stuff-container {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+}
+
+
 /* Tabs - START */
 
 #tab-container {
@@ -236,6 +245,7 @@ body, div {
 	height: 100%;
 	width: 30%;
 	display: inline-block;
+	overflow: hidden;
 }
 
 .stuff-tabs {
@@ -284,7 +294,23 @@ body, div {
 	background-color: #fff;
 	height: calc(100% - 45px);
 	width: 100%;
-	position: relative;
+	position: absolute;
+	top: 45px;
+	left: 0px;
+	@include transform(translate3d(0%, 0%, 0));
+	opacity: 1;
+	&.ng-enter {
+		@include transform(translate3d(100%, 0%, 0));
+	}
+	&.ng-enter.ng-enter-active {
+		@include transform(translate3d(0%, 0%, 0));
+	}
+	&.ng-leave {
+		@include transform(translate3d(0%, 0%, 0));
+	}
+	&.ng-leave.ng-leave-active {
+		@include transform(translate3d(-100%, 0%, 0));
+	}
 	.stuff-list {
 		display: inline-block;
 		width: 100%;
@@ -311,12 +337,6 @@ body, div {
 			}
 		}
 	}
-}
-#tab-content {
-	height: calc(100% - 45px);
-	width: 100%;
-	z-index: 1;
-	position: relative;
 }
 
 .masonry-grid {
@@ -371,7 +391,7 @@ body, div {
 
 /* Give Stuff - START */
 
-.give-stuff-container {
+#give-stuff-container {
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
@@ -589,13 +609,13 @@ body, div {
 			position: relative;
 			text-align: center;
 			line-height: 40px;
-			.give-image-select {
-				position: absolute;
-				height: 0px;
-				width: 0px;
-				opacity: 0.00001;
-				z-index: -1;
-			}
+		}
+		.give-image-select {
+			position: absolute;
+			height: 0px;
+			width: 0px;
+			opacity: 0.00001;
+			z-index: -1;
 		}
 	}
 }
