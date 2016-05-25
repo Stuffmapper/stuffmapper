@@ -110,8 +110,8 @@ if [[ $1 == '' || $1 == 'init' ]]; then
     echo "All done!"
 elif [[ $1 == 'reset' ]]; then
     cd ~/stuffmapper/
-    sudo su postgres -c "psql -c \"DROP DATABASE stuffmapper;\""
-    sudo su postgres -c "psql -f /home/ryan/stuffmapper/init/db.sql"
+    sudo su postgres -c "psql -c \"DROP DATABASE stuffmapper;\"" && sudo su postgres -c "psql -f /home/jack/stuffmapper/init/db.sql"
+
 elif [[ $1 == 'update' ]]; then
     cd ~/stuffmapper/
     git fetch --all
