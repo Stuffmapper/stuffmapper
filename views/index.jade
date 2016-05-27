@@ -29,6 +29,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script(src="/js/all.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
+		script(id="templates/partial-home-my.html" type="text/ng-template")
+			include ./partials/home/partial-home-my
+		script(id="templates/partial-home-settings.html" type="text/ng-template")
+			include ./partials/home/partial-home-settings
 		script(id="templates/partial-home-messages.html" type="text/ng-template")
 			include ./partials/home/partial-home-messages
 		script(id="templates/partial-home-watchlist.html" type="text/ng-template")
@@ -87,16 +91,16 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
 				li
 					i.fa.fa-archive
-					span(ui-sref="stuff.my") My Stuff
+					span(ui-sref="stuff.my.items") My Stuff
 				li
 					i.fa.fa-envelope
-					span(ui-sref="stuff.messages") Messages
+					span(ui-sref="stuff.my.messages") Messages
 				li
 					i.fa.fa-clock-o
-					span(ui-sref="stuff.watchlist") Watchlist
+					span(ui-sref="stuff.my.watchlist") Watchlist
 				li
 					i.fa.fa-cog
-					span(ui-sref="stuff.settings") Settings
+					span(ui-sref="stuff.my.settings") Settings
 				li
 					i.fa.fa-sign-out
 					span(ng-click="logout()") Sign Out

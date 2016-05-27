@@ -95,51 +95,35 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 	.state('stuff.my', {
 		url: '/my',
 		templateUrl: 'templates/partial-home-mystuff.html',
-		controller: MyStuffController,
+		controller: MyController,
 		resolve: {
 			authenticated: ['authenticator', function (authenticated) {
 				return authenticated;
 			}]
 		}
 	})
-	.state('stuff.my.item', {
+	.state('stuff.my.items', {
+		url: '/items',
+		controller: MyStuffController
+	})
+	.state('stuff.my.items.item', {
 		url: '/:id',
-		controller: MyStuffItemController,
-		resolve: {
-			authenticated: ['authenticator', function (authenticated) {
-				return authenticated;
-			}]
-		}
+		controller: MyStuffItemController
 	})
-	.state('stuff.messages', {
+	.state('stuff.my.messages', {
 		url: '/messages',
 		templateUrl: 'templates/partial-home-messages.html',
-		controller: MessagesController,
-		resolve: {
-			authenticated: ['authenticator', function (authenticated) {
-				return authenticated;
-			}]
-		}
+		controller: MessagesController
 	})
-	.state('stuff.watchlist', {
+	.state('stuff.my.watchlist', {
 		url: '/watchlist',
 		templateUrl: 'templates/partial-home-watchlist.html',
-		controller: WatchlistController,
-		resolve: {
-			authenticated: ['authenticator', function (authenticated) {
-				return authenticated;
-			}]
-		}
+		controller: WatchlistController
 	})
-	.state('stuff.settings', {
-		url: '/watchlist',
+	.state('stuff.my.settings', {
+		url: '/settings',
 		templateUrl: 'templates/partial-home-settings.html',
-		controller: SettingsController,
-		resolve: {
-			authenticated: ['authenticator', function (authenticated) {
-				return authenticated;
-			}]
-		}
+		controller: SettingsController
 	})
 	.state('about', {
 		url: '/about',
