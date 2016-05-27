@@ -1,9 +1,9 @@
-function GiveStuffController($scope,authenticated,$timeout, $location) {
+function GiveStuffController($scope, authenticated, $timeout, $location, $stuffTabs) {
+	$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 	if(!authenticated.res.loggedIn) {
 		$location.path('/stuff/get');
 		return;
 	}
-	$('#tab-container .stuff-tabs .give-stuff-tab a').addClass('selected');
 
 	$scope.currentStep = 1;
 	$scope.googleMapStaticUrlTest = [
@@ -118,7 +118,18 @@ function GiveStuffController($scope,authenticated,$timeout, $location) {
 	/* STEP 4 - Done! - START */
 
 	$scope.initStep4 = function() {
-		console.log('pants!');
+		setTimeout(function() {
+			requestAnimationFrame(function() {
+				$('#give-item-uploading-screen-container').css({'display':'hidden'});
+				$('#give-item-uploading-screen-container').removeClass('visible');
+			});
+		}, 250)
+		$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.latCenter).replace('{lng}', $scope.lngCenter));
+		$('#give-finished-image').css('background-image', $('#give-image-verify').css('background-image'));
+	};
+
+	$scope.editPost = function() {
+		prevStep();
 	};
 
 	/* STEP 4 - Done! -  END  */
@@ -136,12 +147,7 @@ function GiveStuffController($scope,authenticated,$timeout, $location) {
 		$scope.currentStep--;
 		$('#give-step' + $scope.currentStep).removeClass('completed').addClass('active');
 		$('#give-step' + ($scope.currentStep + 1)).removeClass('active');
-		$scope['initStep' + $scope.currentStep]();
 	}
 
 	/* Misc Functions -  END  */
-
-	$scope.$on('$destroy', function() {
-		$('#tab-container .stuff-tabs .give-stuff-tab a').removeClass('selected');
-	});
 }
