@@ -19,7 +19,7 @@ var paths = {
 gulp.task('default', ['sass', 'jade', 'js', 'images']);
 
 gulp.task('sass', function(done) {
-	gulp.src('./scss/**/**/*.scss')
+	gulp.src('./scss/**/**/*.app.scss')
 	.pipe(sass())
 	.on('error', sass.logError)
 	.pipe(gulp.dest('./www/css/'))

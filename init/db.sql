@@ -137,7 +137,7 @@ CREATE TABLE watchlist_items (
 CREATE TABLE watchlist_keys (
 	id BIGSERIAL PRIMARY KEY,
 	watchlist_item integer REFERENCES watchlist_items(id),
-	tag_id integer REFERENCES tags(id),
+	tag_id integer REFERENCES tag_names(id),
 	category_id integer REFERENCES categories(id)
 );
 

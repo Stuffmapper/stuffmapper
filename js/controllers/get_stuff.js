@@ -1,5 +1,5 @@
-function GetStuffController($scope, $http, $timeout, $userData) {
-	$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
+function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
+	$stuffTabs.init($scope, '#tab-container .stuff-tabs .get-stuff-tab a');
 	$http({
 		method: 'GET',
 		url: config.api.host + 'api/' + config.api.version + '/stuff/'
@@ -18,28 +18,19 @@ function GetStuffController($scope, $http, $timeout, $userData) {
 		$scope.toggleSwitch = function() {
 			$('.toggle-button').toggleClass('toggle-button-selected');
 		};
-		var mapAnimationTimeout;
-		var mapIsOpen = true;
+		var mapIsOpen = false;
 		$scope.toggleMap = function() {
-			if(mapAnimationTimeout) clearTimeout(mapAnimationTimeout);
 			if(mapIsOpen) {
-				requestAnimationFrame(function() {
-					$('#masonry-container').removeClass('hide-masonry-container');
-					$('#map-view').removeClass('map-view-open');
-				});
+				$('#tab-content-container').css({'pointer-events':''});
+				$('#masonry-container').removeClass('hide-masonry-container');
 			}
 			else {
-				mapAnimationTimeout = setTimeout(function() {
-					requestAnimationFrame(function() {
-						$('#map-view').addClass('map-view-open');
-					});
-				}, 250);
-				requestAnimationFrame(function() {
-					$('#masonry-container').addClass('hide-masonry-container');
-				});
+				$('#tab-content-container').css({'pointer-events':'none'});
+				$('#masonry-container').addClass('hide-masonry-container');
 			}
 			mapIsOpen = !mapIsOpen;
 		};
+		$scope.toggleMap();
 
 		$scope.initMasonry = function() {
 			$('.masonry-grid').masonry({
@@ -157,7 +148,7 @@ function GetStuffController($scope, $http, $timeout, $userData) {
 		}
 	});
 	$scope.$on("$destroy", function() {
-		$('#tab-container .stuff-tabs .get-stuff-tab a').removeClass('selected');
+		$('#tab-content-container').css({'pointer-events':''});
 		if($scope.mapbox) {
 			$scope.map.removeLayer('markers');
 		} else {

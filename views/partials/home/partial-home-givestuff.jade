@@ -36,22 +36,31 @@
 				#give-static-map1-container
 					img#give-static-map1
 				#give-image-details
-			input#give-description-title(type="text" placeholder="Title")
+			input#give-description-title(type="text" placeholder="Title" ng-model="giveItem.title")
 			h3.give-category-header Category
-			select#give-cateogry-selector.give-category-selector
-				option General
-				option Baby things
-				option Furniture
-				option Pants
+			#give-cateogry-selector-container
+				select#give-cateogry-selector.give-category-selector(ng-model="giveItem.category")
+					option General
+					option Baby things
+					option Furniture
 			.give-checkbox-container
-				input#give-checkbox.give-checkbox(type="checkbox")
+				input#give-checkbox.give-checkbox(type="checkbox" ng-model="giveItem.outside")
 				label(for="give-checkbox")
 					span This is outside -- do not contact for pickup
 				i.fa.fa-question.give-checkbox-question
 				//i.fa.fa-circle-question-o
-			textarea#give-description(name="Description" rows="8" cols="40" placeholder="Description")
+			textarea#give-description(name="Description" ng-model="giveItem.description" rows="8" cols="40" placeholder="Description")
 			button#give-description-submit(ng-click="uploadItem()") Submit 
-		li#give-step4.give-steps.animate-250 All done!
+		li#give-step4.give-steps.animate-250
+			#give-finished-map-container
+				img#give-finished-map
+			#give-finished-image
+			button#give-finished-edit-button(ng-click="editPost()") edit
+			#give-finished-title {{ giveItem.title }}
+			#give-finished-description {{ giveItem.description }}
+			#give-finished-footer
+				#give-finished-category {{ giveItem.category }}
+				#give-finished-radius {{ giveItem.outside }}
 	ul#give-stuff-tabs
 		li#give-step1-tab.give-steps-tab.active(ng-click="setGiveStep(1)") step1
 		li#give-step2-tab.give-steps-tab(ng-click="setGiveStep(2)") step2

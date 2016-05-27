@@ -13,7 +13,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		//- if not electron, do the href="/"
 		//- if electron, you have to do the fancy stuff.
 		title Stuffmapper
-		link(href="/css/style.min.css" rel="stylesheet")
+		link(href="/css/main.app.min.css" rel="stylesheet")
 		link(href="/css/font-awesome.min.css" rel="stylesheet")
 		script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U")
 		script(src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.js")
@@ -29,6 +29,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script(src="/js/all.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
+		script(id="templates/partial-home-messages.html" type="text/ng-template")
+			include ./partials/home/partial-home-messages
+		script(id="templates/partial-home-watchlist.html" type="text/ng-template")
+			include ./partials/home/partial-home-watchlist
 		script(id="templates/partial-home-givestuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-givestuff
 		script(id="templates/partial-home-mystuff.html" type="text/ng-template")
@@ -86,13 +90,13 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					span(ui-sref="stuff.my") My Stuff
 				li
 					i.fa.fa-envelope
-					span Messages
+					span(ui-sref="stuff.messages") Messages
 				li
 					i.fa.fa-clock-o
-					span Watchlist
+					span(ui-sref="stuff.watchlist") Watchlist
 				li
 					i.fa.fa-cog
-					span Settings
+					span(ui-sref="stuff.settings") Settings
 				li
 					i.fa.fa-sign-out
 					span(ng-click="logout()") Sign Out
