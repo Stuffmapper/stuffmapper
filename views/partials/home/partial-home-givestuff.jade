@@ -21,7 +21,7 @@
 					i.fa.fa-camera
 				button#give-photo-button.give-image-select-container.give-image-buttons(ng-click="getPhoto()")
 					i.fa.fa-photo
-				input#give-image-select.give-image-select(type="file" name="imageFiles")
+				input#give-image-select.give-image-select(type="file" name="file")
 		li#give-step2.give-steps.animate-250
 			#give-location-text1.give-location-text move the map around
 			i.fa.fa-location-arrow.give-location-icon
@@ -52,6 +52,7 @@
 			textarea#give-description(name="Description" ng-model="giveItem.description" rows="8" cols="40" placeholder="Description")
 			button#give-description-submit(ng-click="uploadItem()") Submit 
 		li#give-step4.give-steps.animate-250
+			#give-another-question
 			#give-finished-map-container
 				img#give-finished-map
 			#give-finished-image
@@ -61,9 +62,29 @@
 			#give-finished-footer
 				#give-finished-category {{ giveItem.category }}
 				#give-finished-radius {{ giveItem.outside }}
-	ul#give-stuff-tabs
-		li#give-step1-tab.give-steps-tab.active(ng-click="setGiveStep(1)") step1
-		li#give-step2-tab.give-steps-tab(ng-click="setGiveStep(2)") step2
-		li#give-step3-tab.give-steps-tab(ng-click="setGiveStep(3)") step3
-		li#give-step4-tab.give-steps-tab(ng-click="setGiveStep(4)") step4
-	
+	#give-stuff-tabs-container
+		#give-stuff-progress.animate-500
+		ul#give-stuff-tabs
+			li#give-step1-tab.give-steps-tab(ng-click="setGiveStep(1)")
+				.give-step-spacer
+				.give-step-main
+				.give-step-min
+				.give-step-min
+			li#give-step2-tab.give-steps-tab(ng-click="setGiveStep(2)")
+				.give-step-min
+				.give-step-min
+				.give-step-main
+				.give-step-min
+				.give-step-min
+			li#give-step3-tab.give-steps-tab(ng-click="setGiveStep(3)")
+				.give-step-min
+				.give-step-min
+				.give-step-main
+				.give-step-min
+				.give-step-min
+			li#give-step4-tab.give-steps-tab(ng-click="setGiveStep(4)")
+				.give-step-min
+				.give-step-min
+				.give-step-main
+				.give-step-spacer
+		
