@@ -1,5 +1,4 @@
 function GetItemController($scope, $http, $stateParams, $userData) {
-	console.log('asdfasdfsadf');
 	$http({
 		method: 'GET',
 		url: config.api.host + 'api/' + config.api.version + '/stuff/' + $stateParams.id
@@ -17,23 +16,45 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 		$scope.marker.addListener('click', function(e) {
 
 		});
-	});
-	$('#post-item-'+$stateParams.id).css({
-		'position': 'fixed',
-		'width': '100%',
-		'height': 'calc(100% - 45px)',
-		'left': '0px',
-		'top': '45px'
+		$('#post-item-'+$stateParams.id)
+		.clone()
+		.attr('id', 'get-item-single' + $stateParams.id)
+		.addClass('animate-250')
+		.css({
+			'position': 'absolute',
+			'top': $('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top + $('#masonry-container').position().top,
+			'left': $('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left,
+			'z-index': '10',
+			'width': $('#post-item-' + $stateParams.id).width(),
+			'height': $('#post-item-' + $stateParams.id).height()
+		})
+		.appendTo('#masonry-container');
+		requestAnimationFrame(function() {
+			$('#post-item-'+$stateParams.id).css({'opacity':0.0001});
+			$('#get-item-single'+$stateParams.id).css({
+				'position': 'absolute',
+				'width': '100%',
+				'height': 'calc(100% - 45px)',
+				'left': '0px',
+				'top': '45px'
+			});
+		});
 	});
 	$scope.$on("$destroy", function() {
-		$('#post-item-'+$stateParams.id).css({
-			'position': '',
-			'width': '',
-			'height': '',
-			'left': '',
-			'top': ''
+		$('#get-item-single'+$stateParams.id).css({
+			'position': 'absolute',
+			'top': $('#post-item-'+$stateParams.id).offset().top - $('#masonry-container').offset().top + $('#masonry-container').position().top,
+			'left': $('#post-item-'+$stateParams.id).offset().left - $('#masonry-container').offset().left,
+			'z-index': '10',
+			'width': $('#post-item-'+$stateParams.id).width(),
+			'height': $('#post-item-'+$stateParams.id).height()
 		});
-		$('#getstuff a').removeClass('selected');
+		setTimeout(function() {
+			$('#post-item-'+$stateParams.id).css({'opacity': ''});
+			requestAnimationFrame(function() {
+				$('#get-item-single'+$stateParams.id).remove();
+			});
+		}, 260);
 		$scope.marker.setMap(null);
 	});
 }
