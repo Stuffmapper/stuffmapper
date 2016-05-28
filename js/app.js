@@ -94,7 +94,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 	})
 	.state('stuff.my', {
 		url: '/my',
-		templateUrl: 'templates/partial-home-mystuff.html',
+		templateUrl: 'templates/partial-home-my.html',
 		controller: MyController,
 		resolve: {
 			authenticated: ['authenticator', function (authenticated) {
@@ -104,6 +104,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 	})
 	.state('stuff.my.items', {
 		url: '/items',
+		templateUrl: 'templates/partial-home-mystuff.html',
 		controller: MyStuffController
 	})
 	.state('stuff.my.items.item', {
