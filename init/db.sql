@@ -55,11 +55,9 @@ CREATE TABLE posts (
 	category integer REFERENCES categories(id),
 	dibbed boolean DEFAULT false,
 	dibber integer REFERENCES users(id),
-	on_the_curb boolean NOT NULL,
 	quality integer,
 	date_archived timestamp DEFAULT current_timestamp,
-	archived boolean DEFAULT false,
-	static_map_url varchar(64)
+	archived boolean DEFAULT false
 );
 
 CREATE TABLE pick_up_success (

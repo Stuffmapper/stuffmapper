@@ -1,3 +1,16 @@
+$primary-color: #82d757;
+
+/* Landfill Tracker - START */
+
+$landfill-tracker-width: 180px;
+$landfill-tracker-color-base: #6bc43c;
+$landfill-tracker-color-fold: #4e8133;
+$landfill-tracker-font-color: #ffffff;
+$landfill-tracker-font-family: Arial;
+
+/* Landfill Tracker -  END  */
+
 @import "mixins";
 @import "style";
+@import "tablet";
 @import "mobile";

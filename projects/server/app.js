@@ -1,3 +1,4 @@
+var AWS = require('aws-sdk');
 var express = require('express');
 var port = process.env.PORT || 3000;
 var path = require('path');
@@ -9,10 +10,29 @@ var methodOverride = require('method-override');
 var session = require('express-session');
 var passport = require('passport');
 var User = require('./routes/api/v1/config/user');
-
-
+var multer = require('multer');
+var multerS3 = require('multer-s3');
+AWS.config = new AWS.Config();
+AWS.config.accessKeyId = "AKIAJMOFEERD4M4HABEA";
+AWS.config.secretAccessKey = "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";
+var s3 = new AWS.S3({
+	Bucket: 'stuffmapper-v2',
+	region: 'us-west-2'
+});
 var app = express();
-
+app.use(multer({
+	storage: multerS3({
+		s3: s3,
+		bucket: 'stuffmapper-v2',
+    acl: 'public-read',
+		metadata: function (req, file, cb) {
+			cb(null, {fieldName: file.fieldname});
+		},
+		key: function (req, file, cb) {
+			cb(null, 'posts/' + Date.now().toString());
+		}
+	})
+}).single('file'));
 app.use(function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');

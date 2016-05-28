@@ -26,3 +26,13 @@
         @content;
     }
 }
+
+@mixin inverseCircleOverflow($bgColor, $borderColor, $diameter, $borderThickness) {
+	$border: $borderThickness + $diameter;
+	$fill: $border + 1;
+	background-image: -moz-radial-gradient(50% 50%,circle closest-corner,transparent 0,transparent #{$diameter}px, $borderColor #{$border}px,$bgColor #{$fill}px);
+	background-image: -webkit-radial-gradient(50% 50%, circle closest-corner, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) #{$diameter}px, $borderColor #{$border}px, $bgColor #{$fill}px);
+	background-image: -ms-radial-gradient(50% 50%, circle closest-corner, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) #{$diameter}px, $borderColor #{$border}px, $bgColor #{$fill}px);
+	background-image: -o-radial-gradient(50% 50%, circle closest-corner, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) #{$diameter}px, $borderColor #{$border}px, $bgColor #{$fill}px);
+	background-image: radial-gradient(50% 50%, circle closest-corner, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) #{$diameter}px, $borderColor #{$border}px, $bgColor #{$fill}px);
+}

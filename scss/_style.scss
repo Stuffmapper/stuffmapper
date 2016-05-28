@@ -20,22 +20,6 @@
 *                          *
 \**************************/
 
-/* Variables - START */
-
-$primary-color: #82d757;
-
-/* Landfill Tracker - START */
-
-$landfill-tracker-width: 180px;
-$landfill-tracker-color-base: #6bc43c;
-$landfill-tracker-color-fold: #4e8133;
-$landfill-tracker-font-color: #ffffff;
-$landfill-tracker-font-family: Arial;
-
-/* Landfill Tracker -  END  */
-
-/* Variables -  END  */
-
 /* Main Styling - START */
 
 html, body, #container {
@@ -214,7 +198,8 @@ body, div {
 	height: 30px;
 	line-height: 40px;
 	font-size: 30px;
-	color: white;
+	color: $primary-color;
+	background-color: #ffffff;
 	padding: 5px 10px;
 	cursor: pointer;
 }
@@ -293,7 +278,7 @@ body, div {
 }
 #tab-content {
 	height: 100%;
-	width: 350px;
+	width: 100%;
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -420,28 +405,63 @@ body, div {
 			}
 		}
 	}
-	#give-stuff-tabs {
+	#give-stuff-tabs-container {
 		margin: 0;
 		padding: 0;
 		background-color: #efefef;
 		width: 100%;
+		position: absolute;
 		height: 40px;
-		.give-steps-tab {
-			color: #3d3d3d;
-			display: inline-block;
+		#give-stuff-progress {
+			width: 100%;
 			height: 100%;
-			line-height: 40px;
-			width: calc(100% / 4);
-			font-weight: 600;
-			text-align: center;
-			&.active {
-				color: #00E5FF;
+			@include transform(translate3d(-83%, 0%, 0));
+			background-color: deepskyblue;
+			position: absolute;
+			z-index: 1;
+			&.step2-done{
+				@include transform(translate3d(-58%, 0%, 0));
 			}
-			&.complete {
-				color: $primary-color;
+			&.step3-done{
+				@include transform(translate3d(-33%, 0%, 0));
 			}
-			&.incomplete {
-				color: #902727;
+			&.step4-done{
+				@include transform(translate3d(-7%, 0%, 0));
+			}
+		}
+		#give-stuff-tabs {
+			position: absolute;
+			z-index: 2;
+			height: 100%;
+			width: 100%;
+			margin: 0 auto;
+			padding: 0;
+			.give-steps-tab {
+				position: relative;
+				color: #3d3d3d;
+				display: inline-block;
+				height: 100%;
+				width: calc(100% / 4);
+				font-weight: 600;
+				text-align: center;
+				.give-step-spacer {
+					width: 30%;
+					display: inline-block;
+					background-color: #cccccc;
+					height: 100%;
+				}
+				.give-step-min {
+					@include inverseCircleOverflow(#cccccc, rgba(0,0,0,0), 4, 0);
+					width: 15%;
+					display: inline-block;
+					height: 100%;
+				}
+				.give-step-main {
+					width: 40%;
+					@include inverseCircleOverflow(#cccccc, rgba(0,0,0,0), 10, 0);
+					display: inline-block;
+					height: 100%;
+				}
 			}
 		}
 	}
@@ -788,20 +808,20 @@ body, div {
 			@include transform(translate3d(-50%, 0%, 0));
 		}
 	}
-		#give-finished-image {
-			background-image: url("data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQA…GtvkKs3pMDsdeTJnvzmcfHnbALaoAPbXUjx1rFTV6mrsONwLweUCZKFI7+oatpWmYMNdz/9k=");
-			height: 150px;
-			background-size: contain;
-			background-position: 50% 50%;
-			background-repeat: no-repeat;
-			background-color: #3d3d3d;
-		}
-		#give-finished-edit-button {
-			height: 60px;
-			width: 100%;
-			border-radius: 0px;
-			font-size: 20px;
-		}
+	#give-finished-image {
+		background-image: url("data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQA…GtvkKs3pMDsdeTJnvzmcfHnbALaoAPbXUjx1rFTV6mrsONwLweUCZKFI7+oatpWmYMNdz/9k=");
+		height: 150px;
+		background-size: contain;
+		background-position: 50% 50%;
+		background-repeat: no-repeat;
+		background-color: #3d3d3d;
+	}
+	#give-finished-edit-button {
+		height: 60px;
+		width: 100%;
+		border-radius: 0px;
+		font-size: 20px;
+	}
 }
 
 /* Give Stuff -  END  */
