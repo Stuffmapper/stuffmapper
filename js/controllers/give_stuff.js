@@ -1,9 +1,10 @@
-function GiveStuffController($scope, authenticated, $timeout, $location, $stuffTabs) {
+function GiveStuffController($scope, authenticated,$http, $timeout, $location, $stuffTabs) {
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 	if(!authenticated.res.loggedIn) {
 		$location.path('/stuff/get');
 		return;
 	}
+	$scope.published = false;
 
 	$scope.currentStep = 1;
 	$scope.googleMapStaticUrlTest = [
@@ -83,8 +84,8 @@ function GiveStuffController($scope, authenticated, $timeout, $location, $stuffT
 	$scope.setMarker = function() {
 		$('#center-marker').addClass('dropped');
 		var mapCenter = $scope.map.getCenter();
-		$scope.latCenter = mapCenter.lat();
-		$scope.lngCenter = mapCenter.lng();
+		$scope.lat = mapCenter.lat();
+		$scope.lng = mapCenter.lng();
 		$('#center-marker').removeClass('dropped');
 		$timeout(function() {
 			requestAnimationFrame(function() {
@@ -98,7 +99,7 @@ function GiveStuffController($scope, authenticated, $timeout, $location, $stuffT
 	/* STEP 3 - Set description - START */
 
 	$scope.initStep3 = function() {
-		$('#give-static-map1').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.latCenter).replace('{lng}', $scope.lngCenter));
+		$('#give-static-map1').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
 		$('#give-image-details').css('background-image', $('#give-image-verify').css('background-image'));
 	};
 
@@ -109,9 +110,20 @@ function GiveStuffController($scope, authenticated, $timeout, $location, $stuffT
 				$('#give-item-uploading-screen-container').addClass('visible');
 			});
 		});
-		$timeout(function() {
+		var fd = new FormData();
+		fd.set('title', $scope.giveItem.title);
+		fd.set('description', $scope.giveItem.description);
+		fd.set('attended', !$scope.giveItem.outside);
+		fd.set('lat', $scope.lat);
+		fd.set('lng', $scope.lng);
+		fd.set('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
+		$http.post('/api/v1/stuff', fd, {
+			transformRequest: angular.identity,
+			headers: {'Content-Type': undefined}
+		}).success(function(data){
+			$scope.published = true;
 			nextStep();
-		}, 1000);
+		});
 	};
 
 	/* STEP 3 - Set description -  END  */
@@ -123,8 +135,8 @@ function GiveStuffController($scope, authenticated, $timeout, $location, $stuffT
 				$('#give-item-uploading-screen-container').css({'display':'hidden'});
 				$('#give-item-uploading-screen-container').removeClass('visible');
 			});
-		}, 250)
-		$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.latCenter).replace('{lng}', $scope.lngCenter));
+		}, 250);
+		$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
 		$('#give-finished-image').css('background-image', $('#give-image-verify').css('background-image'));
 	};
 
@@ -138,15 +150,17 @@ function GiveStuffController($scope, authenticated, $timeout, $location, $stuffT
 
 	function nextStep() {
 		$scope.currentStep++;
+		$('#give-stuff-progress').addClass('step'+$scope.currentStep+'-done');
 		$('#give-step' + ($scope.currentStep - 1)).addClass('completed').removeClass('active');
 		$('#give-step' + $scope.currentStep).addClass('active');
 		$scope['initStep' + $scope.currentStep]();
 	}
 
 	function prevStep() {
+		$('#give-step' + ($scope.currentStep)).removeClass('active');
+		$('#give-stuff-progress').removeClass('step'+$scope.currentStep+'-done');
 		$scope.currentStep--;
 		$('#give-step' + $scope.currentStep).removeClass('completed').addClass('active');
-		$('#give-step' + ($scope.currentStep + 1)).removeClass('active');
 	}
 
 	/* Misc Functions -  END  */

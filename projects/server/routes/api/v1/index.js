@@ -13,6 +13,16 @@ function isAuthenticated(req, res, next) {
 	res.send('unauthorized access');
 }
 
+function apiError(res, err) {
+	console.log(err);
+	res.send({
+		err : {
+			message : err,
+			redirect : false
+		}
+	});
+}
+
 var verifier = function(template, body) {
 	var templateKeys = Object.keys(template);
 	var bodyKeys = Object.keys(body);
@@ -21,10 +31,29 @@ var verifier = function(template, body) {
 //var authenticator = require('stuff_authenticator');
 
 /* STUFF MANAGEMENT - START */
-
+//select posts.title, posts.description, images.image_url from posts, images where images.post_id = posts.id;
 router.get('/stuff', function(req, res) {
-	req.db.get('stuff', function(err, result) {
-		res.json(result);
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'SELECT posts.id, posts.title, posts.description, posts.attended, posts.lat, posts.lng, ',
+			'images.image_url ',
+			'from posts, images where images.post_id = posts.id'
+		].join('');
+		client.query(query, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			res.send({
+				err: null,
+				res: result.rows
+			});
+		});
 	});
 });
 
@@ -40,20 +69,56 @@ router.get('/stuff/:userId/:id', function(req, res) {
 	});
 });
 
-router.post('/stuff', function(req, res) {
-	var stuff = [];
-	if(req.params.id <= db.users.length) {
-		var uname = db.users[req.params.id-1].uname;
-		res.json(db.stuff[uname]);
-	}
-	else {
-		res.json({
-			err: {
-				mesage : 'Error',
-				redirect : true
+router.post('/stuff', function(req, res) {// /img/uploads/
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'INSERT INTO posts ',
+			'(user_id, title, description, lat, lng, attended) ',
+			'VALUES ($1, $2, $3, $4, $5, $6) ',
+			'RETURNING id'
+		].join('');
+		var values = [
+			req.session.passport.user.id,
+			req.body.title,
+			req.body.description,
+			req.body.lat,
+			req.body.lng,
+			req.body.attended
+		];
+		client.query(query, values, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
 			}
+			var query = [
+				'INSERT INTO images ',
+				'(post_id, image_url, main) ',
+				'VALUES ($1, $2, $3)'
+			].join('');
+			var values = [
+				result.rows[0].id,
+				'/'+req.file.key,
+				true
+			];
+			client.query(query, values, function(err, result) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
+				}
+				res.send({
+					err : null,
+					res : {
+						success: true
+					}
+				});
+			});
 		});
-	}
+	});
 });
 
 router.put('/stuff/:id', isAuthenticated, function(req, res) {

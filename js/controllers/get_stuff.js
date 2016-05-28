@@ -4,7 +4,8 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 		method: 'GET',
 		url: config.api.host + 'api/' + config.api.version + '/stuff/'
 	}).success(function(data) {
-		$scope.listItems = data;
+		console.log('data', data.res);
+		$scope.listItems = data.res;
 		$scope.markers = [];
 		$scope.infowindows = [];
 		$scope.filterOptions = [
@@ -31,6 +32,23 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 			mapIsOpen = !mapIsOpen;
 		};
 		$scope.toggleMap();
+
+
+		$scope.watchSize = function() {
+			if(document.width > 768) {
+				$('#tab-content-container').css({'pointer-events':''});
+			}
+			else {
+				if(mapIsOpen) {
+					$('#tab-content-container').css({'pointer-events':''});
+				}
+				else {
+					$('#tab-content-container').css({'pointer-events':'none'});
+				}
+			}
+		};
+		$(window).resize($scope.watchSize);
+		$scope.watchSize();
 
 		$scope.initMasonry = function() {
 			$('.masonry-grid').masonry({
@@ -118,7 +136,8 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 					}
 				});
 			});
-		} else {
+		}
+		else {
 			$scope.listItems.forEach(function(e) {
 				$scope.markers.push(new google.maps.Marker({
 					position: {
@@ -131,7 +150,7 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 				var contentString = [
 					'<div style="width: 180px; height: 300px;">',
 					'   <div style="font-size: 16px">'+e.title+'</div>',
-					'   <div style="background-image: url('+e.img+');position:absolute;width: 200px; height: 270px;top:25px"></div>',
+					'   <div style="background-image: url(//cdn.stuffmapper.com'+e.image_url+');position:absolute;background-position:50% 50%;width:200px;height:270px;top:25px"></div>',
 					'</div>'
 				].join('\n');
 				$scope.infowindows.push(new google.maps.InfoWindow({

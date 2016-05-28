@@ -82,7 +82,7 @@ gulp.task('jade', function(done) {
 });
 
 gulp.task('images', function(){
-	gulp.src('./img/*', {base: './img/'})
+	gulp.src('./img/**/*', {base: './img/'})
 	.pipe(multistream(
 		gulp.dest('./projects/web/img'),
 		gulp.dest('./projects/ionic/img'),

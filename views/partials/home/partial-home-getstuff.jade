@@ -1,4 +1,5 @@
 #get-stuff-container
+	div(ui-view)
 	.search-stuff-container
 		div.toggle(ng-click='toggleSwitch();toggleMap()')
 			div.toggle-button.toggle-button-selected
@@ -8,11 +9,11 @@
 	#masonry-container.animate-250.hide-masonry-container
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
-				.list-item-img-container
-					img(src="{{ list.img }}")
-					.item-info
-						div {{ list.title }}
-				a(ui-sref="stuff.get.item({id:list.id})") {{ item.title }}
+				a(ui-sref="stuff.get.item({id:{{ list.id }}})") {{ item.title }}
+					.list-item-img-container(id="post-item-{{ list.id }}")
+						img(src="//cdn.stuffmapper.com{{ list.image_url }}")
+						.item-info
+							div {{ list.title }}
 	#filter-pane.animate-250
 		ul.filter-options
 			li(ng-repeat="options in filterOptions")
