@@ -1,7 +1,8 @@
 .watchlist-container
+	div(ui-view)
 	section.tag-container
 			ul.tag-list
-				li(ng-repeat="tag in tagNmes") {{tag}}
+				li(ng-repeat="tagname in tagnames") {{tag}}
 	.tag-form
 		input(type="text", placeholder="-->> Enter Tagname Here <<--")
 		button(type="submit") Submit
