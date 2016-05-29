@@ -11,6 +11,8 @@
 *   5. Search Bar          *
 *   6. Give Stuff          *
 *   7. About Us            *
+*		8. My Stuff            *
+*		9. Watchlist					 *
 *   X. Modal Windows       *
 *       - Steps            *
 *       - Sign In Content  *
@@ -1257,6 +1259,25 @@ body, div {
 }
 
 /* My Stuff - END */
+
+/* Watchlist - START */
+.tag-container {
+	height: 46.2em;
+	background-color: #fff;
+}
+.tag-form input {
+	text-align: center;
+	position: relative;
+	height: 3em;
+	width: 100%;
+}
+.tag-form button {
+	position: relative;
+	height: 3em;
+	width: 100%;
+}
+
+/* Watchlist - END */
 
 @media screen and (max-width: 436px) {
 	#landfill-tracker {
