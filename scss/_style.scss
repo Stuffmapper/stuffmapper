@@ -1284,10 +1284,20 @@ body, div {
 }
 
 .tag-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 	height: 100%;
-	padding: 0;
+	padding: 1em;
 	margin: 0;
+	list-style-type: none;
 	overflow: auto;
+}
+.tag-list li {
+	outline: 1px black solid;
+  height: 1em;
+  padding: .5em;
+  margin-right: 1em;
 }
 
 /* Watchlist - END */
@@ -1296,7 +1306,13 @@ body, div {
 	#landfill-tracker {
 		width: 112px;
 	}
+	#tab-content-container {
+		width: 100%;
+	}
 	#tab-container {
+		width: 100%;
+	}
+	.modal-window {
 		width: 100%;
 	}
 

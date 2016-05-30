@@ -1,4 +1,4 @@
-function WatchListController($scope, $location, authentication) {
+function WatchListController($scope, $location, authenticated) {
 	if(!authenticated.res.loggedIn) {
 		$location.path('stuff/get');
 		return;
@@ -8,17 +8,24 @@ function WatchListController($scope, $location, authentication) {
 	// 		$('#mystuff a').removeClass('selected');
 	// });
 	$scope.tagnames = [
-                    { 'tagname':'desk'},
-                    { 'tagname':'couch'},
-	                  { 'tagname':'table'},
-		                { 'tagname':'books'},
-			              { 'tagname':'electronics'},
+                    {'tagname':'desk'},
+                    {'tagname':'couch'},
+	                  {'tagname':'table'},
+		                {'tagname':'books'},
+			              {'tagname':'toys'},
+										{'tagname':'baby'},
+                    {'tagname':'phone'},
+	                  {'tagname':'shoes'},
+		                {'tagname':'art'},
+			              {'tagname':'sports'},
+										{'tagname':'education'},
+                    {'tagname':'auto'},
+	                  {'tagname':'beauty'},
+		                {'tagname':'misc'},
+			              {'tagname':'electronics'}
                     ];
 	$scope.addRow = function(){
 		$scope.tagnames.push({ 'tagname':$scope.tagname});
 		$scope.tagname='';
-	};
-	$scope.submitTagName = function() {
-
 	};
 }
