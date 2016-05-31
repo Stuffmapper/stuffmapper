@@ -119,7 +119,7 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 	.state('stuff.my.watchlist', {
 		url: '/watchlist',
 		templateUrl: 'templates/partial-home-watchlist.html',
-		controller: WatchlistController
+		controller: WatchListController
 	})
 	.state('stuff.my.settings', {
 		url: '/settings',
