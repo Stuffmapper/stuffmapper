@@ -6,3 +6,18 @@ div {{ userData.phone }}
 div {{ userData.email }}
 div {{ userData.googleConnected }}
 div {{ userData.facebookConnected }}
+
+div
+  form(name='{{formName}}', data-ng-submit='save({userData: user})')
+    h3 {{headingText}}
+    label(for='uname') User Name:
+    input(type='text', required='', data-ng-model='userData.uname')
+    label(for='fname') First Name: 
+    input(type='text', data-ng-model='userData.fname', placeholder='First Name')
+    label(for='lname') Last Name: 
+    inputn(type='text', data-ng-model='userData.lname', placeholder='Last Name')
+    label(for='phone') Phone:
+    input(type='text', data-ng-model='userData.phone', placeholder='Phone')
+    label(for='email') Email: 
+    input(type='text', data-ng-model='userData.email', placeholder='Email')
+    button(type='submit') {{buttonText}}
