@@ -51,10 +51,10 @@ CREATE TABLE posts (
 	lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
 	attended boolean NOT NULL,
-	status integer REFERENCES status(id),
-	category integer REFERENCES categories(id),
+	status_id integer REFERENCES status(id),
+	category_id integer REFERENCES categories(id),
 	dibbed boolean DEFAULT false,
-	dibber integer REFERENCES users(id),
+	dibber_id integer REFERENCES users(id),
 	quality integer,
 	date_archived timestamp DEFAULT current_timestamp,
 	archived boolean DEFAULT false
@@ -108,7 +108,8 @@ CREATE TABLE conversations (
 CREATE TABLE messages (
 	id BIGSERIAL PRIMARY KEY,
 	user_id integer REFERENCES users(id),
-	messages text NOT NULL,
+	conversation_id integer REFERENCES conversations(id),
+	message text NOT NULL,
 	date_created timestamp DEFAULT current_timestamp,
 	date_edited timestamp DEFAULT current_timestamp
 );
@@ -157,3 +158,14 @@ CREATE TABLE tracker_item (
 	tracker_action integer REFERENCES tracker_action(id),
 	tracker_time timestamp default current_timestamp
 );
+
+INSERT INTO categories (category) VALUES
+('Arts & Crafts'),
+('Books, Games, Media'),
+('Building & Garden Materials'),
+('Clothing & Accessories'),
+('Electronics'),
+('Furniture & Household'),
+('General'),
+('Kids & Babies'),
+('Recreation');

@@ -1,7 +1,7 @@
 var config = setDefaultConfig();
 var stuffMapp = angular
 .module('stuffMapp', config.modules)
-.controller("MainController", MainController)
+.controller('MainController', MainController)
 .config(appConfig)
 .factory('$userData', function() {
 	var data = { loggedIn: $('html').hasClass('loggedIn'), FirstName: '', LastName: '', email: '', userId: 0 };
@@ -137,7 +137,10 @@ function setDefaultConfig() {
 	var isIonic = $('html').hasClass('ionic');
 	var isDev = $('html').hasClass('dev') || $('html').hasClass('test');
 	var modules = ['ui.router', 'ngAnimate'];
-	if(isIonic) modules.push('ionic');
+	if(isIonic) {
+		modules.push('ionic');
+		modules.push('ngCordova');
+	}
 	return {
 		ionic : {
 			isIonic : isIonic

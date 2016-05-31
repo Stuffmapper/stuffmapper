@@ -1,7 +1,7 @@
 function GetItemController($scope, $http, $stateParams, $userData) {
 	$http({
 		method: 'GET',
-		url: config.api.host + 'api/' + config.api.version + '/stuff/' + $stateParams.id
+		url: config.api.host + 'api/' + config.api.version + '/stuff/id/' + $stateParams.id
 	}).then(function(data) {
 		$scope.listItem = data.data[0];
 		$scope.marker = {};
@@ -11,7 +11,8 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 				lng : $scope.listItem.lng
 			},
 			icon: '/img/circle.png',
-			map: $scope.map
+			map: $scope.map,
+			data: $scope.listItem.id
 		});
 		$scope.marker.addListener('click', function(e) {
 
@@ -30,17 +31,19 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 		})
 		.appendTo('#masonry-container');
 		requestAnimationFrame(function() {
-			$('#post-item-'+$stateParams.id).css({'opacity':0.0001});
-			$('#get-item-single'+$stateParams.id).css({
-				'position': 'absolute',
-				'width': '100%',
-				'height': 'calc(100% - 45px)',
-				'left': '0px',
-				'top': '45px'
+			requestAnimationFrame(function() {
+				$('#post-item-'+$stateParams.id).css({'opacity':0.0001});
+				$('#get-item-single'+$stateParams.id).css({
+					'position': 'absolute',
+					'width': '100%',
+					'height': 'calc(100% - 45px)',
+					'left': '0px',
+					'top': '45px'
+				});
 			});
 		});
 	});
-	$scope.$on("$destroy", function() {
+	$scope.$on('$destroy', function() {
 		$('#get-item-single'+$stateParams.id).css({
 			'position': 'absolute',
 			'top': $('#post-item-'+$stateParams.id).offset().top - $('#masonry-container').offset().top + $('#masonry-container').position().top,
@@ -52,9 +55,11 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 		setTimeout(function() {
 			$('#post-item-'+$stateParams.id).css({'opacity': ''});
 			requestAnimationFrame(function() {
-				$('#get-item-single'+$stateParams.id).remove();
+				requestAnimationFrame(function() {
+					$('#get-item-single'+$stateParams.id).remove();
+				});
 			});
-		}, 260);
+		}, 250);
 		$scope.marker.setMap(null);
 	});
 }

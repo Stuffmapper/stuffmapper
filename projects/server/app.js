@@ -13,8 +13,8 @@ var User = require('./routes/api/v1/config/user');
 var multer = require('multer');
 var multerS3 = require('multer-s3');
 AWS.config = new AWS.Config();
-AWS.config.accessKeyId = "AKIAJMOFEERD4M4HABEA";
-AWS.config.secretAccessKey = "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";
+AWS.config.accessKeyId = 'AKIAJMOFEERD4M4HABEA';
+AWS.config.secretAccessKey = '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';
 var s3 = new AWS.S3({
 	Bucket: 'stuffmapper-v2',
 	region: 'us-west-2'

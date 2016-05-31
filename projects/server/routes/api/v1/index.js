@@ -31,7 +31,6 @@ var verifier = function(template, body) {
 //var authenticator = require('stuff_authenticator');
 
 /* STUFF MANAGEMENT - START */
-//select posts.title, posts.description, images.image_url from posts, images where images.post_id = posts.id;
 router.get('/stuff', function(req, res) {
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
@@ -40,9 +39,9 @@ router.get('/stuff', function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended, posts.lat, posts.lng, ',
+			'SELECT posts.id, posts.title, posts.description, posts.attended, posts.lat, posts.lng, categories.category ',
 			'images.image_url ',
-			'from posts, images where images.post_id = posts.id'
+			'from posts, images, categories WHERE images.post_id = posts.id AND categories.id = posts.category_id'
 		].join('');
 		client.query(query, function(err, result) {
 			if(err) {
@@ -53,23 +52,76 @@ router.get('/stuff', function(req, res) {
 				err: null,
 				res: result.rows
 			});
+			client.end();
 		});
 	});
 });
 
-router.get('/stuff/:id', function(req, res) {
-	req.db.get('stuff', {}, { id : req.params.id }, function(err, result) {
-		res.json(result);
+router.get('/stuff/id/:id', function(req, res) {
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'SELECT posts.id, posts.title, posts.description, posts.attended, posts.lat, posts.lng, categories.category, ',
+			'images.image_url from posts, images, categories WHERE ',
+			'images.post_id = posts.id AND posts.id = $1 AND categories.id = posts.category_id'
+		].join('');
+		var values = [
+			req.params.id
+		];
+		client.query(query, values, function(err, result) {
+			console.log(result);
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			res.send({
+				err: null,
+				res: result.rows[0]
+			});
+			client.end();
+		});
 	});
 });
 
-router.get('/stuff/:userId/:id', function(req, res) {
-	req.db.get('stuff', {}, { userId : req.params.userId, id: req.params.id }, function(err, result) {
-		res.json(result);
+router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
+	var id = req.params.id;
+	var user = req.session.passport.user.id;
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'SELECT posts.id, posts.title, posts.description, posts.attended, posts.lat, posts.lng, categories.category, ',
+			'images.image_url FROM posts, images, categories WHERE ',
+			'images.post_id = posts.id AND posts.user_id = $1 AND posts.id = $2 AND categories.id = posts.category_id'
+		].join('');
+		var values = [
+			user,
+			id
+		];
+		client.query(query, values, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			res.send({
+				err: null,
+				res: result.rows[0]
+			});
+			client.end();
+		});
 	});
 });
+router.get('/stuff/bounds/:nwlat/:nwlng/:nelat/:nelng/:swlat/:swlng/:selat/:selng', function(req, res) {
 
-router.post('/stuff', function(req, res) {// /img/uploads/
+});
+router.post('/stuff', isAuthenticated, function(req, res) {// /img/uploads/
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
 		if(err) {
@@ -78,8 +130,8 @@ router.post('/stuff', function(req, res) {// /img/uploads/
 		}
 		var query = [
 			'INSERT INTO posts ',
-			'(user_id, title, description, lat, lng, attended) ',
-			'VALUES ($1, $2, $3, $4, $5, $6) ',
+			'(user_id, title, description, lat, lng, attended, category_id) ',
+			'VALUES ($1, $2, $3, $4, $5, $6, $7) ',
 			'RETURNING id'
 		].join('');
 		var values = [
@@ -88,7 +140,8 @@ router.post('/stuff', function(req, res) {// /img/uploads/
 			req.body.description,
 			req.body.lat,
 			req.body.lng,
-			req.body.attended
+			req.body.attended,
+			req.body.category
 		];
 		client.query(query, values, function(err, result) {
 			if(err) {
@@ -116,12 +169,13 @@ router.post('/stuff', function(req, res) {// /img/uploads/
 						success: true
 					}
 				});
+				client.end();
 			});
 		});
 	});
 });
 
-router.put('/stuff/:id', isAuthenticated, function(req, res) {
+router.put('/stuff/id/:id', isAuthenticated, function(req, res) {
 	var stuff = [];
 	if(req.params.id <= db.users.length) {
 		var uname = db.users[req.params.id-1].uname;
@@ -137,7 +191,7 @@ router.put('/stuff/:id', isAuthenticated, function(req, res) {
 	}
 });
 
-router.delete('/stuff/:id', isAuthenticated, function(req, res) {
+router.delete('/stuff/id/:id', isAuthenticated, function(req, res) {
 	var stuff = [];
 	if(req.params.id <= db.users.length) {
 		var uname = db.users[req.params.id-1].uname;
@@ -154,6 +208,44 @@ router.delete('/stuff/:id', isAuthenticated, function(req, res) {
 });
 
 /* STUFF MANAGEMENT -  END  */
+
+/* CATEGORIES - START */
+
+router.get('/categories', function(req, res) {
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = 'SELECT * FROM categories';
+		client.query(query, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			res.send({
+				err: null,
+				res: result.rows
+			});
+			return client.end();
+		});
+	});
+});
+
+router.get('/category/name/:name', function(req, res) {
+
+});
+
+router.get('/category/id/:id', function(req, res) {
+
+});
+
+router.post('/category', isAuthenticated, function(req, res) {
+
+});
+
+/* CATEGORIES -  END  */
 
 /* BASIC USER MANAGEMENT - START */
 
@@ -306,11 +398,52 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 /* MESSAGING MANAGEMENT - START */
 
 router.get('/messages', isAuthenticated, function(req, res) {
-
+	var query = [
+		'SELECT messages.message, users.uname, messages.date_created FROM messages ORDER BY date_created DESC LIMIT 1, ',
+		'conversations ORDER BY date_created DESC LIMIT 15, users ',
+		'WHERE users.id = messages.user_id AND ',
+		'conversations.id = messages.conversation_id AND ',
+		'users.id = $1'
+	].join('');
+	var values = [
+		req.session.passport.user.id
+	];
+	queryServer(res, query, value, function(result) {
+		res.send({
+			err: null,
+			res: result
+		});
+	});
 });
-
+//creates conversation
 router.post('/messages', isAuthenticated, function(req, res) {
-
+	var query = [
+		'INSERT INTO'
+	].join('');
+	var values = [
+		req.session.passport.user.id
+	];
+	queryServer(res, query, value, function(result) {
+		res.send({
+			err: null,
+			res: result
+		});
+	});
+});
+//adds message to conversation
+router.post('/messages/:id', isAuthenticated, function(req, res) {
+	var query = [
+		'INSERT INTO'
+	].join('');
+	var values = [
+		req.session.passport.user.id
+	];
+	queryServer(res, query, value, function(result) {
+		res.send({
+			err: null,
+			res: result
+		});
+	});
 });
 
 router.put('/messages/:id', isAuthenticated, function(req, res) {
@@ -347,5 +480,33 @@ router.delete('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
 });
 
 /* WATCHLIST MANAGEMENT -  END  */
+
+
+
+
+function queryServer(res, query, value, cb) {
+	var client = new pg.Client(conString);
+	var body = req.body;
+	client.connect(function(err) {
+		if(err) {
+			client.end();
+			return;
+		}
+		client.query(query, values, function(err, result) {
+			if(err) {
+				res.send({
+					err : {
+						message : err,
+						redirect : false
+					}
+				});
+				client.end();
+			}
+			client.end();
+			cb(result);
+		});
+	});
+}
+
 
 module.exports = router;
