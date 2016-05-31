@@ -39,9 +39,9 @@ router.get('/stuff', function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended, posts.lat, posts.lng, categories.category ',
+			'SELECT posts.id, posts.title, posts.description, posts.attended, posts.lat, posts.lng, categories.category, ',
 			'images.image_url ',
-			'from posts, images, categories WHERE images.post_id = posts.id AND categories.id = posts.category_id'
+			'FROM posts, images, categories WHERE images.post_id = posts.id AND categories.id = posts.category_id'
 		].join('');
 		client.query(query, function(err, result) {
 			if(err) {
@@ -73,7 +73,6 @@ router.get('/stuff/id/:id', function(req, res) {
 			req.params.id
 		];
 		client.query(query, values, function(err, result) {
-			console.log(result);
 			if(err) {
 				apiError(res, err);
 				return client.end();
@@ -415,28 +414,20 @@ router.get('/messages', isAuthenticated, function(req, res) {
 		});
 	});
 });
-//creates conversation
+
 router.post('/messages', isAuthenticated, function(req, res) {
+	var body = req.body;
 	var query = [
-		'INSERT INTO'
+		'INSERT INTO messages(messages.user_id, messages.conversation_id, messages.message) ',
+		'values($1, $2, $3) WHERE conversations.id = $2 AND ',
+		'(conversations.lister_id = $1 OR conversations.dibber_id = $1) AND ',
+		'conversations.date_created = $3'
 	].join('');
 	var values = [
-		req.session.passport.user.id
-	];
-	queryServer(res, query, value, function(result) {
-		res.send({
-			err: null,
-			res: result
-		});
-	});
-});
-//adds message to conversation
-router.post('/messages/:id', isAuthenticated, function(req, res) {
-	var query = [
-		'INSERT INTO'
-	].join('');
-	var values = [
-		req.session.passport.user.id
+		req.session.passport.user.id,
+		body.conversation_id,
+		body.message,
+		body.date_created
 	];
 	queryServer(res, query, value, function(result) {
 		res.send({

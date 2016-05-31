@@ -2,8 +2,8 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 	$http({
 		method: 'GET',
 		url: config.api.host + 'api/' + config.api.version + '/stuff/id/' + $stateParams.id
-	}).then(function(data) {
-		$scope.listItem = data.data[0];
+	}).success(function(data) {
+		$scope.listItem = data.res;
 		$scope.marker = {};
 		$scope.marker = new google.maps.Marker({
 			position: {
@@ -14,6 +14,7 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 			map: $scope.map,
 			data: $scope.listItem.id
 		});
+		$scope.map.panTo(new google.maps.LatLng($scope.listItem.lat, $scope.listItem.lng));
 		$scope.marker.addListener('click', function(e) {
 
 		});
@@ -40,6 +41,11 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 					'left': '0px',
 					'top': '45px'
 				});
+				$('#get-item-single'+$stateParams.id + ' .item-info').addClass('get-single-item-info').append([
+					'<h3 class="get-single-item-description hidden animate-250">'+$scope.listItem.description+'</h3>'
+				].join('\n'));
+				$('#get-item-single'+$stateParams.id).append('<button class="get-single-item-dibs-button">Dibs!</button>');
+
 			});
 		});
 	});

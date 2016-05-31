@@ -30,7 +30,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script(src="https://use.typekit.net/lrm3jdv.js")
 		script.
 			try{Typekit.load({ async: true });}catch(e){}
-			console.log(location);
 		script(src="/js/all.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
@@ -69,7 +68,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									span.social-sign-in-icon.social-sign-in-icon-google
 										i.fa.fa-google-plus
 									span.social-sign-in-text Sign in with Google
-								button.sign-in-up-input.social-button.facebook-sign-in(href="//localhost:3000/api/v1/account/login/facebook" target="_self")
+								a.sign-in-up-input.social-button.facebook-sign-in(href="//localhost:3000/api/v1/account/login/facebook" target="_self")
 									span.social-sign-in-icon.social-sign-in-icon-facebook
 										i.fa.fa-facebook
 									span.social-sign-in-text Sign in with Facebook

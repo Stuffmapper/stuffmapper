@@ -130,7 +130,6 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 	};
 	$scope.toggleMap();
 	$scope.watchSize = function() {
-		console.log('asdf');
 		if(document.width > 768) $('#tab-content-container').css({'pointer-events':''});
 		else {
 			if(mapIsOpen) $('#tab-content-container').css({'pointer-events':''});

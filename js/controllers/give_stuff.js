@@ -137,13 +137,6 @@ function GiveStuffController($scope, authenticated,$http, $timeout, $location, $
 			fd.set('lng', $scope.lng);
 			fd.set('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
 			fd.set('category', $('#give-category-selector').val());
-			console.log('title', $scope.giveItem.title);
-			console.log('description', $scope.giveItem.description);
-			console.log('attended', !$scope.giveItem.outside);
-			console.log('lat', $scope.lat);
-			console.log('lng', $scope.lng);
-			console.log('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
-			console.log('category', $('#give-category-selector').val());
 			$http.post('/api/v1/stuff', fd, {
 				transformRequest: angular.identity,
 				headers: {'Content-Type': undefined}
@@ -189,6 +182,7 @@ function GiveStuffController($scope, authenticated,$http, $timeout, $location, $
 			$scope.currentStep--;
 			$('#give-step' + $scope.currentStep).removeClass('completed').addClass('active');
 		}
+
 		/* Misc Functions -  END  */
 		$scope.$on('$destroy', function() {
 			$(window).off('resize', watchSize);

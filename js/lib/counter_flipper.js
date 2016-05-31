@@ -96,10 +96,6 @@ var CounterFlipper = (function() {
 		else {
 			self.ready = false;
 			self.updateQueue = [];
-			console.log(document.readyState);
-			setTimeout(function(){
-				console.log(document.readyState);
-			}, 1000);
 			if(document.readyState === "complete") {
 				self.id = id;
 				self.ele = document.getElementById(id);

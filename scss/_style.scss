@@ -217,6 +217,22 @@ body, div {
 	position: absolute;
 }
 
+.list-item-img-container {
+	background-color: #ffffff;
+}
+
+.get-single-item-dibs-button {
+	width: 96%;
+	margin: 2%;
+	height: 40px;
+	font-size: 20px;
+	background-color: #F99953;
+	border-radius: 3px;
+	border: none;
+	position: absolute;
+	bottom: 0px;
+}
+
 
 /* Tabs - START */
 
@@ -650,8 +666,8 @@ body, div {
 	#give-location-container{
 		background-color: #CCCCCC;
 		height: calc(100% - 50px);
-    position: relative;
-    display: block;
+		position: relative;
+		display: block;
 		#give-location-text1 {
 			top: calc(50% - 100px);
 		}
@@ -824,7 +840,6 @@ body, div {
 		}
 	}
 	#give-finished-image {
-		background-image: url("data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQA…GtvkKs3pMDsdeTJnvzmcfHnbALaoAPbXUjx1rFTV6mrsONwLweUCZKFI7+oatpWmYMNdz/9k=");
 		height: 150px;
 		background-size: contain;
 		background-position: 50% 50%;
@@ -1308,9 +1323,9 @@ body, div {
 }
 .tag-list li {
 	outline: 1px black solid;
-  height: 1em;
-  padding: .5em;
-  margin-right: 1em;
+	height: 1em;
+	padding: .5em;
+	margin-right: 1em;
 	color: rgb(220, 66, 80);
 }
 

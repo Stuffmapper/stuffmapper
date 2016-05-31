@@ -102,7 +102,10 @@ CREATE TABLE conversations (
 	id BIGSERIAL PRIMARY KEY,
 	post_id integer REFERENCES posts(id),
 	date_created timestamp DEFAULT current_timestamp,
-	date_edited timestamp DEFAULT current_timestamp
+	date_edited timestamp DEFAULT current_timestamp,
+	lister_id integer REFERENCES users(id),
+	dibber_id integer REFERENCES users(id),
+	archived boolean DEFAULT false
 );
 
 CREATE TABLE messages (
@@ -111,14 +114,9 @@ CREATE TABLE messages (
 	conversation_id integer REFERENCES conversations(id),
 	message text NOT NULL,
 	date_created timestamp DEFAULT current_timestamp,
-	date_edited timestamp DEFAULT current_timestamp
-);
-
-CREATE TABLE last_message_read (
-	id BIGSERIAL PRIMARY KEY,
-	message_read integer REFERENCES messages(id),
-	user_id integer REFERENCES users(id),
-	conversation_id integer REFERENCES conversations(id)
+	date_edited timestamp DEFAULT current_timestamp,
+	read boolean DEFAULT false,
+	archived boolean DEFAULT false
 );
 
 CREATE TABLE watchlist (
