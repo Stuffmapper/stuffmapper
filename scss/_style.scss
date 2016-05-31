@@ -11,6 +11,8 @@
 *   5. Search Bar          *
 *   6. Give Stuff          *
 *   7. About Us            *
+*		8. My Stuff            *
+*		9. Watchlist					 *
 *   X. Modal Windows       *
 *       - Steps            *
 *       - Sign In Content  *
@@ -1271,6 +1273,49 @@ body, div {
 
 /* My Stuff - END */
 
+/* Watchlist - START */
+.watchlist-container {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+.tag-container {
+	background-color: #fff;
+	height: calc(100% - 5.4em);
+}
+.tag-form input {
+	text-align: center;
+	position: relative;
+	height: 3em;
+	width: calc(100% - 4px);
+}
+
+.tag-form button {
+	position: relative;
+	height: 3em;
+	width: 100%;
+}
+
+.tag-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	height: 100%;
+	padding: 1em;
+	margin: 0;
+	list-style-type: none;
+	overflow: auto;
+}
+.tag-list li {
+	outline: 1px black solid;
+  height: 1em;
+  padding: .5em;
+  margin-right: 1em;
+	color: rgb(220, 66, 80);
+}
+
+/* Watchlist - END */
+
 @media screen and (max-width: 436px) {
 	.modal-window {
 		width: 100%;
@@ -1287,7 +1332,13 @@ body, div {
 	#landfill-tracker {
 		width: 112px;
 	}
+	#tab-content-container {
+		width: 100%;
+	}
 	#tab-container {
+		width: 100%;
+	}
+	.modal-window {
 		width: 100%;
 	}
 
@@ -1359,28 +1410,6 @@ body, div {
 		@include transform(translate3d(0px, 100%, 0));
 	}
 
-	#masonry-container ul {
-		display: inline-block;
-		width: 100%;
-		height: 100%;
-		overflow: auto;
-		list-style: none;
-		padding: 0;
-	}
-
-	#masonry-container ul li a {
-		width: 100%;
-		height: 100%;
-		position: absolute;
-		left: 0px;
-		top: 0px;
-	}
-	#masonry-container ul li img {
-		width: 100%;
-		position: relative;
-		display: inline-block;
-	}
-
 	#map-view-container {
 		width: 100%;
 		#map-view {
@@ -1433,6 +1462,15 @@ body, div {
 	}
 
 	/* About Us - END */
+
+	/* Watchlist - START */
+	.tag-list {
+		height: 24.8em;
+		padding: 0;
+		margin: 0;
+	}
+
+	/* Watchlist - END */
 
 }
 
