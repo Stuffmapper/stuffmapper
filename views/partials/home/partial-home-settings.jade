@@ -1,7 +1,7 @@
 div.settings 
 	h1 Settings
 	form.settings-form(name='{{formName}}', data-ng-submit='save({userData: users})')
-		ul
+		ul(data-ng-cloak)
 			li
 				label(for='uname') Username: 
 				input(type='text', data-ng-model='userData.uname', placeholder='{{ userData.uname }}')
@@ -13,7 +13,7 @@ div.settings
 				input(type='text', data-ng-model='userData.lname', placeholder='{{ userData.lname }}')
 			li
 				label(for='phone_number') Phone: 
-				input(type='text', data-ng-model='userData.phone_number', placeholder='{{ userData.phone_number }}')
+				input(type='text', data-ng-model='userData.phone', placeholder='{{ userData.phone }}')
 			li
 				label(for='email') Email: 
 				input(type='text', data-ng-model='userData.email', placeholder='{{ userData.email }}')
@@ -32,4 +32,4 @@ div.settings
 			li
 				label(for='country') Country: 
 				input(type='text', data-ng-model='userData.country', placeholder='{{ userData.country }}')
-	button(type='submit') Submit
+	button(type='submit' data-ng-click='userData.editing = true') Submit
