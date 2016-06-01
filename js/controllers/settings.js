@@ -12,6 +12,11 @@ function SettingsController($scope, $http) {
 			lname : 'lastname',
 			email : 'email',
 			phone : 'phone_number',
+			address	:	'address',
+			city : 'city',
+			state	:	'state',
+			zipcode	:	'zipcode',
+			country	:	'country',
 			googleConnected : false,
 			facebookConnected : true
 		};
@@ -24,7 +29,18 @@ function SettingsController($scope, $http) {
 		$scope.userData = data.res;
 	});
 	// Editing user data
-	
+	//
+	// $scope.update = function(userData) {
+	// userData.editing = false;
+	// $http.put('/api/userData/' + userData._id, userData)
+	// 	.then(function(res) {
+	// 		console.log('this user has a been modified');
+	// 	}, function(err) {
+	// 		$scope.errors.push('could not get user: ' + userData.name);
+	// 		console.log(err.data);
+	// 	});
+	// };
+	//
 	// $scope.edit = function(userData) {
 	// $scope.orig = angular.copy(userData);
 	// userData.editing = true;
@@ -38,7 +54,7 @@ function SettingsController($scope, $http) {
   //   return {
   //     restrict: 'AC',
   //     replace: true,
-  //     templateUrl: '/templates/partial-home-settings.html',
+  //     templateUrl: 'templates/partial-home-settings.html',
   //     transclude: true,
   //     scope: {
   //       formName: '@',

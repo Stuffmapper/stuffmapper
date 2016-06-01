@@ -32,4 +32,10 @@ div.settings
 			li
 				label(for='country') Country: 
 				input(type='text', data-ng-model='userData.country', placeholder='{{ userData.country }}')
-	button(type='submit' data-ng-click='userData.editing = true') Submit
+			li
+				label(for='googleConnected') Google+: 
+				input(type='checkbox', data-ng-model='userData.googleConnected')
+			li
+				label(for='facebookConnected') Facebook: 
+				input(type='checkbox', data-ng-model='userData.facebookConnected')
+	button(type='submit', data-ng-if="!userData.editing", data-ng-click='userData.editing = true', data-save='update(userData)') Submit
