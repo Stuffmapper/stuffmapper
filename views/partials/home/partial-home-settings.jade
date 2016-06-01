@@ -1,23 +1,34 @@
-div settings
-div {{ userData.uname }}
-div {{ userData.fname }}
-div {{ userData.lname }}
-div {{ userData.phone }}
-div {{ userData.email }}
-div {{ userData.googleConnected }}
-div {{ userData.facebookConnected }}
-
-div
-  form(name='{{formName}}', data-ng-submit='save({userData: user})')
+div.settings Settings
+  form(name='{{formName}}', data-ng-submit='save({userData: users})')
     h3 {{headingText}}
-    label(for='uname') User Name:
-    input(type='text', required='', data-ng-model='userData.uname')
+    label(for='uname') Username: 
+    input(type='text', data-ng-model='userData.uname', placeholder='{{ userData.uname }}')
+    br
     label(for='fname') First Name: 
-    input(type='text', data-ng-model='userData.fname', placeholder='First Name')
+    input(type='text', data-ng-model='userData.fname', placeholder='{{ userData.fname }}')
+    br
     label(for='lname') Last Name: 
-    inputn(type='text', data-ng-model='userData.lname', placeholder='Last Name')
-    label(for='phone') Phone:
-    input(type='text', data-ng-model='userData.phone', placeholder='Phone')
+    input(type='text', data-ng-model='userData.lname', placeholder='{{ userData.lname }}')
+    br
+    label(for='phone_number') Phone: 
+    input(type='text', data-ng-model='userData.phone_number', placeholder='{{ userData.phone_number }}')
+    br
     label(for='email') Email: 
-    input(type='text', data-ng-model='userData.email', placeholder='Email')
-    button(type='submit') {{buttonText}}
+    input(type='text', data-ng-model='userData.email', placeholder='{{ userData.email }}')
+    br
+    label(for='address') Address: 
+    input(type='text', data-ng-model='userData.address', placeholder='{{ userData.address }}')
+    br
+    label(for='city') City: 
+    input(type='text', data-ng-model='userData.city', placeholder='{{ userData.city }}')
+    br
+    label(for='state') State: 
+    input(type='text', data-ng-model='userData.state', placeholder='{{ userData.state }}')
+    br
+    label(for='zipcode') Zipcode: 
+    input(type='text', data-ng-model='userData.zipcode', placeholder='{{ userData.zipcode }}')
+    br
+    label(for='country') Country: 
+    input(type='text', data-ng-model='userData.country', placeholder='{{ userData.country }}')
+    br
+    button(type='submit') Submit
