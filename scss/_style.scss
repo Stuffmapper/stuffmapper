@@ -13,6 +13,7 @@
 *   7. About Us            *
 *		8. My Stuff            *
 *		9. Watchlist					 *
+*	 10. Settings						 *
 *   X. Modal Windows       *
 *       - Steps            *
 *       - Sign In Content  *
@@ -1303,6 +1304,60 @@ body, div {
 
 /* Watchlist - END */
 
+/* Settings - Start */
+
+.settings-form {
+    padding: 1em;
+		font-size: .9em;
+}
+
+.settings-form ul {
+    width:750px;
+    list-style-type:none;
+    list-style-position:outside;
+    margin:0px;
+    padding:0px;
+}
+.settings-form li{
+    padding:12px;
+    position:relative;
+}
+.settings-form label {
+    width:5.2em;
+    margin-top: 3px;
+    display:inline-block;
+    float:left;
+    padding:3px;
+}
+.settings-form input {
+    height:1.3em;
+    width:15em;
+}
+.settings-form textarea {
+  padding:8px; width:50%;
+}
+.settings-form input:focus, .settings-form textarea:focus {
+    background: #fff;
+    border:1px solid #555;
+    box-shadow: 0 0 3px #aaa;
+}
+.settings {
+	background-color: #fff;
+}
+.settings h1 {
+	font-size: 1em;
+	font-weight: normal;
+	text-align: center;
+}
+.settings button {
+  border: 1px solid;
+  height: 2.5em;
+	width: 100%;
+	cursor: pointer;
+}
+
+/* Settings - End */
+
 @media screen and (max-width: 436px) {
 	#landfill-tracker {
 		width: 112px;
@@ -1446,6 +1501,20 @@ body, div {
 	}
 
 	/* Watchlist - END */
+
+	/* Settings - Start */
+
+	.settings-form {
+			font-size: .9em;
+	}
+	.settings h1 {
+		height: 100%;
+	}
+	.settings-form li {
+		padding: .527em;
+	}
+
+	/* Settings - End */
 
 }
 

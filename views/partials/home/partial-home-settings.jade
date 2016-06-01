@@ -1,34 +1,35 @@
-div.settings Settings
-  form(name='{{formName}}', data-ng-submit='save({userData: users})')
-    h3 {{headingText}}
-    label(for='uname') Username: 
-    input(type='text', data-ng-model='userData.uname', placeholder='{{ userData.uname }}')
-    br
-    label(for='fname') First Name: 
-    input(type='text', data-ng-model='userData.fname', placeholder='{{ userData.fname }}')
-    br
-    label(for='lname') Last Name: 
-    input(type='text', data-ng-model='userData.lname', placeholder='{{ userData.lname }}')
-    br
-    label(for='phone_number') Phone: 
-    input(type='text', data-ng-model='userData.phone_number', placeholder='{{ userData.phone_number }}')
-    br
-    label(for='email') Email: 
-    input(type='text', data-ng-model='userData.email', placeholder='{{ userData.email }}')
-    br
-    label(for='address') Address: 
-    input(type='text', data-ng-model='userData.address', placeholder='{{ userData.address }}')
-    br
-    label(for='city') City: 
-    input(type='text', data-ng-model='userData.city', placeholder='{{ userData.city }}')
-    br
-    label(for='state') State: 
-    input(type='text', data-ng-model='userData.state', placeholder='{{ userData.state }}')
-    br
-    label(for='zipcode') Zipcode: 
-    input(type='text', data-ng-model='userData.zipcode', placeholder='{{ userData.zipcode }}')
-    br
-    label(for='country') Country: 
-    input(type='text', data-ng-model='userData.country', placeholder='{{ userData.country }}')
-    br
-    button(type='submit') Submit
+div.settings 
+	h1 Settings
+	form.settings-form(name='{{formName}}', data-ng-submit='save({userData: users})')
+		ul
+			li
+				label(for='uname') Username: 
+				input(type='text', data-ng-model='userData.uname', placeholder='{{ userData.uname }}')
+			li
+				label(for='fname') First Name: 
+				input(type='text', data-ng-model='userData.fname', placeholder='{{ userData.fname }}')
+			li
+				label(for='lname') Last Name: 
+				input(type='text', data-ng-model='userData.lname', placeholder='{{ userData.lname }}')
+			li
+				label(for='phone_number') Phone: 
+				input(type='text', data-ng-model='userData.phone_number', placeholder='{{ userData.phone_number }}')
+			li
+				label(for='email') Email: 
+				input(type='text', data-ng-model='userData.email', placeholder='{{ userData.email }}')
+			li
+				label(for='address') Address: 
+				input(type='text', data-ng-model='userData.address', placeholder='{{ userData.address }}')
+			li
+				label(for='city') City: 
+				input(type='text', data-ng-model='userData.city', placeholder='{{ userData.city }}')
+			li
+				label(for='state') State: 
+				input(type='text', data-ng-model='userData.state', placeholder='{{ userData.state }}')
+			li
+				label(for='zipcode') Zipcode: 
+				input(type='text', data-ng-model='userData.zipcode', placeholder='{{ userData.zipcode }}')
+			li
+				label(for='country') Country: 
+				input(type='text', data-ng-model='userData.country', placeholder='{{ userData.country }}')
+	button(type='submit') Submit
