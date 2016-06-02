@@ -124,7 +124,7 @@ gulp.task('js', function(done) {
 		gulp.dest('./projects/web/js'),
 		gulp.dest('./projects/electron/js')
 	));
-	gulp.src('./js/lib/ionic/**/*', {base: './js/lib/'})
+	gulp.src(['./js/lib/ionic/**/*','./js/lib/ngCordova/dist/*.js'], {base: './js/lib/'})
 	.pipe(gulp.dest('./projects/ionic/lib/'));
 });
 

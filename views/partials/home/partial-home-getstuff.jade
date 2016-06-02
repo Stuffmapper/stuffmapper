@@ -11,8 +11,8 @@
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
 				a(ui-sref="stuff.get.item({id:{{ list.id }}})") {{ item.title }}
 					.list-item-img-container(id="post-item-{{ list.id }}")
-						img(src="//cdn.stuffmapper.com{{ list.image_url }}")
-						.item-info
+						img(ng-attr-src="//cdn.stuffmapper.com{{ list.image_url }}")
+						.get-stuff-item-info
 							div {{ list.title }}
 	#filter-pane.animate-250
 		ul.filter-options
