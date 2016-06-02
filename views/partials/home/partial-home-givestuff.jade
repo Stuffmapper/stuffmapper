@@ -23,9 +23,10 @@
 					i.fa.fa-photo
 				input#give-image-select.give-image-select(type="file" name="file")
 		li#give-step2.give-steps.animate-250
-			#give-location-text1.give-location-text move the map around
-			i.fa.fa-location-arrow.give-location-icon
-			#give-location-text2.give-location-text to set the pick up location
+			#give-location-container
+				#give-location-text1.give-location-text move the map around
+				i.fa.fa-location-arrow.give-location-icon
+				#give-location-text2.give-location-text to set the pick up location
 			button#give-location-next-step(ng-click="setMarker()") Next Step
 		li#give-step3.give-steps.animate-250
 			#give-item-uploading-screen-container.animate-250
@@ -38,17 +39,14 @@
 				#give-image-details
 			input#give-description-title(type="text" placeholder="Title" ng-model="giveItem.title")
 			h3.give-category-header Category
-			#give-cateogry-selector-container
-				select#give-cateogry-selector.give-category-selector(ng-model="giveItem.category")
-					option General
-					option Baby things
-					option Furniture
+			#give-category-selector-container
+				select#give-category-selector.give-category-selector(ng-model="category" ng-options="v.value as v.name for v in categories track by v.value")
+					option(value="" selected="selected") Choose a Category...
 			.give-checkbox-container
 				input#give-checkbox.give-checkbox(type="checkbox" ng-model="giveItem.outside")
 				label(for="give-checkbox")
 					span This is outside -- do not contact for pickup
 				i.fa.fa-question.give-checkbox-question
-				//i.fa.fa-circle-question-o
 			textarea#give-description(name="Description" ng-model="giveItem.description" rows="8" cols="40" placeholder="Description")
 			button#give-description-submit(ng-click="uploadItem()") Submit 
 		li#give-step4.give-steps.animate-250
@@ -60,7 +58,7 @@
 			#give-finished-title {{ giveItem.title }}
 			#give-finished-description {{ giveItem.description }}
 			#give-finished-footer
-				#give-finished-category {{ giveItem.category }}
+				#give-finished-category {{ categories[giveItem.category] }}
 				#give-finished-radius {{ giveItem.outside }}
 	#give-stuff-tabs-container
 		#give-stuff-progress.animate-500
