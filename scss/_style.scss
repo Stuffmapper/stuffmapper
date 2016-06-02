@@ -221,6 +221,13 @@ body, div {
 	background-color: #ffffff;
 }
 
+.get-single-item-description {
+	opacity: 1;
+	&.hidden {
+		opacity: 0.0001;
+	}
+}
+
 .get-single-item-dibs-button {
 	width: 96%;
 	margin: 2%;
@@ -231,6 +238,10 @@ body, div {
 	border: none;
 	position: absolute;
 	bottom: 0px;
+	opacity: 1;
+	&.hidden {
+		opacity: 0.0001;
+	}
 }
 
 
@@ -366,10 +377,17 @@ body, div {
 	width: calc(50% - 20px);
 	margin: 10px;
 	height: auto;
-	outline: 1px solid black;
+	box-shadow: 0px 1px 3px rgba(0,0,0,0.45);
 	background-size: cover;
 	display: inline-block;
 	position: relative;
+	& a {
+		display: block;
+	}
+}
+
+.get-stuff-item-info {
+	padding: 10px 5px;
 }
 
 

@@ -1,4 +1,4 @@
-function GetItemController($scope, $http, $stateParams, $userData) {
+function GetItemController($scope, $http, $stateParams, $userData, $compile) {
 	$http({
 		method: 'GET',
 		url: config.api.host + 'api/' + config.api.version + '/stuff/id/' + $stateParams.id
@@ -18,6 +18,9 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 		$scope.marker.addListener('click', function(e) {
 
 		});
+		$scope.dibsItem = function() {
+			console.log('asdfsdaf');
+		};
 		$('#post-item-'+$stateParams.id)
 		.clone()
 		.attr('id', 'get-item-single' + $stateParams.id)
@@ -41,15 +44,26 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 					'left': '0px',
 					'top': '45px'
 				});
-				$('#get-item-single'+$stateParams.id + ' .item-info').addClass('get-single-item-info').append([
-					'<h3 class="get-single-item-description hidden animate-250">'+$scope.listItem.description+'</h3>'
+				$('#get-item-single'+$stateParams.id + ' .get-stuff-item-info').addClass('get-single-item-info').append([
+					'<h3 class="get-single-item-description hidden animate-250">\n',
+					'	'+$scope.listItem.description,
+					'</h3>'
 				].join('\n'));
-				$('#get-item-single'+$stateParams.id).append('<button class="get-single-item-dibs-button">Dibs!</button>');
-
+				var $el = ($('#get-item-single'+$stateParams.id).append('<button class="get-single-item-dibs-button hidden animate-250" ng-click="dibsItem()">Dibs!</button>'));
+				requestAnimationFrame(function() {
+					$('.get-single-item-description, .get-single-item-dibs-button').removeClass('hidden');
+				});
 			});
 		});
 	});
+	$('body').on('click', dibsItem);
+	function dibsItem(e) {
+		if(e.target.className === 'get-single-item-dibs-button animate-250') {
+			console.log('ID: '+$stateParams.id);
+		}
+	}
 	$scope.$on('$destroy', function() {
+		$('body').off('click', dibsItem);
 		$('#get-item-single'+$stateParams.id).css({
 			'position': 'absolute',
 			'top': $('#post-item-'+$stateParams.id).offset().top - $('#masonry-container').offset().top + $('#masonry-container').position().top,
@@ -58,6 +72,7 @@ function GetItemController($scope, $http, $stateParams, $userData) {
 			'width': $('#post-item-'+$stateParams.id).width(),
 			'height': $('#post-item-'+$stateParams.id).height()
 		});
+		$('.get-single-item-description, .get-single-item-dibs-button').addClass('hidden');
 		setTimeout(function() {
 			$('#post-item-'+$stateParams.id).css({'opacity': ''});
 			requestAnimationFrame(function() {
