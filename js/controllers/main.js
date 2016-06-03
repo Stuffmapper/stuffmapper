@@ -31,7 +31,7 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 		});
 	};
 	$scope.hideModal = function() {
-		if(config.html5) history.pushState("", document.title, window.location.pathname + window.location.search + '#');
+		if(config.html5) location.hash = '';
 		else console.log('this should close popups... not sure what to do without html5 :<');
 		if($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 		$scope.popUpOpen = false;
@@ -58,6 +58,9 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 			var hash = value.split('#').pop();
 			if(hash === "signin") $scope.showModal();
 		}
+		else {
+			removeHash();
+		}
 		$(window).on('hashchange', function(event) {
 			var value = location.hash;
 			if(value) {
@@ -68,7 +71,23 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 			else if($scope.popUpOpen) {
 				$scope.hideModal();
 			}
+			if(!value) {
+				removeHash();
+			}
 		});
+	}
+	function removeHash () {
+		var scrollV, scrollH, loc = window.location;
+		if ("pushState" in history) {
+			history.pushState("", document.title, loc.pathname + loc.search);
+		}
+		else {
+			scrollV = document.body.scrollTop;
+			scrollH = document.body.scrollLeft;
+			loc.hash = "";
+			document.body.scrollTop = scrollV;
+			document.body.scrollLeft = scrollH;
+		}
 	}
 	var popupOpen = false;
 	$scope.showPopup = function() {
@@ -110,7 +129,6 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 				console.log(data.err);
 				return;
 			}
-			console.log(data);
 			location.hash = '';
 			$('html').addClass('loggedIn');
 			$userData.setLoggedIn(true);

@@ -1,6 +1,8 @@
-function MessagesController($scope) {
-    $('#mystuff a').addClass('selected');
-    $scope.$on("$destroy", function() {
-        $('#mystuff a').removeClass('selected');
+function MessagesController($scope, $http) {
+		$http.get('/api/v1/messages').success(function(data) {
+			$scope.messages = data.res;
+			
+		});
+    $scope.$on('$destroy', function() {
     });
 }
