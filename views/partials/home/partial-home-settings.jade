@@ -33,9 +33,13 @@ div.settings
 				label(for='country') Country: 
 				input(type='text', data-ng-model='userData.country', placeholder='{{ userData.country }}')
 			li
-				label(for='googleConnected') Google+: 
-				input(type='checkbox', data-ng-model='userData.googleConnected')
+				a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
+					span.social-sign-in-icon.social-sign-in-icon-google
+						i.fa.fa-google-plus
+					span.social-sign-in-text Sign in with Google
 			li
-				label(for='facebookConnected') Facebook: 
-				input(type='checkbox', data-ng-model='userData.facebookConnected')
+				a.settings-sign-in-up-input.social-button.facebook-sign-in(href="//localhost:3000/api/v1/account/login/facebook" target="_self")
+					span.social-sign-in-icon.social-sign-in-icon-facebook
+						i.fa.fa-facebook
+					span.social-sign-in-text Sign in with Facebook
 	button(type='submit', data-ng-if="!userData.editing", data-ng-click='userData.editing = true', data-save='update(userData)') Submit

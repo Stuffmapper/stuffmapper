@@ -31,6 +31,7 @@ function WatchListController($scope, $location, authenticated) {
 		$scope.tagnames.push({ 'tagname':$scope.tagname});
 		$scope.tagname='';
 	};
+}
 
 	// $scope.getAll = function() {
 	// $http.get('/api/tagname')
