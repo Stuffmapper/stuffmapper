@@ -17,7 +17,6 @@ CREATE TABLE users (
 	email varchar(64) UNIQUE NOT NULL,
 	password text,
 	password_reset_token text,
-	status integer REFERENCES status(id),
 	phone_number varchar(10),
 	verify_email_token varchar(32) UNIQUE DEFAULT md5(random()::text),
 	verified_email boolean DEFAULT false,
