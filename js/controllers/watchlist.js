@@ -74,4 +74,3 @@ function WatchListController($scope, $location, authenticated) {
 	// 			$scope.getAll();
 	// 		});
 	// };
-}

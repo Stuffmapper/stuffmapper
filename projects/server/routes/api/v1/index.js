@@ -472,12 +472,57 @@ router.delete('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
 
 /* WATCHLIST MANAGEMENT -  END  */
 
+/* SETTINGS - START */
+router.get('/account/info', isAuthenticated, function(req, res) {
+	var query = [
+		'SELECT * FROM users WHERE id = $1'
+	].join('');
+	var values = [
+		req.session.passport.user.id
+	];
+	queryServer(res, query, values, function(result) {
+		res.send({
+			err: null,
+			res: result.rows[0]
+		});
+	});
+});
+
+router.put('/account/info', isAuthenticated, function(req, res) {
+	var query = [
+		'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
+		'phone_number = $5, email = $6, address = $7, city = $8, ',
+		'state = $9, zip_code = $10, country = $11 ',
+		'WHERE id = $1'
+	].join('');
+	var values = [
+		req.session.passport.user.id,
+		req.body.uname,
+		req.body.fname,
+		req.body.lname,
+		req.body.phone_number,
+		req.body.email,
+		req.body.address,
+		req.body.city,
+		req.body.state,
+		req.body.zip_code,
+		req.body.country,
+	];
+});
+
+router.delete('/account/info', isAuthenticated, function(req, res) {
+	// ARCHIVE DO NOT DELETE
+	var id = req.session.passport.user.id;
+
+});
+
+/* SETTINGS - END */
+
 
 
 
 function queryServer(res, query, value, cb) {
 	var client = new pg.Client(conString);
-	var body = req.body;
 	client.connect(function(err) {
 		if(err) {
 			client.end();

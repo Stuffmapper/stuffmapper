@@ -28,6 +28,7 @@ function SettingsController($scope, $http) {
 		}
 		$scope.userData = data.res;
 	});
+	
 	// Editing user data
 	//
 	// $scope.update = function(userData) {
@@ -51,16 +52,16 @@ function SettingsController($scope, $http) {
 	// 		userData.editing = false;
 	// };
 	// directive('settingsDirective', function() {
-  //   return {
-  //     restrict: 'AC',
-  //     replace: true,
-  //     templateUrl: 'templates/partial-home-settings.html',
-  //     transclude: true,
-  //     scope: {
-  //       formName: '@',
-  //       userData: '=',
-  //       save: '&'
-  //     }
-  //   };
-  // });
+	//   return {
+	//     restrict: 'AC',
+	//     replace: true,
+	//     templateUrl: 'templates/partial-home-settings.html',
+	//     transclude: true,
+	//     scope: {
+	//       formName: '@',
+	//       userData: '=',
+	//       save: '&'
+	//     }
+	//   };
+	// });
 }
