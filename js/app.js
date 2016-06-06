@@ -116,6 +116,11 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 		templateUrl: 'templates/partial-home-messages.html',
 		controller: MessagesController
 	})
+	.state('stuff.my.conversation', {
+		url: '/messages/:conversation',
+		templateUrl: 'templates/partial-home-conversation.html',
+		controller: ConversationController
+	})
 	.state('stuff.my.watchlist', {
 		url: '/watchlist',
 		templateUrl: 'templates/partial-home-watchlist.html',

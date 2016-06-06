@@ -1,5 +1,9 @@
 function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	//TODO: loading http://tobiasahlin.com/spinkit/ http://projects.lukehaas.me/css-loaders/
+	$scope.socket = io();
+	$(window).unload(function() {
+		$scope.socket.disconnect();
+	});
 	$scope.counterFlipper = new CounterFlipper('landfill-tracker', 0, 7);
 	$scope.counterFlipper.setCounter(1283746);
 	$scope.counterFlipper.setCounter(2738391);

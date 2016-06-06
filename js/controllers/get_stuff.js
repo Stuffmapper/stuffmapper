@@ -20,15 +20,12 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 				});
 				$(window).resize(function() {
 					$('.masonry-grid').masonry({
-						columnWidth: function(columnWidth) {
-							return $('.masonry-grid').width()/2;
-						}(),
+						columnWidth: $('.masonry-grid').width()/2,
 						itemSelector: '.masonry-grid-item',
 						isAnimated: true
 					});
 				});
 			};
-
 			var tempSearchText = '';
 			var searchTextTimeout;
 			var lastSearch;
