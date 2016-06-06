@@ -18,9 +18,6 @@ function GetItemController($scope, $http, $stateParams, $userData, $compile) {
 		$scope.marker.addListener('click', function(e) {
 
 		});
-		$scope.dibsItem = function() {
-			console.log('asdfsdaf');
-		};
 		$('#post-item-'+$stateParams.id)
 		.clone()
 		.attr('id', 'get-item-single' + $stateParams.id)
@@ -60,6 +57,9 @@ function GetItemController($scope, $http, $stateParams, $userData, $compile) {
 	function dibsItem(e) {
 		if(e.target.className === 'get-single-item-dibs-button animate-250') {
 			console.log('ID: '+$stateParams.id);
+			$http.post('/api/v1/dibs/'+$stateParams.id).success(function(data) {
+				console.log(data.res);
+			});
 		}
 	}
 	$scope.$on('$destroy', function() {
