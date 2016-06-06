@@ -488,12 +488,12 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-router.put('/account/info/:id', isAuthenticated, function(req, res) {
+router.put('/account/info', isAuthenticated, function(req, res) {
 	var query = [
 		'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
 		'phone_number = $5, email = $6, address = $7, city = $8, ',
 		'state = $9, zip_code = $10, country = $11 ',
-		'WHERE id = $1'
+		'WHERE id = $1 RETURNING *'
 	].join('');
 	var values = [
 		req.session.passport.user.id,
@@ -508,6 +508,13 @@ router.put('/account/info/:id', isAuthenticated, function(req, res) {
 		req.body.zip_code,
 		req.body.country,
 	];
+	queryServer(res, query, values, function(result) {
+		res.send({
+			err: null,
+			res: result
+		});
+	});
+
 });
 
 router.delete('/account/info', isAuthenticated, function(req, res) {
@@ -522,26 +529,21 @@ router.delete('/account/info', isAuthenticated, function(req, res) {
 
 
 function queryServer(res, query, values, cb) {
-	var client = new pg.Client(conString);
-	client.connect(function(err) {
-		if(err) {
-			client.end();
-			return;
-		}
-		client.query(query, values, function(err, result) {
-			if(err) {
-				res.send({
-					err : {
-						message : err,
-						redirect : false
-					}
-				});
-				client.end();
-			}
-			client.end();
-			cb(result);
-		});
-	});
+    var client = new pg.Client(conString);
+    client.connect(function(err) {
+        if(err) {
+            apiError(res, err);
+            return client.end();
+        }
+        client.query(query, values, function(err, result) {
+            if(err) {
+                apiError(res, err);
+                return client.end();
+            }
+            client.end();
+            cb(result);
+        });
+    });
 }
 
 

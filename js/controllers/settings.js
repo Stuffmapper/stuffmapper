@@ -28,7 +28,16 @@ function SettingsController($scope, $http) {
 	// Editing user data
 
 	$scope.update = function(users) {
-	$http.put('/api/v1/account/info/' + users._id).success(function(data) {
+
+	$http.put('/api/v1/account/info', $scope.users,{
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+		},
+		transformRequest: function(data){
+			return $.param(data);
+		}
+	}).success(function(data) {
+
 			console.log(data);
 		});
 	};
