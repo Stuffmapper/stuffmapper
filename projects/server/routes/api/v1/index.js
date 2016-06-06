@@ -655,7 +655,6 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-<<<<<<< HEAD
 router.put('/account/info', isAuthenticated, function(req, res) {
 	var query = [
 		'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
@@ -680,57 +679,39 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 		res.send({
 			err: null,
 			res: result
-=======
+
+		});
+	});
+});
+
+	router.delete('/account/info', isAuthenticated, function(req, res) {
+		// ARCHIVE DO NOT DELETE
+		var id = req.session.passport.user.id;
+
+	});
+
+	/* SETTINGS - END */
 
 
-function queryServer(res, query, values, cb) {
-	var client = new pg.Client(conString);
-	client.connect(function(err) {
-		if(err) {
-			apiError(res, err);
-			return client.end();
-		}
-		client.query(query, values, function(err, result) {
+
+
+	function queryServer(res, query, values, cb) {
+		var client = new pg.Client(conString);
+		client.connect(function(err) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
-			client.end();
-			cb(result);
->>>>>>> master
+			client.query(query, values, function(err, result) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
+				}
+				client.end();
+				cb(result);
+			});
 		});
-	});
-
-});
-
-router.delete('/account/info', isAuthenticated, function(req, res) {
-	// ARCHIVE DO NOT DELETE
-	var id = req.session.passport.user.id;
-
-});
-
-/* SETTINGS - END */
+	}
 
 
-
-
-function queryServer(res, query, values, cb) {
-    var client = new pg.Client(conString);
-    client.connect(function(err) {
-        if(err) {
-            apiError(res, err);
-            return client.end();
-        }
-        client.query(query, values, function(err, result) {
-            if(err) {
-                apiError(res, err);
-                return client.end();
-            }
-            client.end();
-            cb(result);
-        });
-    });
-}
-
-
-module.exports = router;
+	module.exports = router;

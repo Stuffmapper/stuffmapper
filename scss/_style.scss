@@ -1451,7 +1451,7 @@ body, div {
 }
 .settings-form input {
     height:1.3em;
-    width:18em;
+    width:16em;
 }
 .settings-form textarea {
   padding:8px; width:50%;
@@ -1473,7 +1473,7 @@ body, div {
 .settings button {
   border: 1px solid;
   height: 3.5em;
-	width: 28em;
+	width: 24.5em;
 	cursor: pointer;
 	margin-top: .5em;
 }
@@ -1482,7 +1482,7 @@ body, div {
 	border-radius: 3px;
 	overflow: hidden;
 	border: 0;
-	width: 21em;
+	width: 22em;
 	height: 36px;
 	padding: 0;
 	font-size: 14px;
@@ -1659,11 +1659,14 @@ body, div {
 		padding: .26em;
 	}
 	.settings-form input {
-		width: 18em;
+		width: 15em;
 		outline: 1px black solid;
 	}
+	.settings button {
+		width: 23em;
+	}
 	.settings-sign-in-up-input {
-		margin-top: .5em;
+		width: 21em;
 	}
 	/* Settings - End */
 
