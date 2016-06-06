@@ -35,7 +35,7 @@ router.get('/stuff', function(req, res) {
 			'SELECT posts.id, posts.title, posts.description, posts.attended, ',
 			'posts.lat, posts.lng, categories.category, images.image_url ',
 			'FROM posts, images, categories WHERE images.post_id = posts.id AND ',
-			'categories.id = posts.category_id'
+			'categories.id = posts.category_id AND posts.dibbed = false'
 		].join('');
 		client.query(query, function(err, result) {
 			if(err) {
@@ -60,10 +60,10 @@ router.get('/stuff/id/:id', function(req, res) {
 		}
 		var query = [
 			'SELECT posts.id, posts.title, posts.description, posts.attended, ',
-			'posts.lat, posts.lng, categories.category, ',
-			'images.image_url from posts, images, categories WHERE ',
-			'images.post_id = posts.id AND posts.id = $1 AND ',
-			'categories.id = posts.category_id'
+			'posts.lat, posts.lng, categories.category, images.image_url ',
+			'FROM posts, images, categories ',
+			'WHERE images.post_id = posts.id AND posts.id = $1 AND ',
+			'categories.id = posts.category_id AND posts.dibbed = false'
 		].join('');
 		var values = [
 			req.params.id
@@ -90,9 +90,11 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended, posts.lat, posts.lng, categories.category, ',
-			'images.image_url FROM posts, images, categories WHERE ',
-			'images.post_id = posts.id AND posts.user_id = $1 AND posts.id = $2 AND categories.id = posts.category_id'
+			'SELECT posts.id, posts.title, posts.description, posts.attended, ',
+			'posts.lat, posts.lng, categories.category, images.image_url FROM posts, ',
+			'images, categories',
+			'WHERE images.post_id = posts.id AND posts.user_id = $1 AND ',
+			'posts.id = $2 AND categories.id = posts.category_id'
 		].join('');
 		var values = [
 			req.session.passport.user.id,
@@ -386,8 +388,31 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 });
 
 router.put('/account/info', isAuthenticated, function(req, res) {
-	var id = req.session.passport.user.id;
-
+	var query = [
+		'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
+		'phone_number = $5, email = $6, address = $7, city = $8, ',
+		'state = $9, zip_code = $10, country = $11 ',
+		'WHERE id = $1'
+	].join('');
+	var values = [
+		req.session.passport.user.id,
+		req.body.uname,
+		req.body.fname,
+		req.body.lname,
+		req.body.phone_number,
+		req.body.email,
+		req.body.address,
+		req.body.city,
+		req.body.state,
+		req.body.zip_code,
+		req.body.country
+	];
+	queryServer(res, query, values, function(result) {
+		res.send({
+			err: null,
+			res: result
+		});
+	});
 });
 
 router.delete('/account/info', isAuthenticated, function(req, res) {
@@ -409,6 +434,76 @@ router.delete('/account/info', isAuthenticated, function(req, res) {
 /* DIBS MANAGEMENT - START */
 
 router.post('/dibs/:id', isAuthenticated, function(req, res) {
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'UPDATE posts SET dibber_id = $1, dibbed = true ',
+			'WHERE dibbed = false AND id = $2 ',
+			'RETURNING *'
+		].join('');
+		var values = [
+			req.session.passport.user.id,
+			req.params.id
+		];
+		client.query(query, values, function(err, result1) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			var query = [
+				'INSERT INTO pick_up_success ',
+				'(post_id, dibber_id, lister_id) ',
+				'VALUES ($1, $2, $3) RETURNING *'
+			].join('');
+			var values = [
+				req.params.id,
+				req.session.passport.user.id,
+				result1.rows[0].user_id
+			];
+			client.query(query, values, function(err, result2) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
+				}
+				var query = [
+					'INSERT INTO conversations ',
+					'(post_id, dibber_id, lister_id) ',
+					'VALUES ($1, $2, $3) RETURNING *'
+				].join('');
+				var values = [
+					req.params.id,
+					req.session.passport.user.id,
+					result1.rows[0].user_id
+				];
+				client.query(query, values, function(err, result3) {
+					if(err) {
+						apiError(res, err);
+						return client.end();
+					}
+					res.send({
+						err: null,
+						res: {
+							'res1': result1.rows,
+							'res2': result2.rows,
+							'res3': result3.rows
+						}
+					});
+					return client.end();
+				});
+			});
+		});
+	});
+});
+
+router.delete('/undib/:id', isAuthenticated, function(req, res) {
+
+});
+
+router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 
 });
 
@@ -417,42 +512,79 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 /* MESSAGING MANAGEMENT - START */
 
 router.get('/messages', isAuthenticated, function(req, res) {
-	var query = [
-		'SELECT messages.message, users.uname, messages.date_created FROM messages ORDER BY date_created DESC LIMIT 1, ',
-		'conversations ORDER BY date_created DESC LIMIT 15, users ',
-		'WHERE users.id = messages.user_id AND ',
-		'conversations.id = messages.conversation_id AND ',
-		'users.id = $1'
-	].join('');
-	var values = [
-		req.session.passport.user.id
-	];
-	queryServer(res, query, value, function(result) {
-		res.send({
-			err: null,
-			res: result
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'SELECT * FROM conversations, posts ',
+			'WHERE (conversations.lister_id = $1 OR ',
+			'conversations.dibber_id = $1) AND ',
+			'posts.id = conversations.post_id ',
+			'ORDER BY conversations.date_created DESC'
+		].join('');
+		var values = [
+			req.session.passport.user.id
+		];
+		client.query(query, values, function(err, result1) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			var catcher = 0;
+			var messagesRows = {};
+			var cb = function(err, result2) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
+				}
+				console.log(result2);
+				if(result2.rows[0]) messagesRows[result2.rows[0].conversation_id] = result2.rows[0].message;
+				if(++catcher === result1.rows.length) {
+					res.send({
+						err: null,
+						res: {
+							res: result1,
+							messages: messagesRows
+						}
+					});
+					return client.end();
+				}
+			};
+			for(var i = 0; i < result1.rows.length; ++i) {
+				var query = [
+					'SELECT messages.message, messages.conversation_id, posts.title FROM messages, posts ',
+					'WHERE messages.conversation_id = $1 AND posts.id = $2 ',
+					'ORDER BY messages.date_created DESC LIMIT 1'
+				].join('');
+				var values = [
+					result1.rows[i].id,
+					result1.rows[i].post_id
+				];
+				console.log('values', values);
+				client.query(query, values, cb);
+			}
 		});
 	});
 });
 
 router.post('/messages', isAuthenticated, function(req, res) {
-	var body = req.body;
 	var query = [
-		'INSERT INTO messages(messages.user_id, messages.conversation_id, messages.message) ',
-		'values($1, $2, $3) WHERE conversations.id = $2 AND ',
-		'(conversations.lister_id = $1 OR conversations.dibber_id = $1) AND ',
-		'conversations.date_created = $3'
+		'INSERT INTO messages(conversation_id, user_id, message) ',
+		'values($1, $2, $3) RETURNING *',
 	].join('');
-	var value = [
+	var values = [
+		parseInt(req.body.conversation_id),
 		req.session.passport.user.id,
-		body.conversation_id,
-		body.message,
-		body.date_created
+		req.body.message
 	];
-	queryServer(res, query, value, function(result) {
+	console.log(values);
+	queryServer(res, query, values, function(result) {
 		res.send({
 			err: null,
-			res: result
+			res: result.rows
 		});
 	});
 });
@@ -463,6 +595,21 @@ router.put('/messages/:id', isAuthenticated, function(req, res) {
 
 router.delete('/messages/:id', isAuthenticated, function(req, res) {
 
+});
+
+router.get('/conversation/:id', isAuthenticated, function(req, res) {
+	var query = [
+		'SELECT * FROM messages WHERE conversation_id = $1 ORDER BY date_created DESC'
+	].join('');
+	var values = [
+		req.params.id
+	];
+	queryServer(res, query, values, function(result) {
+		res.send({
+			err: null,
+			res: result.rows
+		});
+	});
 });
 
 /* MESSAGING MANAGEMENT -  END  */

@@ -1304,7 +1304,78 @@ body, div {
 	list-style: none;
 }
 
+#my-container {
+	height: 100%;
+	width: 100%;
+	display: block;
+	position: absolute;
+}
+
 /* My Stuff - END */
+
+/* Messages - START */
+/* Messages -  END  */
+
+/* Conversations - START */
+#conversation-container {
+	height: 100%;
+	width: 100%;
+	display: block;
+	position: relative;
+}
+#conversation-messages {
+	height: calc(100% - 44px);
+	width: 100%;
+	display: block;
+	position: relative;
+}
+#conversation-input-container {
+	margin: 6px 0;
+	height: 32px;
+	width: 100%;
+	display: block;
+	position: relative;
+	outline: solid 1px black;
+}
+.conversation-input-button {
+	color: white;
+	background-color: deepskyblue;
+	display: inline-block;
+	border-radius: 50%;
+	width: 30px;
+	height: 30px;
+	margin: 1px;
+	line-height: 30px;
+	text-align: center;
+	top: 0px;
+	position: absolute;
+	cursor: pointer;
+}
+#conversation-auto-reply{
+	left: 0px;
+
+}
+#conversation-send-reply {
+	right: 0px;
+}
+#cnversation-input {
+	resize: none;
+	height: 26px;
+	width: calc(100% - 80px);
+	display: block;
+	border: none;
+	border-radius: 3px;
+	outline: 1px solid black;
+	margin: 0 auto;
+	padding: 3px;
+	font-size: 20px;
+	line-height: 32px;
+	position: relative;
+	top: 0px;
+	margin: 0 auto;
+	z-index: 1;
+}
+/* Conversations -  END  */
 
 /* Watchlist - START */
 .watchlist-container {
