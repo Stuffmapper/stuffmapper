@@ -13,6 +13,7 @@
 *   7. About Us            *
 *		8. My Stuff            *
 *		9. Watchlist					 *
+*	 10. Settings						 *
 *   X. Modal Windows       *
 *       - Steps            *
 *       - Sign In Content  *
@@ -1405,10 +1406,13 @@ body, div {
 	flex-direction: row;
 	flex-wrap: wrap;
 	height: 100%;
-	padding: 1em;
+	padding-top: 0;
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-bottom: 0;
 	margin: 0;
 	list-style-type: none;
-	overflow: auto;
+	overflow: scroll;
 }
 .tag-list li {
 	outline: 1px black solid;
@@ -1419,6 +1423,73 @@ body, div {
 }
 
 /* Watchlist - END */
+
+/* Settings - Start */
+
+.settings-form {
+    padding: 1em;
+		font-size: .9em;
+}
+
+.settings-form ul {
+    width:750px;
+    list-style-type:none;
+    list-style-position:outside;
+    margin:0px;
+    padding:0px;
+}
+.settings-form li{
+    padding:.45em;
+    position:relative;
+}
+.settings-form label {
+    width:5.2em;
+    margin-top: 3px;
+    display:inline-block;
+    float:left;
+    padding:3px;
+}
+.settings-form input {
+    height:1.3em;
+    width:18em;
+}
+.settings-form textarea {
+  padding:8px; width:50%;
+}
+.settings-form input:focus, .settings-form textarea:focus {
+    background: #fff;
+    border:1px solid #555;
+    box-shadow: 0 0 3px #aaa;
+}
+.settings {
+	background-color: #fff;
+}
+.settings h1 {
+	font-size: 1em;
+	font-weight: normal;
+	text-align: center;
+	margin-bottom: 0;
+}
+.settings button {
+  border: 1px solid;
+  height: 3.5em;
+	width: 28em;
+	cursor: pointer;
+	margin-top: .5em;
+}
+.settings-sign-in-up-input {
+	display: block;
+	border-radius: 3px;
+	overflow: hidden;
+	border: 0;
+	width: 21em;
+	height: 36px;
+	padding: 0;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+/* Settings - End */
 
 @media screen and (max-width: 436px) {
 	.modal-window {
@@ -1570,11 +1641,31 @@ body, div {
 	/* Watchlist - START */
 	.tag-list {
 		height: 24.8em;
-		padding: 0;
 		margin: 0;
 	}
 
 	/* Watchlist - END */
+
+	/* Settings - Start */
+
+	.settings-form {
+			font-size: .9em;
+			padding: .5em;
+	}
+	.settings h1 {
+		height: 100%;
+	}
+	.settings-form li {
+		padding: .26em;
+	}
+	.settings-form input {
+		width: 18em;
+		outline: 1px black solid;
+	}
+	.settings-sign-in-up-input {
+		margin-top: .5em;
+	}
+	/* Settings - End */
 
 }
 

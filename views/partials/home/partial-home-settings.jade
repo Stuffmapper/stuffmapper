@@ -1,8 +1,45 @@
-div settings
-div {{ userData.uname }}
-div {{ userData.fname }}
-div {{ userData.lname }}
-div {{ userData.phone }}
-div {{ userData.email }}
-div {{ userData.googleConnected }}
-div {{ userData.facebookConnected }}
+div.settings 
+	h1 Settings
+	form.settings-form(data-ng-submit='save({users: users})')
+		ul(data-ng-cloak)
+			li
+				label(for='uname') Username: 
+				input(type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}')
+			li
+				label(for='fname') First Name: 
+				input(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
+			li
+				label(for='lname') Last Name: 
+				input(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
+			li
+				label(for='phone_number') Phone: 
+				input(type='text', data-ng-model='users.phone', placeholder='{{ users.phone }}')
+			li
+				label(for='email') Email: 
+				input(type='text', data-ng-model='users.email', placeholder='{{ users.email }}')
+			li
+				label(for='address') Address: 
+				input(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
+			li
+				label(for='city') City: 
+				input(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
+			li
+				label(for='state') State: 
+				input(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
+			li
+				label(for='zipcode') Zipcode: 
+				input(type='text', data-ng-model='users.zipcode', placeholder='{{ users.zipcode }}')
+			li
+				label(for='country') Country: 
+				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
+			//- li
+			//- 	a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
+			//- 		span.social-sign-in-icon.social-sign-in-icon-google
+			//- 			i.fa.fa-google-plus
+			//- 		span.social-sign-in-text Sign in with Google
+			//- li
+			//- 	a.settings-sign-in-up-input.social-button.facebook-sign-in(href="//localhost:3000/api/v1/account/login/facebook" target="_self")
+			//- 		span.social-sign-in-icon.social-sign-in-icon-facebook
+			//- 			i.fa.fa-facebook
+			//- 		span.social-sign-in-text Sign in with Facebook
+			button(type='submit', data-ng-click='update(users)') Submit
