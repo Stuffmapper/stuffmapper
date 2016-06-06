@@ -1335,10 +1335,13 @@ body, div {
 	flex-direction: row;
 	flex-wrap: wrap;
 	height: 100%;
-	padding: 1em;
+	padding-top: 0;
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-bottom: 0;
 	margin: 0;
 	list-style-type: none;
-	overflow: auto;
+	overflow: scroll;
 }
 .tag-list li {
 	outline: 1px black solid;
@@ -1566,7 +1569,6 @@ body, div {
 	/* Watchlist - START */
 	.tag-list {
 		height: 24.8em;
-		padding: 0;
 		margin: 0;
 	}
 
@@ -1582,7 +1584,7 @@ body, div {
 		height: 100%;
 	}
 	.settings-form li {
-		padding: .36em;
+		padding: .26em;
 	}
 
 	/* Settings - End */

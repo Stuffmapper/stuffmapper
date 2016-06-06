@@ -1,8 +1,4 @@
 function SettingsController($scope, $http) {
-	$('#mystuff a').addClass('selected');
-	$scope.$on("$destroy", function() {
-		$('#mystuff a').removeClass('selected');
-	});
 	$scope.userInfo = {};
 	var testing = true;
 	if(testing) {
@@ -21,47 +17,30 @@ function SettingsController($scope, $http) {
 			facebookConnected : true
 		};
 	}
-	$http.get('/api/v1/user').success(function(data){
+	$http.get('/api/v1/account/info').success(function(data){
 		if(data.err) {
 			console.log(data.err);
 			return;
 		}
-		$scope.userData = data.res;
+		$scope.users = data.res;
 	});
-	
+
 	// Editing user data
-	//
-	// $scope.update = function(userData) {
-	// userData.editing = false;
-	// $http.put('/api/userData/' + userData._id, userData)
-	// 	.then(function(res) {
-	// 		console.log('this user has a been modified');
-	// 	}, function(err) {
-	// 		$scope.errors.push('could not get user: ' + userData.name);
-	// 		console.log(err.data);
-	// 	});
-	// };
-	//
-	// $scope.edit = function(userData) {
-	// $scope.orig = angular.copy(userData);
-	// userData.editing = true;
-	// };
-	//
-	// $scope.cancelEdit = function(userData) {
-	// 		angular.copy($scope.orig, userData);
-	// 		userData.editing = false;
-	// };
-	// directive('settingsDirective', function() {
-	//   return {
-	//     restrict: 'AC',
-	//     replace: true,
-	//     templateUrl: 'templates/partial-home-settings.html',
-	//     transclude: true,
-	//     scope: {
-	//       formName: '@',
-	//       userData: '=',
-	//       save: '&'
-	//     }
-	//   };
-	// });
+
+	$scope.update = function(users) {
+	users.editing = false;
+	$http.put('/api/v1/account/info/' + users._id).success(function(data) {
+			console.log(data);
+		});
+	};
+
+	$scope.edit = function(users) {
+	$scope.orig = angular.copy(users);
+	users.editing = true;
+	};
+
+	$scope.cancelEdit = function(users) {
+			angular.copy($scope.orig, users);
+			users.editing = false;
+	};
 }

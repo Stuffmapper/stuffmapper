@@ -488,7 +488,7 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-router.put('/account/info', isAuthenticated, function(req, res) {
+router.put('/account/info/:id', isAuthenticated, function(req, res) {
 	var query = [
 		'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
 		'phone_number = $5, email = $6, address = $7, city = $8, ',
@@ -521,7 +521,7 @@ router.delete('/account/info', isAuthenticated, function(req, res) {
 
 
 
-function queryServer(res, query, value, cb) {
+function queryServer(res, query, values, cb) {
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
 		if(err) {

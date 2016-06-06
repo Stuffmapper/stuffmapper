@@ -1,37 +1,37 @@
 div.settings 
 	h1 Settings
-	form.settings-form(name='{{formName}}', data-ng-submit='save({userData: users})')
+	form.settings-form(data-ng-submit='save({users: users})')
 		ul(data-ng-cloak)
 			li
 				label(for='uname') Username: 
-				input(type='text', data-ng-model='userData.uname', placeholder='{{ userData.uname }}')
+				input(type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}')
 			li
 				label(for='fname') First Name: 
-				input(type='text', data-ng-model='userData.fname', placeholder='{{ userData.fname }}')
+				input(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
 			li
 				label(for='lname') Last Name: 
-				input(type='text', data-ng-model='userData.lname', placeholder='{{ userData.lname }}')
+				input(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
 			li
 				label(for='phone_number') Phone: 
-				input(type='text', data-ng-model='userData.phone', placeholder='{{ userData.phone }}')
+				input(type='text', data-ng-model='users.phone', placeholder='{{ users.phone }}')
 			li
 				label(for='email') Email: 
-				input(type='text', data-ng-model='userData.email', placeholder='{{ userData.email }}')
+				input(type='text', data-ng-model='users.email', placeholder='{{ users.email }}')
 			li
 				label(for='address') Address: 
-				input(type='text', data-ng-model='userData.address', placeholder='{{ userData.address }}')
+				input(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
 			li
 				label(for='city') City: 
-				input(type='text', data-ng-model='userData.city', placeholder='{{ userData.city }}')
+				input(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
 			li
 				label(for='state') State: 
-				input(type='text', data-ng-model='userData.state', placeholder='{{ userData.state }}')
+				input(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
 			li
 				label(for='zipcode') Zipcode: 
-				input(type='text', data-ng-model='userData.zipcode', placeholder='{{ userData.zipcode }}')
+				input(type='text', data-ng-model='users.zipcode', placeholder='{{ users.zipcode }}')
 			li
 				label(for='country') Country: 
-				input(type='text', data-ng-model='userData.country', placeholder='{{ userData.country }}')
+				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
 			li
 				a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
 					span.social-sign-in-icon.social-sign-in-icon-google
@@ -42,4 +42,3 @@ div.settings
 					span.social-sign-in-icon.social-sign-in-icon-facebook
 						i.fa.fa-facebook
 					span.social-sign-in-text Sign in with Facebook
-	button(type='submit', data-ng-if="!userData.editing", data-ng-click='userData.editing = true', data-save='update(userData)') Submit

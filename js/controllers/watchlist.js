@@ -6,10 +6,6 @@ function WatchListController($scope, $location, authenticated) {
 	// $scope.tagnames = [];
 	// $scope.errors = [];
 	// $scope.newTagname = null;
-	// $('#mystuff a').addClass('selected');
-	// $scope.$on("$destroy", function() {
-	// 		$('#mystuff a').removeClass('selected');
-	// });
 	$scope.tagnames = [
                     {'tagname':'desk'},
                     {'tagname':'couch'},
