@@ -39,10 +39,15 @@ www/libs/**
 **/.DS_Store
 
 hooks
-hooks/**
-www/css/**/*
-www/**/*.html
-plugins/**/*
+www
+js/lib
+!js/lib/counter_flipper.js
+plugins
+projects/electron
+projects/ionic
+projects/web
+platforms
+.atomignore
 
 .remote-sync.json
 

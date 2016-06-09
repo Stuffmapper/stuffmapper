@@ -1,9 +1,6 @@
 function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	//TODO: loading http://tobiasahlin.com/spinkit/ http://projects.lukehaas.me/css-loaders/
-	$scope.socket = io();
-	$(window).unload(function() {
-		$scope.socket.disconnect();
-	});
+	//$scope.socket = io();
 	$scope.counterFlipper = new CounterFlipper('landfill-tracker', 0, 7);
 	$scope.counterFlipper.setCounter(1283746);
 	$scope.counterFlipper.setCounter(2738391);
@@ -118,7 +115,7 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 	};
 	$scope.login = function() {
 		// set step to loading
-		$http.post("/api/v1/account/login", {
+		$http.post(config.api.host + 'api/' + config.api.version + '/account/login', {
 			username: $('#sign-in-email').val(),
 			password: $('#sign-in-password').val()
 		},{
@@ -141,7 +138,7 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 		});
 	};
 	$scope.logout = function() {
-		$http.post("/api/v1/account/logout")
+		$http.post(config.api.host + 'api/' + config.api.version + '/account/logout')
 		.success(function(data) {
 			$('html').removeClass('loggedIn');
 			$userData.setLoggedIn(false);
@@ -182,7 +179,7 @@ function MainController($scope, $http, $timeout, $userData, $state, $location) {
 			fname : $('#sign-up-fname').val(),
 			lname : $('#sign-up-lname').val()
 		};
-		$http.post('/api/v1/account/register', fd,{
+		$http.post(config.api.host + 'api/' + config.api.version + '/account/register', fd,{
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
 			},
