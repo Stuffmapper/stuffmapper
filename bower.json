@@ -16,6 +16,7 @@
     "tween.js": "tweenjs#^16.3.4",
     "animateCSS": "^1.2.1",
     "masonry": "^4.1.0",
-    "imagesloaded": "^4.1.0"
+    "imagesloaded": "^4.1.0",
+    "ngCordova": "^0.1.26-alpha"
   }
 }

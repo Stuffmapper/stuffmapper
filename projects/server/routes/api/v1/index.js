@@ -688,37 +688,36 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 			res: result
 		});
 	});
-
 });
 
-router.delete('/account/info', isAuthenticated, function(req, res) {
-	// ARCHIVE DO NOT DELETE
-	var id = req.session.passport.user.id;
+	router.delete('/account/info', isAuthenticated, function(req, res) {
+		// ARCHIVE DO NOT DELETE
+		var id = req.session.passport.user.id;
 
-});
+	});
 
-/* SETTINGS - END */
-
-
+	/* SETTINGS - END */
 
 
-function queryServer(res, query, values, cb) {
-    var client = new pg.Client(conString);
-    client.connect(function(err) {
-        if(err) {
-            apiError(res, err);
-            return client.end();
-        }
-        client.query(query, values, function(err, result) {
-            if(err) {
-                apiError(res, err);
-                return client.end();
-            }
-            client.end();
-            cb(result);
-        });
-    });
-}
 
 
-module.exports = router;
+	function queryServer(res, query, values, cb) {
+		var client = new pg.Client(conString);
+		client.connect(function(err) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			client.query(query, values, function(err, result) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
+				}
+				client.end();
+				cb(result);
+			});
+		});
+	}
+
+
+	module.exports = router;

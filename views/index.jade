@@ -13,7 +13,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		//- link(rel="icon" sizes="192x192" href="nice-highres.png")
 		//- if not electron, do the href="/"
 		if ionic
-			base(href="/android-asset/www/")
+			base(href="/android_asset/www/")
 		else if electron
 			base(href="/")
 		else
@@ -39,7 +39,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script(src="https://use.typekit.net/lrm3jdv.js")
 		script.
 			//try{Typekit.load({ async: true });}catch(e){}
-		script(src="/js/all.js")
+		script(src="js/all.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
 		script(id="templates/blank.html" type="text/ng-template").
@@ -128,7 +128,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			li.side-menu-item
 		#container
 			#header
-				img#logo(src="/img/logo-txt-only-bold.png" ng-click="aboutUs()")
+				img#logo(src="img/logo-txt-only-bold.png" ng-click="aboutUs()")
 				#landfill-tracker
 				#user-portal
 					a#sign-in-button(ng-click="userButton()")
