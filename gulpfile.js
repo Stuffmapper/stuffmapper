@@ -29,20 +29,20 @@ gulp.task('sass', function(done) {
 	.pipe(rename({ extname: '.min.css' }))
 	.pipe(multistream(
 		gulp.dest('./projects/web/css/'),
-		gulp.dest('./projects/ionic/css/'),
+		gulp.dest('./www/css/'),
 		gulp.dest('./projects/electron/css/')
 	))
 	.on('end', done);
 	gulp.src('./js/lib/font-awesome/css/*', {base: './js/lib/font-awesome/css/'})
 	.pipe(multistream(
 		gulp.dest('./projects/web/css'),
-		gulp.dest('./projects/ionic/css'),
+		gulp.dest('./www/css'),
 		gulp.dest('./projects/electron/css')
 	));
 	gulp.src('./js/lib/font-awesome/fonts/*', {base: './js/lib/font-awesome/fonts/'})
 	.pipe(multistream(
 		gulp.dest('./projects/web/fonts'),
-		gulp.dest('./projects/ionic/fonts'),
+		gulp.dest('./www/fonts'),
 		gulp.dest('./projects/electron/fonts')
 	));
 });
@@ -56,7 +56,7 @@ gulp.task('jade', function(done) {
 		pretty : true,
 		doctype: 'html'
 	}))
-	.pipe(gulp.dest('./projects/ionic/'))
+	.pipe(gulp.dest('./www/'))
 	.on('end', done);
 
 	gulp.src('./views/index.jade')
@@ -85,7 +85,7 @@ gulp.task('images', function(){
 	gulp.src('./img/**/*', {base: './img/'})
 	.pipe(multistream(
 		gulp.dest('./projects/web/img'),
-		gulp.dest('./projects/ionic/img'),
+		gulp.dest('./www/img'),
 		gulp.dest('./projects/electron/img')
 	));
 });
@@ -107,7 +107,7 @@ gulp.task('js', function(done) {
 	.pipe(sourcemaps.write())
 	.pipe(multistream(
 		gulp.dest('./projects/web/js'),
-		gulp.dest('./projects/ionic/js'),
+		gulp.dest('./www/js'),
 		gulp.dest('./projects/electron/js')
 	))
 	.pipe(rename('all.min.js'))
@@ -116,7 +116,7 @@ gulp.task('js', function(done) {
 	}))
 	.pipe(multistream(
 		gulp.dest('./projects/web/js'),
-		gulp.dest('./projects/ionic/js'),
+		gulp.dest('./www/js'),
 		gulp.dest('./projects/electron/js')
 	))
 	.on('end', done);
@@ -126,7 +126,7 @@ gulp.task('js', function(done) {
 		gulp.dest('./projects/electron/js')
 	));
 	gulp.src(['./js/lib/ionic/**/*','./js/lib/ngCordova/dist/*.js'], {base: './js/lib/'})
-	.pipe(gulp.dest('./projects/ionic/lib/'));
+	.pipe(gulp.dest('./www/lib/'));
 });
 
 gulp.task('build', function() {

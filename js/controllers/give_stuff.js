@@ -4,7 +4,7 @@ function GiveStuffController($scope, authenticated,$http, $timeout, $location, $
 		$location.path('/stuff/get');
 		return;
 	}
-	$http.get('/api/v1/categories').success(function(data) {
+	$http.get(config.api.host + 'api/' + config.api.version + '/categories').success(function(data) {
 		$scope.data = data.res;
 		$scope.categories = [];
 		$scope.data.forEach(function(e, i) {

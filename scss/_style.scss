@@ -31,6 +31,7 @@ html, body, #container {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+	min-height: 500px;
 }
 
 body, div {
@@ -237,7 +238,7 @@ body, div {
 	background-color: #F99953;
 	border-radius: 3px;
 	border: none;
-	position: absolute;
+	position: fixed;
 	bottom: 0px;
 	opacity: 1;
 	&.hidden {
@@ -1310,6 +1311,7 @@ body, div {
 	width: 100%;
 	display: block;
 	position: absolute;
+	background-color: #ffffff;
 }
 
 /* My Stuff - END */
@@ -1318,20 +1320,31 @@ body, div {
 /* Messages -  END  */
 
 /* Conversations - START */
+
 #conversation-container {
 	height: 100%;
 	width: 100%;
 	display: block;
 	position: relative;
 }
-#conversation-messages {
+#conversation-messages-container {
 	height: calc(100% - 44px);
+	background-color: #ffffff;
+	position: relative;
+	display: block;
+}
+#conversation-messages {
+	list-style: none;
+	padding: 0;
+	margin: 0;
 	width: 100%;
 	display: block;
-	position: relative;
+	position: absolute;
+	bottom: 0px;
 }
 #conversation-input-container {
-	margin: 6px 0;
+	background-color: #efefef;
+	padding: 6px 0;
 	height: 32px;
 	width: 100%;
 	display: block;
@@ -1345,7 +1358,7 @@ body, div {
 	border-radius: 50%;
 	width: 30px;
 	height: 30px;
-	margin: 1px;
+	margin: 7px 1px;
 	line-height: 30px;
 	text-align: center;
 	top: 0px;
@@ -1360,21 +1373,69 @@ body, div {
 	right: 0px;
 }
 #cnversation-input {
+	border-radius: 5px;
+	background-color: #ffffff;
 	resize: none;
 	height: 26px;
 	width: calc(100% - 80px);
 	display: block;
 	border: none;
-	border-radius: 3px;
-	outline: 1px solid black;
+	border-radius: 5px;
 	margin: 0 auto;
-	padding: 3px;
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-top: 0px;
+	padding-bottom: 6px;
 	font-size: 20px;
 	line-height: 32px;
 	position: relative;
 	top: 0px;
 	margin: 0 auto;
 	z-index: 1;
+}
+.conversation-out-message {
+	width: 80%;
+	margin: 5px 5% 5px 15%;
+	background-color: limegreen;
+	padding: 3px;
+	color: #fff;
+	border-radius: 2px;
+	position: relative;
+}
+.conversation-out-message::before {
+	content: ' ';
+	width: 0px;
+	height: 0px;
+	display: block;
+	position: absolute;
+	right: -14px;
+	top: 5px;
+	border-right: 7px solid transparent;
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;
+	border-left: 7px solid limegreen;
+}
+.conversation-in-message {
+	width: 80%;
+	margin: 5px 15% 5px 5%;
+	background-color: forestgreen;
+	padding: 3px;
+	color: white;
+	border-radius: 2px;
+	position: relative;
+}
+.conversation-in-message::before {
+	content: ' ';
+	width: 0px;
+	height: 0px;
+	display: block;
+	position: absolute;
+	left: -14px;
+	top: 5px;
+	border-left: 7px solid transparent;
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;
+	border-right: 7px solid forestgreen;
 }
 /* Conversations -  END  */
 
@@ -1427,39 +1488,39 @@ body, div {
 /* Settings - Start */
 
 .settings-form {
-    padding: 1em;
-		font-size: .9em;
+	padding: 1em;
+	font-size: .9em;
 }
 
 .settings-form ul {
-    width:750px;
-    list-style-type:none;
-    list-style-position:outside;
-    margin:0px;
-    padding:0px;
+	width:750px;
+	list-style-type:none;
+	list-style-position:outside;
+	margin:0px;
+	padding:0px;
 }
 .settings-form li{
-    padding:.45em;
-    position:relative;
+	padding:.45em;
+	position:relative;
 }
 .settings-form label {
-    width:5.2em;
-    margin-top: 3px;
-    display:inline-block;
-    float:left;
-    padding:3px;
+	width:5.2em;
+	margin-top: 3px;
+	display:inline-block;
+	float:left;
+	padding:3px;
 }
 .settings-form input {
-    height:1.3em;
-    width:16em;
+	height:1.3em;
+	width:16em;
 }
 .settings-form textarea {
-  padding:8px; width:50%;
+	padding:8px; width:50%;
 }
 .settings-form input:focus, .settings-form textarea:focus {
-    background: #fff;
-    border:1px solid #555;
-    box-shadow: 0 0 3px #aaa;
+	background: #fff;
+	border:1px solid #555;
+	box-shadow: 0 0 3px #aaa;
 }
 .settings {
 	background-color: #fff;
@@ -1471,9 +1532,9 @@ body, div {
 	margin-bottom: 0;
 }
 .settings button {
-  border: 1px solid;
-  height: 3.5em;
-	width: 43%;
+	border: 1px solid;
+	height: 3.5em;
+	width: 29.5em;
 	cursor: pointer;
 	margin-top: .5em;
 }
@@ -1649,8 +1710,8 @@ body, div {
 	/* Settings - Start */
 
 	.settings-form {
-			font-size: .9em;
-			padding: .5em;
+		font-size: .9em;
+		padding: .5em;
 	}
 	.settings h1 {
 		height: 100%;

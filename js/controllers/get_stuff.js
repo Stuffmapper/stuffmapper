@@ -1,10 +1,7 @@
 function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .get-stuff-tab a');
 	$scope.listItems = [];
-	$http({
-		method: 'GET',
-		url: config.api.host + 'api/' + config.api.version + '/stuff/'
-	}).success(function(data) {
+	$http.get(config.api.host + 'api/' + config.api.version + '/stuff/').success(function(data) {
 		$scope.listItems = data.res;
 		$scope.markers = [];
 		if($scope.listItems) {

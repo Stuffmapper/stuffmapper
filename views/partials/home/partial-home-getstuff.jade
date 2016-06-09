@@ -9,7 +9,8 @@
 	#masonry-container.animate-250.hide-masonry-container
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
-				a(ui-sref="stuff.get.item({id:{{ list.id }}})") {{ item.title }}
+				a(ui-sref="stuff.get.item({id:{{ list.id }}})")
+					| {{ item.title }}
 					.list-item-img-container(id="post-item-{{ list.id }}")
 						img(ng-attr-src="//cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info

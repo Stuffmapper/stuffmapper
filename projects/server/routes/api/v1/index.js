@@ -42,6 +42,10 @@ router.get('/stuff', function(req, res) {
 				apiError(res, err);
 				return client.end();
 			}
+			result.rows.forEach(function(e, i) {
+				result.rows[i].lat += ((Math.random() * 0.2)-1);
+				result.rows[i].lng += ((Math.random() * 0.2)-1);
+			});
 			res.send({
 				err: null,
 				res: result.rows
@@ -519,10 +523,11 @@ router.get('/messages', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT * FROM conversations, posts ',
+			'SELECT * FROM conversations, posts, images ',
 			'WHERE (conversations.lister_id = $1 OR ',
 			'conversations.dibber_id = $1) AND ',
-			'posts.id = conversations.post_id ',
+			'posts.id = conversations.post_id AND ',
+			'images.post_id = conversations.post_id ',
 			'ORDER BY conversations.date_created DESC'
 		].join('');
 		var values = [
@@ -540,15 +545,12 @@ router.get('/messages', isAuthenticated, function(req, res) {
 					apiError(res, err);
 					return client.end();
 				}
-				console.log(result2);
 				if(result2.rows[0]) messagesRows[result2.rows[0].conversation_id] = result2.rows[0].message;
 				if(++catcher === result1.rows.length) {
 					res.send({
 						err: null,
-						res: {
-							res: result1,
-							messages: messagesRows
-						}
+						res: result1.rows,
+						messages : messagesRows
 					});
 					return client.end();
 				}
@@ -563,7 +565,6 @@ router.get('/messages', isAuthenticated, function(req, res) {
 					result1.rows[i].id,
 					result1.rows[i].post_id
 				];
-				console.log('values', values);
 				client.query(query, values, cb);
 			}
 		});
@@ -580,7 +581,6 @@ router.post('/messages', isAuthenticated, function(req, res) {
 		req.session.passport.user.id,
 		req.body.message
 	];
-	console.log(values);
 	queryServer(res, query, values, function(result) {
 		res.send({
 			err: null,
@@ -605,6 +605,13 @@ router.get('/conversation/:id', isAuthenticated, function(req, res) {
 		req.params.id
 	];
 	queryServer(res, query, values, function(result) {
+		result.rows.forEach(function(e, i) {
+			console.log(result.rows[i].user_id);
+			console.log(req.session.passport.user.id);
+			console.log((result.rows[i].user_id === req.session.passport.user.id));
+			console.log(((result.rows[i].user_id === req.session.passport.user.id)?'out':'in'));
+			result.rows[i].type = ((parseInt(result.rows[i].user_id) === parseInt(req.session.passport.user.id))?'out':'in');
+		});
 		res.send({
 			err: null,
 			res: result.rows
@@ -679,7 +686,6 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 		res.send({
 			err: null,
 			res: result
-
 		});
 	});
 });
