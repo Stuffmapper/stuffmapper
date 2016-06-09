@@ -1,1 +1,5 @@
-div messages
+ul#messages-container
+	li.messages-conversation-container(ng-repeat="message in messages")
+		a.message-conversation(ui-sref="stuff.my.conversation({conversation:({{ message.id }} - 1)})")
+			h3 {{ message.title }}
+			h4 {{ message.message }}

@@ -1,8 +1,6 @@
 function GetItemController($scope, $http, $stateParams, $userData, $compile) {
-	$http({
-		method: 'GET',
-		url: config.api.host + 'api/' + config.api.version + '/stuff/id/' + $stateParams.id
-	}).success(function(data) {
+	$http.get(config.api.host + 'api/' + config.api.version + '/stuff/id/' + $stateParams.id
+	).success(function(data) {
 		$scope.listItem = data.res;
 		$scope.marker = {};
 		$scope.marker = new google.maps.Marker({

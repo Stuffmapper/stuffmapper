@@ -26,6 +26,7 @@ CREATE TABLE users (
 	google_id varchar(64),
 	facebook_id varchar(64),
 	image_url text,
+	news_letter boolean DEFAULT false,
 	date_archived timestamp DEFAULT current_timestamp,
 	archived boolean DEFAULT false,
 	country varchar(32),
@@ -179,3 +180,7 @@ INSERT INTO categories (category) VALUES
 --
 -- CREATE TRIGGER watched_table_trigger AFTER INSERT OR UPDATE ON bar
 -- FOR EACH ROW EXECUTE PROCEDURE notify_trigger();
+
+
+
+--
