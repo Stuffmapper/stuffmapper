@@ -1473,7 +1473,7 @@ body, div {
 	padding-bottom: 0;
 	margin: 0;
 	list-style-type: none;
-	overflow: scroll;
+	overflow-y: scroll;
 }
 .tag-list li {
 	outline: 1px black solid;
@@ -1534,7 +1534,7 @@ body, div {
 .settings button {
 	border: 1px solid;
 	height: 3.5em;
-	width: 29.5em;
+	width: 43%;
 	cursor: pointer;
 	margin-top: .5em;
 }
