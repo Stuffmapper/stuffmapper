@@ -1,7 +1,7 @@
 function GiveStuffController($scope, authenticated, $http, $timeout, $location, $stuffTabs) {
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 	if(!authenticated.res.loggedIn) return $location.path('/stuff/get');
-	$http.get('/api/v1/categories').success(function(data) {
+	$http.get(config.api.host + 'api/' + config.api.version + '/categories').success(function(data) {
 		$scope.data = data.res;
 		$scope.categories = [];
 		$scope.data.forEach(function(e, i) {
@@ -166,18 +166,16 @@ function GiveStuffController($scope, authenticated, $http, $timeout, $location, 
 		/* Misc Functions - START */
 
 		function nextStep() {
-			$scope.currentStep++;
-			$('#give-stuff-progress').addClass('step'+$scope.currentStep+'-done');
+			$('#give-stuff-progress').addClass('step'+(++$scope.currentStep)+'-done');
 			$('#give-step' + ($scope.currentStep - 1)).addClass('completed').removeClass('active');
 			$('#give-step' + $scope.currentStep).addClass('active');
 			$scope['initStep' + $scope.currentStep]();
 		}
 
 		function prevStep() {
-			$('#give-step' + ($scope.currentStep)).removeClass('active');
+			$('#give-step' + $scope.currentStep).removeClass('active');
 			$('#give-stuff-progress').removeClass('step'+$scope.currentStep+'-done');
-			$scope.currentStep--;
-			$('#give-step' + $scope.currentStep).removeClass('completed').addClass('active');
+			$('#give-step' + (--$scope.currentStep)).removeClass('completed').addClass('active');
 		}
 
 		/* Misc Functions -  END  */

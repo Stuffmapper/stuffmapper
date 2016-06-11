@@ -47,7 +47,6 @@ module.exports = (function() {
 		}
 	}
 	function findOrCreateOne(type, profile, cb) {
-		console.log(type, profile);
 		var client = new pg.Client(conString);
 		if(profile) {
 			client.connect(function(err) {
@@ -97,7 +96,6 @@ module.exports = (function() {
 							profile.id
 						];
 						client.query(query, values, function(err, result) {
-							console.log(result);
 							if(err) {
 								client.end();
 								return cb(err, null);

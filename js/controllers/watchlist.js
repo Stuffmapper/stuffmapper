@@ -6,10 +6,6 @@ function WatchListController($scope, $location, authenticated) {
 	// $scope.tagnames = [];
 	// $scope.errors = [];
 	// $scope.newTagname = null;
-	// $('#mystuff a').addClass('selected');
-	// $scope.$on("$destroy", function() {
-	// 		$('#mystuff a').removeClass('selected');
-	// });
 	$scope.tagnames = [
                     {'tagname':'desk'},
                     {'tagname':'couch'},
@@ -31,6 +27,7 @@ function WatchListController($scope, $location, authenticated) {
 		$scope.tagnames.push({ 'tagname':$scope.tagname});
 		$scope.tagname='';
 	};
+}
 
 	// $scope.getAll = function() {
 	// $http.get('/api/tagname')
@@ -73,4 +70,3 @@ function WatchListController($scope, $location, authenticated) {
 	// 			$scope.getAll();
 	// 		});
 	// };
-}

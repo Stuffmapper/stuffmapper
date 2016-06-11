@@ -33,20 +33,19 @@ var stuffMapp = angular
 })
 .service('authenticator', ['$http', '$q', function ($http, $q) {
 	var deferred = $q.defer();
-	$http({
-		method: 'POST',
-		url: '/api/v1/account/status',
-		cache: false
-	}).success(function (data) {
-		deferred.resolve(data);
-	}).error(function (msg) {
-		deferred.reject(msg);
-	});
+	$http.post(config.api.host + 'api/' + config.api.version + '/account/status')
+	.success(function (data) { deferred.resolve(data); })
+	.error(function (msg) { deferred.reject(msg); });
 	return deferred.promise;
 }])
 .directive('repeatDone', function() {
 	return function(scope, element, attrs) {
 		if(scope.$last) scope.$eval(attrs.repeatDone);
+	};
+})
+.filter('reverse', function() {
+	return function(items) {
+		if(items) return items.slice().reverse();
 	};
 });
 

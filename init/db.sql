@@ -26,6 +26,7 @@ CREATE TABLE users (
 	google_id varchar(64),
 	facebook_id varchar(64),
 	image_url text,
+	news_letter boolean DEFAULT false,
 	date_archived timestamp DEFAULT current_timestamp,
 	archived boolean DEFAULT false,
 	country varchar(32),
@@ -50,7 +51,6 @@ CREATE TABLE posts (
 	lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
 	attended boolean NOT NULL,
-	status_id integer REFERENCES status(id),
 	category_id integer REFERENCES categories(id),
 	dibbed boolean DEFAULT false,
 	dibber_id integer REFERENCES users(id),
@@ -64,10 +64,12 @@ CREATE TABLE pick_up_success (
 	post_id integer REFERENCES posts(id),
 	dibber_id integer REFERENCES users(id),
 	lister_id integer REFERENCES users(id),
+	pick_up_init timestamp DEFAULT current_timestamp,
 	pick_up_success boolean DEFAULT FALSE,
 	pick_up_date timestamp,
 	rejected boolean,
 	rejection_date timestamp,
+	omw_attempt integer DEFAULT 0,
 	omw boolean DEFAULT FALSE,
 	omw_time timestamp,
 	omw_lat FLOAT,
@@ -166,3 +168,19 @@ INSERT INTO categories (category) VALUES
 ('General'),
 ('Kids & Babies'),
 ('Recreation');
+
+-- HARD MODE!  Create DB trigger that runs async on the server
+-- CREATE FUNCTION notify_trigger() RETURNS trigger AS $$
+-- DECLARE
+-- BEGIN
+--   PERFORM pg_notify('watchers', TG_TABLE_NAME || ',id,' || NEW.id );
+--   RETURN new;
+-- END;
+-- $$ LANGUAGE plpgsql;
+--
+-- CREATE TRIGGER watched_table_trigger AFTER INSERT OR UPDATE ON bar
+-- FOR EACH ROW EXECUTE PROCEDURE notify_trigger();
+
+
+
+--

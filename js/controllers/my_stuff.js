@@ -1,8 +1,5 @@
 function MyStuffController($scope, $http, $userData) {
-	$http({
-		method: 'GET',
-		url: config.api.host + 'api/' + config.api.version + '/stuff/'
-	}).success(function(data) {
+	$http.get(config.api.host + 'api/' + config.api.version + '/stuff/').success(function(data) {
 		$scope.listItems = data;
     // $('#mystuff a').addClass('selected');
     // $scope.$on("$destroy", function() {
