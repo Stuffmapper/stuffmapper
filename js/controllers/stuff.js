@@ -1,4 +1,15 @@
-function StuffController($scope, $userData) {
+var stuffControllerArgs = [];
+stuffControllerArgs.push('$scope');
+stuffControllerArgs.push('$userData');
+if(config.isIonic) stuffControllerArgs.push('authenticated');
+stuffMapp.controller('stuffController', [$scope, $userData, authenticated], stuffcontroller);
+function StuffController() {
+	$scope = arguments[0];
+	$userData = arguments[1];
+	authenticated = arguments[2];
+	if(typeof authenticated !== 'undefined') {
+		// check login
+	}
 	$scope.mapbox = false;
 	if($scope.mapbox) {
 		if (mapboxgl.supported()) {
