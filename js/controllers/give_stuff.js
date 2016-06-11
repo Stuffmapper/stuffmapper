@@ -1,9 +1,6 @@
-function GiveStuffController($scope, authenticated,$http, $timeout, $location, $stuffTabs) {
+function GiveStuffController($scope, authenticated, $http, $timeout, $location, $stuffTabs) {
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
-	if(!authenticated.res.loggedIn) {
-		$location.path('/stuff/get');
-		return;
-	}
+	if(!authenticated.res.loggedIn) return $location.path('/stuff/get');
 	$http.get(config.api.host + 'api/' + config.api.version + '/categories').success(function(data) {
 		$scope.data = data.res;
 		$scope.categories = [];
@@ -13,7 +10,7 @@ function GiveStuffController($scope, authenticated,$http, $timeout, $location, $
 				value: parseInt(e.id)
 			});
 		});
-		$scope.category = "General";
+		$scope.category = 'General';
 		$scope.published = false;
 
 		$scope.currentStep = 1;
