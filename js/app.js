@@ -67,83 +67,100 @@ function appConfig($locationProvider, $stateProvider, $urlRouterProvider) {
 	$urlRouterProvider.otherwise('/stuff/get');
 	$locationProvider.html5Mode(config.html5);
 	$stateProvider
-	.state('stuff', {
-		url: '/stuff',
-		templateUrl: 'templates/partial-home.html',
-		controller: StuffController
-	})
-	.state('stuff.get', {
-		url: '/get',
-		templateUrl: 'templates/partial-home-getstuff.html',
-		controller: GetStuffController
-	})
-	.state('stuff.get.item', { //  http://www.stuffmapper.com/stuff/get/232
-		url: '/:id',
-		controller: GetItemController
-	})
-	.state('stuff.give', { //  http://www.stuffmapper.com/stuff/give#step1
-		url: '/give',
-		templateUrl: 'templates/partial-home-givestuff.html',
-		controller: GiveStuffController,
-		resolve: {
-			authenticated: ['authenticator', function (authenticated) {
-				return authenticated;
-			}]
-		}
-	})
-	.state('stuff.my', {
-		url: '/my',
-		templateUrl: 'templates/partial-home-my.html',
-		controller: MyController,
-		resolve: {
-			authenticated: ['authenticator', function (authenticated) {
-				return authenticated;
-			}]
-		}
-	})
-	.state('stuff.my.items', {
-		url: '/items',
-		templateUrl: 'templates/partial-home-mystuff.html',
-		controller: MyStuffController
-	})
-	.state('stuff.my.items.item', {
-		url: '/:id',
-		controller: MyStuffItemController
-	})
-	.state('stuff.my.messages', {
-		url: '/messages',
-		templateUrl: 'templates/partial-home-messages.html',
-		controller: MessagesController
-	})
-	.state('stuff.my.conversation', {
-		url: '/messages/:conversation',
-		templateUrl: 'templates/partial-home-conversation.html',
-		controller: ConversationController
-	})
-	.state('stuff.my.watchlist', {
-		url: '/watchlist',
-		templateUrl: 'templates/partial-home-watchlist.html',
-		controller: WatchListController
-	})
-	.state('stuff.my.settings', {
-		url: '/settings',
-		templateUrl: 'templates/partial-home-settings.html',
-		controller: SettingsController
-	})
-	.state('about', {
-		url: '/about',
-		templateUrl: 'templates/partial-about.html',
-		controller: AboutController
-	});
+	.state('stuff', config.providers.stuff)
+	.state('stuff.get', config.providers.getStuff)
+	.state('stuff.get.item', config.providers.getItem)
+	.state('stuff.give', config.providers.giveStuff)
+	.state('stuff.my', config.providers.my)
+	.state('stuff.my.items', config.providers.myStuff)
+	.state('stuff.my.items.item', config.providers.myItem)
+	.state('stuff.my.messages', config.providers.myMessages)
+	.state('stuff.my.watchlist', config.providers.myWatchlist)
+	.state('stuff.my.settings', config.providers.mySettings)
+	.state('about', config.providers.about);
 }
 
 function setDefaultConfig() {
 	var isIonic = $('html').hasClass('ionic');
 	var isDev = $('html').hasClass('dev') || $('html').hasClass('test');
 	var modules = ['ui.router', 'ngAnimate'];
+	var providers = {
+		stuff : {
+			url: '/stuff',
+			templateUrl: 'templates/partial-home.html',
+			controller: StuffController
+		},
+		getStuff : {
+			url: '/get',
+			templateUrl: 'templates/partial-home-getstuff.html',
+			controller: GetStuffController
+		},
+		getItem : {
+			url: '/:id',
+			controller: GetItemController
+		},
+		giveStuff : {
+			url: '/give',
+			templateUrl: 'templates/partial-home-givestuff.html',
+			controller: GiveStuffController,
+			resolve: {
+				authenticated: ['authenticator', function (authenticated) {
+					return authenticated;
+				}]
+			}
+		},
+		my : {
+			url: '/my',
+			templateUrl: 'templates/partial-home-my.html',
+			controller: MyController,
+			resolve: {
+				authenticated: ['authenticator', function (authenticated) {
+					return authenticated;
+				}]
+			}
+		},
+		myStuff : {
+			url: '/items',
+			templateUrl: 'templates/partial-home-mystuff.html',
+			controller: MyStuffController
+		},
+		myItem : {
+			url: '/:id',
+			controller: MyItemController
+		},
+		myMessages : {
+			url: '/messages',
+			templateUrl: 'templates/partial-home-messages.html',
+			controller: MessagesController
+		},
+		myWatchlist : {
+			url: '/watchlist',
+			templateUrl: 'templates/partial-home-watchlist.html',
+			controller: WatchListController
+		},
+		mySettings : {
+			url: '/settings',
+			templateUrl: 'templates/partial-home-settings.html',
+			controller: SettingsController
+		},
+		about : {
+			url: '/about',
+			templateUrl: 'templates/partial-about.html',
+			controller: AboutController
+		}
+	};
 	if(isIonic) {
 		modules.push('ionic');
 		modules.push('ngCordova');
+		Object.keys(providers).forEach(function(key) {
+			if(!providers[key].resolve) {
+				providers[key].resolve = {
+					authenticated: ['authenticator', function (authenticated) {
+						return authenticated;
+					}]
+				};
+			}
+		});
 	}
 	return {
 		ionic : {
@@ -158,6 +175,7 @@ function setDefaultConfig() {
 			'/',
 			version : 'v1'
 		},
-		html5 : !!window.history && !!window.history.pushState
+		html5 : !!window.history && !!window.history.pushState,
+		providers : providers
 	};
 }
