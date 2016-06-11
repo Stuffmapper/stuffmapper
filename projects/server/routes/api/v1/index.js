@@ -43,8 +43,8 @@ router.get('/stuff', function(req, res) {
 				return client.end();
 			}
 			result.rows.forEach(function(e, i) {
-				result.rows[i].lat += ((Math.random() * 0.2)-1);
-				result.rows[i].lng += ((Math.random() * 0.2)-1);
+				result.rows[i].lat += ((Math.random() * 0.002)-0.001);
+				result.rows[i].lng += ((Math.random() * 0.002)-0.001);
 			});
 			res.send({
 				err: null,

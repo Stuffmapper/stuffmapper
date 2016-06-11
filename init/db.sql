@@ -36,6 +36,23 @@ CREATE TABLE users (
 	address varchar(64)
 );
 
+CREATE TABLE ip_addresses (
+	id BIGSERIAL PRIMARY KEY,
+	user_id integer REFERENCES users(id),
+	ip_address varchar(16)
+);
+
+CREATE TABLE addresses (
+	id BIGSERIAL PRIMARY KEY,
+	user_id integer REFERENCES users(id),
+	main_address boolean DEFAULT false,
+	country varchar(32),
+	city varchar(32),
+	state varchar(32),
+	zip_code varchar(10),
+	address varchar(64)
+);
+
 CREATE TABLE categories (
 	id BIGSERIAL PRIMARY KEY,
 	category varchar(32) UNIQUE NOT NULL

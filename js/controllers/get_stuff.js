@@ -48,9 +48,9 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 						},
 						"properties": {
 							"title": "Stuff",
-							"iconUrl": "/img/circle.png",
+							"iconUrl": $('base').attr('href')+"img/circle.png",
 							"icon": {
-								"iconUrl": "/img/circle.png",
+								"iconUrl": $('base').attr('href')+"img/circle.png",
 								"iconSize": [100, 100],
 								"iconAnchor": [50, 50],
 								"popupAnchor": [0, -55],
@@ -88,7 +88,7 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 							lat: e.lat,
 							lng : e.lng
 						},
-						icon: '/img/circle.png',
+						icon: $('base').attr('href')+'img/circle.png',
 						map: $scope.map,
 						data: e
 					}));

@@ -40,11 +40,11 @@ function StuffController() {
 				lat: 47.608013,
 				lng: -122.335167
 			},
-			zoomControl: true,
+			zoomControl: false,
 			mapTypeControl: false,
-			scaleControl: true,
+			scaleControl: false,
 			streetViewControl: false,
-			rotateControl: true,
+			rotateControl: false,
 			fullscreenControl: false,
 			mapTypeControlOptions: {
 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']

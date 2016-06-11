@@ -168,11 +168,7 @@ function setDefaultConfig() {
 		},
 		modules : modules,
 		api : {
-			host : isIonic?
-			isDev?
-			'//localhost/':
-			/*'//www.stuffmapper.com/'*/'//localhost:3000/':
-			'/',
+			host : isDev?'/':'http://ducks.stuffmapper.com:3000/',
 			version : 'v1'
 		},
 		html5 : !!window.history && !!window.history.pushState,
