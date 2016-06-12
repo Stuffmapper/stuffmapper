@@ -1,4 +1,8 @@
-function SettingsController($scope, $http) {
+stuffMapp.controller('settingsController', ['$scope', '$http', SettingsController]);
+
+function SettingsController() {
+	var $scope = arguments[0];
+	var $http = arguments[1];
 	// $scope.userInfo = {};
 	// var testing = true;
 	// if(testing) {

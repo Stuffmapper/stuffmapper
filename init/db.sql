@@ -137,16 +137,11 @@ CREATE TABLE messages (
 	archived boolean DEFAULT false
 );
 
-CREATE TABLE watchlist (
-	id BIGSERIAL PRIMARY KEY,
-	user_id integer REFERENCES users(id)
-);
-
 CREATE TABLE watchlist_items (
 	id BIGSERIAL PRIMARY KEY,
-	watchlist_id integer REFERENCES watchlist(id),
+	user_id integer REFERENCES users(id),
 	archived boolean DEFAULT false,
-	radius_miles FLOAT DEFAULT 15.0 NOT NULL
+	radius_miles FLOAT DEFAULT 15.0
 );
 
 CREATE TABLE watchlist_keys (

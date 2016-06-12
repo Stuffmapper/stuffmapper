@@ -98,8 +98,10 @@ gulp.task('js', function(done) {
 		'./js/lib/masonry/dist/masonry.pkgd.js',
 		'./js/lib/angular-ui-router/release/angular-ui-router.min.js',
 		'./js/lib/angular-animate/angular-animate.min.js',
+		'./js/app.js',
+		'./js/settings.js',
 		'./js/controllers/*.js',
-		'./js/app.js'
+		'./js/config.js'
 	])
 	.pipe(sourcemaps.init())
 	.pipe(concat('all.js'))

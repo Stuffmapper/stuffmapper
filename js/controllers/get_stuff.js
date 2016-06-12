@@ -1,4 +1,10 @@
-function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
+stuffMapp.controller('getStuffController', ['$scope', '$http', '$timeout', '$userData', '$stuffTabs', GetStuffController]);
+function GetStuffController() {
+	var $scope = arguments[0];
+	var $http = arguments[1];
+	var $timeout = arguments[2];
+	var $userData = arguments[3];
+	var $stuffTabs = arguments[4];
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .get-stuff-tab a');
 	$scope.listItems = [];
 	$http.get(config.api.host + 'api/' + config.api.version + '/stuff/').success(function(data) {
@@ -82,23 +88,38 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 				});
 			}
 			else {
-				$scope.listItems.forEach(function(e) {
-					$scope.markers.push(new google.maps.Marker({
-						position: {
-							lat: e.lat,
-							lng : e.lng
-						},
-						icon: $('base').attr('href')+'img/circle.png',
-						map: $scope.map,
-						data: e
-					}));
-					$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
-						$scope.openInfoWindow(this.data);
-					});
-				});
+				setMarkers();
 			}
 		}
 	});
+	console.log($scope);
+	$scope.map.addListener('zoom_changed', setMarkers);
+	function setMarkers() {
+		$scope.markers.forEach(function(e) {
+			e.setMap(null);
+		});
+		var mapZoom = $scope.map.getZoom();
+		console.log(mapZoom, (mapZoom*mapZoom*2)/(20/mapZoom));
+		$scope.listItems.forEach(function(e) {
+			$scope.markers.push(new google.maps.Marker({
+				position: {
+					lat: e.lat,
+					lng : e.lng
+				},
+				icon: {
+					//url: $('base').attr('href')+'img/circle.png',
+					url: 'http://thecraftchop.com/files/images/rope-circle.svg',
+					scaledSize: new google.maps.Size((mapZoom*mapZoom*2)/(20/mapZoom), (mapZoom*mapZoom*2)/(20/mapZoom)),
+					origin: new google.maps.Point(0, 0)
+				},
+				map: $scope.map,
+				data: e
+			}));
+			$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
+				$scope.openInfoWindow(this.data);
+			});
+		});
+	}
 	$scope.filterOptions = [
 		'thing',
 		'stuff'
