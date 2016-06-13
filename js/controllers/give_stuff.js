@@ -1,4 +1,11 @@
-function GiveStuffController($scope, authenticated, $http, $timeout, $location, $stuffTabs) {
+stuffMapp.controller('giveController', ['$scope', 'authenticated', '$http', '$timeout', '$location', '$stuffTabs', GiveController]);
+function GiveController() {
+	var $scope = arguments[0];
+	var authenticated = arguments[1];
+	var $http = arguments[2];
+	var $timeout = arguments[3];
+	var $location = arguments[4];
+	var $stuffTabs = arguments[5];
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 	if(!authenticated.res.loggedIn) return $location.path('/stuff/get');
 	$http.get(config.api.host + 'api/' + config.api.version + '/categories').success(function(data) {

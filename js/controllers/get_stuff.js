@@ -1,4 +1,10 @@
-function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
+stuffMapp.controller('getStuffController', ['$scope', '$http', '$timeout', '$userData', '$stuffTabs', GetStuffController]);
+function GetStuffController() {
+	var $scope = arguments[0];
+	var $http = arguments[1];
+	var $timeout = arguments[2];
+	var $userData = arguments[3];
+	var $stuffTabs = arguments[4];
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .get-stuff-tab a');
 	$scope.listItems = [];
 	$http.get(config.api.host + 'api/' + config.api.version + '/stuff/').success(function(data) {
@@ -48,9 +54,9 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 						},
 						"properties": {
 							"title": "Stuff",
-							"iconUrl": "/img/circle.png",
+							"iconUrl": $('base').attr('href')+"img/circle.png",
 							"icon": {
-								"iconUrl": "/img/circle.png",
+								"iconUrl": $('base').attr('href')+"img/circle.png",
 								"iconSize": [100, 100],
 								"iconAnchor": [50, 50],
 								"popupAnchor": [0, -55],
@@ -82,23 +88,38 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 				});
 			}
 			else {
-				$scope.listItems.forEach(function(e) {
-					$scope.markers.push(new google.maps.Marker({
-						position: {
-							lat: e.lat,
-							lng : e.lng
-						},
-						icon: '/img/circle.png',
-						map: $scope.map,
-						data: e
-					}));
-					$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
-						$scope.openInfoWindow(this.data);
-					});
-				});
+				setMarkers();
 			}
 		}
 	});
+	console.log($scope);
+	$scope.map.addListener('zoom_changed', setMarkers);
+	function setMarkers() {
+		$scope.markers.forEach(function(e) {
+			e.setMap(null);
+		});
+		var mapZoom = $scope.map.getZoom();
+		console.log(mapZoom, (mapZoom*mapZoom*2)/(20/mapZoom));
+		$scope.listItems.forEach(function(e) {
+			$scope.markers.push(new google.maps.Marker({
+				position: {
+					lat: e.lat,
+					lng : e.lng
+				},
+				icon: {
+					//url: $('base').attr('href')+'img/circle.png',
+					url: 'https://upload.wikimedia.org/wikipedia/commons/4/43/Blue_circle_for_diabetes.svg',
+					scaledSize: new google.maps.Size((mapZoom*mapZoom*2)/(20/mapZoom), (mapZoom*mapZoom*2)/(20/mapZoom)),
+					origin: new google.maps.Point(0, 0)
+				},
+				map: $scope.map,
+				data: e
+			}));
+			$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
+				$scope.openInfoWindow(this.data);
+			});
+		});
+	}
 	$scope.filterOptions = [
 		'thing',
 		'stuff'
@@ -132,31 +153,9 @@ function GetStuffController($scope, $http, $timeout, $userData, $stuffTabs) {
 	};
 	$(window).on('resize', $scope.watchSize);
 	$scope.watchSize();
-
-	$scope.infoWindowTemplate = [
-		'<div id="info-window-{{id}}" class="info-windows">',
-		'	<div class="info-window-header">',
-		'		<span class="info-window-image" style="background-image: {{image}};"></span>',
-		'		<span class="info-window-header-text">',
-		'			<div class="info-window-header-title">{{title}}</div>',
-		'			<div class="info-window-header-description">{{description}}</div>',
-		'		</span>',
-		'	</div>',
-		'		<div class="info-window-dibs-button">Dibs!</div>',
-		'	<span class="info-window-text">',
-		'		<div class="info-window-title">{{title}}</div>',
-		'		<div class="info-window-description">{{description}}</div>',
-		'	</span>',
-		'	<div class="info-window-footer">',
-		'		<span class="info-window-category">{{category}}</span>',
-		'		<span class="info-window-attended">{{attended}}</span>',
-		'		</span>',
-		'	</div>',
-		'</div>'
-	].join('\n');
 	$scope.openInfoWindow = function(e) {
 		e.category = 'test-category';
-		var template = $scope.infoWindowTemplate
+		var template = $('#templates/partial-home-get-item-single-map.html').text()// XXX: WHAT IS THIS
 		.slice(0)
 		.replace('{{id}}',e.id)
 		.replace('{{image}}',e.image_url)

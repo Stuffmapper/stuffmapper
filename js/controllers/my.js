@@ -1,4 +1,9 @@
-function MyController($scope, $state, $location, authenticated) {
+stuffMapp.controller('myController', ['$scope', '$state', '$location', 'authenticated', MyController]);
+function MyController() {
+	var $scope = arguments[0];
+	var $state = arguments[1];
+	var $location = arguments[2];
+	var authenticated = arguments[3];
 	if(!authenticated.res.loggedIn) {
 		$location.path('/stuff/get');
 		return;

@@ -1,12 +1,13 @@
 var stuffControllerArgs = [];
 stuffControllerArgs.push('$scope');
 stuffControllerArgs.push('$userData');
-if(config.isIonic) stuffControllerArgs.push('authenticated');
-stuffMapp.controller('stuffController', [$scope, $userData, authenticated], stuffcontroller);
+if(config.ionic) stuffControllerArgs.push('authenticator');
+stuffControllerArgs.push(StuffController);
+stuffMapp.controller('stuffController', stuffControllerArgs);
 function StuffController() {
-	$scope = arguments[0];
-	$userData = arguments[1];
-	authenticated = arguments[2];
+	var $scope = arguments[0];
+	var $userData = arguments[1];
+	var authenticated = (typeof arguments[2] !== 'function' && typeof arguments[3] !== 'undefined')?arguments[2]:undefined;
 	if(typeof authenticated !== 'undefined') {
 		// check login
 	}
@@ -40,11 +41,13 @@ function StuffController() {
 				lat: 47.608013,
 				lng: -122.335167
 			},
-			zoomControl: true,
+			minZoom: 12,
+			maxZoom: 17,
+			zoomControl: false,
 			mapTypeControl: false,
-			scaleControl: true,
+			scaleControl: false,
 			streetViewControl: false,
-			rotateControl: true,
+			rotateControl: false,
 			fullscreenControl: false,
 			mapTypeControlOptions: {
 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
@@ -53,6 +56,7 @@ function StuffController() {
 		$scope.map = new google.maps.Map($('#map-view')[0], mapOptions);
 		$scope.map.mapTypes.set('map_style', styledMap);
 		$scope.map.setMapTypeId('map_style');
+		console.log($scope);
 	}
 	$userData.setUserId(1);
 }
