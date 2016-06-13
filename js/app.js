@@ -1,4 +1,3 @@
-
 var config = setDefaultSettings();
 var stuffMapp = angular
 .module('stuffMapp', config.modules)

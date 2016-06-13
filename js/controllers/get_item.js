@@ -12,7 +12,7 @@ function GetItemController() {
 				lat: $scope.listItem.lat,
 				lng : $scope.listItem.lng
 			},
-			icon: '/img/circle.png',
+			icon: 'https://upload.wikimedia.org/wikipedia/commons/4/43/Blue_circle_for_diabetes.svg',
 			map: $scope.map,
 			data: $scope.listItem.id
 		});

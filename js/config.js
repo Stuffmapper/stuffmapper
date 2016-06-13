@@ -1,4 +1,3 @@
-
 stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider) {
 	$urlRouterProvider.otherwise('/stuff/get');
 	$locationProvider.html5Mode(config.html5);

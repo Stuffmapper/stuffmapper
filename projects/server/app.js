@@ -81,7 +81,8 @@ io.on('disconnect', function(socket){
 app.use('/api/v1', require('./routes/api/v1/index'));
 app.use('*', function(req,res){
 	res.render('index', {
-		loggedIn : req.isAuthenticated()
+		loggedIn : req.isAuthenticated(),
+		isDev : true
 	});
 });
 

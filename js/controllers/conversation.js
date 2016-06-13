@@ -22,7 +22,6 @@ function ConversationController() {
 					'	'+$('#cnversation-input').val(),
 					'</li>'
 				].join('\n'));
-				$('#cnversation-input').val('');
 			});
 		};
 	});
