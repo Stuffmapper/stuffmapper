@@ -48,13 +48,14 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		else
 			script(src="/js/angular.js")
 		script(src="https://use.typekit.net/lrm3jdv.js")
-		script.
-			//try{Typekit.load({ async: true });}catch(e){}
+		script try{Typekit.load({ async: true });}catch(e){}
 		script(src="js/all.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
 		script(id="templates/blank.html" type="text/ng-template").
-			<div style="display:none;"></div>
+			div(style="display:none;")
+		script(id="templates/partial-home-get-item-single-map.html" type="text/ng-template")
+			include ./partials/home/partial-home-get-item-single-map
 		script(id="templates/partial-home-my.html" type="text/ng-template")
 			include ./partials/home/partial-home-my
 		script(id="templates/partial-home-conversation.html" type="text/ng-template")

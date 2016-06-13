@@ -108,7 +108,7 @@ function GetStuffController() {
 				},
 				icon: {
 					//url: $('base').attr('href')+'img/circle.png',
-					url: 'http://thecraftchop.com/files/images/rope-circle.svg',
+					url: 'https://upload.wikimedia.org/wikipedia/commons/4/43/Blue_circle_for_diabetes.svg',
 					scaledSize: new google.maps.Size((mapZoom*mapZoom*2)/(20/mapZoom), (mapZoom*mapZoom*2)/(20/mapZoom)),
 					origin: new google.maps.Point(0, 0)
 				},
@@ -153,31 +153,9 @@ function GetStuffController() {
 	};
 	$(window).on('resize', $scope.watchSize);
 	$scope.watchSize();
-
-	$scope.infoWindowTemplate = [
-		'<div id="info-window-{{id}}" class="info-windows">',
-		'	<div class="info-window-header">',
-		'		<span class="info-window-image" style="background-image: {{image}};"></span>',
-		'		<span class="info-window-header-text">',
-		'			<div class="info-window-header-title">{{title}}</div>',
-		'			<div class="info-window-header-description">{{description}}</div>',
-		'		</span>',
-		'	</div>',
-		'		<div class="info-window-dibs-button">Dibs!</div>',
-		'	<span class="info-window-text">',
-		'		<div class="info-window-title">{{title}}</div>',
-		'		<div class="info-window-description">{{description}}</div>',
-		'	</span>',
-		'	<div class="info-window-footer">',
-		'		<span class="info-window-category">{{category}}</span>',
-		'		<span class="info-window-attended">{{attended}}</span>',
-		'		</span>',
-		'	</div>',
-		'</div>'
-	].join('\n');
 	$scope.openInfoWindow = function(e) {
 		e.category = 'test-category';
-		var template = $scope.infoWindowTemplate
+		var template = $('#templates/partial-home-get-item-single-map.html').text()// XXX: WHAT IS THIS
 		.slice(0)
 		.replace('{{id}}',e.id)
 		.replace('{{image}}',e.image_url)
