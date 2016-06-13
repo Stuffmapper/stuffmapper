@@ -203,8 +203,8 @@ body, div {
 	height: 30px;
 	line-height: 40px;
 	font-size: 30px;
-	color: $primary-color;
-	background-color: #ffffff;
+	background-color: $primary-color;
+	color: #ffffff;
 	padding: 5px 10px;
 	cursor: pointer;
 }
@@ -1499,9 +1499,13 @@ body, div {
 	margin:0px;
 	padding:0px;
 }
-.settings-form li{
+.settings-form li {
 	padding:.45em;
 	position:relative;
+}
+.settings-form li p {
+	margin-bottom: 0;
+	margin-top: 4px;
 }
 .settings-form label {
 	width:5.2em;
@@ -1524,6 +1528,7 @@ body, div {
 }
 .settings {
 	background-color: #fff;
+	overflow-y: auto;
 }
 .settings h1 {
 	font-size: 1em;
@@ -1532,8 +1537,7 @@ body, div {
 	margin-bottom: 0;
 }
 .settings button {
-	border: 1px solid;
-	height: 3.5em;
+	height: 41px;
 	width: 43%;
 	cursor: pointer;
 	margin-top: .5em;

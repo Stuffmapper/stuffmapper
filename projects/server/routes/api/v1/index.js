@@ -624,24 +624,120 @@ router.get('/conversation/:id', isAuthenticated, function(req, res) {
 
 /* WATCHLIST MANAGEMENT - START */
 
-router.get('/watchlist/:userid', isAuthenticated, function(req, res) {
+router.get('/watchlist', isAuthenticated, function(req, res) {
 	//return all watchlist items
+	var query = [
+		'SELECT * FROM watchlist WHERE user_id = $1'
+	].join('');
+	var values = [
+		req.session.passport.user.id
+	];
+	queryServer(res, query, values, function(result) {
+		res.send({
+			err: null,
+			res: result.rows[0]
+		});
+	});
 });
 
-router.get('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
+router.get('/watchlist/:id', isAuthenticated, function(req, res) {
 	//return watchlist item
+	var query = [
+		'SELECT FROM watchlist_items WHERE id = $1, watchlist_id = $2'
+	].join('');
+	var values = [
+		req.session.passport.user.id,
+		req.params.watchlist_id
+	];
+	queryServer(res, query, values, function(result) {
+		res.send({
+			err: null,
+			res: result.rows[0]
+		});
+	});
 });
 
-router.post('/watchlist/:userid', isAuthenticated, function(req, res) {
-	//add watchlist item
+router.post('/watchlist', function(req, res) {
+	var category_tag_ids = [];
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		req.body.keys.forEach(function(e) {
+			client.query(
+				'SELECT id FROM categories WHERE category = $1',
+				[e],
+				function(err, result1) {
+					if(result.rows.length === 0) {
+						client.query(
+							'INSERT INTO tag_names(tag_name) VALUES ($1) WHERE NOT EXISTS (SELECT * FROM tag_names WHERE tag_name = $1)',
+							[e],
+							function(err, result2) {
+								client.query(
+									'SELECT id FROM tag_names WHERE tag_name = $1',
+									[e],
+									function(err, result3) {
+										category_tag_ids.push({value:result3.rows[0].id,type:'category'});
+										if(category_ids.length + tags_ids.length === req.body.keys.length) createWatchlist();
+									}
+								);
+							}
+						);
+					}
+					else {
+						category_tag_ids.push({value:result1.rows[0].id,type:'tag'});
+						if(category_ids.length + tags_ids.length === req.body.keys.length) createWatchlist();
+					}
+				}
+			);
+		});
+	});
+	function createWatchlist() {
+		var queries = 0;
+		client.query(
+			'INSERT INTO watchlist_items (user_id) VALUES ($1) returning id',
+			[req.session.passport.user.id],
+			function(err, result1) {
+				category_tag_ids.forEach(function(e) {
+					var values = [
+						result1.rows[0].id,
+						(e.type==='tag')?e.value:null,
+						(e.type==='category')?e.value:null
+					];
+					client.query(
+						'INSERT INTO watchlist_keys (watchlist_item, tag_id, category_id) VALUES ($1, $2, $3)',
+						values,
+						function(err, result2) {
+							if(++queries === req.body.keys.length) client.end();
+							res.send({
+								err:null,
+								res:'success!'
+							});
+						}
+					);
+				});
+			}
+		);
+	}
 });
 
-router.put('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
+router.put('/watchlist/:id', isAuthenticated, function(req, res) {
 	//update watchlist item
 });
 
-router.delete('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
+router.delete('/watchlist/:id', isAuthenticated, function(req, res) {
 	//archive watchlist item
+	var query = [
+		'DELETE FROM watchlist_items WHERE id = $1, watchlist_id = $2'
+	].join('');
+	var values = [
+		req.session.passport.user.id,
+		req.params.watchlist_id
+	];
+	queryServer(res, query, values, function(result) {
+		res.send({
+			err: null,
+			res: result.rows[0]
+		});
+	});
 });
 
 /* WATCHLIST MANAGEMENT -  END  */

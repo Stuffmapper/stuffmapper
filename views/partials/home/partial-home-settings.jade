@@ -1,5 +1,4 @@
 div.settings 
-	h1 Settings
 	form.settings-form(data-ng-submit='save({users: users})')
 		ul(data-ng-cloak)
 			li
@@ -32,6 +31,9 @@ div.settings
 			li
 				label(for='country') Country: 
 				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
+			button(type='submit', data-ng-click='update(users)') Submit
+			li
+				p Log in &amp; share with connections
 			li
 				a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
 					span.social-sign-in-icon.social-sign-in-icon-google
@@ -42,4 +44,4 @@ div.settings
 					span.social-sign-in-icon.social-sign-in-icon-facebook
 						i.fa.fa-facebook
 					span.social-sign-in-text Connect with Facebook
-			button(type='submit', data-ng-click='update(users)') Submit
+			

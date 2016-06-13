@@ -1,6 +1,13 @@
-function MainController($scope, $http, $timeout, $userData, $state, $location) {
+stuffMapp.controller('MainController', ['$scope', '$http', '$timeout', '$userData', '$state', '$location', MainController]);
+function MainController() {
 	//TODO: loading http://tobiasahlin.com/spinkit/ http://projects.lukehaas.me/css-loaders/
 	//$scope.socket = io();
+	var $scope = arguments[0];
+	var $http = arguments[1];
+	var $timeout = arguments[2];
+	var $userData = arguments[3];
+	var $state = arguments[4];
+	var $location = arguments[5];
 	$scope.counterFlipper = new CounterFlipper('landfill-tracker', 0, 7);
 	$scope.counterFlipper.setCounter(1283746);
 	$scope.counterFlipper.setCounter(2738391);
