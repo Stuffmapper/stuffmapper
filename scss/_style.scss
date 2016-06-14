@@ -1492,17 +1492,28 @@ body, div {
 	padding: 5px;
 }
 .settings-header h1 {
-	width: 50%;
+	width: 110%;
 	display: inline-block;
 	margin-right: 30px;
 }
 .settings-header img {
-	height: 33px;
+	height: 50px;
 	display: inline-block;
+	margin-left: 16px;
+	margin-right: 16px;
+	margin-top: 16px;
 }
-
+.settings-header-button {
+	width: 43%;
+	height: 28px;
+	float: right;
+	margin-top: 28px;
+	margin-right: 26%;
+}
 .settings-form {
-	padding: 1em;
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-bottom: 1em;
 	font-size: .9em;
 }
 
@@ -1532,9 +1543,6 @@ body, div {
 	height:1.3em;
 	width:100%;
 }
-.edit-profile input {
-	width: 14px;
-}
 .settings-profile {
 	border-bottom: 1px solid #dedede;
 }
@@ -1554,14 +1562,9 @@ body, div {
 .settings h1 {
 	font-size: 1em;
 	text-align: center;
-	margin-bottom: 0;
+	margin: 0;
 }
-.settings button {
-	height: 41px;
-	width: 100%;
-	cursor: pointer;
-	margin-top: .5em;
-}
+
 .settings-sign-in-up-input {
 	display: block;
 	border-radius: 3px;
@@ -1572,6 +1575,14 @@ body, div {
 	padding: 0;
 	font-size: 14px;
 	cursor: pointer;
+}
+.connections {
+	margin: 0;
+}
+.connections li {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 3px;
 }
 
 /* Settings - End */
@@ -1732,17 +1743,6 @@ body, div {
 	/* Watchlist - END */
 
 	/* Settings - Start */
-
-	.settings-header h1 {
-		width: 50%;
-		display: inline-block;
-		margin-right: 30px;
-	}
-	.settings-header img {
-		height: 33px;
-		display: inline-block;
-	}
-
 	.settings-form {
 		font-size: .9em;
 		padding: .5em;

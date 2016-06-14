@@ -1,7 +1,9 @@
 div.settings
 	.settings-header
 		h1 Your profile &amp; settings
+		br
 		img(src="img/circle.png")
+		button.settings-header-button(ng-click='showEdit=true') Edit Profile
 
 	form.settings-form(data-ng-submit='save({users: users})')
 		ul.settings-profile
@@ -15,9 +17,8 @@ div.settings
 			li State: &ensp; {{ users.state }}
 			li Zip Code: &ensp; {{ users.zip_code }}
 			li Country: &ensp; {{ users.country }}
-		label.edit-profile Edit Profile
-			input(type='checkbox', ng-model='checked')
-		ul(data-ng-cloak, ng-show='checked')
+
+		ul(data-ng-cloak, ng-show='showEdit')
 			p Display Name
 			li
 				input(type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}')
