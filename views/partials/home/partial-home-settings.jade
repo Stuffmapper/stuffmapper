@@ -5,6 +5,16 @@ div.settings
 
 	form.settings-form(data-ng-submit='save({users: users})')
 		ul.settings-profile
+			li Display Name: &ensp; {{ users.uname }}
+			li First Name: &ensp; {{ users.fname }}
+			li Last Name: &ensp; {{ users.lname }}
+			li Phone: &ensp; {{ users.phone_number }}
+			li Email: &ensp; {{ users.email }}
+			li Address: &ensp; {{ users.address }}
+			li City: &ensp; {{ users.city }}
+			li State: &ensp; {{ users.state }}
+			li Zip Code: &ensp; {{ users.zip_code }}
+			li Country: &ensp; {{ users.country }}
 		label.edit-profile Edit Profile
 			input(type='checkbox', ng-model='checked')
 		ul(data-ng-cloak, ng-show='checked')
