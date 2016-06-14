@@ -1312,6 +1312,8 @@ body, div {
 	display: block;
 	position: absolute;
 	background-color: #ffffff;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 /* My Stuff - END */
@@ -1486,6 +1488,18 @@ body, div {
 /* Watchlist - END */
 
 /* Settings - Start */
+.settings-header {
+	padding: 5px;
+}
+.settings-header h1 {
+	width: 50%;
+	display: inline-block;
+	margin-right: 30px;
+}
+.settings-header img {
+	height: 33px;
+	display: inline-block;
+}
 
 .settings-form {
 	padding: 1em;
@@ -1493,11 +1507,15 @@ body, div {
 }
 
 .settings-form ul {
-	width:750px;
+	width:100%;
 	list-style-type:none;
 	list-style-position:outside;
-	margin:0px;
 	padding:0px;
+}
+.settings-form ul p {
+	padding-left: 7px;
+	margin-top: 10px;
+	margin-bottom: 0;
 }
 .settings-form li {
 	padding:.45em;
@@ -1505,18 +1523,20 @@ body, div {
 }
 .settings-form li p {
 	margin-bottom: 0;
-	margin-top: 4px;
+	margin-top: 20px;
 }
 .settings-form label {
-	width:5.2em;
-	margin-top: 3px;
-	display:inline-block;
-	float:left;
-	padding:3px;
+	padding: 7px;
 }
 .settings-form input {
 	height:1.3em;
-	width:16em;
+	width:100%;
+}
+.edit-profile input {
+	width: 14px;
+}
+.settings-profile {
+	border-bottom: 1px solid #dedede;
 }
 .settings-form textarea {
 	padding:8px; width:50%;
@@ -1528,17 +1548,17 @@ body, div {
 }
 .settings {
 	background-color: #fff;
-	overflow-y: auto;
+	margin: 5px;
+	outline: 1px solid #dedede;
 }
 .settings h1 {
 	font-size: 1em;
-	font-weight: normal;
 	text-align: center;
 	margin-bottom: 0;
 }
 .settings button {
 	height: 41px;
-	width: 43%;
+	width: 100%;
 	cursor: pointer;
 	margin-top: .5em;
 }
@@ -1713,25 +1733,34 @@ body, div {
 
 	/* Settings - Start */
 
+	.settings-header h1 {
+		width: 50%;
+		display: inline-block;
+		margin-right: 30px;
+	}
+	.settings-header img {
+		height: 33px;
+		display: inline-block;
+	}
+
 	.settings-form {
 		font-size: .9em;
 		padding: .5em;
 	}
+	.settings-profile {
+		margin-top: 0;
+	}
 	.settings h1 {
 		height: 100%;
+	}
+	.settings-form ul {
+		margin-bottom: 0;
 	}
 	.settings-form li {
 		padding: .26em;
 	}
-	.settings-form input {
-		width: 15em;
-		outline: 1px black solid;
-	}
-	.settings button {
-		width: 41%;
-	}
 	.settings-sign-in-up-input {
-		width: 21em;
+		width: 100%;
 	}
 	/* Settings - End */
 

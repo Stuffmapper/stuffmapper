@@ -1,39 +1,48 @@
-div.settings 
+div.settings
+	.settings-header
+		h1 Your profile &amp; settings
+		img(src="img/circle.png")
+
 	form.settings-form(data-ng-submit='save({users: users})')
-		ul(data-ng-cloak)
+		ul.settings-profile
+		label.edit-profile Edit Profile
+			input(type='checkbox', ng-model='checked')
+		ul(data-ng-cloak, ng-show='checked')
+			p Display Name
 			li
-				label(for='uname') Username: 
 				input(type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}')
-			li
-				label(for='fname') First Name: 
+			p First Name
+			li 
 				input(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
-			li
-				label(for='lname') Last Name: 
+			p Last Name
+			li 
 				input(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
+			p Phone
 			li
-				label(for='phone_number') Phone: 
 				input(type='tel', data-ng-model='users.phone_number', placeholder='{{ users.phone_number }}')
-			li
-				label(for='email') Email: 
+			p Email
+			li 
 				input(type='email', data-ng-model='users.email', placeholder='{{ users.email }}')
-			li
-				label(for='address') Address: 
+			p Address
+			li 
 				input(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
-			li
-				label(for='city') City: 
+			p City
+			li 
 				input(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
+			p State
 			li
-				label(for='state') State: 
 				input(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
+			p Zipcode
 			li
-				label(for='zipcode') Zipcode: 
 				input(type='text', data-ng-model='users.zip_code', placeholder='{{ users.zip_code }}')
+			p Country
 			li
-				label(for='country') Country: 
 				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
 			button(type='submit', data-ng-click='update(users)') Submit
 			li
 				p Log in &amp; share with connections
+		ul.connections 
+			li Connections
 			li
 				a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
 					span.social-sign-in-icon.social-sign-in-icon-google
