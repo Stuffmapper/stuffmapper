@@ -43,8 +43,8 @@ router.get('/stuff', function(req, res) {
 				return client.end();
 			}
 			result.rows.forEach(function(e, i) {
-				result.rows[i].lat += ((Math.random() * 0.002)-0.001);
-				result.rows[i].lng += ((Math.random() * 0.002)-0.001);
+				result.rows[i].lat += ((Math.random() * 0.2)-1);
+				result.rows[i].lng += ((Math.random() * 0.2)-1);
 			});
 			res.send({
 				err: null,
@@ -662,60 +662,70 @@ router.post('/watchlist', function(req, res) {
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
 		req.body.keys.forEach(function(e) {
-			client.query(
-				'SELECT id FROM categories WHERE category = $1',
-				[e],
-				function(err, result1) {
-					if(result.rows.length === 0) {
-						client.query(
-							'INSERT INTO tag_names(tag_name) VALUES ($1) WHERE NOT EXISTS (SELECT * FROM tag_names WHERE tag_name = $1)',
-							[e],
-							function(err, result2) {
-								client.query(
-									'SELECT id FROM tag_names WHERE tag_name = $1',
-									[e],
-									function(err, result3) {
-										category_tag_ids.push({value:result3.rows[0].id,type:'category'});
-										if(category_ids.length + tags_ids.length === req.body.keys.length) createWatchlist();
-									}
-								);
-							}
-						);
-					}
-					else {
-						category_tag_ids.push({value:result1.rows[0].id,type:'tag'});
-						if(category_ids.length + tags_ids.length === req.body.keys.length) createWatchlist();
-					}
+			console.log(e);
+			client.query("SELECT id FROM categories WHERE category = $1", [e], function(err, result1) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
 				}
-			);
+
+				if(result1.rows.length === 0) {
+					client.query('INSERT INTO tag_names(tag_name) SELECT CAST($1 AS VARCHAR) WHERE NOT EXISTS (SELECT * FROM tag_names WHERE tag_name = $1) RETURNING id', [e], function(err, result2) {
+						if(err) {
+							apiError(res, err);
+							return client.end();
+						}
+						if(!result2.rows.length) {
+							client.query('SELECT id FROM tag_names WHERE tag_name = $1', [e], function(err, result3) {
+								if(err) {
+									apiError(res, err);
+									return client.end();
+								}
+								console.log(err);
+								console.log(result3);
+								category_tag_ids.push({value:result3.rows[0].id,type:'tag'});
+								if(category_tag_ids.length === req.body.keys.length) createWatchlist();
+							});
+						} else {
+							console.log(result2.rows);
+							console.log(!result2.rows);
+							category_tag_ids.push({value:result2.rows[0].id,type:'tag'});
+
+							if(category_tag_ids.length === req.body.keys.length) createWatchlist();
+						}
+					});
+				}
+				else {
+					category_tag_ids.push({value:result1.rows[0].id,type:'category'});
+					if(category_tag_ids.length === req.body.keys.length) createWatchlist();
+				}
+			});
 		});
 	});
 	function createWatchlist() {
 		var queries = 0;
-		client.query(
-			'INSERT INTO watchlist_items (user_id) VALUES ($1) returning id',
-			[req.session.passport.user.id],
-			function(err, result1) {
-				category_tag_ids.forEach(function(e) {
-					var values = [
-						result1.rows[0].id,
-						(e.type==='tag')?e.value:null,
-						(e.type==='category')?e.value:null
-					];
-					client.query(
-						'INSERT INTO watchlist_keys (watchlist_item, tag_id, category_id) VALUES ($1, $2, $3)',
-						values,
-						function(err, result2) {
-							if(++queries === req.body.keys.length) client.end();
-							res.send({
-								err:null,
-								res:'success!'
-							});
-						}
-					);
-				});
+		client.query('INSERT INTO watchlist_items (user_id) SELECT ($1) returning id', [req.session.passport.user.id], function(err, result1) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
 			}
-		);
+			category_tag_ids.forEach(function(e) {
+				var values = [
+					result1.rows[0].id,
+					(e.type==='tag')?e.value:null,
+					(e.type==='category')?e.value:null
+				];
+				client.query('INSERT INTO watchlist_keys (watchlist_item, tag_id, category_id) VALUES ($1, $2, $3)', values, function(err, result2) {
+					if(++queries === req.body.keys.length){
+						client.end();
+						res.send({
+							err:null,
+							res:'success!'
+						});
+					}
+				});
+			});
+		});
 	}
 });
 
@@ -786,34 +796,34 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-	router.delete('/account/info', isAuthenticated, function(req, res) {
-		// ARCHIVE DO NOT DELETE
-		var id = req.session.passport.user.id;
+router.delete('/account/info', isAuthenticated, function(req, res) {
+	// ARCHIVE DO NOT DELETE
+	var id = req.session.passport.user.id;
 
-	});
+});
 
-	/* SETTINGS - END */
-
-
+/* SETTINGS - END */
 
 
-	function queryServer(res, query, values, cb) {
-		var client = new pg.Client(conString);
-		client.connect(function(err) {
+
+
+function queryServer(res, query, values, cb) {
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		client.query(query, values, function(err, result) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
-			client.query(query, values, function(err, result) {
-				if(err) {
-					apiError(res, err);
-					return client.end();
-				}
-				client.end();
-				cb(result);
-			});
+			client.end();
+			cb(result);
 		});
-	}
+	});
+}
 
 
-	module.exports = router;
+module.exports = router;

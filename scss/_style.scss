@@ -1489,31 +1489,42 @@ body, div {
 
 /* Settings - Start */
 .settings-header {
-	padding: 5px;
+	padding-bottom: 5px;
+	text-align: center;
 }
 .settings-header h1 {
-	width: 110%;
 	display: inline-block;
-	margin-right: 30px;
+	padding-top: 5px;
+	font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 0;
+	height: 24px;
+  width:100%;
+	color: #6f6f6f;
+	background-color: #dedede;
+	font-weight: 300;
+}
+.settings-header p {
+	width: 80px;
 }
 .settings-header img {
-	height: 50px;
+	height: 120px;
 	display: inline-block;
-	margin-left: 16px;
-	margin-right: 16px;
-	margin-top: 16px;
+	margin: 0;
 }
 .settings-header-button {
-	width: 43%;
-	height: 28px;
-	float: right;
-	margin-top: 28px;
-	margin-right: 26%;
+	width: 50%;
+  height: 36px;
+  float: right;
+  margin-top: 10px;
+  margin-right: 5%;
+	-moz-box-shadow: inset -2px  -2px #808080;
+	-webkit-box-shadow: inset -2px  -2px #808080;
+	box-shadow: inset -2px  -2px #808080;
+	border: none;
 }
 .settings-form {
-	padding-left: 1em;
-	padding-right: 1em;
-	padding-bottom: 1em;
+	padding: 13px;
 	font-size: .9em;
 }
 
@@ -1543,8 +1554,11 @@ body, div {
 	height:1.3em;
 	width:100%;
 }
-.settings-profile {
+.settings-profile li {
 	border-bottom: 1px solid #dedede;
+}
+.settings-profile p {
+	float: right;
 }
 .settings-form textarea {
 	padding:8px; width:50%;
@@ -1559,12 +1573,6 @@ body, div {
 	margin: 5px;
 	outline: 1px solid #dedede;
 }
-.settings h1 {
-	font-size: 1em;
-	text-align: center;
-	margin: 0;
-}
-
 .settings-sign-in-up-input {
 	display: block;
 	border-radius: 3px;
@@ -1576,6 +1584,13 @@ body, div {
 	font-size: 14px;
 	cursor: pointer;
 }
+.edit-profile button {
+	width: 99%;
+	height: 30px;
+	margin-left: 4px;
+	margin-top: 15px;
+}
+
 .connections {
 	margin: 0;
 }
@@ -1583,6 +1598,7 @@ body, div {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	padding: 3px;
+	color: #b1b1b1;
 }
 
 /* Settings - End */
@@ -1743,9 +1759,11 @@ body, div {
 	/* Watchlist - END */
 
 	/* Settings - Start */
+	.settings-header {
+		padding-bottom: 0;
+	}
 	.settings-form {
 		font-size: .9em;
-		padding: .5em;
 	}
 	.settings-profile {
 		margin-top: 0;
@@ -1761,6 +1779,15 @@ body, div {
 	}
 	.settings-sign-in-up-input {
 		width: 100%;
+	}
+	.connections {
+		margin-top: 10px;
+	}
+	.connections > li:first-child {
+		display: none;
+	}
+	.connections li {
+		margin: 0;
 	}
 	/* Settings - End */
 

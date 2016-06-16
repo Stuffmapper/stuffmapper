@@ -1,24 +1,12 @@
 div.settings
 	.settings-header
 		h1 Your profile &amp; settings
-		br
-		img(src="img/circle.png")
+		p Profile
+		img(src="http://3.bp.blogspot.com/_LQxMQhdo6MQ/SdokfXbd7VI/AAAAAAAAAE8/GOndOJ7Z1A0/s320/twitChair3a.jpg")
 		button.settings-header-button(ng-click='showEdit=true') Edit Profile
 
 	form.settings-form(data-ng-submit='save({users: users})')
-		ul.settings-profile
-			li Display Name: &ensp; {{ users.uname }}
-			li First Name: &ensp; {{ users.fname }}
-			li Last Name: &ensp; {{ users.lname }}
-			li Phone: &ensp; {{ users.phone_number }}
-			li Email: &ensp; {{ users.email }}
-			li Address: &ensp; {{ users.address }}
-			li City: &ensp; {{ users.city }}
-			li State: &ensp; {{ users.state }}
-			li Zip Code: &ensp; {{ users.zip_code }}
-			li Country: &ensp; {{ users.country }}
-
-		ul(data-ng-cloak, ng-show='showEdit')
+		ul.edit-profile(data-ng-cloak, ng-show='showEdit')
 			p Display Name
 			li
 				input(type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}')
@@ -49,19 +37,18 @@ div.settings
 			p Country
 			li
 				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
-			button(type='submit', data-ng-click='update(users)') Submit
-			li
-				p Log in &amp; share with connections
+			button(type='submit', data-ng-click='update(users); showEdit=false') Submit
+			button(data-ng-click='showEdit=false') Cancel Edit
 		ul.connections 
-			li Connections
+			li Connections &ensp; &ensp; log in &amp; share with connections
 			li
 				a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
 					span.social-sign-in-icon.social-sign-in-icon-google
 						i.fa.fa-google-plus
-					span.social-sign-in-text Connect with Google
+					span.social-sign-in-text Connect to Google
 			li
 				a.settings-sign-in-up-input.social-button.facebook-sign-in(href="//localhost:3000/api/v1/account/login/facebook" target="_self")
 					span.social-sign-in-icon.social-sign-in-icon-facebook
 						i.fa.fa-facebook
-					span.social-sign-in-text Connect with Facebook
+					span.social-sign-in-text Connect to Facebook
 			
