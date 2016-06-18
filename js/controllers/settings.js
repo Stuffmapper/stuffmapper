@@ -21,7 +21,7 @@ function SettingsController() {
 	// 		facebookConnected : true
 	// 	};
 	// }
-	$http.get(config.api.host + 'api/' + config.api.version + '/account/info').success(function(data){
+	$http.get('/api/v1/account/info').success(function(data){
 		if(data.err) {
 			console.log(data.err);
 			return;
@@ -43,6 +43,11 @@ function SettingsController() {
 	}).success(function(data) {
 
 			console.log(data);
+		});
+	};
+	$scope.showSuccess = function() {
+		$('.edit-profile button:first-of-type').click(function () {
+    $('.success').fadeIn(400).delay(1000).fadeOut(400).stop();
 		});
 	};
 

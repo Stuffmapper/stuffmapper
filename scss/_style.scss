@@ -1312,6 +1312,8 @@ body, div {
 	display: block;
 	position: absolute;
 	background-color: #ffffff;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 /* My Stuff - END */
@@ -1473,7 +1475,7 @@ body, div {
 	padding-bottom: 0;
 	margin: 0;
 	list-style-type: none;
-	overflow: scroll;
+	overflow-y: scroll;
 }
 .tag-list li {
 	outline: 1px black solid;
@@ -1486,33 +1488,87 @@ body, div {
 /* Watchlist - END */
 
 /* Settings - Start */
-
+.settings-header {
+	padding-bottom: 5px;
+	text-align: center;
+}
+.settings-header h1 {
+	display: inline-block;
+	padding-top: 5px;
+	font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 0;
+	height: 24px;
+  width:100%;
+	color: #6f6f6f;
+	background-color: #dedede;
+	font-weight: 300;
+}
+.settings-header p {
+	width: 80px;
+}
+.settings-header img {
+	height: 120px;
+	display: inline-block;
+	border: 1px solid #6f6f6f;
+  border-radius: 61px;
+	margin: 0;
+}
+.settings-header-button {
+	width: 50%;
+  height: 36px;
+	cursor: pointer;
+  float: right;
+  margin-top: 10px;
+  margin-right: 5%;
+	-moz-box-shadow: inset -2px  -2px #808080;
+	-webkit-box-shadow: inset -2px  -2px #808080;
+	box-shadow: inset -2px  -2px #808080;
+	border: none;
+	-moz-transition: background-color 0.5s ease;
+	-webkit-transition: background-color 0.5s ease;
+	transition:  background-color 0.5s ease;
+}
+.settings-header-button:hover {
+	background-color: $primary-color;
+}
 .settings-form {
-	padding: 1em;
+	padding: 13px;
 	font-size: .9em;
 }
 
 .settings-form ul {
-	width:750px;
+	width:100%;
 	list-style-type:none;
 	list-style-position:outside;
-	margin:0px;
 	padding:0px;
 }
-.settings-form li{
+.settings-form ul p {
+	padding-left: 7px;
+	margin-top: 10px;
+	margin-bottom: 0;
+}
+.settings-form li {
 	padding:.45em;
 	position:relative;
 }
+.settings-form li p {
+	margin-bottom: 0;
+	margin-top: 20px;
+}
 .settings-form label {
-	width:5.2em;
-	margin-top: 3px;
-	display:inline-block;
-	float:left;
-	padding:3px;
+	padding: 7px;
 }
 .settings-form input {
 	height:1.3em;
-	width:16em;
+	width:97%;
+	padding-left: 5px;
+}
+.settings-profile li {
+	border-bottom: 1px solid #dedede;
+}
+.settings-profile p {
+	float: right;
 }
 .settings-form textarea {
 	padding:8px; width:50%;
@@ -1524,19 +1580,8 @@ body, div {
 }
 .settings {
 	background-color: #fff;
-}
-.settings h1 {
-	font-size: 1em;
-	font-weight: normal;
-	text-align: center;
-	margin-bottom: 0;
-}
-.settings button {
-	border: 1px solid;
-	height: 3.5em;
-	width: 29.5em;
-	cursor: pointer;
-	margin-top: .5em;
+	margin: 5px;
+	outline: 1px solid #dedede;
 }
 .settings-sign-in-up-input {
 	display: block;
@@ -1548,6 +1593,80 @@ body, div {
 	padding: 0;
 	font-size: 14px;
 	cursor: pointer;
+}
+.edit-profile {
+	transition: all linear 0.5s;
+}
+.edit-profile.ng-hide {
+	opacity: 0;
+}
+.edit-profile button {
+	width: 48%;
+	height: 30px;
+	cursor: pointer;
+	margin-left: 4px;
+	margin-top: 15px;
+	display: inline-block;
+	-moz-box-shadow: inset -2px  -2px #808080;
+	-webkit-box-shadow: inset -2px  -2px #808080;
+	box-shadow: inset -2px  -2px #808080;
+	border: none;
+	-moz-transition: background-color 0.5s ease;
+	-webkit-transition: background-color 0.5s ease;
+	transition:  background-color 0.5s ease;
+}
+.edit-profile button:first-of-type:hover {
+	background-color: $primary-color;
+}
+.edit-profile button:last-of-type:hover {
+	background-color: #dc4e41;
+}
+.success {
+	width: 91%;
+  position: absolute;
+  background-color: #383838;
+  color: #F0F0F0;
+  font-family: Calibri;
+  font-size: 20px;
+  padding: 10px;
+  text-align: center;
+  border-radius: 2px;
+  -webkit-box-shadow: 0 0 24px -1px #383838;
+  -moz-box-shadow: 0 0 24px -1px #383838;
+  box-shadow: 0 0 24px -1px #383838;
+}
+.user-info {
+	padding: 15px;
+}
+.user-info label {
+	display: block;
+	font-size: 14px;
+	color: #6f6f6f;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	height: 50px;
+}
+.user-info input {
+	display: block;
+	width: 97%;
+	font-size: 16px;
+	height: 25px;
+	padding-left: 5px;
+	margin-top: 3px;
+}
+.connections {
+	margin: 0;
+}
+.connections li {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 3px;
+	color: #b1b1b1;
+}
+.connections li:first-child {
+	margin: 0;
+	font-size: 13px;
+	padding: 0 3px;
 }
 
 /* Settings - End */
@@ -1708,28 +1827,50 @@ body, div {
 	/* Watchlist - END */
 
 	/* Settings - Start */
-
+	.settings-header {
+		padding-bottom: 0;
+	}
 	.settings-form {
 		font-size: .9em;
-		padding: .5em;
 	}
-	.settings h1 {
-		height: 100%;
+	.settings-profile {
+		margin-top: 0;
+	}
+	.settings-form ul {
+		margin-bottom: 0;
 	}
 	.settings-form li {
 		padding: .26em;
 	}
-	.settings-form input {
-		width: 15em;
-		outline: 1px black solid;
-	}
-	.settings button {
-		width: 28em;
-	}
 	.settings-sign-in-up-input {
-		width: 21em;
+		width: 100%;
+	}
+	.user-info {
+		padding: 3px 15px;
+	}
+	.connections {
+		margin-top: 10px;
+	}
+	.connections > li:first-child {
+		display: none;
+	}
+	.connections li {
+		margin: 0;
 	}
 	/* Settings - End */
+	/* Popups - START */
+
+	#profile-popup {
+		width: 94%;
+		height: 511px;
+	}
+	#popups .popups li {
+		text-align: center;
+		padding: 38px 5px 5px 10px;
+		outline: 1px solid #808080;
+		height: 59px;
+	}
+	/* Popups - End */
 
 }
 
