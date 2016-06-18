@@ -1510,11 +1510,14 @@ body, div {
 .settings-header img {
 	height: 120px;
 	display: inline-block;
+	border: 1px solid #6f6f6f;
+  border-radius: 61px;
 	margin: 0;
 }
 .settings-header-button {
 	width: 50%;
   height: 36px;
+	cursor: pointer;
   float: right;
   margin-top: 10px;
   margin-right: 5%;
@@ -1522,6 +1525,12 @@ body, div {
 	-webkit-box-shadow: inset -2px  -2px #808080;
 	box-shadow: inset -2px  -2px #808080;
 	border: none;
+	-moz-transition: background-color 0.5s ease;
+	-webkit-transition: background-color 0.5s ease;
+	transition:  background-color 0.5s ease;
+}
+.settings-header-button:hover {
+	background-color: $primary-color;
 }
 .settings-form {
 	padding: 13px;
@@ -1552,7 +1561,8 @@ body, div {
 }
 .settings-form input {
 	height:1.3em;
-	width:100%;
+	width:97%;
+	padding-left: 5px;
 }
 .settings-profile li {
 	border-bottom: 1px solid #dedede;
@@ -1584,13 +1594,66 @@ body, div {
 	font-size: 14px;
 	cursor: pointer;
 }
+.edit-profile {
+	transition: all linear 0.5s;
+}
+.edit-profile.ng-hide {
+	opacity: 0;
+}
 .edit-profile button {
-	width: 99%;
+	width: 48%;
 	height: 30px;
+	cursor: pointer;
 	margin-left: 4px;
 	margin-top: 15px;
+	display: inline-block;
+	-moz-box-shadow: inset -2px  -2px #808080;
+	-webkit-box-shadow: inset -2px  -2px #808080;
+	box-shadow: inset -2px  -2px #808080;
+	border: none;
+	-moz-transition: background-color 0.5s ease;
+	-webkit-transition: background-color 0.5s ease;
+	transition:  background-color 0.5s ease;
 }
-
+.edit-profile button:first-of-type:hover {
+	background-color: $primary-color;
+}
+.edit-profile button:last-of-type:hover {
+	background-color: #dc4e41;
+}
+.success {
+	width: 91%;
+  position: absolute;
+  background-color: #383838;
+  color: #F0F0F0;
+  font-family: Calibri;
+  font-size: 20px;
+  padding: 10px;
+  text-align: center;
+  border-radius: 2px;
+  -webkit-box-shadow: 0 0 24px -1px #383838;
+  -moz-box-shadow: 0 0 24px -1px #383838;
+  box-shadow: 0 0 24px -1px #383838;
+}
+.user-info {
+	padding: 15px;
+}
+.user-info label {
+	display: block;
+	font-size: 14px;
+	color: #6f6f6f;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	height: 50px;
+}
+.user-info input {
+	display: block;
+	width: 97%;
+	font-size: 16px;
+	height: 25px;
+	padding-left: 5px;
+	margin-top: 3px;
+}
 .connections {
 	margin: 0;
 }
@@ -1599,6 +1662,11 @@ body, div {
 	margin-bottom: 5px;
 	padding: 3px;
 	color: #b1b1b1;
+}
+.connections li:first-child {
+	margin: 0;
+	font-size: 13px;
+	padding: 0 3px;
 }
 
 /* Settings - End */
@@ -1768,9 +1836,6 @@ body, div {
 	.settings-profile {
 		margin-top: 0;
 	}
-	.settings h1 {
-		height: 100%;
-	}
 	.settings-form ul {
 		margin-bottom: 0;
 	}
@@ -1779,6 +1844,9 @@ body, div {
 	}
 	.settings-sign-in-up-input {
 		width: 100%;
+	}
+	.user-info {
+		padding: 3px 15px;
 	}
 	.connections {
 		margin-top: 10px;
@@ -1790,6 +1858,19 @@ body, div {
 		margin: 0;
 	}
 	/* Settings - End */
+	/* Popups - START */
+
+	#profile-popup {
+		width: 94%;
+		height: 511px;
+	}
+	#popups .popups li {
+		text-align: center;
+		padding: 38px 5px 5px 10px;
+		outline: 1px solid #808080;
+		height: 59px;
+	}
+	/* Popups - End */
 
 }
 

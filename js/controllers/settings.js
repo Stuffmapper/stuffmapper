@@ -45,6 +45,11 @@ function SettingsController() {
 			console.log(data);
 		});
 	};
+	$scope.showSuccess = function() {
+		$('.edit-profile button:first-of-type').click(function () {
+    $('.success').fadeIn(400).delay(1000).fadeOut(400).stop();
+		});
+	};
 
 	$scope.edit = function(users) {
 	$scope.orig = angular.copy(users);

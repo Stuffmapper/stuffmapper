@@ -19,14 +19,18 @@ function WatchListController() {
 	};
 
 	$scope.create = function(tag_name) {
-		$http.post('/api/watchlist', tag_name)
-			.then(function(res) {
-				$scope.tag_names.push(res.data);
-				$scope.newTag_Name = null;
-			}, function(err) {
-				console.log(err.data);
+		$http.post('/api/watchlist', $scope.watchlist_items._id,{
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			transformRequest: function(data){
+				return $.param(data);
+			}
+		}).success(function(data) {
+
+				console.log(data);
 			});
-	};
+		};
 
 	$scope.remove = function(tagname) {
 		$scope.watchlist_items.splice($scope.watchlist_items.indexOf(watchlist_item), 1);

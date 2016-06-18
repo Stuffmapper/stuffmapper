@@ -1,10 +1,15 @@
 div.settings
+	.success(style='display:none') All changes have been saved!
 	.settings-header
 		h1 Your profile &amp; settings
 		p Profile
 		img(src="http://3.bp.blogspot.com/_LQxMQhdo6MQ/SdokfXbd7VI/AAAAAAAAAE8/GOndOJ7Z1A0/s320/twitChair3a.jpg")
 		button.settings-header-button(ng-click='showEdit=true') Edit Profile
-
+	.user-info
+		label Display name
+			input(type='text', placeholder='{{users.uname}}')
+		label Email
+			input(type='text', placeholder='{{users.email}}')
 	form.settings-form(data-ng-submit='save({users: users})')
 		ul.edit-profile(data-ng-cloak, ng-show='showEdit')
 			p Display Name
@@ -37,10 +42,12 @@ div.settings
 			p Country
 			li
 				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
-			button(type='submit', data-ng-click='update(users); showEdit=false') Submit
-			button(data-ng-click='showEdit=false') Cancel Edit
+			button(type='submit', data-ng-click='update(users); showEdit=false; showSuccess()') Submit
+			button(data-ng-click='showEdit=false') Cancel
 		ul.connections 
-			li Connections &ensp; &ensp; log in &amp; share with connections
+			li 
+				strong Connections 
+				| &ensp; &ensp; log in &amp; share with connections
 			li
 				a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
 					span.social-sign-in-icon.social-sign-in-icon-google
