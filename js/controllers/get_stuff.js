@@ -108,6 +108,7 @@ function GetStuffController() {
 				},
 				icon: {
 					//url: $('base').attr('href')+'img/circle.png',
+					url: 'https://upload.wikimedia.org/wikipedia/commons/4/43/Blue_circle_for_diabetes.svg',
 					scaledSize: new google.maps.Size((mapZoom*mapZoom*2)/(20/mapZoom), (mapZoom*mapZoom*2)/(20/mapZoom)),
 					origin: new google.maps.Point(0, 0)
 				},
