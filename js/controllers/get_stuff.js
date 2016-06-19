@@ -155,18 +155,20 @@ function GetStuffController() {
 	$scope.watchSize();
 	$scope.openInfoWindow = function(e) {
 		e.category = 'test-category';
-		var template = $('#templates/partial-home-get-item-single-map.html').text()// XXX: WHAT IS THIS
-		.slice(0)
-		.replace('{{id}}',e.id)
-		.replace('{{image}}',e.image_url)
-		.replace('{{title}}',e.title)
-		.replace('{{title}}',e.title)
-		.replace('{{description}}',e.description)
-		.replace('{{description}}',e.description)
-		.replace('{{category}}',e.category)
-		.replace('{{attended}}',e.attended);
+		var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
+		getWordsBetweenCurlies(template).forEach(function(f) {
+			template = template.replace('{{'+f+'}}',e[f]);
+		});
 		console.log(template);
 	};
+	function getWordsBetweenCurlies(str) {
+		var results = [], re = /{{([^}]+)}}/g, text;
+
+		while(text = re.exec(str)) {
+			results.push(text[1]);
+		}
+		return results;
+	}
 	$scope.$on('$destroy', function() {
 		$(window).off('resize', $scope.watchSize);
 		$('#tab-content-container').css({'pointer-events':''});

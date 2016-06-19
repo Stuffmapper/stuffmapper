@@ -3,7 +3,6 @@ var router = express.Router();
 var pg = require('pg');
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
-var upload = require('multer')({ dest: 'uploads/' });
 var passport = require('passport');
 
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
@@ -523,13 +522,13 @@ router.get('/messages', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT * FROM conversations, posts, images ',
-			'WHERE (conversations.lister_id = $1 OR ',
-			'conversations.dibber_id = $1) AND ',
-			'posts.id = conversations.post_id AND ',
-			'images.post_id = conversations.post_id ',
+			'SELECT * FROM conversations, posts, images',
+			'WHERE (conversations.lister_id = $1 OR',
+			'conversations.dibber_id = $1) AND',
+			'posts.id = conversations.post_id AND',
+			'images.post_id = conversations.post_id',
 			'ORDER BY conversations.date_created DESC'
-		].join('');
+		].join(' ');
 		var values = [
 			req.session.passport.user.id
 		];
@@ -557,10 +556,10 @@ router.get('/messages', isAuthenticated, function(req, res) {
 			};
 			for(var i = 0; i < result1.rows.length; ++i) {
 				var query = [
-					'SELECT messages.message, messages.conversation_id, posts.title FROM messages, posts ',
-					'WHERE messages.conversation_id = $1 AND posts.id = $2 ',
+					'SELECT messages.message, messages.conversation_id, posts.title FROM messages, posts',
+					'WHERE messages.conversation_id = $1 AND posts.id = $2',
 					'ORDER BY messages.date_created DESC LIMIT 1'
-				].join('');
+				].join(' ');
 				var values = [
 					result1.rows[i].id,
 					result1.rows[i].post_id
@@ -573,9 +572,9 @@ router.get('/messages', isAuthenticated, function(req, res) {
 
 router.post('/messages', isAuthenticated, function(req, res) {
 	var query = [
-		'INSERT INTO messages(conversation_id, user_id, message) ',
-		'values($1, $2, $3) RETURNING *',
-	].join('');
+		'INSERT INTO messages(conversation_id, user_id, message)',
+		'values($1, $2, $3) RETURNING *'
+	].join(' ');
 	var values = [
 		parseInt(req.body.conversation_id),
 		req.session.passport.user.id,
@@ -599,8 +598,9 @@ router.delete('/messages/:id', isAuthenticated, function(req, res) {
 
 router.get('/conversation/:id', isAuthenticated, function(req, res) {
 	var query = [
-		'SELECT * FROM messages WHERE conversation_id = $1 ORDER BY date_created DESC'
-	].join('');
+		'SELECT * FROM messages WHERE conversation_id = $1',
+		'ORDER BY date_created DESC'
+	].join(' ');
 	var values = [
 		req.params.id
 	];
@@ -640,6 +640,58 @@ router.put('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
 	//update watchlist item
 });
 
+router.post('/watchlist', function(req, res) {
+	var category_tag_ids = [];
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		req.body.keys.forEach(function(e) {
+			client.query('SELECT id FROM categories WHERE category = $1', [e], function(err, result1) {
+				if(result.rows.length === 0) {
+					client.query('INSERT INTO tag_names(tag_name) VALUES ($1) WHERE NOT EXISTS (SELECT * FROM tag_names WHERE tag_name = $1) RETURNING id', [e], function(err, result2) {
+						if(!result2.rows[0]) {
+							client.query('SELECT id FROM tag_names WHERE tag_name = $1', [e], function(err, result3) {
+								category_tag_ids.push({value:result3.rows[0].id,type:'category'});
+								if(category_tag_ids.length + tags_ids.length === req.body.keys.length) createWatchlist();
+							});
+						}
+						else {
+							category_tag_ids.push({value:result2.rows[0].id,type:'category'});
+							if(category_tag_ids.length + tags_ids.length === req.body.keys.length) createWatchlist();
+						}
+					});
+				}
+				else {
+					category_tag_ids.push({value:result1.rows[0].id,type:'category'});
+					if(category_tag_ids.length + tags_ids.length === req.body.keys.length) createWatchlist();
+				}
+			});
+		});
+	});
+
+
+	function createWatchlist() {
+		var queries = 0;
+		client.query('INSERT INTO watchlist_items (user_id) VALUES ($1) returning id', [req.session.passport.user.id], function(err, result1) {
+			category_tag_ids.forEach(function(e) {
+				var values = [
+					result1.rows[0].id,
+					(e.type==='tag')?e.value:null,
+					(e.type==='category')?e.value:null
+				];
+				client.query('INSERT INTO watchlist_keys (watchlist_item, tag_id, category_id) VALUES ($1, $2, $3)', values, function(err, result2) {
+					if(++queries === req.body.keys.length){
+						client.end();
+						res.send({
+							err:null,
+							res:'success!'
+						});
+					}
+				});
+			});
+		});
+	}
+});
+
 router.delete('/watchlist/:userid/:id', isAuthenticated, function(req, res) {
 	//archive watchlist item
 });
@@ -664,11 +716,11 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 
 router.put('/account/info', isAuthenticated, function(req, res) {
 	var query = [
-		'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
-		'phone_number = $5, email = $6, address = $7, city = $8, ',
-		'state = $9, zip_code = $10, country = $11 ',
+		'UPDATE users SET uname = $2, fname = $3, lname = $4,',
+		'phone_number = $5, email = $6, address = $7, city = $8,',
+		'state = $9, zip_code = $10, country = $11',
 		'WHERE id = $1 RETURNING *'
-	].join('');
+	].join(' ');
 	var values = [
 		req.session.passport.user.id,
 		req.body.uname,
@@ -690,34 +742,34 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-	router.delete('/account/info', isAuthenticated, function(req, res) {
-		// ARCHIVE DO NOT DELETE
-		var id = req.session.passport.user.id;
+router.delete('/account/info', isAuthenticated, function(req, res) {
+	// ARCHIVE DO NOT DELETE
+	var id = req.session.passport.user.id;
 
-	});
+});
 
-	/* SETTINGS - END */
-
-
+/* SETTINGS - END */
 
 
-	function queryServer(res, query, values, cb) {
-		var client = new pg.Client(conString);
-		client.connect(function(err) {
+
+
+function queryServer(res, query, values, cb) {
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		client.query(query, values, function(err, result) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
-			client.query(query, values, function(err, result) {
-				if(err) {
-					apiError(res, err);
-					return client.end();
-				}
-				client.end();
-				cb(result);
-			});
+			client.end();
+			cb(result);
 		});
-	}
+	});
+}
 
 
-	module.exports = router;
+module.exports = router;
