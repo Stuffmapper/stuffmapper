@@ -52,7 +52,7 @@ function setDefaultSettings() {
 			controller: 'messagesController'
 		},
 		myConversation : {
-			url: '/messages/:id',
+			url: '/messages/:conversation',
 			templateUrl: 'templates/partial-home-conversation.html',
 			controller: 'conversationController'
 		},

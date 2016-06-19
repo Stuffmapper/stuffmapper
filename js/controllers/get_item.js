@@ -1,4 +1,4 @@
-stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData']);
+stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', GetItemController]);
 function GetItemController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
