@@ -1330,7 +1330,7 @@ body, div {
 	position: relative;
 }
 #conversation-messages-container {
-	height: calc(100% - 52px);
+	height: calc(100% - 44px);
 	background-color: #ffffff;
 	position: relative;
 	display: block;
@@ -1340,112 +1340,104 @@ body, div {
 	padding: 0;
 	margin: 0;
 	width: 100%;
-	height: 100%;
-	overflow-y: scroll;
-	overflow-x: hidden;
 	display: block;
 	position: absolute;
 	bottom: 0px;
 }
 #conversation-input-container {
-	background-color: #ffffff;
+	background-color: #efefef;
 	padding: 6px 0;
-	height: 40px;
+	height: 32px;
 	width: 100%;
 	display: block;
 	position: relative;
 	outline: solid 1px black;
 }
 .conversation-input-button {
-	color: #3d3d3d;
+	color: white;
+	background-color: deepskyblue;
 	display: inline-block;
+	border-radius: 50%;
 	width: 30px;
 	height: 30px;
+	margin: 7px 1px;
 	line-height: 30px;
 	text-align: center;
-	top: 50%;
-	transform: translateY(-50%);
+	top: 0px;
 	position: absolute;
 	cursor: pointer;
 }
 #conversation-auto-reply{
 	left: 0px;
+
 }
 #conversation-send-reply {
 	right: 0px;
 }
-#conversation-input {
+#cnversation-input {
 	border-radius: 5px;
 	background-color: #ffffff;
 	resize: none;
-	height: 38px;
+	height: 26px;
 	width: calc(100% - 80px);
 	display: block;
 	border: none;
+	border-radius: 5px;
 	margin: 0 auto;
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-top: 0px;
+	padding-bottom: 6px;
 	font-size: 20px;
-	line-height: 34px;
+	line-height: 32px;
 	position: relative;
 	top: 0px;
 	margin: 0 auto;
 	z-index: 1;
 }
-#conversation-input:focus {
-	outline: none;
-}
-.conversation-message-container {
-	width: calc(100% - 10px);
-	display: block;
-	position: relative;
-	margin: 5px;
-}
-.conversation-message {
-	white-space: pre-wrap;
-	white-space: -moz-pre-wrap;
-	white-space: -pre-wrap;
-	white-space: -o-pre-wrap;
-	word-wrap: break-word;
-	color: #ffffff;
-	max-width: 80%;
-	padding: 3px;
-	position: relative;
-	display: inline-block;
-}
-.conversation-message:before {
-	content: ' ';
-	width: 0;
-	height: 0;
-	display: block;
-	position: absolute;
-}
 .conversation-out-message {
+	width: 80%;
+	margin: 5px 5% 5px 15%;
 	background-color: limegreen;
-	padding-right: 6px;
-	left: 100%;
-	transform: translateX(-100%);
+	padding: 3px;
+	color: #fff;
+	border-radius: 2px;
+	position: relative;
 }
 .conversation-out-message::before {
-	right: -4px;
-	top: -5px;
-	border-right: 5px solid transparent;
-	border-top: 5px solid transparent;
-	border-bottom: 5px solid transparent;
-	border-left: 5px solid #32cd32;
-	transform: rotate(-135deg);
+	content: ' ';
+	width: 0px;
+	height: 0px;
+	display: block;
+	position: absolute;
+	right: -14px;
+	top: 5px;
+	border-right: 7px solid transparent;
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;
+	border-left: 7px solid limegreen;
 }
 .conversation-in-message {
+	width: 80%;
+	margin: 5px 15% 5px 5%;
 	background-color: forestgreen;
-	padding-left: 6px;
-	left: 0px;
+	padding: 3px;
+	color: white;
+	border-radius: 2px;
+	position: relative;
 }
 .conversation-in-message::before {
-	left: -5px;
-	top: -5px;
-	border-left: 5px solid transparent;
-	border-top: 5px solid transparent;
-	border-bottom: 5px solid transparent;
-	border-right: 5px solid #228b22;
-	transform: rotate(135deg);
+	content: ' ';
+	width: 0px;
+	height: 0px;
+	display: block;
+	position: absolute;
+	left: -14px;
+	top: 5px;
+	border-left: 7px solid transparent;
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;
+	border-right: 7px solid forestgreen;
 }
 /* Conversations -  END  */
 
@@ -1485,14 +1477,6 @@ body, div {
 	list-style-type: none;
 	overflow-y: scroll;
 }
-.tag-list li {
-	outline: 1px black solid;
-	height: 1em;
-	padding: .5em;
-	margin-right: 1em;
-	color: rgb(220, 66, 80);
-}
-
 /* Watchlist - END */
 
 /* Settings - Start */
@@ -1629,8 +1613,12 @@ body, div {
 .edit-profile button:last-of-type:hover {
 	background-color: #dc4e41;
 }
+.nosuccess {
+	display: none;
+}
 .success {
 	width: 91%;
+	display: none;
   position: absolute;
   background-color: #383838;
   color: #F0F0F0;

@@ -42,8 +42,8 @@ router.get('/stuff', function(req, res) {
 				return client.end();
 			}
 			result.rows.forEach(function(e, i) {
-				result.rows[i].lat += ((Math.random() * 0.2)-1);
-				result.rows[i].lng += ((Math.random() * 0.2)-1);
+				result.rows[i].lat += ((Math.random() * 0.002)-0.001);
+				result.rows[i].lng += ((Math.random() * 0.002)-0.001);
 			});
 			res.send({
 				err: null,
@@ -626,16 +626,47 @@ router.get('/conversation/:id', isAuthenticated, function(req, res) {
 
 router.get('/watchlist', isAuthenticated, function(req, res) {
 	//return all watchlist items
-	var query = [
-		'SELECT * FROM watchlist WHERE user_id = $1'
-	].join('');
-	var values = [
-		req.session.passport.user.id
-	];
-	queryServer(res, query, values, function(result) {
-		res.send({
-			err: null,
-			res: result.rows[0]
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'SELECT watchlist_keys.* FROM watchlist_items, watchlist_keys WHERE user_id = $1 AND watchlist_keys.watchlist_item = watchlist_items.id'
+		].join('');
+		var values = [
+			req.session.passport.user.id
+		];
+		client.query(query, values, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			var counter = 0;
+			var keys = [];
+			result.rows.forEach(function(e) {
+				var query2 = [
+					'SELECT * FROM ', e.category_id?'categories':'tag_names',
+					' WHERE id = $1'
+				].join('');
+				var values2 = [
+					e.category_id?e.category_id:e.tag_id
+				];
+				client.query(query2, values2, function(err, result2) {
+					if(err) {
+						apiError(res, err);
+						return client.end();
+					}
+					keys.push(result2.rows[0]);
+					if(++counter === result.rows.length) {
+						res.send({
+							err:null,
+							res: keys
+						});
+					}
+				});
+			});
 		});
 	});
 });

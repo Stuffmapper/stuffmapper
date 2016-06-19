@@ -3,24 +3,7 @@ stuffMapp.controller('settingsController', ['$scope', '$http', SettingsControlle
 function SettingsController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
-	// $scope.userInfo = {};
-	// var testing = true;
-	// if(testing) {
-	// 	$scope.userData = {
-	// 		uname : 'username',
-	// 		fname : 'firstname',
-	// 		lname : 'lastname',
-	// 		email : 'email',
-	// 		phone : 'phone_number',
-	// 		address	:	'address',
-	// 		city : 'city',
-	// 		state	:	'state',
-	// 		zipcode	:	'zipcode',
-	// 		country	:	'country',
-	// 		googleConnected : false,
-	// 		facebookConnected : true
-	// 	};
-	// }
+
 	$http.get(config.api.host + 'api/' + config.api.version + '/account/info').success(function(data){
 		if(data.err) {
 			console.log(data.err);
@@ -47,7 +30,10 @@ function SettingsController() {
 	};
 	$scope.showSuccess = function() {
 		$('.edit-profile button:first-of-type').click(function () {
-    $('.success').fadeIn(400).delay(1000).fadeOut(400).stop();
+    	$('.success').css({'display': 'block'});
+			// requestAnimationFrame(function(){
+			//
+			// })
 		});
 	};
 
