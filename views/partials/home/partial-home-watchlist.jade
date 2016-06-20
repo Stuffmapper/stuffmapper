@@ -1,7 +1,13 @@
 .watchlist-container
-	section.tag-container(data-ng-init='getAll()')
-			ul.tag-list
-				li(ng-repeat='item in watchlist') {{ item.tag_name || item.category }}
+	section.tag-container(data-ng-init='getAll(); selections()')
+		ul.tag-list
+			li(ng-repeat='item in watchlist') {{ item.tag_name || item.category }}
 	form.tag-form(data-ng-submit='save({users: users})')
 		input#watchlist-input(type='text', ng-model='tagname', placeholder='Add to your watchlist')
 		button(type='submit', value='Submit', ng-click='create()') Submit
+		//- | Attribute:
+		//- select#attribute(name='attribute')
+		//- 	option(value='0') Color
+		//- 	option(value='1') Size
+		//- | Value:
+		//- input#value(type='hidden', style='width:300px')
