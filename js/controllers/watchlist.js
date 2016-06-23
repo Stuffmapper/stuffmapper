@@ -14,9 +14,9 @@ function WatchListController() {
 		$http.get('/api/v1/watchlist')
 		.then(function(res) {
 			$scope.watchlist = res.data.res;
-			console.log($scope.watchlist);
+			console.log('get',$scope.watchlist);
 		}, function(err) {
-			console.log(err.data);
+			console.log('geterr',err.data);
 		});
 	};
 
@@ -31,7 +31,7 @@ function WatchListController() {
 			}
 		}).success(function(data) {
 
-			console.log(data);
+			console.log('create', data);
 		});
 	};
 
@@ -46,16 +46,16 @@ function WatchListController() {
 			$scope.getAll();
 		});
 	};
-	$scope.selections = function() {
-		$(function() {
-			var data = [
-				[{id:0,text:'black'},{id:1,text:'blue'}],
-				[{id:0,text:'9'},{id:1,text:'10'}]
-			];
-
-			$('#attribute').select2().on('change', function() {
-				$('#value').select2({data:data[$(this).val()]});
-			}).trigger('change');
-		});
-	};
+	// $scope.selections = function() {
+	// 	$(function() {
+	// 		var data = [
+	// 			[{id:0,text:'black'},{id:1,text:'blue'}],
+	// 			[{id:0,text:'9'},{id:1,text:'10'}]
+	// 		];
+	//
+	// 		$('#attribute').select2().on('change', function() {
+	// 			$('#value').select2({data:data[$(this).val()]});
+	// 		}).trigger('change');
+	// 	});
+	// };
 }

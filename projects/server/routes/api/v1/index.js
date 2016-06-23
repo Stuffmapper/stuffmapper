@@ -691,6 +691,7 @@ router.get('/watchlist/:id', isAuthenticated, function(req, res) {
 router.post('/watchlist', function(req, res) {
 	var category_tag_ids = [];
 	var client = new pg.Client(conString);
+	console.log(req.params);
 	client.connect(function(err) {
 		req.body.keys.forEach(function(e) {
 			console.log(e);

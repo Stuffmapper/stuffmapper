@@ -1553,7 +1553,7 @@ body, div {
 	padding: 7px;
 }
 .settings-form input {
-	height:1.3em;
+	height:20px;
 	width:97%;
 	padding-left: 5px;
 }
@@ -1594,7 +1594,7 @@ body, div {
 	opacity: 0;
 }
 .edit-profile button {
-	width: 48%;
+	width: 97%;
 	height: 30px;
 	cursor: pointer;
 	margin-left: 4px;
@@ -1608,12 +1608,12 @@ body, div {
 	-webkit-transition: background-color 0.5s ease;
 	transition:  background-color 0.5s ease;
 }
-.edit-profile button:first-of-type:hover {
-	background-color: $primary-color;
-}
-.edit-profile button:last-of-type:hover {
-	background-color: #dc4e41;
-}
+// .edit-profile button:first-of-type:hover {
+// 	background-color: $primary-color;
+// }
+// .edit-profile button:last-of-type:hover {
+// 	background-color: #dc4e41;
+// }
 .nosuccess {
 	display: none;
 }
@@ -1631,6 +1631,7 @@ body, div {
   -webkit-box-shadow: 0 0 24px -1px #383838;
   -moz-box-shadow: 0 0 24px -1px #383838;
   box-shadow: 0 0 24px -1px #383838;
+	opacity: 1;
 }
 .user-info {
 	padding: 15px;
@@ -1838,6 +1839,9 @@ body, div {
 	}
 	.settings-form li {
 		padding: .26em;
+	}
+	.settings-form input {
+		outline: 1px solid #dedede;
 	}
 	.settings-sign-in-up-input {
 		width: 100%;

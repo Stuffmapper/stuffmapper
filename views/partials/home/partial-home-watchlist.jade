@@ -1,5 +1,5 @@
 .watchlist-container
-	section.tag-container(data-ng-init='getAll(); selections()')
+	section.tag-container(data-ng-init='getAll()')
 		ul.tag-list
 			li(ng-repeat='item in watchlist') {{ item.tag_name || item.category }}
 	form.tag-form(data-ng-submit='save({users: users})')

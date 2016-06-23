@@ -28,14 +28,14 @@ function SettingsController() {
 			console.log(data);
 		});
 	};
-	$scope.showSuccess = function() {
-		$('.edit-profile button:first-of-type').click(function () {
-    	$('.success').css({'display': 'block'});
-			// requestAnimationFrame(function(){
-			//
-			// })
-		});
-	};
+	// $scope.showSuccess = function() {
+	// 	$('.edit-profile button:first-of-type').click(function () {
+  //   	// $('.success').css({});
+	// 		requestAnimationFrame(function(){
+	//
+	// 		})
+	// 	});
+	// };
 
 	$scope.edit = function(users) {
 	$scope.orig = angular.copy(users);
