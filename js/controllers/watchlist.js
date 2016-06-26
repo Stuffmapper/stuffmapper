@@ -30,8 +30,16 @@ function WatchListController() {
 				return $.param(data);
 			}
 		}).success(function(data) {
-
-			console.log('create', data);
+			if (!data.err) {
+				var newWatchlist_item = [];
+				keys.forEach(
+					function(e) {
+						newWatchlist_item.push({tag_name:e});
+					}
+				);
+				$scope.watchlist.push(newWatchlist_item);
+				console.log($scope.watchlist);
+			}
 		});
 	};
 

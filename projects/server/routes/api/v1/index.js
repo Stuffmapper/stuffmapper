@@ -633,8 +633,9 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT watchlist_keys.* FROM watchlist_items, watchlist_keys WHERE user_id = $1 AND watchlist_keys.watchlist_item = watchlist_items.id'
-		].join('');
+			'SELECT watchlist_keys.* FROM watchlist_items, watchlist_keys',
+			'WHERE user_id = $1 AND watchlist_keys.watchlist_item = watchlist_items.id'
+		].join(' ');
 		var values = [
 			req.session.passport.user.id
 		];
@@ -645,6 +646,9 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 			}
 			var counter = 0;
 			var keys = [];
+			var lastWatchlistItem = null;
+			var watchlistItemPos = 0;
+			var watchlist = [];
 			result.rows.forEach(function(e) {
 				var query2 = [
 					'SELECT * FROM ', e.category_id?'categories':'tag_names',
@@ -658,11 +662,16 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 						apiError(res, err);
 						return client.end();
 					}
-					keys.push(result2.rows[0]);
+					if(lastWatchlistItem === null || lastWatchlistItem !== e.watchlist_item) {
+						watchlist.push([]);
+						watchlistItemPos = watchlist.length-1;
+						lastWatchlistItem = e.watchlist_item;
+					}
+					watchlist[watchlistItemPos].push(result2.rows[0]);
 					if(++counter === result.rows.length) {
 						res.send({
-							err:null,
-							res: keys
+							err: null,
+							res: watchlist
 						});
 					}
 				});
