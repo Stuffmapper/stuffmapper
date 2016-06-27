@@ -54,16 +54,15 @@ function WatchListController() {
 			$scope.getAll();
 		});
 	};
-	// $scope.selections = function() {
-	// 	$(function() {
-	// 		var data = [
-	// 			[{id:0,text:'black'},{id:1,text:'blue'}],
-	// 			[{id:0,text:'9'},{id:1,text:'10'}]
-	// 		];
-	//
-	// 		$('#attribute').select2().on('change', function() {
-	// 			$('#value').select2({data:data[$(this).val()]});
-	// 		}).trigger('change');
-	// 	});
-	// };
+	$scope.clearField = function() {
+		$('#watchlist-input').val('');
+	};
+	$scope.selections = function() {
+		$('.select-values').select2({
+			placeholder: 'select a tagname'
+			// ajax: {
+			// 	url: '/watchlist'
+			// }
+		});
+	};
 }

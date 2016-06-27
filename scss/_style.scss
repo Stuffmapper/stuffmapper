@@ -1454,29 +1454,31 @@ body, div {
 .tag-form input {
 	text-align: center;
 	position: relative;
-	height: 3em;
+	height: 40px;
 	width: calc(100% - 4px);
 }
 
 .tag-form button {
 	position: relative;
-	height: 3em;
+	height: 40px;
 	width: 100%;
 }
 
 .tag-list {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
 	height: 100%;
 	padding: 10px;
 	margin: 0;
 	list-style-type: none;
-	overflow-y: scroll;
+	overflow-y: auto;
+	font-size: 17px;
 }
 .tag-list li {
-	padding: 5px;
-	height: 17px;
+	margin-bottom: 9px;
+}
+.tag-list span {
+	padding: 2px;
+	outline: 1px solid #E6E9ED;
+	margin: 5px;
 }
 /* Watchlist - END */
 
@@ -1493,20 +1495,20 @@ body, div {
   margin-bottom: 0;
 	height: 24px;
   width:100%;
-	color: #6f6f6f;
-	background-color: #dedede;
+	color: #AAB2BE;
+	background-color: #F5F7FA;
 	font-weight: 300;
 }
 .settings-header p {
 	width: 80px;
 }
-.settings-header img {
-	height: 120px;
-	display: inline-block;
-	border: 1px solid #6f6f6f;
-  border-radius: 61px;
-	margin: 0;
-}
+// .settings-header img {
+// 	height: 120px;
+// 	display: inline-block;
+// 	border: 1px solid #6f6f6f;
+//   border-radius: 61px;
+// 	margin: 0;
+// }
 .settings-header-button {
 	width: 50%;
   height: 36px;
@@ -1558,7 +1560,7 @@ body, div {
 	padding-left: 5px;
 }
 .settings-profile li {
-	border-bottom: 1px solid #dedede;
+	border-bottom: 1px solid #F5F7FA;
 }
 .settings-profile p {
 	float: right;
@@ -1574,14 +1576,14 @@ body, div {
 .settings {
 	background-color: #fff;
 	margin: 5px;
-	outline: 1px solid #dedede;
+	outline: 1px solid #E6E9ED;
 }
 .settings-sign-in-up-input {
 	display: block;
 	border-radius: 3px;
 	overflow: hidden;
 	border: 0;
-	width: 22em;
+	width: 100%;
 	height: 36px;
 	padding: 0;
 	font-size: 14px;
@@ -1714,7 +1716,7 @@ body, div {
 		position: absolute;
 	}
 	.toggle-button {
-		background-color: #d3d3d3;
+		background-color: #E6E9ED;
 		border-radius: 4em;
 		border: 1px solid;
 		height: 1em;
@@ -1841,7 +1843,7 @@ body, div {
 		padding: .26em;
 	}
 	.settings-form input {
-		outline: 1px solid #dedede;
+		outline: 1px solid #F5F7FA;
 	}
 	.settings-sign-in-up-input {
 		width: 100%;
