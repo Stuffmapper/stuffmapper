@@ -679,7 +679,11 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 		});
 	});
 });
-
+router.get('/categoriesandtags', function(req, res) {
+	var query = [
+		'SELECT * FROM categories, tag_names WHERE categories.category SIMILAR TO "%$1%" OR tag_names.tag_name SIMILAR TO "%$1%" LIMIT 10'
+	];
+});
 router.get('/watchlist/:id', isAuthenticated, function(req, res) {
 	//return watchlist item
 	var query = [
