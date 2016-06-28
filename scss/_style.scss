@@ -1461,6 +1461,10 @@ input:read-only{
 	padding-left: 20px;
 	padding-right: 20px;
 }
+.tag-form select {
+	width: 100%;
+	outline: none;
+}
 .tag-form input {
 	text-align: center;
 	position: relative;

@@ -50,7 +50,7 @@ function WatchListController() {
 			console.log('watchlist item deleted');
 		}, function(err) {
 			console.log(err.data);
-			$scope.errors.push('could not delete watchlist_item: ' + tagname.name);
+			$scope.errors.push('could not delete watchlist_item: ' + tag_name.name);
 			$scope.getAll();
 		});
 	};
@@ -60,7 +60,7 @@ function WatchListController() {
 	$scope.selections = function() {
 		$("#watchlist-input").select2({
 		  ajax: {
-		    url: '/api/vi/watchlist/tags',
+		    url: '/api/vi/categoriesandtags',
 		    dataType: 'json',
 		    delay: 250,
 		    data: function (params) {

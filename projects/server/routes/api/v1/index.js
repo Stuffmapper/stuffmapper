@@ -680,9 +680,26 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 	});
 });
 router.get('/categoriesandtags', function(req, res) {
-	var query = [
-		'SELECT * FROM categories, tag_names WHERE categories.category SIMILAR TO "%$1%" OR tag_names.tag_name SIMILAR TO "%$1%" LIMIT 10'
-	];
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'SELECT * FROM categories, tag_names WHERE categories.category SIMILAR TO "%$1%"',
+			'OR tag_names.tag_name SIMILAR TO "%$1%" LIMIT 10'
+		].join('');
+		var values = [
+
+		];
+		queryServer(res, query, values, function(result) {
+			res.send({
+				err: null,
+				res: result.rows[0]
+			});
+		});
+	});
 });
 router.get('/watchlist/:id', isAuthenticated, function(req, res) {
 	//return watchlist item

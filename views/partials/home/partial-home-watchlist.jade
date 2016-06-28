@@ -7,9 +7,7 @@
 			li(ng-repeat='items in watchlist') 
 				span(ng-repeat='item in items') {{ item.tag_name || item.category }}
 	form.tag-form(name='watchlistForm', novalidate, data-ng-submit='save({users: users})')
-		//- select.select-values(data-ng-init='selections()', multiple ='multiple')
-		//- 	option General
-		//- 	option Electronics
-		//- 	option Clothes
+		select.select-values(data-ng-init='selections()', multiple ='multiple')
+			option(selected='selected')
 		input#watchlist-input(type='text', ng-model='tagname', ng placeholder='Add to your watchlist' required)
 		button(type='submit', value='Submit', ng-disabled='watchlistForm.$invalid', ng-click='create(); clearField()') Submit
