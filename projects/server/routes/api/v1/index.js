@@ -680,6 +680,7 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 	});
 });
 router.get('/categoriesandtags', function(req, res) {
+	console.log(req.query.q);
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
 		if(err) {
@@ -687,11 +688,11 @@ router.get('/categoriesandtags', function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT * FROM categories, tag_names WHERE categories.category SIMILAR TO "%$1%"',
-			'OR tag_names.tag_name SIMILAR TO "%$1%" LIMIT 10'
-		].join('');
+			'(SELECT * FROM categories WHERE category SIMILAR TO \'%\' || $1 || \'%\') UNION ALL',
+			'(SELECT * FROM tag_names WHERE tag_name SIMILAR TO \'%\' || $1 || \'%\') LIMIT 10'
+		].join(' ');
 		var values = [
-
+			req.query.q
 		];
 		queryServer(res, query, values, function(result) {
 			res.send({

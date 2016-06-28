@@ -1464,6 +1464,7 @@ input:read-only{
 .tag-form select {
 	width: 100%;
 	outline: none;
+	overflow: auto;
 }
 .tag-form input {
 	text-align: center;
