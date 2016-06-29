@@ -679,7 +679,30 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 		});
 	});
 });
+router.get('/categoriesandtags', function(req, res) {
+	console.log(req.query.q);
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'(SELECT category AS text, row_number() over() AS id FROM categories WHERE category SIMILAR TO \'%\' || $1 || \'%\') UNION ALL',
+			'(SELECT tag_name AS text, row_number() over() AS id FROM tag_names WHERE tag_name SIMILAR TO \'%\' || $1 || \'%\') LIMIT 10'
+		].join(' ');
+		var values = [
+			req.query.q
+		];
+		queryServer(res, query, values, function(result) {
 
+			res.send({
+				err: null,
+				res: result.rows
+			});
+		});
+	});
+});
 router.get('/watchlist/:id', isAuthenticated, function(req, res) {
 	//return watchlist item
 	var query = [

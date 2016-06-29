@@ -6,16 +6,6 @@
 		ul.tag-list
 			li(ng-repeat='items in watchlist') 
 				span(ng-repeat='item in items') {{ item.tag_name || item.category }}
-	form.tag-form(name="watchlistForm", data-ng-submit='save({users: users})')
-		//- select.select-values(data-ng-init='selections()', multiple ='multiple')
-		//- 	option General
-		//- 	option Electronics
-		//- 	option Clothes
-		input#watchlist-input(type='text', ng-model='tagname', placeholder='Add to your watchlist')
+	form.tag-form(name='watchlistForm', data-ng-submit='save({users: users})')
+		select#watchlist-select(data-ng-init='selections()', multiple ='multiple')
 		button(type='submit', value='Submit', ng-click='create(); clearField()') Submit
-		//- | Attribute:
-		//- select#attribute(name='attribute')
-		//- 	option(value='0') Color
-		//- 	option(value='1') Size
-		//- | Value:
-		//- input#value(type='hidden', style='width:300px')

@@ -21,26 +21,28 @@ function WatchListController() {
 	};
 
 	$scope.create = function() {
-		var keys = $('#watchlist-input').val().split(',');
-		$http.post('/api/v1/watchlist', {keys:keys},{
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-			},
-			transformRequest: function(data){
-				return $.param(data);
-			}
-		}).success(function(data) {
-			if (!data.err) {
-				var newWatchlist_item = [];
-				keys.forEach(
-					function(e) {
-						newWatchlist_item.push({tag_name:e});
-					}
-				);
-				$scope.watchlist.push(newWatchlist_item);
-				console.log($scope.watchlist);
-			}
-		});
+		var keys = $('#watchlist-select').val();
+		if (keys) {
+			$http.post('/api/v1/watchlist', {keys:keys}, {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+				},
+				transformRequest: function(data){
+					return $.param(data);
+				}
+			}).success(function(data) {
+				if (!data.err) {
+					var newWatchlist_item = [];
+					keys.forEach(
+						function(e) {
+							newWatchlist_item.push({tag_name:e});
+						}
+					);
+					$scope.watchlist.push(newWatchlist_item);
+					console.log($scope.watchlist);
+				}
+			});
+		}
 	};
 
 	$scope.remove = function(tagname) {
@@ -50,7 +52,7 @@ function WatchListController() {
 			console.log('watchlist item deleted');
 		}, function(err) {
 			console.log(err.data);
-			$scope.errors.push('could not delete watchlist_item: ' + tagname.name);
+			$scope.errors.push('could not delete watchlist_item: ' + tag_name.name);
 			$scope.getAll();
 		});
 	};
@@ -58,11 +60,37 @@ function WatchListController() {
 		$('#watchlist-input').val('');
 	};
 	$scope.selections = function() {
-		$('.select-values').select2({
-			placeholder: 'select a tagname'
-			// ajax: {
-			// 	url: '/watchlist'
-			// }
+		$("#watchlist-select").select2({
+			placeholder: "Search for tag names",
+			allowClear: true,
+			tags: true,
+			tokenSeparators: [',', ' '],
+			ajax: {
+				url: '/api/v1/categoriesandtags',
+				dataType: 'json',
+				delay: 250,
+				data: function (params) {
+					return {
+						q: params.term, // search term
+						page: params.page
+					};
+				},
+				processResults: function (data, params) {
+					// parse the results into the format expected by Select2
+					// since we are using custom formatting functions we do not need to
+					// alter the remote JSON data, except to indicate that infinite
+					// scrolling can be used
+					console.log(data);
+					params.page = params.page || 1;
+
+					return {
+						results: data.res
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+			minimumInputLength: 1
 		});
 	};
 }

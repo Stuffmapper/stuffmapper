@@ -38,6 +38,10 @@ body, div {
 	font-family: Arial;
 }
 
+input:read-only{
+	background-color: #FFF;
+}
+
 .animate-250 {
 	@include transition(all 250ms);
 }
@@ -1444,24 +1448,41 @@ body, div {
 /* Watchlist - START */
 .watchlist-container {
 	position: absolute;
-	height: 100%;
-	width: 100%;
+	height: 98%;
+	width: 97%;
+	margin: 5px;
+	outline: #E6E9ED solid 1px;
 }
 .tag-container {
 	background-color: #fff;
-	height: calc(100% - 5.4em);
+	height: calc(100% - 6.4em);
+}
+.tag-form {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.tag-form select {
+	width: 100%;
+	outline: none;
+	overflow: auto;
 }
 .tag-form input {
 	text-align: center;
 	position: relative;
 	height: 40px;
-	width: calc(100% - 4px);
+	width: calc(100% - 6px);
+	outline: 1px solid #E6E9ED;
 }
 
 .tag-form button {
-	position: relative;
 	height: 40px;
 	width: 100%;
+	width: 100%;
+	cursor: pointer;
+	-moz-box-shadow: inset -2px -2px grey;
+	-webkit-box-shadow: inset -2px -2px grey;
+	box-shadow: inset -2px -2px grey;
+	border: none;
 }
 
 .tag-list {
@@ -1471,6 +1492,8 @@ body, div {
 	list-style-type: none;
 	overflow-y: auto;
 	font-size: 17px;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 .tag-list li {
 	margin-bottom: 9px;
@@ -1491,10 +1514,10 @@ body, div {
 	display: inline-block;
 	padding-top: 5px;
 	font-size: 16px;
-  margin-top: 0;
-  margin-bottom: 0;
+	margin-top: 0;
+	margin-bottom: 0;
 	height: 24px;
-  width:100%;
+	width:100%;
 	color: #AAB2BE;
 	background-color: #F5F7FA;
 	font-weight: 300;
@@ -1511,11 +1534,11 @@ body, div {
 // }
 .settings-header-button {
 	width: 50%;
-  height: 36px;
+	height: 36px;
 	cursor: pointer;
-  float: right;
-  margin-top: 10px;
-  margin-right: 5%;
+	float: right;
+	margin-top: 10px;
+	margin-right: 5%;
 	-moz-box-shadow: inset -2px  -2px #808080;
 	-webkit-box-shadow: inset -2px  -2px #808080;
 	box-shadow: inset -2px  -2px #808080;
@@ -1622,17 +1645,17 @@ body, div {
 .success {
 	width: 91%;
 	display: none;
-  position: absolute;
-  background-color: #383838;
-  color: #F0F0F0;
-  font-family: Calibri;
-  font-size: 20px;
-  padding: 10px;
-  text-align: center;
-  border-radius: 2px;
-  -webkit-box-shadow: 0 0 24px -1px #383838;
-  -moz-box-shadow: 0 0 24px -1px #383838;
-  box-shadow: 0 0 24px -1px #383838;
+	position: absolute;
+	background-color: #383838;
+	color: #F0F0F0;
+	font-family: Calibri;
+	font-size: 20px;
+	padding: 10px;
+	text-align: center;
+	border-radius: 2px;
+	-webkit-box-shadow: 0 0 24px -1px #383838;
+	-moz-box-shadow: 0 0 24px -1px #383838;
+	box-shadow: 0 0 24px -1px #383838;
 	opacity: 1;
 }
 .user-info {
