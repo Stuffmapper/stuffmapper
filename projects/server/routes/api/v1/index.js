@@ -688,16 +688,17 @@ router.get('/categoriesandtags', function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'(SELECT * FROM categories WHERE category SIMILAR TO \'%\' || $1 || \'%\') UNION ALL',
-			'(SELECT * FROM tag_names WHERE tag_name SIMILAR TO \'%\' || $1 || \'%\') LIMIT 10'
+			'(SELECT category AS text, row_number() over() AS id FROM categories WHERE category SIMILAR TO \'%\' || $1 || \'%\') UNION ALL',
+			'(SELECT tag_name AS text, row_number() over() AS id FROM tag_names WHERE tag_name SIMILAR TO \'%\' || $1 || \'%\') LIMIT 10'
 		].join(' ');
 		var values = [
 			req.query.q
 		];
 		queryServer(res, query, values, function(result) {
+
 			res.send({
 				err: null,
-				res: result.rows[0]
+				res: result.rows
 			});
 		});
 	});
