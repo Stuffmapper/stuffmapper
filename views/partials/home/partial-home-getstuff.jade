@@ -1,11 +1,14 @@
 #get-stuff-container
 	div(ui-view)
+	#loading-get-stuff.loading-screen.animate-250
+		.spinner
+			.double-bounce1
+			.double-bounce2
+		.loading-text Finding Stuff...
 	.search-stuff-container
-		div.toggle(ng-click='toggleSwitch();toggleMap()')
-			div.toggle-button.toggle-button-selected
-				button
+		i.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
 		input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
-		i#filter-button.stuff-button.fa.fa-sliders(tabindex="0" ng-click='toggleFilterPane()')
+		i#filter-button.stuff-button.fa.fa-filter(tabindex="0" ng-click='toggleFilterPane()')
 	#masonry-container.animate-250.hide-masonry-container
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
@@ -16,5 +19,4 @@
 						.get-stuff-item-info
 							div {{ list.title }}
 	#filter-pane.animate-250
-		ul.filter-options
-			li(ng-repeat="options in filterOptions")
+		

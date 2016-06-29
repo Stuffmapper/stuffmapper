@@ -1,10 +1,11 @@
 
-stuffMapp.controller('watchlistController', ['$scope', '$location', 'authenticated', WatchListController]);
+stuffMapp.controller('watchlistController', ['$scope', '$http', '$location', 'authenticated', WatchListController]);
 function WatchListController() {
 	var $scope = arguments[0];
-	var $location = arguments[1];
-	var authenticated = arguments[2];
-	if(!authenticated.res.loggedIn) {
+	var $http = arguments[1];
+	var $location = arguments[2];
+	var authenticated = arguments[3];
+	if(authenticated.err) {
 		$location.path('stuff/get');
 		return;
 	}

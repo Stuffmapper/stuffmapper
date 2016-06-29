@@ -56,7 +56,6 @@ function StuffController() {
 		$scope.map = new google.maps.Map($('#map-view')[0], mapOptions);
 		$scope.map.mapTypes.set('map_style', styledMap);
 		$scope.map.setMapTypeId('map_style');
-		console.log($scope);
 	}
 	$userData.setUserId(1);
 }

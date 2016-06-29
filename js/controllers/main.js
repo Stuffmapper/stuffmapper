@@ -1,19 +1,56 @@
-stuffMapp.controller('MainController', ['$scope', '$http', '$timeout', '$userData', '$state', '$location', MainController]);
+stuffMapp.controller('MainController', ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope', MainController]);
 function MainController() {
 	//TODO: loading http://tobiasahlin.com/spinkit/ http://projects.lukehaas.me/css-loaders/
-	//$scope.socket = io();
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $timeout = arguments[2];
 	var $userData = arguments[3];
 	var $state = arguments[4];
 	var $location = arguments[5];
-	$scope.counterFlipper = new CounterFlipper('landfill-tracker', 0, 7);
-	$scope.counterFlipper.setCounter(1283746);
-	$scope.counterFlipper.setCounter(2738391);
-	$scope.counterFlipper.setCounter(3345678);
-	$scope.counterFlipper.setCounter(4765432);
-	$scope.counterFlipper.setCounter(3);
+	var $rootScope = arguments[6];
+	$scope.counterFlipperHeader = new CounterFlipper('landfill-tracker-header', 0, 7);
+	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
+	$scope.counterFlipperHeader.setCounter(1283746);
+	$scope.counterFlipperHeader.setCounter(2738391);
+	$scope.counterFlipperHeader.setCounter(3345678);
+	$scope.counterFlipperHeader.setCounter(4765432);
+	$scope.counterFlipperHeader.setCounter(3);
+	$scope.counterFlipperMenu.setCounter(3);
+	$http.post('/api/v1/account/status').success(function(data) {
+		if(!data.err) {
+			$scope.socket = io('http://ducks.stuffmapper.com:3000');
+			$scope.socket.on((data.res.user.id), function (data) {
+				console.log(data);
+				console.log($location.$$path);
+				var lPath = $location.$$path.split('/');
+				lPath.shift();
+				var out = document.getElementById('conversation-messages');
+				console.log(lPath);
+				if(
+					out &&
+					lPath[0] === 'stuff' &&
+					lPath[1] === 'my' &&
+					lPath[2] === 'messages' &&
+					lPath.length === 4 &&
+					parseInt(lPath[3]) === parseInt(data.messages.conversation)) {
+					var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+					$('#conversation-messages').append([
+						'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="conversation-message conversation-in-message">',
+						data.messages.message,
+						'</div></li>'
+					].join(''));
+					if(isScrolledToBottom) {
+						$(out).animate({
+							scrollTop: out.scrollHeight - out.clientHeight
+						}, 250);
+					}
+				}
+			});
+		}
+	});
+	$(function() {
+		FastClick.attach(document.body);
+	});
 	$scope.popUpOpen = false;
 	$scope.showModal = function() {
 		if(config.html5) location.hash = 'signin';
@@ -207,6 +244,9 @@ function MainController() {
 		$('#sign-in-step .modal-title').css({'transform':''});
 		$('#sign-in-step .modal-title').removeClass('visible');
 		$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+	};
+	$scope.toggleSideMenu = function() {
+		$('#side-menu, #side-menu-background').toggleClass('hidden');
 	};
 }
 

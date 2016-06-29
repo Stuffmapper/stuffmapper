@@ -8,8 +8,8 @@ doctype html
 html(lang="en" class= htmlClassList ng-app="stuffMapp")
 	head
 		meta(charset="utf-8")
-		meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width")
-		meta(name="theme-color" content="#6bc43c")
+		meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, height=device-height")
+		meta(name="theme-color" content="#9FD661")
 		//- link(rel="icon" sizes="192x192" href="nice-highres.png")
 		title Stuffmapper
 		if ionic
@@ -42,10 +42,11 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="http://ducks.stuffmapper.com:3000/socket.io/socket.io.js")
+			//script(src="http://localhost:3000/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 		else
+			script(src="/socket.io/socket.io.js")
 			script(src="/js/angular.js")
 		script(src="https://use.typekit.net/lrm3jdv.js")
 		script try{Typekit.load({ async: true });}catch(e){}
@@ -133,15 +134,50 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				li
 					i.fa.fa-sign-out
 					span(ng-click="logout()") Sign Out
-		ul.side-menu.animate-250
-			li.side-menu-header
-				.profile
+		ul#side-menu.side-menu.hidden.animate-250
+			#close-menu-button.fa.fa-times(ng-click="toggleSideMenu()")
+			li.side-menu-user-container
+				.side-menu-user-info
+					.side-menu-logo
+					.side-menu-details-container
+						.side-menu-uname
+						.side-menu-email
+						.side-menu-settings
+						.side-menu-logout
+			li.side-menu-item 
+				.side-menu-icon.fa.fa-user
+				span My Stuff
 			li.side-menu-item
+				.side-menu-icon.fa.fa-user
+				span Messages
+			li.side-menu-item 
+				.side-menu-icon.fa.fa-user
+				span Watchlist
 			li.side-menu-item
+				.side-menu-icon.fa.fa-user
+				span Settings
+			li.side-menu-item
+				.side-menu-icon.fa.fa-user
+				span FAQ/Help
+			.side-menu-footer
+				.new-thing Stuff saved from landfill  
+					a.fa.fa-info-circle(href="/faq#landfill-tracker" style="color: white; text-decoration: none;")
+				#landfill-tracker-menu
+				#stuffmapper-logo-container-menu
+					img#logo-menu(src="img/logo-txt-only-bold.png" ng-click="aboutUs()")
+					.tiny-links
+						a(ui-sref="about") about
+						span.tiny-links-separator |
+						a(ui-sref="useragreement") terms
+						span.tiny-links-separator |
+						a(ui-sref="privacy") policy
+		#side-menu-background.side-menu-background.animate-250.hidden(ng-click="toggleSideMenu()")
 		#container
 			#header
+				#header-menu-icon-container(ng-click="toggleSideMenu()")
+					#header-menu-icon.menu-icon.fa.fa-bars
 				img#logo(src="img/logo-txt-only-bold.png" ng-click="aboutUs()")
-				#landfill-tracker
+				#landfill-tracker-header
 				#user-portal
 					a#sign-in-button(ng-click="userButton()")
 						i.fa.fa-user

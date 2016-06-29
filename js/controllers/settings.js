@@ -22,10 +22,7 @@ function SettingsController() {
 	// 	};
 	// }
 	$http.get(config.api.host + 'api/' + config.api.version + '/account/info').success(function(data){
-		if(data.err) {
-			console.log(data.err);
-			return;
-		}
+		if(data.err) return console.log(data.err);
 		$scope.users = data.res;
 	});
 
@@ -33,31 +30,30 @@ function SettingsController() {
 
 	$scope.update = function(users) {
 
-	$http.put('/api/v1/account/info', $scope.users,{
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-		},
-		transformRequest: function(data){
-			return $.param(data);
-		}
-	}).success(function(data) {
-
+		$http.put('/api/v1/account/info', $scope.users,{
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			transformRequest: function(data){
+				return $.param(data);
+			}
+		}).success(function(data) {
 			console.log(data);
 		});
 	};
 	$scope.showSuccess = function() {
 		$('.edit-profile button:first-of-type').click(function () {
-    $('.success').fadeIn(400).delay(1000).fadeOut(400).stop();
+			$('.success').fadeIn(400).delay(1000).fadeOut(400).stop();
 		});
 	};
 
 	$scope.edit = function(users) {
-	$scope.orig = angular.copy(users);
-	users.editing = true;
+		$scope.orig = angular.copy(users);
+		users.editing = true;
 	};
 
 	$scope.cancelEdit = function(users) {
-			angular.copy($scope.orig, users);
-			users.editing = false;
+		angular.copy($scope.orig, users);
+		users.editing = false;
 	};
 }

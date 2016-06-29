@@ -40,7 +40,7 @@ www/libs/**
 
 hooks
 www
-js/lib
+js/lib/*
 !js/lib/counter_flipper.js
 plugins
 projects/electron

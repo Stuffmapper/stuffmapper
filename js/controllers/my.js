@@ -4,7 +4,7 @@ function MyController() {
 	var $state = arguments[1];
 	var $location = arguments[2];
 	var authenticated = arguments[3];
-	if(!authenticated.res.loggedIn) {
+	if(authenticated.err) {
 		$location.path('/stuff/get');
 		return;
 	}

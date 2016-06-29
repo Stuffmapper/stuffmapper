@@ -7,7 +7,7 @@ function GiveController() {
 	var $location = arguments[4];
 	var $stuffTabs = arguments[5];
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
-	if(!authenticated.res.loggedIn) return $location.path('/stuff/get');
+	if(authenticated.err) return $location.path('/stuff/get');
 	$http.get(config.api.host + 'api/' + config.api.version + '/categories').success(function(data) {
 		$scope.data = data.res;
 		$scope.categories = [];

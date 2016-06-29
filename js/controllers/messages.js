@@ -4,6 +4,7 @@ function MessagesController() {
 	var $http = arguments[1];
 	$http.get(config.api.host + 'api/' + config.api.version + '/messages').success(function(data) {
 		$scope.messages = data.res;
+		console.log(data.res);
 	});
 	$scope.$on('$destroy', function() {
 	});

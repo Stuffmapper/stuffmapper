@@ -4,14 +4,15 @@ function ConversationController() {
 	var $http = arguments[1];
 	var $stateParams = arguments[2];
 	$http.get(config.api.host + 'api/v1/conversation/'+$stateParams.conversation).success(function(data) {
-		$scope.conversation = data.res;
+		$scope.conversation = data.res.conversation;
+		$scope.info = data.res.info;
 		requestAnimationFrame(function() {
 			out.scrollTop = out.scrollHeight - out.clientHeight;
 		});
 		$scope.sendMessage = function() {
 			if(!$('#conversation-input').val()) return;
 			$http.post('/api/v1/messages', {
-				conversation_id:$stateParams.conversation,
+				conversation_id:(parseInt($stateParams.conversation)),
 				message:$('#conversation-input').val()
 			}, {
 				headers: {
@@ -21,7 +22,13 @@ function ConversationController() {
 					return $.param(data);
 				}
 			}).success(function(data) {
-				insertMessage('out', $('#conversation-input').val());
+				$scope.socket.emit('message', {
+					to: $scope.info.inboundMessenger,
+					from: $scope.info.outboundMessenger,
+					conversation: $stateParams.conversation,
+					message: $('#conversation-input').val()
+				});
+				$scope.insertMessage('out', $('#conversation-input').val());
 				$('#conversation-input').val('');
 				$('#conversation-input').focus();
 				var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
@@ -36,7 +43,7 @@ function ConversationController() {
 		};
 	});
 	var out = document.getElementById('conversation-messages');
-	function insertMessage(type, message) {
+	$scope.insertMessage = function(type, message) {
 		var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 		$('#conversation-messages').append([
 			'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="conversation-message conversation-'+type+'-message">',
@@ -48,7 +55,7 @@ function ConversationController() {
 				scrollTop: out.scrollHeight - out.clientHeight
 			}, 250);
 		}
-	}
+	};
 	$('#conversation-input').on('input', function(e) {
 		var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 		this.style.height = 'auto';

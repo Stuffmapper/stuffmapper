@@ -1,4 +1,29 @@
-$primary-color: #82d757;
+/* COLORS - START */
+
+$aqua-dark: #33AEDC;
+$aqua-light: #48C0EB;
+$charcoal-dark: #3C3B3D;
+$charcoal-light: #555555;
+$fog-light: #F5F7FA;
+$fog-dark: #E6E9ED;
+$grapefruit-dark: #DC4250;
+$grapefruit-light: #ED5565;
+$grass-dark: #8BC34A;
+$grass-light: #9FD661;
+$pewter-dark: #AAB2BE;
+$pewter-light: #CCD1D9;
+$plum-dark: #6A4DA9;
+$plum-light: #8065B9;
+$sunflower-dark: #F7BC31;
+$sunflower-light: #FFCF47;
+$white: #FFFFFF;
+
+
+/* COLORS -  END  */
+
+
+$primary-color: $grass-light;
+$secondary-color: $grass-dark;
 
 /* Landfill Tracker - START */
 
