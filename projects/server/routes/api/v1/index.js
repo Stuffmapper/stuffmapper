@@ -686,20 +686,83 @@ router.get('/conversation/:id', isAuthenticated, function(req, res) {
 
 router.get('/watchlist', isAuthenticated, function(req, res) {
 	//return all watchlist items
-	var query = [
-		'SELECT * FROM watchlist WHERE user_id = $1'
-	].join('');
-	var values = [
-		req.session.passport.user.id
-	];
-	queryServer(res, query, values, function(result) {
-		res.send({
-			err: null,
-			res: result.rows[0]
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'SELECT watchlist_keys.* FROM watchlist_items, watchlist_keys',
+			'WHERE user_id = $1 AND watchlist_keys.watchlist_item = watchlist_items.id'
+		].join(' ');
+		var values = [
+			req.session.passport.user.id
+		];
+		client.query(query, values, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			var counter = 0;
+			var keys = [];
+			var lastWatchlistItem = null;
+			var watchlistItemPos = 0;
+			var watchlist = [];
+			result.rows.forEach(function(e) {
+				var query2 = [
+					'SELECT * FROM ', e.category_id?'categories':'tag_names',
+					' WHERE id = $1'
+				].join('');
+				var values2 = [
+					e.category_id?e.category_id:e.tag_id
+				];
+				client.query(query2, values2, function(err, result2) {
+					if(err) {
+						apiError(res, err);
+						return client.end();
+					}
+					if(lastWatchlistItem === null || lastWatchlistItem !== e.watchlist_item) {
+						watchlist.push([]);
+						watchlistItemPos = watchlist.length-1;
+						lastWatchlistItem = e.watchlist_item;
+					}
+					watchlist[watchlistItemPos].push(result2.rows[0]);
+					if(++counter === result.rows.length) {
+						res.send({
+							err: null,
+							res: watchlist
+						});
+					}
+				});
+			});
 		});
 	});
 });
+router.get('/categoriesandtags', function(req, res) {
+	console.log(req.query.q);
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'(SELECT category AS text, row_number() over() AS id FROM categories WHERE category SIMILAR TO \'%\' || $1 || \'%\') UNION ALL',
+			'(SELECT tag_name AS text, row_number() over() AS id FROM tag_names WHERE tag_name SIMILAR TO \'%\' || $1 || \'%\') LIMIT 10'
+		].join(' ');
+		var values = [
+			req.query.q
+		];
+		queryServer(res, query, values, function(result) {
 
+			res.send({
+				err: null,
+				res: result.rows
+			});
+		});
+	});
+});
 router.get('/watchlist/:id', isAuthenticated, function(req, res) {
 	//return watchlist item
 	var query = [
@@ -720,6 +783,7 @@ router.get('/watchlist/:id', isAuthenticated, function(req, res) {
 router.post('/watchlist', function(req, res) {
 	var category_tag_ids = [];
 	var client = new pg.Client(conString);
+	console.log(req.params);
 	client.connect(function(err) {
 		req.body.keys.forEach(function(e) {
 			console.log(e);
