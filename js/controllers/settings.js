@@ -21,7 +21,7 @@ function SettingsController() {
 	// 		facebookConnected : true
 	// 	};
 	// }
-	$http.get(config.api.host + 'api/' + config.api.version + '/account/info').success(function(data){
+	$http.get(config.api.host + '/api/v' + config.api.version + '/account/info').success(function(data){
 		if(data.err) return console.log(data.err);
 		$scope.users = data.res;
 	});

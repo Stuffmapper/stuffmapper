@@ -3,7 +3,7 @@ function ConversationController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $stateParams = arguments[2];
-	$http.get(config.api.host + 'api/v1/conversation/'+$stateParams.conversation).success(function(data) {
+	$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+$stateParams.conversation).success(function(data) {
 		$scope.conversation = data.res.conversation;
 		$scope.info = data.res.info;
 		requestAnimationFrame(function() {
@@ -11,7 +11,7 @@ function ConversationController() {
 		});
 		$scope.sendMessage = function() {
 			if(!$('#conversation-input').val()) return;
-			$http.post('/api/v1/messages', {
+			$http.post(config.api.host + '/api/v'+config.api.version+'/messages', {
 				conversation_id:(parseInt($stateParams.conversation)),
 				message:$('#conversation-input').val()
 			}, {

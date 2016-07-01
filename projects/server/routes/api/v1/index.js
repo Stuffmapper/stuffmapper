@@ -4,6 +4,7 @@ var pg = require('pg');
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
 var passport = require('passport');
+var request = require('request');
 
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
 
@@ -321,13 +322,25 @@ router.post('/account/status', function(req, res) {
 
 router.post('/account/register', function(req, res) {
 	var client = new pg.Client(conString);
-	var body = req.body;
-	bcrypt.hash(body.password, saltRounds, function(err, hashedPassword) {
-		client.connect(function(err) {
-			if(err) {
-				apiError(res, err);
-				return client.end();
+	var b = req.body;
+	console.log(b);
+	if(b.type === 'google') {
+		console.log('alskfjlaskjfsadlkfjsdalfkjsdfkj');
+		request({
+			method: 'GET',
+			url:'https://www.googleapis.com/oauth2/v2/userinfo?fields=email%2Cfamily_name%2Cgiven_name%2Cpicture&key='+b.oauth.id_token,
+			headers: {
+				'Authorization':'Bearer '+b.oauth.access_token
 			}
+		}, function(data) {
+			console.log('AHHHHHHH I DID IT AHHHHHHHHHH', data);
+		});
+	}
+	else if(b.type === 'facebook') {
+
+	}
+	else {
+		bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
 			var query = [
 				'INSERT INTO users ',
 				'(fname, lname, uname, email, password, phone_number) ',
@@ -335,28 +348,23 @@ router.post('/account/register', function(req, res) {
 				'RETURNING *'
 			].join('');
 			var values = [
-				body.fname,
-				body.lname,
-				body.uname,
-				body.email,
+				b.fname,
+				b.lname,
+				b.uname,
+				b.email,
 				hashedPassword,
-				body.phone_number
+				b.phone_number
 			];
-			client.query(query, values, function(err, result) {
-				if(err) {
-					apiError(res, err);
-					return client.end();
-				} else {
-					res.send({
-						err : null,
-						res : {
-							redirect: true
-						}
-					});
-				}
+			queryServer(res, query, values, function(result) {
+				res.send({
+					err : null,
+					res : {
+						redirect: true
+					}
+				});
 			});
 		});
-	});
+	}
 });
 
 router.post('/account/login', function(req, res, next) {

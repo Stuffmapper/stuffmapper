@@ -9,6 +9,7 @@
 		i.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
 		input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
 		i#filter-button.stuff-button.fa.fa-filter(tabindex="0" ng-click='toggleFilterPane()')
+	//- ion-content#masonry-container.animate-250.hide-masonry-container
 	#masonry-container.animate-250.hide-masonry-container
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")

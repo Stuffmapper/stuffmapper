@@ -33,6 +33,7 @@
     "passport-local": "^1.0.0",
     "pg": "^4.5.3",
     "pm2": "^1.0.2",
+    "request": "^2.72.0",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.4.6"
   },
@@ -47,7 +48,8 @@
     "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
-    "ionic-plugin-keyboard"
+    "ionic-plugin-keyboard",
+    "cordova-plugin-inappbrowser"
   ],
   "cordovaPlatforms": [
     "ios",

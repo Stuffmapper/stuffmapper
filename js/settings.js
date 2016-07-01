@@ -75,6 +75,7 @@ function setDefaultSettings() {
 	if(isIonic) {
 		modules.push('ionic');
 		modules.push('ngCordova');
+		modules.push('ngCordovaOauth');
 		Object.keys(providers).forEach(function(key) {
 			if(!providers[key].resolve) {
 				providers[key].resolve = {
@@ -91,9 +92,9 @@ function setDefaultSettings() {
 		},
 		modules : modules,
 		api : {
-			host : isDev?'/':'http://ducks.stuffmapper.com:3000/',
+			host : 'http://ducks.stuffmapper.com:3000',
 			//host : isDev?'/':'http://localhost:3000/',
-			version : 'v1'
+			version : 1
 		},
 		html5 : !!window.history && !!window.history.pushState,
 		providers : providers

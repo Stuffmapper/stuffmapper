@@ -12,7 +12,7 @@ function GetStuffController() {
 	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
 		console.log(this.getBounds());
 	});
-	$http.get(config.api.host + 'api/' + config.api.version + '/stuff/').success(function(data) {
+	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
 		$scope.listItems = data.res;
 		if($scope.listItems) {
 			$scope.initMasonry = function() {
@@ -113,7 +113,7 @@ function GetStuffController() {
 					lng : e.lng
 				},
 				icon: {
-					url: '/img/Marker-all.png',
+					url: 'img/Marker-all.png',
 					scaledSize: new google.maps.Size(mapSize, mapSize),
 					anchor: new google.maps.Point(mapAnchor, mapAnchor)
 				},
@@ -135,7 +135,7 @@ function GetStuffController() {
 		var mapAnchor = mapSize/2;
 		$scope.markers.forEach(function(e) {
 			e.setIcon({
-				url: e.data.selected?'/img/marker-selected.png':'/img/Marker-all.png',
+				url: e.data.selected?'img/marker-selected.png':'img/Marker-all.png',
 				scaledSize: new google.maps.Size(mapSize, mapSize),
 				anchor: new google.maps.Point(mapAnchor, mapAnchor)
 			});
@@ -181,13 +181,17 @@ function GetStuffController() {
 		});
 		console.log(template);
 	};
+	/* jshint ignore:start */
 	function getWordsBetweenCurlies(str) {
+		/* jshint ignore:start */
 		var results = [], re = /{{([^}]+)}}/g, text;
+		/* jshint ignore:end */
 		while(text = re.exec(str)) {
 			results.push(text[1]);
 		}
 		return results;
 	}
+	/* jshint ignore:end */
 	$scope.$on('$destroy', function() {
 		$(window).off('resize', $scope.watchSize);
 		$('#tab-content-container').css({'pointer-events':''});

@@ -99,7 +99,6 @@ gulp.task('js', function(done) {
 			'./js/lib/masonry/dist/masonry.pkgd.js',
 			'./js/lib/angular-ui-router/release/angular-ui-router.min.js',
 			'./js/lib/angular-animate/angular-animate.min.js',
-			'./js/lib/fastclick/lib/fastclick.js',
 			'./js/app.js',
 			'./js/settings.js',
 			'./js/controllers/*.js',

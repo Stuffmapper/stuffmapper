@@ -13,13 +13,18 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		//- link(rel="icon" sizes="192x192" href="nice-highres.png")
 		title Stuffmapper
 		if ionic
+			//- meta(http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'")
 			script.
 				var deviceType = (navigator.userAgent.match(/iPad/i))  == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i))  == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : (navigator.userAgent.match(/BlackBerry/i)) == "BlackBerry" ? "BlackBerry" : "null";
 				var d = document.documentElement;
-				if(/iPad|iPhone|iPod/.test(deviceType))
+				if(/iPad|iPhone|iPod/.test(deviceType)){
 					d.className += ' ios';
-				else
+					document.getElementsByTagName('html')[0].className += ' ios'
+				}
+				else {
 					d.className += ' android';
+					document.getElementsByTagName('html')[0].className += ' android'
+				}
 				var path = window.location.pathname.split('/');
 				path.pop();
 				path = path.join('/') + '/';
@@ -42,12 +47,13 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			//script(src="http://localhost:3000/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
+			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
 		else
 			script(src="/socket.io/socket.io.js")
 			script(src="/js/angular.js")
+		script(src="https://js.braintreegateway.com/js/braintree-2.26.0.min.js")
 		script(src="https://use.typekit.net/lrm3jdv.js")
 		script try{Typekit.load({ async: true });}catch(e){}
 		script(src="js/all.js")
@@ -88,7 +94,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 						.modal-steps
 							#sign-in-step.modal-step.animate-250.active
 								h2.modal-title.animate-250 Sign In
-								a.sign-in-up-input.social-button.google-plus-sign-in(href="//ducks.stuffmapper.com:3000/api/v1/account/login/google" target="_self")
+								//a.sign-in-up-input.social-button.google-plus-sign-in(href="//ducks.stuffmapper.com:3000/api/v1/account/login/google" target="_self")
+								a.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()" target="_self")
 									span.social-sign-in-icon.social-sign-in-icon-google
 										i.fa.fa-google-plus
 									span.social-sign-in-text Sign in with Google
@@ -136,29 +143,35 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					span(ng-click="logout()") Sign Out
 		ul#side-menu.side-menu.hidden.animate-250
 			#close-menu-button.fa.fa-times(ng-click="toggleSideMenu()")
-			li.side-menu-user-container
-				.side-menu-user-info
-					.side-menu-logo
-					.side-menu-details-container
-						.side-menu-uname
-						.side-menu-email
-						.side-menu-settings
-						.side-menu-logout
-			li.side-menu-item 
-				.side-menu-icon.fa.fa-user
-				span My Stuff
+			//- li.side-menu-user-container
+			//- 	.side-menu-user-info
+			//- 		.side-menu-logo
+			//- 		.side-menu-details-container
+			//- 			.side-menu-uname
+			//- 			.side-menu-email
+			//- 			.side-menu-settings
+			//- 			.side-menu-logout
+			li.side-menu-header
 			li.side-menu-item
-				.side-menu-icon.fa.fa-user
-				span Messages
-			li.side-menu-item 
-				.side-menu-icon.fa.fa-user
-				span Watchlist
+				a.side-menu-link(ui-sref="stuff.my")
+					.side-menu-icon.fa.fa-rocket
+					span My Stuff
 			li.side-menu-item
-				.side-menu-icon.fa.fa-user
-				span Settings
+				a.side-menu-link(ui-sref="stuff.my.messages")
+					.side-menu-icon.fa.fa-bell
+					span Messages
 			li.side-menu-item
-				.side-menu-icon.fa.fa-user
-				span FAQ/Help
+				a.side-menu-link(ui-sref="stuff.my.watchlist")
+					.side-menu-icon.fa.fa-bookmark
+					span Watchlist
+			li.side-menu-item
+				a.side-menu-link(ui-sref="stuff.my.settings")
+					.side-menu-icon.fa.fa-wrench
+					span Profile & Settings
+			li.side-menu-item
+				a.side-menu-link(ui-sref="faq")
+					.side-menu-icon.fa.fa-support
+					span FAQ/Help
 			.side-menu-footer
 				.new-thing Stuff saved from landfill  
 					a.fa.fa-info-circle(href="/faq#landfill-tracker" style="color: white; text-decoration: none;")
