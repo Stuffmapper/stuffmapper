@@ -191,7 +191,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			#header
 				#header-menu-icon-container(ng-click="toggleSideMenu()")
 					#header-menu-icon.menu-icon.fa.fa-bars
-				img#logo(src="img/logo-txt-only-bold.png" ng-click="aboutUs()")
+				a(ui-sref="stuff.get")
+					img#logo(src="img/logo-txt-only-bold.png" )
 				#landfill-tracker-header
 				#user-portal
 					a#sign-in-button(ng-click="userButton()")
