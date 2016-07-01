@@ -3,7 +3,7 @@ function MyStuffController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $userData = arguments[2];
-	$http.get(config.api.host + 'api/' + config.api.version + '/stuff/').success(function(data) {
+	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
 		$scope.listItems = data;
     // $('#mystuff a').addClass('selected');
     // $scope.$on("$destroy", function() {

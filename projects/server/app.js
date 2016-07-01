@@ -13,8 +13,8 @@ var User = require('./routes/api/v1/config/user');
 var multer = require('multer');
 var multerS3 = require('multer-s3');
 AWS.config = new AWS.Config();
-AWS.config.accessKeyId = 'AKIAJMOFEERD4M4HABEA';
-AWS.config.secretAccessKey = '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';
+AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
+AWS.config.secretAccessKey = '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';
 var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
 var app = express();
 var http = require('http').Server(app);
@@ -74,6 +74,19 @@ app.get('/auth/facebook_oauth2/callback', passport.authenticate('facebook', {
 
 io.on('connection', function(socket){
   console.log('a user connected');
+	socket.on('message', function(data) {
+		console.log(data);
+		if(data.to) {
+			io.sockets.emit((''+data.to), {
+				messages: {
+					message: data.message,
+					from: data.from,
+					conversation: data.conversation
+				}
+			});
+		}
+		socket.emit('test', {data:'pants'});
+	});
 });
 io.on('disconnect', function(socket){
   console.log('a user disconnected');
@@ -103,7 +116,7 @@ process.on('SIGTERM', function() {
 	setTimeout(function() {
 		console.error('Could not close connections in time, forcefully shutting down');
 		process.exit(1);
-	}, 5000);
+	}, 1000);
 });
 process.on('SIGINT', function() {
 	console.log('\nAttempting to close all connections...');
@@ -114,5 +127,5 @@ process.on('SIGINT', function() {
 	setTimeout(function() {
 		console.error('Could not close connections in time, forcefully shutting down');
 		process.exit(1);
-	}, 5000);
+	}, 1000);
 });

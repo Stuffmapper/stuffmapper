@@ -4,6 +4,7 @@ var pg = require('pg');
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
 var passport = require('passport');
+var request = require('request');
 
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
 
@@ -42,8 +43,8 @@ router.get('/stuff', function(req, res) {
 				return client.end();
 			}
 			result.rows.forEach(function(e, i) {
-				result.rows[i].lat += ((Math.random() * 0.002)-0.001);
-				result.rows[i].lng += ((Math.random() * 0.002)-0.001);
+				result.rows[i].lat += ((Math.random() * 0.002) - 0.001);
+				result.rows[i].lng += ((Math.random() * 0.002) - 0.001);
 			});
 			res.send({
 				err: null,
@@ -85,6 +86,22 @@ router.get('/stuff/id/:id', function(req, res) {
 	});
 });
 
+router.get('/stuff/my', isAuthenticated, function(req, res) {
+	var query = [
+		'SELECT * FROM posts WHERE user_id = $1 AND dibber_id = $1 AND ',
+		'archived = false AND images.post_id = posts.id;'
+	].join('');
+	var values = [
+		req.session.passport.user.id
+	];
+	queryServer(res, query, values, function(result) {
+		res.send({
+			err: null,
+			res: result
+		});
+	});
+});
+
 router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
@@ -117,8 +134,33 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 	});
 });
 
-router.get('/stuff/bounds/:nwlat/:nwlng/:nelat/:nelng/:swlat/:swlng/:selat/:selng', function(req, res) {
-
+router.get('/stuff/bounds/:north/:south/:west/:east', function(req, res) {
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'SELECT * FROM posts WHERE lat <= $1 AND lat >= $2 AND lng >= $3 AND lng <= $4',
+		].join('');
+		var values = [
+			req.params.north,
+			req.params.south,
+			req.params.west,
+			req.params.east
+		];
+		client.query(query, values, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			res.send({
+				err:null,
+				res:result.rows
+			});
+		});
+	});
 });
 
 router.post('/stuff', isAuthenticated, function(req, res) {
@@ -265,24 +307,40 @@ router.get('/views', function() {
 /* USER ACCOUNT MANAGEMENT - START */
 
 router.post('/account/status', function(req, res) {
-	res.send({
-		err: null,
-		res: {
-			loggedIn: req.isAuthenticated(),
-			admin: false
-		}
-	});
+	if(req.isAuthenticated()) {
+		res.send({
+			err: null,
+			res: {
+				user: req.session.passport.user
+			}
+		});
+	}
+	else {
+		apiError(res, 'not logged in');
+	}
 });
 
 router.post('/account/register', function(req, res) {
 	var client = new pg.Client(conString);
-	var body = req.body;
-	bcrypt.hash(body.password, saltRounds, function(err, hashedPassword) {
-		client.connect(function(err) {
-			if(err) {
-				apiError(res, err);
-				return client.end();
+	var b = req.body;
+	console.log(b);
+	if(b.type === 'google') {
+		console.log('alskfjlaskjfsadlkfjsdalfkjsdfkj');
+		request({
+			method: 'GET',
+			url:'https://www.googleapis.com/oauth2/v2/userinfo?fields=email%2Cfamily_name%2Cgiven_name%2Cpicture&key='+b.oauth.id_token,
+			headers: {
+				'Authorization':'Bearer '+b.oauth.access_token
 			}
+		}, function(data) {
+			console.log('AHHHHHHH I DID IT AHHHHHHHHHH', data);
+		});
+	}
+	else if(b.type === 'facebook') {
+
+	}
+	else {
+		bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
 			var query = [
 				'INSERT INTO users ',
 				'(fname, lname, uname, email, password, phone_number) ',
@@ -290,28 +348,23 @@ router.post('/account/register', function(req, res) {
 				'RETURNING *'
 			].join('');
 			var values = [
-				body.fname,
-				body.lname,
-				body.uname,
-				body.email,
+				b.fname,
+				b.lname,
+				b.uname,
+				b.email,
 				hashedPassword,
-				body.phone_number
+				b.phone_number
 			];
-			client.query(query, values, function(err, result) {
-				if(err) {
-					apiError(res, err);
-					return client.end();
-				} else {
-					res.send({
-						err : null,
-						res : {
-							redirect: true
-						}
-					});
-				}
+			queryServer(res, query, values, function(result) {
+				res.send({
+					err : null,
+					res : {
+						redirect: true
+					}
+				});
 			});
 		});
-	});
+	}
 });
 
 router.post('/account/login', function(req, res, next) {
@@ -522,7 +575,7 @@ router.get('/messages', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT * FROM conversations, posts, images',
+			'SELECT conversations.id, posts.user_id, images.image_url, posts.title FROM conversations, posts, images',
 			'WHERE (conversations.lister_id = $1 OR',
 			'conversations.dibber_id = $1) AND',
 			'posts.id = conversations.post_id AND',
@@ -605,16 +658,23 @@ router.get('/conversation/:id', isAuthenticated, function(req, res) {
 		req.params.id
 	];
 	queryServer(res, query, values, function(result) {
+		var inboundMessenger = null;
 		result.rows.forEach(function(e, i) {
-			console.log(result.rows[i].user_id);
-			console.log(req.session.passport.user.id);
-			console.log((result.rows[i].user_id === req.session.passport.user.id));
-			console.log(((result.rows[i].user_id === req.session.passport.user.id)?'out':'in'));
+			if(!inboundMessenger && result.rows[i].user_id !== parseInt(req.session.passport.user.id)) {
+				inboundMessenger = parseInt(result.rows[i].user_id);
+			}
 			result.rows[i].type = ((parseInt(result.rows[i].user_id) === parseInt(req.session.passport.user.id))?'out':'in');
 		});
 		res.send({
 			err: null,
-			res: result.rows
+			res: {
+				conversation: result.rows,
+				info: {
+					inboundMessenger: inboundMessenger,
+					outboundMessenger: parseInt(req.session.passport.user.id),
+					id: req.params.id
+				}
+			}
 		});
 	});
 });

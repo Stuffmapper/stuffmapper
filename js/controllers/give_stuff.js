@@ -7,8 +7,8 @@ function GiveController() {
 	var $location = arguments[4];
 	var $stuffTabs = arguments[5];
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
-	if(!authenticated.res.loggedIn) return $location.path('/stuff/get');
-	$http.get(config.api.host + 'api/' + config.api.version + '/categories').success(function(data) {
+	if(authenticated.err) return $location.path('/stuff/get');
+	$http.get(config.api.host + '/api/v' + config.api.version + '/categories').success(function(data) {
 		$scope.data = data.res;
 		$scope.categories = [];
 		$scope.data.forEach(function(e, i) {
@@ -141,7 +141,7 @@ function GiveController() {
 			fd.set('lng', $scope.lng);
 			fd.set('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
 			fd.set('category', $('#give-category-selector').val());
-			$http.post('/api/v1/stuff', fd, {
+			$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
 				transformRequest: angular.identity,
 				headers: {'Content-Type': undefined}
 			}).success(function(data){

@@ -1,15 +1,19 @@
-stuffMapp.controller('getStuffController', ['$scope', '$http', '$timeout', '$userData', '$stuffTabs', GetStuffController]);
+stuffMapp.controller('getStuffController', ['$scope', '$http', '$state', '$timeout', '$userData', '$stuffTabs', GetStuffController]);
 function GetStuffController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
-	var $timeout = arguments[2];
-	var $userData = arguments[3];
-	var $stuffTabs = arguments[4];
+	var $state = arguments[2];
+	var $timeout = arguments[3];
+	var $userData = arguments[4];
+	var $stuffTabs = arguments[5];
 	$stuffTabs.init($scope, '#tab-container .stuff-tabs .get-stuff-tab a');
 	$scope.listItems = [];
-	$http.get(config.api.host + 'api/' + config.api.version + '/stuff/').success(function(data) {
+	$scope.markers = [];
+	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+		console.log(this.getBounds());
+	});
+	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
 		$scope.listItems = data.res;
-		$scope.markers = [];
 		if($scope.listItems) {
 			$scope.initMasonry = function() {
 				$('.masonry-grid').masonry({
@@ -20,6 +24,7 @@ function GetStuffController() {
 					isAnimated: true
 				}).imagesLoaded(function(){
 					$('.masonry-grid').masonry('reloadItems').masonry();
+					$('#loading-get-stuff').addClass('hidden');
 				});
 				$(window).resize(function() {
 					$('.masonry-grid').masonry({
@@ -88,18 +93,19 @@ function GetStuffController() {
 				});
 			}
 			else {
-				setMarkers();
+				initMarkers();
 			}
 		}
 	});
-	console.log($scope);
-	$scope.map.addListener('zoom_changed', setMarkers);
-	function setMarkers() {
+	$scope.map.addListener('zoom_changed', $scope.resizeMarkers);
+	function initMarkers() {
 		$scope.markers.forEach(function(e) {
 			e.setMap(null);
+			$scope.markers = [];
 		});
 		var mapZoom = $scope.map.getZoom();
-		console.log(mapZoom, (mapZoom*mapZoom*2)/(20/mapZoom));
+		var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
+		var mapAnchor = mapSize/2;
 		$scope.listItems.forEach(function(e) {
 			$scope.markers.push(new google.maps.Marker({
 				position: {
@@ -107,30 +113,38 @@ function GetStuffController() {
 					lng : e.lng
 				},
 				icon: {
-					//url: $('base').attr('href')+'img/circle.png',
-					url: 'https://upload.wikimedia.org/wikipedia/commons/4/43/Blue_circle_for_diabetes.svg',
-					scaledSize: new google.maps.Size((mapZoom*mapZoom*2)/(20/mapZoom), (mapZoom*mapZoom*2)/(20/mapZoom)),
-					origin: new google.maps.Point(0, 0)
+					url: 'img/Marker-all.png',
+					scaledSize: new google.maps.Size(mapSize, mapSize),
+					anchor: new google.maps.Point(mapAnchor, mapAnchor)
 				},
 				map: $scope.map,
 				data: e
 			}));
 			$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
-				$scope.openInfoWindow(this.data);
+				if(config.mobile) {
+					$scope.openInfoWindow(this.data);
+				} else {
+					$state.go('stuff.get.item', {id:this.data.id});
+				}
 			});
 		});
 	}
-	$scope.filterOptions = [
-		'thing',
-		'stuff'
-	];
-	$scope.filterPaneOpen = false;
+	$scope.resizeMarkers = function() {
+		var mapZoom = $scope.map.getZoom();
+		var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
+		var mapAnchor = mapSize/2;
+		$scope.markers.forEach(function(e) {
+			e.setIcon({
+				url: e.data.selected?'img/marker-selected.png':'img/Marker-all.png',
+				scaledSize: new google.maps.Size(mapSize, mapSize),
+				anchor: new google.maps.Point(mapAnchor, mapAnchor)
+			});
+		});
+	};
 	$scope.toggleFilterPane = function() {
 		$('#filter-pane').toggleClass('open-filter-pane');
 	};
-	$scope.toggleSwitch = function() {
-		$('.toggle-button').toggleClass('toggle-button-selected');
-	};
+	$scope.toggleSwitch = function() {$('.toggle-button').toggleClass('toggle-button-selected');};
 	var mapIsOpen = false;
 	$scope.toggleMap = function() {
 		if(mapIsOpen) {
@@ -145,10 +159,16 @@ function GetStuffController() {
 	};
 	$scope.toggleMap();
 	$scope.watchSize = function() {
-		if(document.width > 768) $('#tab-content-container').css({'pointer-events':''});
+		if($(document).width() > 436) {
+			$('#tab-content-container').css({'pointer-events':''});
+		}
 		else {
-			if(mapIsOpen) $('#tab-content-container').css({'pointer-events':''});
-			else $('#tab-content-container').css({'pointer-events':'none'});
+			if(mapIsOpen) {
+				$('#tab-content-container').css({'pointer-events':'none'});
+			}
+			else {
+				$('#tab-content-container').css({'pointer-events':''});
+			}
 		}
 	};
 	$(window).on('resize', $scope.watchSize);
@@ -161,14 +181,15 @@ function GetStuffController() {
 		});
 		console.log(template);
 	};
+	/* jshint ignore:start */
 	function getWordsBetweenCurlies(str) {
 		var results = [], re = /{{([^}]+)}}/g, text;
-
 		while(text = re.exec(str)) {
 			results.push(text[1]);
 		}
 		return results;
 	}
+	/* jshint ignore:end */
 	$scope.$on('$destroy', function() {
 		$(window).off('resize', $scope.watchSize);
 		$('#tab-content-container').css({'pointer-events':''});

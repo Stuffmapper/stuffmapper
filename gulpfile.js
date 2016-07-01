@@ -91,44 +91,48 @@ gulp.task('images', function(){
 });
 
 gulp.task('js', function(done) {
-	gulp.src([
-		'./js/lib/jquery/dist/jquery.min.js',
-		'./js/lib/counter_flipper.js',
-		'./js/lib/imagesloaded/imagesloaded.pkgd.min.js',
-		'./js/lib/masonry/dist/masonry.pkgd.js',
-		'./js/lib/angular-ui-router/release/angular-ui-router.min.js',
-		'./js/lib/angular-animate/angular-animate.min.js',
-		'./js/lib/select2/dist/js/select2.full.min.js',
-		'./js/app.js',
-		'./js/settings.js',
-		'./js/controllers/*.js',
-		'./js/config.js'
-	])
-	.pipe(sourcemaps.init())
-	.pipe(concat('all.js'))
-	.pipe(sourcemaps.write())
-	.pipe(multistream(
-		gulp.dest('./projects/web/js'),
-		gulp.dest('./www/js'),
-		gulp.dest('./projects/electron/js')
-	))
-	.pipe(rename('all.min.js'))
-	.pipe(uglify({
-		mangle: false
-	}))
-	.pipe(multistream(
-		gulp.dest('./projects/web/js'),
-		gulp.dest('./www/js'),
-		gulp.dest('./projects/electron/js')
-	))
-	.on('end', done);
-	gulp.src('./js/lib/angular/angular.*', {base: './js/lib/angular/'})
-	.pipe(multistream(
-		gulp.dest('./projects/web/js'),
-		gulp.dest('./projects/electron/js')
-	));
-	gulp.src(['./js/lib/ionic/**/*','./js/lib/ngCordova/dist/*.js'], {base: './js/lib/'})
-	.pipe(gulp.dest('./www/lib/'));
+	try {
+		gulp.src([
+			'./js/lib/jquery/dist/jquery.min.js',
+			'./js/lib/counter_flipper.js',
+			'./js/lib/imagesloaded/imagesloaded.pkgd.min.js',
+			'./js/lib/masonry/dist/masonry.pkgd.js',
+			'./js/lib/angular-ui-router/release/angular-ui-router.min.js',
+			'./js/lib/angular-animate/angular-animate.min.js',
+			'./js/lib/select2/dist/js/select2.full.min.js',
+			'./js/app.js',
+			'./js/settings.js',
+			'./js/controllers/*.js',
+			'./js/config.js'
+		])
+		.pipe(sourcemaps.init())
+		.pipe(concat('all.js'))
+		.pipe(sourcemaps.write())
+		.pipe(multistream(
+			gulp.dest('./projects/web/js'),
+			gulp.dest('./www/js'),
+			gulp.dest('./projects/electron/js')
+		))
+		.pipe(rename('all.min.js'))
+		.pipe(uglify({
+			mangle: false
+		}))
+		.pipe(multistream(
+			gulp.dest('./projects/web/js'),
+			gulp.dest('./www/js'),
+			gulp.dest('./projects/electron/js')
+		))
+		.on('end', done);
+		gulp.src('./js/lib/angular/angular.*', {base: './js/lib/angular/'})
+		.pipe(multistream(
+			gulp.dest('./projects/web/js'),
+			gulp.dest('./projects/electron/js')
+		));
+		gulp.src(['./js/lib/ionic/**/*','./js/lib/ngCordova/dist/*.js'], {base: './js/lib/'})
+		.pipe(gulp.dest('./www/lib/'));
+	} catch (e) {
+		console.log(e);
+	}
 });
 
 gulp.task('build', function() {

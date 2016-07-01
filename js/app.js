@@ -31,7 +31,7 @@ var stuffMapp = angular
 })
 .service('authenticator', ['$http', '$q', function ($http, $q) {
 	var deferred = $q.defer();
-	$http.post(config.api.host + 'api/' + config.api.version + '/account/status')
+	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status')
 	.success(function (data) { deferred.resolve(data); })
 	.error(function (msg) { deferred.reject(msg); });
 	return deferred.promise;

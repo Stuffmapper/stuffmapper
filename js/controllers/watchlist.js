@@ -5,10 +5,7 @@ function WatchListController() {
 	var $http = arguments[1];
 	var $location = arguments[2];
 	var authenticated = arguments[3];
-	if(!authenticated.res.loggedIn) {
-		$location.path('stuff/get');
-		return;
-	}
+	if(!authenticated.res.loggedIn) return $location.path('stuff/get');
 
 	$scope.getAll = function() {
 		$http.get('/api/v1/watchlist')
