@@ -1622,27 +1622,16 @@ input:read-only{
 	bottom: 0px;
 }
 #conversation-input-container {
-<<<<<<< HEAD
 	background-color: $white;
 	padding: 6px 0;
 	height: 24px;
-=======
-	background-color: #efefef;
-	padding: 6px 0;
-	height: 32px;
->>>>>>> master
 	width: 100%;
 	display: block;
 	position: relative;
 	outline: solid 1px $charcoal-dark;
 }
 .conversation-input-button {
-<<<<<<< HEAD
 	color: $charcoal-dark;
-=======
-	color: white;
-	background-color: deepskyblue;
->>>>>>> master
 	display: inline-block;
 	border-radius: 50%;
 	width: 30px;
@@ -1665,28 +1654,15 @@ input:read-only{
 	border-radius: 5px;
 	background-color: $white;
 	resize: none;
-<<<<<<< HEAD
 	height: 22px;
 	color: $charcoal-light;
-=======
-	height: 26px;
->>>>>>> master
 	width: calc(100% - 80px);
 	display: block;
 	border: none;
 	border-radius: 5px;
 	margin: 0 auto;
-<<<<<<< HEAD
 	font-size: 16px;
 	line-height: 18px;
-=======
-	padding-left: 3px;
-	padding-right: 3px;
-	padding-top: 0px;
-	padding-bottom: 6px;
-	font-size: 20px;
-	line-height: 32px;
->>>>>>> master
 	position: relative;
 	top: 0px;
 	margin: 0 auto;
@@ -1710,17 +1686,10 @@ input:read-only{
 	word-wrap: break-word;
 	color: $white;
 	max-width: 80%;
-=======
-.conversation-out-message {
-	width: 80%;
-	margin: 5px 5% 5px 15%;
-	background-color: limegreen;
->>>>>>> master
 	padding: 3px;
 	color: #fff;
 	border-radius: 2px;
 	position: relative;
-<<<<<<< HEAD
 	display: inline-block;
 	line-height: 150%;
 	font-size: 16px;
@@ -1732,8 +1701,6 @@ input:read-only{
 
 .conversation-out-message {
 	margin-right: 10px;
-=======
->>>>>>> master
 }
 .conversation-out-message::before {
 	content: ' ';
@@ -1741,7 +1708,6 @@ input:read-only{
 	height: 0px;
 	display: block;
 	position: absolute;
-<<<<<<< HEAD
 }
 .conversation-out-message {
 	color: $charcoal-dark;
@@ -1771,36 +1737,6 @@ input:read-only{
 	border-bottom: 5px solid transparent;
 	border-right: 5px solid $fog-dark;
 	transform: rotate(135deg);
-=======
-	right: -14px;
-	top: 5px;
-	border-right: 7px solid transparent;
-	border-top: 7px solid transparent;
-	border-bottom: 7px solid transparent;
-	border-left: 7px solid limegreen;
-}
-.conversation-in-message {
-	width: 80%;
-	margin: 5px 15% 5px 5%;
-	background-color: forestgreen;
-	padding: 3px;
-	color: white;
-	border-radius: 2px;
-	position: relative;
-}
-.conversation-in-message::before {
-	content: ' ';
-	width: 0px;
-	height: 0px;
-	display: block;
-	position: absolute;
-	left: -14px;
-	top: 5px;
-	border-left: 7px solid transparent;
-	border-top: 7px solid transparent;
-	border-bottom: 7px solid transparent;
-	border-right: 7px solid forestgreen;
->>>>>>> master
 }
 /* Conversations -  END  */
 
@@ -1855,20 +1791,12 @@ input:read-only{
 	padding-right: 20px;
 }
 .tag-list li {
-<<<<<<< HEAD
-	outline: 1px $charcoal-dark solid;
-	height: 1em;
-	padding: .5em;
-	margin-right: 1em;
-	color: rgb(220, 66, 80);
-=======
 	margin-bottom: 9px;
 }
 .tag-list span {
 	padding: 2px;
 	outline: 1px solid #E6E9ED;
 	margin: 5px;
->>>>>>> master
 }
 /* Watchlist - END */
 
@@ -1885,27 +1813,13 @@ input:read-only{
 	margin-bottom: 0;
 	height: 24px;
 	width:100%;
-<<<<<<< HEAD
-	color: #6f6f6f;
-	background-color: #dedede;
-=======
 	color: #AAB2BE;
 	background-color: #F5F7FA;
->>>>>>> master
 	font-weight: 300;
 }
 .settings-header p {
 	width: 80px;
 }
-<<<<<<< HEAD
-.settings-header img {
-	height: 120px;
-	display: inline-block;
-	border: 1px solid #6f6f6f;
-	border-radius: 61px;
-	margin: 0;
-}
-=======
 // .settings-header img {
 // 	height: 120px;
 // 	display: inline-block;
@@ -1913,7 +1827,6 @@ input:read-only{
 //   border-radius: 61px;
 // 	margin: 0;
 // }
->>>>>>> master
 .settings-header-button {
 	width: 50%;
 	height: 36px;
@@ -2026,10 +1939,7 @@ input:read-only{
 }
 .success {
 	width: 91%;
-<<<<<<< HEAD
-=======
 	display: none;
->>>>>>> master
 	position: absolute;
 	background-color: #383838;
 	color: #F0F0F0;
@@ -2041,10 +1951,7 @@ input:read-only{
 	-webkit-box-shadow: 0 0 24px -1px #383838;
 	-moz-box-shadow: 0 0 24px -1px #383838;
 	box-shadow: 0 0 24px -1px #383838;
-<<<<<<< HEAD
-=======
 	opacity: 1;
->>>>>>> master
 }
 .user-info {
 	padding: 15px;
@@ -2131,56 +2038,8 @@ input:read-only{
 		border-radius: 3px;
 	}
 
-<<<<<<< HEAD
 	.toggle-stuff {
 		left: 8px;
-=======
-	.toggle {
-		margin-top: .3em;
-		position: absolute;
-	}
-	.toggle-button {
-		background-color: #E6E9ED;
-		border-radius: 4em;
-		border: 1px solid;
-		height: 1em;
-		cursor: pointer;
-		width: 1.8em;
-		position: relative;
-		display: inline-block;
-		user-select: none;
-		-webkit-user-select: none;
-		-ms-user-select: none;
-		-moz-user-select: none;
-	}
-	.toggle-button button {
-		cursor: pointer;
-		outline: 0;
-		display: block;
-		position: absolute;
-		left: 0;
-		top: 0;
-		border-radius: 100%;
-		width: 1.2em;
-		height: 1.2em;
-		background-color: white;
-		float: left;
-		border: 1px black solid;
-		transition: left 0.3s;
-	}
-	.toggle-button-selected {
-		background-color: #00ff1b;
-		border: 1px black solid;
-	}
-	.toggle-button-selected button {
-		left: 1.1em;
-		top: 0;
-		border: 1px solid #000;
-		width: 1.2em;
-		height: 1.2em;
-		margin: 0.05em 0 0 0.05em;
-		box-shadow: 0 0 4px rgba(0,0,0,.1);
->>>>>>> master
 	}
 
 	#masonry-container {

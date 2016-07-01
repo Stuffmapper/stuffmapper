@@ -183,9 +183,7 @@ function GetStuffController() {
 	};
 	/* jshint ignore:start */
 	function getWordsBetweenCurlies(str) {
-		/* jshint ignore:start */
 		var results = [], re = /{{([^}]+)}}/g, text;
-		/* jshint ignore:end */
 		while(text = re.exec(str)) {
 			results.push(text[1]);
 		}
