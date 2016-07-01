@@ -11,7 +11,11 @@
 	<access origin="*"/>
   <access origin="https://assets.braintreegateway.com/*"/>
 	<access origin="http://ducks.stuffmapper.com:3000/*"/>
+	<access origin="about:blank"/>
 	<allow-navigation href="http://ducks.stuffmapper.com:3000/*"/>
+	<allow-navigation href="https://assets.braintreegateway.com/*"/>
+	<allow-navigation href="about:*"/>
+	<allow-navigation href="https://checkout.paypal.com/*"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>
