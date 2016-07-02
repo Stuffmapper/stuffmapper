@@ -70,6 +70,21 @@ function setDefaultSettings() {
 			url: '/about',
 			templateUrl: 'templates/partial-about.html',
 			controller: 'aboutController'
+		},
+		privacy : {
+			url: '/privacy',
+			templateUrl: 'templates/partial-privacy.html',
+			controller: 'privacyController'
+		},
+		faq : {
+			url: '/faq',
+			templateUrl: 'templates/partial-faq.html',
+			controller: 'faqController'
+		},
+		useragreement : {
+			url: '/useragreement',
+			templateUrl: 'templates/partial-useragreement.html',
+			controller: 'useragreementController'
 		}
 	};
 	if(isIonic) {
@@ -92,7 +107,7 @@ function setDefaultSettings() {
 		},
 		modules : modules,
 		api : {
-			host : 'http://ducks.stuffmapper.com:3000',
+			host : 'http:/localhost:3000',
 			//host : isDev?'/':'http://localhost:3000/',
 			version : 1
 		},
