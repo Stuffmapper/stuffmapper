@@ -13,7 +13,8 @@
 *   7. About Us            *
 *		8. My Stuff            *
 *		9. Watchlist					 *
-*	 10. Settings						 *
+*	 10. Settings            *
+*  11. Privacy  					 *
 *   X. Modal Windows       *
 *       - Steps            *
 *       - Sign In Content  *
@@ -1987,6 +1988,21 @@ input:read-only{
 }
 
 /* Settings - End */
+
+/* Privacy -START */
+.privacy-container {
+	display: block;
+	height: 100%;
+	max-width: 1020px;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: Verdana;
+	overflow: auto;
+	margin: 5px;
+	outline: #E6E9ED solid 1px;
+}
+
+/* Privacy - End */
 
 @media screen and (max-width: 436px) {
 	#landfill-tracker-header {

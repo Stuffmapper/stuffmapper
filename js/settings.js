@@ -68,23 +68,19 @@ function setDefaultSettings() {
 		},
 		about : {
 			url: '/about',
-			templateUrl: 'templates/partial-about.html',
-			controller: 'aboutController'
+			templateUrl: 'templates/partial-about.html'
 		},
 		privacy : {
 			url: '/privacy',
-			templateUrl: 'templates/partial-privacy.html',
-			controller: 'privacyController'
+			templateUrl: 'templates/partial-privacy.html'
 		},
 		faq : {
 			url: '/faq',
-			templateUrl: 'templates/partial-faq.html',
-			controller: 'faqController'
+			templateUrl: 'templates/partial-faq.html'
 		},
 		useragreement : {
 			url: '/useragreement',
-			templateUrl: 'templates/partial-useragreement.html',
-			controller: 'useragreementController'
+			templateUrl: 'templates/partial-useragreement.html'
 		}
 	};
 	if(isIonic) {
