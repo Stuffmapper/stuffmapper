@@ -109,11 +109,15 @@ input:read-only{
 }
 
 .side-menu-icon {
-
+	color: $charcoal-dark;
 }
 .side-menu-item span {
 	padding: 15px;
 	padding-left: 25px;
+	color: $charcoal-dark;
+}
+.side-menu-item a {
+	text-decoration: none;
 }
 #close-menu-button {
 	color: white;
@@ -1751,7 +1755,7 @@ input:read-only{
 }
 .tag-container {
 	background-color: #fff;
-	height: calc(100% - 6.4em);
+	height: calc(100% - 7.4em);
 }
 .tag-form {
 	padding-left: 20px;
@@ -2064,11 +2068,15 @@ input:read-only{
 	margin: 10px;
 }
 .faq-nav a {
-	color: $primary-color;
+	color: $charcoal-dark;
+	text-decoration: none;
 
 }
 .answer-container {
 	padding: 13px;
+}
+.answer-container a {
+	color: $charcoal-dark;
 }
 .faq-container h2 {
 	font-weight: 500;
@@ -2080,7 +2088,7 @@ input:read-only{
 }
 #user-agreement,#privacy-policy, .contact-us a {
 	font-size: 16px;
-	color: $primary-color;
+	color: $charcoal-dark;
 }
 
 /* Faq - END */
