@@ -13,7 +13,9 @@
 *   7. About Us            *
 *		8. My Stuff            *
 *		9. Watchlist					 *
-*	 10. Settings						 *
+*	 10. Settings            *
+*  11. Privacy             *
+*  12. Faq      					 *
 *   X. Modal Windows       *
 *       - Steps            *
 *       - Sign In Content  *
@@ -1987,6 +1989,101 @@ input:read-only{
 }
 
 /* Settings - End */
+
+/* Privacy -START */
+.privacy-container {
+	display: block;
+	height: 98%;
+	max-width: 1020px;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: Verdana;
+	font-size: 15px;
+	overflow: auto;
+	margin: 5px;
+	background-color: #fff;
+	outline: #E6E9ED solid 1px;
+}
+.privacy-list {
+	padding: 13px;
+}
+.policy-changes {
+	margin: 0;
+}
+
+.privacy-list h2 {
+	font-weight: 500;
+	font-size: 15px;
+}
+/* Privacy - End */
+
+/* Useragreement -START */
+.useragreement-container {
+	display: block;
+	height: 98%;
+	max-width: 1020px;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: Verdana;
+	font-size: 15px;
+	overflow: auto;
+	margin: 5px;
+	background-color: #fff;
+	outline: #E6E9ED solid 1px;
+}
+.useragreement-list {
+	padding: 13px;
+}
+.useragreement-list h2 {
+	font-weight: 500;
+	font-size: 15px;
+}
+/* Useragreement - End */
+
+/* Faq - START */
+
+.faq-container {
+	display: block;
+	height: 98%;
+	max-width: 1020px;
+	margin-left: auto;
+	margin-right: auto;
+	font-family: Verdana;
+	font-size: 15px;
+	overflow: auto;
+	margin: 5px;
+	background-color: #fff;
+	outline: #E6E9ED solid 1px;
+}
+.faq-nav {
+	list-style:  none;
+	margin: 0;
+	padding: 13px;
+}
+.faq-nav li {
+	margin: 10px;
+}
+.faq-nav a {
+	color: $primary-color;
+
+}
+.answer-container {
+	padding: 13px;
+}
+.faq-container h2 {
+	font-weight: 500;
+	font-size: 15px;
+}
+.faq-container h3 {
+	margin: 0;
+	font-size: 15px;
+}
+#user-agreement,#privacy-policy, .contact-us a {
+	font-size: 16px;
+	color: $primary-color;
+}
+
+/* Faq - END */
 
 @media screen and (max-width: 436px) {
 	#landfill-tracker-header {
