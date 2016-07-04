@@ -170,23 +170,23 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			//- 			.side-menu-logout
 			li.side-menu-header
 			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my")
+				a.side-menu-link(ui-sref="stuff.my", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-rocket
 					span My Stuff
 			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my.messages")
+				a.side-menu-link(ui-sref="stuff.my.messages", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-bell
 					span Messages
 			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my.watchlist")
+				a.side-menu-link(ui-sref="stuff.my.watchlist", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-bookmark
 					span Watchlist
 			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my.settings")
+				a.side-menu-link(ui-sref="stuff.my.settings", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-wrench
 					span Profile & Settings
 			li.side-menu-item
-				a.side-menu-link(ui-sref="faq")
+				a.side-menu-link(ui-sref="faq", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-support
 					span FAQ/Help
 			.side-menu-footer
@@ -194,13 +194,13 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					a.fa.fa-info-circle(href="/faq#landfill-tracker" style="color: white; text-decoration: none;")
 				#landfill-tracker-menu
 				#stuffmapper-logo-container-menu
-					img#logo-menu(src="img/logo-txt-only-bold.png" ng-click="aboutUs()")
+					img#logo-menu(src="img/logo-txt-only-bold.png" ng-click="aboutUs(); toggleSideMenu()")
 					.tiny-links
-						a(ui-sref="about") about
+						a(ui-sref="about", ng-click="toggleSideMenu()") about
 						span.tiny-links-separator |
-						a(ui-sref="useragreement") terms
+						a(ui-sref="useragreement", ng-click="toggleSideMenu()") terms
 						span.tiny-links-separator |
-						a(ui-sref="privacy") policy
+						a(ui-sref="privacy", ng-click="toggleSideMenu()") policy
 		#side-menu-background.side-menu-background.animate-250.hidden(ng-click="toggleSideMenu()")
 		#container
 			#header

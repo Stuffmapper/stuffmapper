@@ -1998,7 +1998,7 @@ input:read-only{
 	margin-left: auto;
 	margin-right: auto;
 	font-family: Verdana;
-	font-size: 20px;
+	font-size: 15px;
 	overflow: auto;
 	margin: 5px;
 	background-color: #fff;
@@ -2013,7 +2013,7 @@ input:read-only{
 
 .privacy-list h2 {
 	font-weight: 500;
-	font-size: 20px;
+	font-size: 15px;
 }
 /* Privacy - End */
 
@@ -2025,7 +2025,7 @@ input:read-only{
 	margin-left: auto;
 	margin-right: auto;
 	font-family: Verdana;
-	font-size: 20px;
+	font-size: 15px;
 	overflow: auto;
 	margin: 5px;
 	background-color: #fff;
@@ -2036,7 +2036,7 @@ input:read-only{
 }
 .useragreement-list h2 {
 	font-weight: 500;
-	font-size: 20px;
+	font-size: 15px;
 }
 /* Useragreement - End */
 
@@ -2049,7 +2049,7 @@ input:read-only{
 	margin-left: auto;
 	margin-right: auto;
 	font-family: Verdana;
-	font-size: 20px;
+	font-size: 15px;
 	overflow: auto;
 	margin: 5px;
 	background-color: #fff;
@@ -2072,14 +2072,14 @@ input:read-only{
 }
 .faq-container h2 {
 	font-weight: 500;
-	font-size: 20px;
+	font-size: 15px;
 }
 .faq-container h3 {
 	margin: 0;
-	font-size: 18px;
+	font-size: 15px;
 }
-#user-agreement a,#privacy-policy a, .contact-us a {
-	font-size: 18px;
+#user-agreement,#privacy-policy, .contact-us a {
+	font-size: 16px;
 	color: $primary-color;
 }
 
