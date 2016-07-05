@@ -103,8 +103,8 @@ function setDefaultSettings() {
 		},
 		modules : modules,
 		api : {
-			host : 'http://ducks.stuffmapper.com',
-			//host : isDev?'/':'http://localhost:3000',
+			// host : 'http://ducks.stuffmapper.com',
+			host : isDev?'/':'http://localhost:3000',
 			version : 1
 		},
 		html5 : !!window.history && !!window.history.pushState,
