@@ -1,8 +1,7 @@
 var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope'];
-console.log(config.ionic.isIonic);
 if(config.ionic.isIonic) {
-	console.log('is ionic?');
 	mainControllerArgs.push('$cordovaOauth');
+	mainControllerArgs.push('$ionicPlatform');
 }
 mainControllerArgs.push(MainController);
 stuffMapp.controller('MainController', mainControllerArgs);
@@ -15,6 +14,16 @@ function MainController() {
 	var $location = arguments[5];
 	var $rootScope = arguments[6];
 	var $cordovaOauth = (typeof arguments[7] !== 'function')?arguments[7]:undefined;
+	var $ionicPlatform = (typeof arguments[8] !== 'function')?arguments[8]:undefined;
+	if($ionicPlatform) {
+		$ionicPlatform.registerBackButtonAction(function(event) {
+			if($state.current.name !== 'stuff.get') {
+				event.preventDefault();
+				event.stopPropagation();
+				navigator.app.backHistory();
+			}
+		}, 100);
+	}
 	$scope.counterFlipperHeader = new CounterFlipper('landfill-tracker-header', 0, 7);
 	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
 	$scope.counterFlipperHeader.setCounter(1283746);
@@ -25,7 +34,7 @@ function MainController() {
 	$scope.counterFlipperMenu.setCounter(3);
 	$http.post(config.api.host + '/api/v'+config.api.version+'/account/status').success(function(data) {
 		if(!data.err) {
-			$scope.socket = io('http://localhost:3000');
+			$scope.socket = io('http://ducks.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function (data) {
 				var lPath = $location.$$path.split('/');
 				lPath.shift();
@@ -101,7 +110,7 @@ function MainController() {
 					'https://www.googleapis.com/auth/userinfo.profile'
 				]).then(function(data) {
 					console.log(data);
-					$http.post(config.api.host + '/api/v' +config.api.version+'/account/register', {
+					$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', {
 						type: 'google',
 						oauth: data
 					},{
@@ -170,9 +179,6 @@ function MainController() {
 		};
 		$scope.aboutUs = function() {
 			$state.go('about');
-		};
-		$scope.privacy = function() {
-			$state.go('privacy');
 		};
 		$scope.login = function() {
 			// set step to loading

@@ -43,7 +43,7 @@ function StuffController() {
 			},
 			minZoom: 12,
 			maxZoom: 17,
-			zoomControl: false,
+			zoomControl: !config.ionic.isIonic,
 			mapTypeControl: false,
 			scaleControl: false,
 			streetViewControl: false,

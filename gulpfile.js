@@ -94,7 +94,7 @@ gulp.task('js', function(done) {
 	try {
 		gulp.src([
 			'./js/lib/jquery/dist/jquery.min.js',
-			'./js/lib/counter_flipper.js',
+			'./js/custom/counter_flipper.js',
 			'./js/lib/imagesloaded/imagesloaded.pkgd.min.js',
 			'./js/lib/masonry/dist/masonry.pkgd.js',
 			'./js/lib/angular-ui-router/release/angular-ui-router.min.js',

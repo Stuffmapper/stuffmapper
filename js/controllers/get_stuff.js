@@ -97,7 +97,11 @@ function GetStuffController() {
 			}
 		}
 	});
-	$scope.map.addListener('zoom_changed', $scope.resizeMarkers);
+
+	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+		$scope.getLocation()
+	});
+	$scope.map.addListener('zoom_changed', resizeMarkers);
 	function initMarkers() {
 		$scope.markers.forEach(function(e) {
 			e.setMap(null);
@@ -129,7 +133,25 @@ function GetStuffController() {
 			});
 		});
 	}
-	$scope.resizeMarkers = function() {
+	$scope.getLocation = function() {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				$scope.map.setCenter({
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				});
+			}, function() {
+				//handleLocationError(true, infoWindow, map.getCenter());
+			});
+		} else {
+			//handleLocationError(false, infoWindow, map.getCenter());
+		}
+	};
+	$scope.setGetStuff = function() {
+		$state.go('stuff.get');
+	};
+	$('#get-location').click($scope.getLocation);
+	function resizeMarkers() {
 		var mapZoom = $scope.map.getZoom();
 		var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
 		var mapAnchor = mapSize/2;
@@ -140,20 +162,29 @@ function GetStuffController() {
 				anchor: new google.maps.Point(mapAnchor, mapAnchor)
 			});
 		});
+	}
+	$('#search-stuff').focus(function() {
+		$('#filter-pane').addClass('open-filter-pane');
+	});
+	$('#search-stuff').blur(function() {
+		$('#filter-pane').removeClass('open-filter-pane');
+	});
+	$scope.toggleSwitch = function() {
+		$('.toggle-button').toggleClass('toggle-button-selected');
 	};
-	$scope.toggleFilterPane = function() {
-		$('#filter-pane').toggleClass('open-filter-pane');
-	};
-	$scope.toggleSwitch = function() {$('.toggle-button').toggleClass('toggle-button-selected');};
 	var mapIsOpen = false;
 	$scope.toggleMap = function() {
 		if(mapIsOpen) {
 			$('#tab-content-container').css({'pointer-events':''});
+			$('#get-stuff-container').removeClass('hide-masonry-container');
 			$('#masonry-container').removeClass('hide-masonry-container');
+			$('#map-toggle-switch').removeClass('fa-th-large').addClass('fa-map');
 		}
 		else {
 			$('#tab-content-container').css({'pointer-events':'none'});
+			$('#get-stuff-container').addClass('hide-masonry-container');
 			$('#masonry-container').addClass('hide-masonry-container');
+			$('#map-toggle-switch').removeClass('fa-map').addClass('fa-th-large');
 		}
 		mapIsOpen = !mapIsOpen;
 	};
