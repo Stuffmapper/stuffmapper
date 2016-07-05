@@ -24,25 +24,6 @@ function MainController() {
 			}
 		}, 100);
 	}
-	$scope.getLocation = function() {
-		console.log('uh-huh.');
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function(position) {
-				console.log('$scope.map', $scope.map);
-				$scope.map.setCenter({
-					lat: position.coords.latitude,
-					lng: position.coords.longitude
-				});
-				console.log('yup');
-			}, function() {
-				//handleLocationError(true, infoWindow, map.getCenter());
-				console.log('yup');
-			});
-		} else {
-			//handleLocationError(false, infoWindow, map.getCenter());
-			console.log('nope.');
-		}
-	};
 	$scope.counterFlipperHeader = new CounterFlipper('landfill-tracker-header', 0, 7);
 	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
 	$scope.counterFlipperHeader.setCounter(1283746);
@@ -53,7 +34,7 @@ function MainController() {
 	$scope.counterFlipperMenu.setCounter(3);
 	$http.post(config.api.host + '/api/v'+config.api.version+'/account/status').success(function(data) {
 		if(!data.err) {
-			$scope.socket = io('http://localhost:3000');
+			$scope.socket = io('http://ducks.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function (data) {
 				var lPath = $location.$$path.split('/');
 				lPath.shift();
@@ -198,9 +179,6 @@ function MainController() {
 		};
 		$scope.aboutUs = function() {
 			$state.go('about');
-		};
-		$scope.privacy = function() {
-			$state.go('privacy');
 		};
 		$scope.login = function() {
 			// set step to loading

@@ -98,7 +98,9 @@ function GetStuffController() {
 		}
 	});
 
-	google.maps.event.addListenerOnce($scope.map, 'idle', $scope.getLocation);
+	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
+		$scope.getLocation()
+	});
 	$scope.map.addListener('zoom_changed', resizeMarkers);
 	function initMarkers() {
 		$scope.markers.forEach(function(e) {
