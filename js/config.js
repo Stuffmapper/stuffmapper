@@ -13,5 +13,8 @@ stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider)
 	.state('stuff.my.conversation', config.providers.myConversation)
 	.state('stuff.my.watchlist', config.providers.myWatchlist)
 	.state('stuff.my.settings', config.providers.mySettings)
+	.state('privacy', config.providers.privacy)
+	.state('useragreement', config.providers.useragreement)
+	.state('faq', config.providers.faq)
 	.state('about', config.providers.about);
 });
