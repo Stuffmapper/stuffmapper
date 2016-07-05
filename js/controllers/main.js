@@ -1,8 +1,7 @@
 var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope'];
-console.log(config.ionic.isIonic);
 if(config.ionic.isIonic) {
-	console.log('is ionic?');
 	mainControllerArgs.push('$cordovaOauth');
+	mainControllerArgs.push('$ionicPlatform');
 }
 mainControllerArgs.push(MainController);
 stuffMapp.controller('MainController', mainControllerArgs);
@@ -15,6 +14,35 @@ function MainController() {
 	var $location = arguments[5];
 	var $rootScope = arguments[6];
 	var $cordovaOauth = (typeof arguments[7] !== 'function')?arguments[7]:undefined;
+	var $ionicPlatform = (typeof arguments[8] !== 'function')?arguments[8]:undefined;
+	if($ionicPlatform) {
+		$ionicPlatform.registerBackButtonAction(function(event) {
+			if($state.current.name !== 'stuff.get') {
+				event.preventDefault();
+				event.stopPropagation();
+				navigator.app.backHistory();
+			}
+		}, 100);
+	}
+	$scope.getLocation = function() {
+		console.log('uh-huh.');
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				console.log('$scope.map', $scope.map);
+				$scope.map.setCenter({
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				});
+				console.log('yup');
+			}, function() {
+				//handleLocationError(true, infoWindow, map.getCenter());
+				console.log('yup');
+			});
+		} else {
+			//handleLocationError(false, infoWindow, map.getCenter());
+			console.log('nope.');
+		}
+	};
 	$scope.counterFlipperHeader = new CounterFlipper('landfill-tracker-header', 0, 7);
 	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
 	$scope.counterFlipperHeader.setCounter(1283746);
@@ -101,7 +129,7 @@ function MainController() {
 					'https://www.googleapis.com/auth/userinfo.profile'
 				]).then(function(data) {
 					console.log(data);
-					$http.post(config.api.host + '/api/v' +config.api.version+'/account/register', {
+					$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', {
 						type: 'google',
 						oauth: data
 					},{

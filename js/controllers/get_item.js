@@ -12,7 +12,8 @@ function GetItemController() {
 			if(e.data.id === $scope.listItem.id) {
 				console.log(e.data.id);
 				e.data.selected = true;
-				$scope.resizeMarkers();
+				//$scope.resizeMarkers();
+				google.maps.event.trigger($scope.map, 'zoom_changed');
 				$scope.map.panTo(new google.maps.LatLng(e.data.lat, e.data.lng));
 			}
 		});
@@ -60,7 +61,7 @@ function GetItemController() {
 		$scope.singleItem.appendTo($scope.imageContainer);
 		$scope.imageContainer.appendTo($scope.container);
 		$scope.detailsContainer.appendTo($scope.container);
-		$scope.container.appendTo('#masonry-container');
+		$scope.container.appendTo('#get-stuff-container');
 		requestAnimationFrame(function() {
 			requestAnimationFrame(function() {
 				initPayment();
@@ -83,6 +84,14 @@ function GetItemController() {
 				var $el = ($('#get-item-single'+$stateParams.id).append('<button class="get-single-item-dibs-button hidden animate-250">Dibs!</button>'));
 				requestAnimationFrame(function() {
 					$('.get-single-item-description, .get-single-item-dibs-button').removeClass('hidden');
+					$('#get-stuff-back-button-container').removeClass('hidden');
+					$('#get-stuff-item-title').text($scope.listItem.title);
+					setTimeout(function() {
+						$('.get-stuff-back-button').removeClass('hidden');
+					},100);
+					setTimeout(function() {
+						$('#get-stuff-item-title').removeClass('hidden');
+					},300);
 					checkScroll();
 				});
 			});
@@ -112,12 +121,16 @@ function GetItemController() {
 		console.log(hasVerticalScrollbar);
 	}
 	$scope.$on('$destroy', function() {
+		$('#get-stuff-back-button-container').addClass('hidden');
+		$('.get-stuff-back-button').addClass('hidden');
+		$('#get-stuff-item-title').addClass('hidden');
 		$('#get-single-item-dibs-button'+$stateParams.id).off('click', dibs);
 		$scope.markers.forEach(function(e) {
 			if(e.data.id === $scope.listItem.id) {
 				console.log(e.data.id);
 				e.data.selected = false;
-				$scope.resizeMarkers();
+				//$scope.resizeMarkers();
+				google.maps.event.trigger($scope.map, 'zoom_changed');
 			}
 		});
 		$scope.imageContainer.css({

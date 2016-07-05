@@ -6,17 +6,18 @@
 			.double-bounce2
 		.loading-text Finding Stuff...
 	.search-stuff-container
-		i.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
-		input#searchStuff.stuff-input(type='search' placeholder="Search..." ng-model="searchStuff")
-		i#filter-button.stuff-button.fa.fa-filter(tabindex="0" ng-click='toggleFilterPane()')
-	//- ion-content#masonry-container.animate-250.hide-masonry-container
-	#masonry-container.animate-250.hide-masonry-container
+		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
+		input#search-stuff.stuff-input(type='search' placeholder='Search for stuff!' ng-model="searchStuff")
+	#get-stuff-back-button-container.hidden.animate-250
+		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
+		#get-stuff-item-title.hidden.animate-250
+	ion-content#masonry-container.animate-250.hide-masonry-container
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
 				a(ui-sref="stuff.get.item({id:{{ list.id }}})")
 					| {{ item.title }}
 					.list-item-img-container(id="post-item-{{ list.id }}")
-						img(ng-attr-src="http://cdn.stuffmapper.com{{ list.image_url }}")
+						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info
 							div {{ list.title }}
 	#filter-pane.animate-250
