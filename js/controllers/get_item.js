@@ -1,13 +1,46 @@
-stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', GetItemController]);
+stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', '$state', GetItemController]);
 function GetItemController() {
 	'use strict';
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $stateParams = arguments[2];
 	var $userData = arguments[3];
+	var $state = arguments[4];
+
+	var singleItemTemplateMap = undefined;
+
+	console.log($scope.mapIsOpen);
+
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
 		console.log(data.res);
+		function openInfoWindow(e) {
+			e.category = 'test-category';
+			var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
+			getWordsBetweenCurlies(template).forEach(function(f) {
+				template = template.replace('{{'+f+'}}',e[f]);
+			});
+			singleItemTemplateMap = $(template);
+			singleItemTemplateMap.appendTo($('#map-view-container'));
+			requestAnimationFrame(function() {
+				requestAnimationFrame(function() {
+					singleItemTemplateMap.removeClass('hidden');
+					$('.info-windows').click(function() {
+						$scope.toggleMap();
+					});
+				});
+			});
+		}
+		/* jshint ignore:start */
+		function getWordsBetweenCurlies(str) {
+			var results = [], re = /{{([^}]+)}}/g, text;
+			while(text = re.exec(str)) {
+				results.push(text[1]);
+			}
+			return results;
+		}
+		/* jshint ignore:end */
+		openInfoWindow(data.res);
 		$scope.markers.forEach(function(e) {
 			if(e.data.id === $scope.listItem.id) {
 				console.log(e.data.id);
@@ -77,7 +110,7 @@ function GetItemController() {
 					'transform': 'scale3d(1, 1, 1) translate3d('+($('#masonry-container').width()/2-$scope.singleItem.width()/2)+'px, 0px, 0)'
 				});
 				$('#get-item-single-'+$stateParams.id + ' .get-stuff-item-info').addClass('get-single-item-info').append([
-					'<h3 class="get-single-item-description hidden animate-250">\n',
+					'<h3 class="get-single-item-description hidden animate-250">',
 					'	'+$scope.listItem.description,
 					'</h3>'
 				].join('\n'));
@@ -118,9 +151,25 @@ function GetItemController() {
 	function checkScroll() {
 		var div = $scope.detailsContainer[0];
 		var hasVerticalScrollbar = div.scrollHeight > div.clientHeight;
-		console.log(hasVerticalScrollbar);
+	}
+	$('#map-view').on('mousedown', backToGetStuff);
+	function backToGetStuff() {
+		//if($scope.mapMode){
+			$state.go('stuff.get');
+		//}
+		//else {
+
+		//}
 	}
 	$scope.$on('$destroy', function() {
+		$('#map-view').off('mousedown', backToGetStuff);
+		if(singleItemTemplateMap) {
+			singleItemTemplateMap.addClass('hidden');
+			setTimeout(function() {
+				singleItemTemplateMap.remove();
+				singleItemTemplateMap = undefined;
+			}, 250)
+		}
 		$('#get-stuff-back-button-container').addClass('hidden');
 		$('.get-stuff-back-button').addClass('hidden');
 		$('#get-stuff-item-title').addClass('hidden');
