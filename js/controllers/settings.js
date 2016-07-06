@@ -5,12 +5,9 @@ function SettingsController() {
 	var $http = arguments[1];
 
 
-	$http.get(config.api.host + 'api/' + config.api.version + '/account/info').success(function(data){
-		if(data.err) {
-			console.log(data.err);
-			return;
-		}
-	$scope.users = data.res;
+	$http.get(config.api.host + '/api/' + config.api.version + '/account/info').success(function(data){
+		if(data.err) return console.log(data.err);
+		$scope.users = data.res;
 	});
 
 	// Editing user data
@@ -31,7 +28,7 @@ function SettingsController() {
 
 	// $scope.showSuccess = function() {
 	// 	$('.edit-profile button:first-of-type').click(function () {
-  //   	// $('.success').css({});
+	//   	// $('.success').css({});
 	// 		requestAnimationFrame(function(){
 	//
 	// 		})
