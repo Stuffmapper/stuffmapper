@@ -4,10 +4,7 @@ function MyController() {
 	var $state = arguments[1];
 	var $location = arguments[2];
 	var authenticated = arguments[3];
-	if(authenticated.err) {
-		$location.path('/stuff/get');
-		return;
-	}
+	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 	if($location.$$path === '/stuff/my') {
 		$state.go('stuff.my.items');
 		return;

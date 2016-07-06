@@ -1,11 +1,11 @@
 
-stuffMapp.controller('watchlistController', ['$scope', '$http', '$location', 'authenticated', WatchListController]);
+stuffMapp.controller('watchlistController', ['$scope', '$http', '$location', '$state', 'authenticated', WatchListController]);
 function WatchListController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $location = arguments[2];
 	var authenticated = arguments[3];
-	if(!authenticated.res.loggedIn) return $location.path('stuff/get');
+	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 
 	$scope.getAll = function() {
 		$http.get('/api/v1/watchlist')
