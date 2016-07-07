@@ -1,4 +1,4 @@
-stuffMapp.controller('conversationController', ['$scope', '$http', '$stateParams', '$state', ConversationController]);
+stuffMapp.controller('conversationController', ['$scope', '$state', '$http', '$stateParams', 'authenticated', ConversationController]);
 function ConversationController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];

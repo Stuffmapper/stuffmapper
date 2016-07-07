@@ -1,4 +1,4 @@
-stuffMapp.controller('messagesController', ['$scope', '$http', '$state', MessagesController]);
+stuffMapp.controller('messagesController', ['$scope', '$http', '$state', 'authenticated', MessagesController]);
 function MessagesController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
