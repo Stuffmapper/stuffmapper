@@ -92,6 +92,8 @@ input:read-only{
 }
 .side-menu-item {
 	padding: 15px;
+	padding-top: 33px;
+	padding-bottom: 29px;
 	padding-left: 25px;
 	color: $charcoal-dark;
 }
@@ -690,7 +692,6 @@ input:read-only{
 	width: 100%;
 	padding: 0;
 	margin-top: 0;
-	overflow: auto;
 }
 .list-item-img-container img {
 	width: 100%;
@@ -2098,7 +2099,10 @@ input:read-only{
 	font-family: Verdana;
 	font-size: 15px;
 	overflow: auto;
-	margin: 5px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	background-color: #fff;
 	outline: #E6E9ED solid 1px;
 }
@@ -2125,7 +2129,10 @@ input:read-only{
 	font-family: Verdana;
 	font-size: 15px;
 	overflow: auto;
-	margin: 5px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	background-color: #fff;
 	outline: #E6E9ED solid 1px;
 }
@@ -2149,7 +2156,10 @@ input:read-only{
 	font-family: Verdana;
 	font-size: 15px;
 	overflow: auto;
-	margin: 5px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	background-color: #fff;
 	outline: #E6E9ED solid 1px;
 }
@@ -2163,17 +2173,19 @@ input:read-only{
 }
 .faq-nav a {
 	color: $charcoal-dark;
-	text-decoration: none;
-
 }
 .answer-container {
 	padding: 13px;
+}
+.answer-container h2:first-of-type {
+	border-top: 1px solid $charcoal-dark;
+	padding-top: 10px;
 }
 .answer-container a {
 	color: $charcoal-dark;
 }
 .faq-container h2 {
-	font-weight: 500;
+	font-weight: 700;
 	font-size: 15px;
 }
 .faq-container h3 {
@@ -2362,7 +2374,24 @@ input:read-only{
 		height: 59px;
 	}
 	/* Popups - End */
+	/* Privacy - START */
 
+	.privacy-container {
+		margin: 5px;
+	}
+	/* Privacy - END */
+	/* Useragreement - START */
+
+	.useragreement-container {
+		margin: 5px;
+	}
+	/* Useragreement - END */
+	/* Faq - START */
+
+	.faq-container {
+		margin: 5px;
+	}
+	/* Faq - END */
 }
 
 @media screen and (min-width: 767px) {

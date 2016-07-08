@@ -1,12 +1,16 @@
-stuffMapp.controller('settingsController', ['$scope', '$http', SettingsController]);
+stuffMapp.controller('settingsController', ['$scope', '$http', 'authenticated', '$state', SettingsController]);
 
 function SettingsController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
+	var authenticated = arguments[2];
+	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 
-
-	$http.get(config.api.host + '/api/' + config.api.version + '/account/info').success(function(data){
-		if(data.err) return console.log(data.err);
+	$http.get(config.api.host + '/api/v' + config.api.version + '/account/info').success(function(data){
+		if(data.err) {
+			console.log(data.err);
+			return;
+		}
 		$scope.users = data.res;
 	});
 

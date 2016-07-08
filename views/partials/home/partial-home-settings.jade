@@ -43,18 +43,17 @@ div.settings
 			li
 				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
 			button(type='submit', data-ng-click='update(users); showSuccess()') Save
-			//- button(data-ng-click='showEdit=false') Cancel
 		ul.connections 
 			li 
 				strong Connections 
 				| &ensp;&ensp;&nbsp;&nbsp; log in &amp; share with connections
 			li
-				a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/google" target="_self")
+				a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="http://localhost:3000/api/v1/account/login/google" target="_self")
 					span.social-sign-in-icon.social-sign-in-icon-google
 						i.fa.fa-google-plus
 					span.social-sign-in-text Connect to Google
 			li
-				a.settings-sign-in-up-input.social-button.facebook-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/facebook" target="_self")
+				a.settings-sign-in-up-input.social-button.facebook-sign-in(href="http://localhost:3000/api/v1/account/login/facebook" target="_self")
 					span.social-sign-in-icon.social-sign-in-icon-facebook
 						i.fa.fa-facebook
 					span.social-sign-in-text Connect to Facebook

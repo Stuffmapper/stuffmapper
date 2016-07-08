@@ -47,7 +47,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="http://ducks.stuffmapper.com/socket.io/socket.io.js")
+			script(src="http://localhost:3000/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
@@ -116,7 +116,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 											i.fa.fa-google-plus
 										span.social-sign-in-text Sign in with Google
 								else
-									a.sign-in-up-input.social-button.google-plus-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/google" target="_self")
+									a.sign-in-up-input.social-button.google-plus-sign-in(href="http://localhost:3000/api/v1/account/login/google" target="_self")
 										span.social-sign-in-icon.social-sign-in-icon-google
 											i.fa.fa-google-plus
 										span.social-sign-in-text Sign in with Google
@@ -126,7 +126,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 											i.fa.fa-facebook
 										span.social-sign-in-text Sign in with Facebook
 								else
-									a.sign-in-up-input.social-button.facebook-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/facebook" target="_self")
+									a.sign-in-up-input.social-button.facebook-sign-in(href="http://localhost:3000/api/v1/account/login/facebook" target="_self")
 										span.social-sign-in-icon.social-sign-in-icon-facebook
 											i.fa.fa-facebook
 										span.social-sign-in-text Sign in with Facebook
@@ -154,19 +154,19 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		#popups
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
 				li
-					i.fa.fa-archive
+					i.fa.fa-rocket
 					span(ui-sref="stuff.my.items") My Stuff
 				li
-					i.fa.fa-envelope
+					i.fa.fa-bell
 					span(ui-sref="stuff.my.messages") Messages
 				li
-					i.fa.fa-clock-o
+					i.fa.fa-bookmark
 					span(ui-sref="stuff.my.watchlist") Watchlist
 				li
 					i.fa.fa-cog
-					span(ui-sref="stuff.my.settings") Settings
+					span(ui-sref="stuff.my.settings") Profile/Settings
 				li
-					i.fa.fa.question-circle-o
+					i.fa.fa-question
 					span(ui-sref="faq") FAQ
 				li
 					i.fa.fa-user-secret

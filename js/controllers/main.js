@@ -34,7 +34,7 @@ function MainController() {
 	$scope.counterFlipperMenu.setCounter(3);
 	$http.post(config.api.host + '/api/v'+config.api.version+'/account/status').success(function(data) {
 		if(!data.err) {
-			$scope.socket = io('http://ducks.stuffmapper.com');
+			$scope.socket = io('http://localhost:3000');
 			$scope.socket.on((data.res.user.id), function (data) {
 				var lPath = $location.$$path.split('/');
 				lPath.shift();

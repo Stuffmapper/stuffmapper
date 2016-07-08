@@ -37,8 +37,8 @@ passport.use(new LocalStrategy(
 passport.use(new GoogleStrategy({
 	clientID:     GOOGLE_CLIENT_ID,
 	clientSecret: GOOGLE_CLIENT_SECRET,
-	callbackURL: 'http://ducks.stuffmapper.com/auth/google_oauth2/callback'
-	//callbackURL: 'http://localhost/auth/google_oauth2/callback'
+	// callbackURL: 'http://ducks.stuffmapper.com/auth/google_oauth2/callback'
+	callbackURL: 'http://localhost:3000/auth/google_oauth2/callback'
 },
 function(accessToken, refreshToken, profile, done) {
 	User.findOrCreateOne('google', profile, function (err, user) {
@@ -51,8 +51,8 @@ function(accessToken, refreshToken, profile, done) {
 passport.use(new FacebookStrategy({
 	clientID:     FACEBOOK_CLIENT_ID,
 	clientSecret: FACEBOOK_CLIENT_SECRET,
-	callbackURL: 'http://ducks.stuffmapper.com/auth/facebook_oauth2/callback',
-	//callbackURL: 'http://localhost/auth/facebook_oauth2/callback',
+	// callbackURL: 'http://ducks.stuffmapper.com/auth/facebook_oauth2/callback',
+	callbackURL: 'http://localhost:3000/auth/facebook_oauth2/callback',
   profileFields: ['id', 'displayName', 'photos', 'email', 'name']
 },
 function(accessToken, refreshToken, profile, done) {
