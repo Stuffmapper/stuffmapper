@@ -419,7 +419,39 @@ input:read-only{
 
 /* Header -  END  */
 
+.info-windows {
+	bottom: 0px;
+	position: absolute;
+	height: 120px;
+	width: 100%;
+	z-index: 2;
+	background-color: white;
+	pointer-events: all;
+	@include transform(translate3d(0, 0%, 0));
+	&.hidden {
+		@include transform(translate3d(0, 100%, 0));
+	}
+}
 
+.info-window-image {
+	height: 120px;
+	width: 120px;
+	position: relative;
+	display: inline-block;
+	background-size: cover;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+}
+
+.info-window-header-text {
+	width: calc(100% - 130px);
+	display: inline-block;
+	height: 110px;
+	top: 0px;
+	position: absolute;
+	right: 0px;
+	padding: 5px;
+}
 
 #get-stuff-container {
 	height: 100%;
@@ -603,6 +635,7 @@ input:read-only{
 	height: calc(100% - 45px);
 	width: 350px;
 	overflow: hidden;
+	z-index: 2;
 }
 #tab-content {
 	height: 100%;

@@ -1,9 +1,9 @@
-
 stuffMapp.controller('watchlistController', ['$scope', '$http', '$location', '$state', 'authenticated', WatchListController]);
 function WatchListController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $location = arguments[2];
+	var $state = arguments[3];
 	var authenticated = arguments[4];
 	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 
@@ -11,16 +11,16 @@ function WatchListController() {
 		$http.get('/api/v1/watchlist')
 		.then(function(res) {
 			$scope.watchlist = res.data.res;
-			console.log('get',$scope.watchlist);
+			console.log('get', $scope.watchlist);
 		}, function(err) {
-			console.log('geterr',err.data);
+			console.log('geterr', err.data);
 		});
 	};
 
 	$scope.create = function() {
 		var keys = $('#watchlist-select').val();
 		if (keys) {
-			$http.post('/api/v1/watchlist', {keys:keys}, {
+			$http.post('/api/v1/watchlist', {keys: keys}, {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
 				},

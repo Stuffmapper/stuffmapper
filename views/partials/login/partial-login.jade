@@ -1,0 +1,13 @@
+#login-container
+#tab-container
+	ul.stuff-tabs
+		li.logo-tab
+			a(ng-click)
+		li.get-stuff-tab
+			a.tk-proxima-nova(ui-sref="stuff.get") Get Stuff
+		li.give-stuff-tab
+			a.tk-proxima-nova(ng-click="toGiveStuff()") Give Stuff
+		li.my-stuff-tab
+			a.tk-proxima-nova(ui-sref="stuff.my") My Stuff
+#tab-content-container
+	#tab-content.animate-500(ui-view)

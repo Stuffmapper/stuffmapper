@@ -88,6 +88,15 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			include ./partials/useragreement/partial-useragreement
 		script(id="templates/partial-faq.html" type="text/ng-template")
 			include ./partials/faq/partial-faq
+		if ionic
+			script(id="templates/partial-login.html" type="text/ng-template")
+				include ./partials/login/partial-login
+			script(id="templates/partial-login-steps.html" type="text/ng-template")
+				include ./partials/login/partial-login-steps
+			script(id="templates/partial-login-setup1.html" type="text/ng-template")
+				include ./partials/login/partial-login-setup1
+			script(id="templates/partial-login-setup2.html" type="text/ng-template")
+				include ./partials/login/partial-login-setup2
 	body(ng-controller="MainController")
 		#modal-windows
 			.modal-windows-bg.animate-250

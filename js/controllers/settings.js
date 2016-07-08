@@ -11,7 +11,7 @@ function SettingsController() {
 			console.log(data.err);
 			return;
 		}
-	$scope.users = data.res;
+		$scope.users = data.res;
 	});
 
 	// Editing user data
@@ -32,7 +32,7 @@ function SettingsController() {
 
 	// $scope.showSuccess = function() {
 	// 	$('.edit-profile button:first-of-type').click(function () {
-  //   	// $('.success').css({});
+	//   	// $('.success').css({});
 	// 		requestAnimationFrame(function(){
 	//
 	// 		})
