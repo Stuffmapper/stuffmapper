@@ -6,7 +6,7 @@ function SettingsController() {
 	var authenticated = arguments[2];
 	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 
-	$http.get(config.api.host + 'api/' + config.api.version + '/account/info').success(function(data){
+	$http.get(config.api.host + '/api/v' + config.api.version + '/account/info').success(function(data){
 		if(data.err) {
 			console.log(data.err);
 			return;

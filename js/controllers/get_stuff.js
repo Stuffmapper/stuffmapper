@@ -39,9 +39,9 @@ function GetStuffController() {
 			var lastSearch;
 			$scope.$watch('searchStuff', function (val) {
 				if (searchTextTimeout) $timeout.cancel(searchTextTimeout);
-				else console.log('Search for everything');
 				tempSearchText = val;
 				searchTextTimeout = $timeout(function() {
+					$scope.filterSearch();
 					if(tempSearchText) {
 						$scope.filterText = tempSearchText;
 						if(tempSearchText !== lastSearch) lastSearch = tempSearchText;
@@ -232,4 +232,19 @@ function GetStuffController() {
 			});
 		}
 	});
+	$scope.filterSearch = function () {
+		//refresh masonry
+		setTimeout(function () {
+			$('.masonry-grid').masonry({
+				columnWidth: function(columnWidth) {
+					return $('.masonry-grid').width()/2;
+				}(),
+				itemSelector: '.masonry-grid-item',
+				isAnimated: true
+			}).imagesLoaded(function(){
+
+				$('.masonry-grid').masonry('reloadItems').masonry();
+			});
+		},100);
+	};
 }

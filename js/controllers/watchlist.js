@@ -4,7 +4,7 @@ function WatchListController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $location = arguments[2];
-	var authenticated = arguments[3];
+	var authenticated = arguments[4];
 	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 
 	$scope.getAll = function() {
@@ -54,7 +54,7 @@ function WatchListController() {
 		});
 	};
 	$scope.clearField = function() {
-		$('#watchlist-input').val('');
+		$('#watchlist-select').val('');
 	};
 	$scope.selections = function() {
 		$("#watchlist-select").select2({
