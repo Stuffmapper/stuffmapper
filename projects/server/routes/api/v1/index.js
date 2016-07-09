@@ -5,7 +5,6 @@ var bcrypt = require('bcrypt');
 var saltRounds = 10;
 var passport = require('passport');
 var request = require('request');
-
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
 
 function isAuthenticated(req, res, next) {

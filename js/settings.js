@@ -66,32 +66,16 @@ function setDefaultSettings() {
 			templateUrl: 'templates/partial-home-settings.html',
 			controller: 'settingsController'
 		},
-		loginMain : {
-			url: '/login',
-			templateUrl: 'templates/partial-login.html'
-		},
-		loginOne : {
-			url: '/step1',
+		loginSteps : {
+			url: '/login-steps',
 			templateUrl: 'templates/partial-login-steps.html'
 		},
-		loginTwo : {
-			url: '/step2',
-			templateUrl: 'templates/partial-login-steps.html'
-		},
-		loginThree : {
-			url: '/step3',
-			templateUrl: 'templates/partial-login-steps.html'
-		},
-		loginFour : {
-			url: '/step4',
-			templateUrl: 'templates/partial-login-steps.html'
-		},
-		setupOne : {
-			url: '/setup1',
+		loginSetupOne : {
+			url: '/login-setup1',
 			templateUrl: 'templates/partial-login-setup1.html'
 		},
-		setupTwo : {
-			url: '/setup2',
+		loginSetupTwo : {
+			url: '/login-setup2',
 			templateUrl: 'templates/partial-login-setup2.html'
 		},
 		about : {

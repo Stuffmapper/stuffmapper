@@ -10,11 +10,14 @@ function GetStuffController() {
 	$scope.listItems = [];
 	$scope.markers = [];
 	google.maps.event.addListenerOnce($scope.map, 'idle', function() {
-		console.log(this.getBounds());
+		//console.log(this.getBounds());
 	});
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
 		$scope.listItems = data.res;
 		if($scope.listItems) {
+			$scope.refresh = function() {
+				//console.log('refresh');
+			};
 			$scope.initMasonry = function() {
 				$('.masonry-grid').masonry({
 					columnWidth: $('.masonry-grid').width()/2,
@@ -37,14 +40,14 @@ function GetStuffController() {
 			var lastSearch;
 			$scope.$watch('searchStuff', function (val) {
 				if (searchTextTimeout) $timeout.cancel(searchTextTimeout);
-				else console.log('Search for everything');
+				//else console.log('Search for everything');
 				tempSearchText = val;
 				searchTextTimeout = $timeout(function() {
 					if(tempSearchText) {
 						$scope.filterText = tempSearchText;
 						if(tempSearchText !== lastSearch) lastSearch = tempSearchText;
 					}
-					else if(tempSearchText !== undefined) console.log('Search for everything');
+					//else if(tempSearchText !== undefined) console.log('Search for everything');
 				}, 250);
 			});
 			if ($scope.mapbox) {
@@ -95,7 +98,7 @@ function GetStuffController() {
 	});
 
 	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
-		$scope.getLocation()
+		$scope.getLocation();
 	});
 	$scope.map.addListener('zoom_changed', resizeMarkers);
 	function initMarkers() {
@@ -132,6 +135,16 @@ function GetStuffController() {
 					lat: position.coords.latitude,
 					lng: position.coords.longitude
 				});
+				var marker = new google.maps.Marker({
+          position: {
+						lat: position.coords.latitude,
+						lng: position.coords.longitude
+					},
+          map: $scope.map,
+					icon: {
+						url: '/img/currentlocation1.png'
+					}
+        });
 			}, function() {
 				//handleLocationError(true, infoWindow, map.getCenter());
 			});

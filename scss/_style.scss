@@ -425,6 +425,7 @@ input:read-only{
 	z-index: 2;
 	background-color: white;
 	pointer-events: all;
+	display: none;
 	@include transform(translate3d(0, 0%, 0));
 	&.hidden {
 		@include transform(translate3d(0, 100%, 0));
@@ -2188,6 +2189,10 @@ input:read-only{
 /* Faq - END */
 
 @media screen and (max-width: 436px) {
+
+	.info-windows {
+		display: block;
+	}
 	#map-view-container #get-location {
 		top: 95px;
 	}

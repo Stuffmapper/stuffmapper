@@ -12,6 +12,8 @@
 		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
 		#get-stuff-item-title.hidden.animate-250
 	ion-content#masonry-container.animate-250.hide-masonry-container
+		if ionic
+			ion-refresher(pulling-text="Pull to refresh..." on-refresh="refresh()")
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
 				a(ui-sref="stuff.get.item({id:{{ list.id }}})")

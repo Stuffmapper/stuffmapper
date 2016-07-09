@@ -7,7 +7,7 @@ function GetItemController() {
 	var $userData = arguments[3];
 	var $state = arguments[4];
 
-	var singleItemTemplateMap = undefined;
+	var singleItemTemplateMap;
 
 	console.log($scope.mapIsOpen);
 
@@ -168,7 +168,7 @@ function GetItemController() {
 			setTimeout(function() {
 				singleItemTemplateMap.remove();
 				singleItemTemplateMap = undefined;
-			}, 250)
+			}, 250);
 		}
 		$('#get-stuff-back-button-container').addClass('hidden');
 		$('.get-stuff-back-button').addClass('hidden');

@@ -57,6 +57,18 @@ if(config.ionic.isIonic) {
 			if(window.StatusBar) {
 				StatusBar.styleDefault();
 			}
+			var deploy = new Ionic.Deploy();
+			deploy.check().then(function(hasUpdate) {
+				deploy.update().then(function(res) {
+					console.log('Ionic Deploy: Update Success! ', res);
+				}, function(err) {
+					console.log('Ionic Deploy: Update error! ', err);
+				}, function(prog) {
+					console.log('Ionic Deploy: Progress... ', prog);
+				});
+			}, function(err) {
+				console.error('Ionic Deploy: Unable to check for updates', err);
+			});
 		});
 	});
 }

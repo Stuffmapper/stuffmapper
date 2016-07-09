@@ -1,5 +1,5 @@
 stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider) {
-	$urlRouterProvider.otherwise(config.ionic.isIonic?'/login/setup1':'/stuff/get');
+	$urlRouterProvider.otherwise('/stuff/get');
 	$locationProvider.html5Mode(config.html5);
 	$stateProvider
 	.state('stuff', config.providers.stuff)
@@ -19,12 +19,8 @@ stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider)
 	.state('about', config.providers.about);
 	if(config.ionic.isIonic) {
 		$stateProvider
-		.state('login', config.providers.loginMain)
-		.state('login.step1', config.providers.loginOne)
-		.state('login.step2', config.providers.loginTwo)
-		.state('login.step3', config.providers.loginThree)
-		.state('login.step4', config.providers.loginFour)
-		.state('login.setup1', config.providers.setupOne)
-		.state('login.setup2', config.providers.setupTwo);
+		.state('login', config.providers.loginSteps)
+		.state('setup1', config.providers.loginSetupOne)
+		.state('setup2', config.providers.loginSetupTwo);
 	}
 });
