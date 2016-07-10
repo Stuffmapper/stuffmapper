@@ -7,7 +7,7 @@
 		.loading-text Finding Stuff...
 	.search-stuff-container
 		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
-		input#search-stuff.stuff-input(type='search' placeholder='Search for stuff!' ng-model="searchStuff")
+		input#search-stuff.stuff-input(type='search' placeholder='Search by name or category' ng-model="searchStuff")
 	#get-stuff-back-button-container.hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
 		#get-stuff-item-title.hidden.animate-250

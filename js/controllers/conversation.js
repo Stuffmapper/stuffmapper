@@ -1,8 +1,10 @@
-stuffMapp.controller('conversationController', ['$scope', '$state', '$http', '$stateParams', 'authenticated', ConversationController]);
+stuffMapp.controller('conversationController', ['$scope', '$http', '$stateParams', '$state', 'authenticated', ConversationController]);
 function ConversationController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $stateParams = arguments[2];
+	var $state = arguments[3];
+	var authenticated = arguments[4];
 	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 	$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+$stateParams.conversation).success(function(data) {
 		$scope.conversation = data.res.conversation;

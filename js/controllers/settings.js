@@ -4,6 +4,7 @@ function SettingsController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var authenticated = arguments[2];
+	var $state = arguments[3];
 	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 
 	$http.get(config.api.host + '/api/v' + config.api.version + '/account/info').success(function(data){
