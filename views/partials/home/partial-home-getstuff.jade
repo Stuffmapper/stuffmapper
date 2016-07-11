@@ -7,7 +7,7 @@
 		.loading-text Finding Stuff...
 	.search-stuff-container
 		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
-		input#search-stuff.stuff-input(type='search' placeholder='Search for stuff!' ng-model="searchStuff")
+		input#search-stuff.stuff-input(type='search' placeholder='Search by name or category' ng-model="searchStuff")
 	#get-stuff-back-button-container.hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
 		#get-stuff-item-title.hidden.animate-250
@@ -20,29 +20,46 @@
 						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info
 							div {{ list.title }}
-	//- #filter-pane.animate-250
-	//- 	ul
-	//- 		li
-	//- 			select
-	//- 				option option1
-	//- 				option option1
-	//- 				option option3
-	//- 				option option4
-	//- 				option option5
-	//- 		li
-	//- 			select
-	//- 				option option1
-	//- 				option option1
-	//- 				option option3
-	//- 				option option4
-	//- 				option option5
-	//- 		li
-	//- 			select
-	//- 				option option1
-	//- 				option option1
-	//- 				option option3
-	//- 				option option4
-	//- 				option option5
-	//- 		li
-	//- 			label 
-	//- 			input(type='checkbox')
+	#filter-pane.animate-250
+		form
+			ul.filter
+				li Choose a Category
+					select(ng-model="searchStuff")
+						option Arts & Crafts
+						option Books, Games, Media
+						option Building & Garden Materials
+						option Clothes & Accessories
+						option Electronics
+						option Furniture & Household
+						option General
+						option Kids & Babies
+						option Recreation
+				//- li Attended/Unattended
+				//- 	select(ng-model="searchStuff")
+				//- 		option Attended
+				//- 		option Unattended
+				//- 		option All
+				//- li Distance from Me
+				//- 	select(ng-model="searchStuff")
+				//- 		option 1 miles
+				//- 		option 2 miles
+				//- 		option 3 miles
+				//- 		option 4 miles
+				//- 		option 5 miles
+				//- 		option 6 miles
+				//- 		option 7 miles
+				//- 		option 8 miles
+				//- 		option 9 miles
+				//- 		option 10 miles
+				//- 		option 11 miles
+				//- 		option 12 miles
+				//- 		option 13 miles
+				//- 		option 14 miles
+				//- 		option 15 miles
+				//- 		option 16 miles
+				//- 		option 17 miles
+				//- 		option 18 miles
+				//- 		option 19 miles
+				//- 		option 20 miles
+				button(type='submit', ng-click="initMasonry()") Filter
+				

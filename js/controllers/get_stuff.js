@@ -157,9 +157,9 @@ function GetStuffController() {
 	}
 	$('#search-stuff').focus(function() {
 		if($scope.mapIsOpen) $scope.toggleMap();
-		//$('#filter-pane').addClass('open-filter-pane');
+		$('#filter-pane').addClass('open-filter-pane');
 	});
-	$('#search-stuff').blur(function() {
+	$('.filter button').click(function() {
 		$('#filter-pane').removeClass('open-filter-pane');
 	});
 	$scope.toggleSwitch = function() {
