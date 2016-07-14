@@ -158,9 +158,15 @@ function GetStuffController() {
 	$('#search-stuff').focus(function() {
 		if($scope.mapIsOpen) $scope.toggleMap();
 		$('#filter-pane').addClass('open-filter-pane');
+		$('.search-stuff-container .fa-map', '.search-stuff-container .toggle-stuff').css({'display': 'none'});
+		$('.stuff-input').css({'width': 'calc(100% - 57px)', 'left': '5px'});
+		$('.search-stuff-container .fa-search').css({'margin-left': '20px', 'display': 'inline-block'});
 	});
-	$('.filter button').click(function() {
+	$('.search-stuff-container .fa-search').click(function() {
 		$('#filter-pane').removeClass('open-filter-pane');
+		$('.search-stuff-container .fa-map', '.search-stuff-container .toggle-stuff').css({'display': ''});
+		$('.stuff-input').css({'width': '', 'left': ''});
+		$('.search-stuff-container .fa-search').css({'margin-left': '', 'display': ''});
 	});
 	$scope.toggleSwitch = function() {
 		$('.toggle-button').toggleClass('toggle-button-selected');
@@ -202,18 +208,32 @@ function GetStuffController() {
 		}
 	});
 	$scope.filterSearch = function () {
-		//refresh masonry
-		setTimeout(function () {
-			$('.masonry-grid').masonry({
-				columnWidth: function(columnWidth) {
-					return $('.masonry-grid').width()/2;
-				}(),
-				itemSelector: '.masonry-grid-item',
-				isAnimated: true
-			}).imagesLoaded(function(){
-
-				$('.masonry-grid').masonry('reloadItems').masonry();
+		$scope.listItems.forEach(function(e) {
+			var searchQuery = $('#search-stuff').val().toLowerCase();
+			var matches = false;
+			e.title.split(',').forEach(function(f) {
+				if(f.toLowerCase().startsWith(searchQuery)) {
+					matches = true;
+				}
 			});
-		},100);
+			if(!matches) {
+				//hide the element
+				$('#loading-get-stuff').addClass('hidden');
+
+				//refresh masonry
+				setTimeout(function () {
+					$('.masonry-grid').masonry({
+						columnWidth: function(columnWidth) {
+							return $('.masonry-grid').width()/2;
+						}(),
+						itemSelector: '.masonry-grid-item',
+						isAnimated: true
+					}).imagesLoaded(function(){
+
+						$('.masonry-grid').masonry('reloadItems').masonry();
+					});
+				},100);
+			}
+		});
 	};
 }
