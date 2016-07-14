@@ -190,7 +190,7 @@ input:read-only{
 	padding-top: 7px;
 }
 .search-stuff-container .fa-search {
-	background-color: #F5F7FA;
+	background-color: $fog-dark;
 	padding-top: 5px;
 	width: 30px;
 	height: 21px;
@@ -207,7 +207,7 @@ input:read-only{
 .stuff-input {
 	height: 24px;
 	padding: 13px 0px;
-	border: 1px solid $charcoal-dark;
+	border: 2px solid $fog-dark;
 	left: 0px;
 	text-indent: 10px;
 	display: inline-block;
@@ -746,10 +746,15 @@ input:read-only{
 	background-color: $white;
 	pointer-events: all;
 	z-index: 4;
+	overflow: auto;
 	@include transform(translate3d(0%, -100%, 0));
 	&.open-filter-pane {
 		@include transform(translate3d(0%, 0%, 0));
 	}
+}
+#filter-head {
+	padding-top: 23px;
+	font-weight: 600;
 }
 .filter {
 	height: 100%;
@@ -777,10 +782,10 @@ input:read-only{
 }
 .filter select {
 	width: 100%;
-	height: 270px;
+	height: 340px;
 	border: 0px;
 	display: inline-flex;
-	overflow: auto;
+	overflow: inherit;;
 }
 
 .filter option {
@@ -792,10 +797,41 @@ input:read-only{
 	border: 1px solid #E6E9ED;
 	border-radius: 6px;
 }
-.categories form {
-	margin: 10px;
+#newlisting select {
+	width: 100%;
+	height: 80px;
+	border: 0px;
+	display: inline-flex;
+	overflow: inherit;;
 }
-.categories form button {
+
+#newlisting option {
+	font-size: 13px;
+	margin-bottom: 9px;
+	margin-left: 5px;
+	padding: 2px;
+	display: inline-table;
+	border: 1px solid #E6E9ED;
+	border-radius: 6px;
+}
+#item-status select {
+	width: 100%;
+	height: 80px;
+	border: 0px;
+	display: inline-flex;
+	overflow: inherit;;
+}
+
+#item-status option {
+	font-size: 13px;
+	margin-bottom: 9px;
+	margin-left: 5px;
+	padding: 2px;
+	display: inline-table;
+	border: 1px solid #E6E9ED;
+	border-radius: 6px;
+}
+#categories form button {
 	margin-top: 10px;
 	height: 40px;
 	width: 100%;
@@ -1061,8 +1097,18 @@ input[type=range].distance-slider:focus::-ms-fill-lower {
 input[type=range].distance-slider:focus::-ms-fill-upper {
   background: rgba(121, 255, 58, 0.21);
 }
-#distance-from-me {
+#distance-from-me, #filter-head, #newlisting, #item-status, #categories {
 	margin: 11px;
+	font-size: 13px;
+}
+#distance-from-me, #newlisting, #item-status {
+	padding-bottom: 10px;
+}
+#distance-from-me p, #newlisting p, #item-status p, #categories p {
+	color: $pewter-dark;
+}
+#get-stuff-container .settings-header {
+	display: none;
 }
 /* Filter -  END  */
 
@@ -2558,6 +2604,7 @@ input[type=range].distance-slider:focus::-ms-fill-upper {
 	.search-stuff-container {
 		padding: 8px;
 		height: 24px;
+		border-top: 1px solid $fog-dark;
 	}
 
 	.stuff-input {

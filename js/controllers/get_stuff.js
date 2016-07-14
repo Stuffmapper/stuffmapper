@@ -161,12 +161,16 @@ function GetStuffController() {
 		$('.search-stuff-container .fa-map', '.search-stuff-container .toggle-stuff').css({'display': 'none'});
 		$('.stuff-input').css({'width': 'calc(100% - 57px)', 'left': '5px'});
 		$('.search-stuff-container .fa-search').css({'margin-left': '20px', 'display': 'inline-block'});
+		$('#get-stuff-container .settings-header').css({'display': 'block', 'height': '24px'});
+		$('.fa-map').css({'display': 'none'});
 	});
 	$('.search-stuff-container .fa-search').click(function() {
 		$('#filter-pane').removeClass('open-filter-pane');
 		$('.search-stuff-container .fa-map', '.search-stuff-container .toggle-stuff').css({'display': ''});
 		$('.stuff-input').css({'width': '', 'left': ''});
 		$('.search-stuff-container .fa-search').css({'margin-left': '', 'display': ''});
+		$('#get-stuff-container .settings-header').css({'display': '', 'height': ''});
+		$('.fa-map').css({'display': ''});
 	});
 	$scope.toggleSwitch = function() {
 		$('.toggle-button').toggleClass('toggle-button-selected');

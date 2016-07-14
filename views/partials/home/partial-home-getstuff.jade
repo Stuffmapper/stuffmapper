@@ -5,6 +5,8 @@
 			.double-bounce1
 			.double-bounce2
 		.loading-text Finding Stuff...
+	.settings-header
+		h1 Filter & Settings
 	.search-stuff-container
 		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
 		input#search-stuff.stuff-input(type='search' placeholder='Search' ng-model="searchStuff")
@@ -22,22 +24,23 @@
 						.get-stuff-item-info
 							div {{ list.title }}
 	#filter-pane.animate-250
-		h1 Filters
+		#filter-head
+			p Filters
 		#distance-from-me
 			p Distance from me
-			input.distance-slider(type="range", ng-model="searchStuff")
+			input.distance-slider(type="range", max="20", ng-model="searchStuff")
 		#newlisting
 			p New listing
-			select(ng-model="searchStuff", size="1")
+			select(ng-model="searchStuff", size="2")
 				option.fa.fa-check only show new listings
 		#item-status
 			p Item status
 			select(ng-model="searchStuff", size="2")
 				option.fa.fa-check unattended
 				option.fa.fa-check contact for pickup
-		.categories
+		#categories
+			p Categories
 			form 
-				p Categories
 				.select-deselect
 					ul
 						li
