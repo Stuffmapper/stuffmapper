@@ -213,9 +213,8 @@ function GetStuffController() {
 				});
 			}
 		});
-		$scope.filterRadius = function () {
+		$scope.filterSearch = function () {
 			$scope.getLocation(function(position){
-				$('#loading-get-stuff').removeClass('hidden');
 				$scope.listItems.forEach(function(e) {
 					var sliderValue = $('.distance-slider').val();
 					var convertValue = sliderValue * 1609.344;
@@ -234,23 +233,7 @@ function GetStuffController() {
 						$('#post-item-' + e.id).css({'display': ''});
 					}
 				});
-				//refresh masonry
-				setTimeout(function () {
-					$('.masonry-grid').masonry({
-						columnWidth: function(columnWidth) {
-							return $('.masonry-grid').width()/2;
-						}(),
-						itemSelector: '.masonry-grid-item',
-						isAnimated: true
-					}).imagesLoaded(function(){
-
-						$('.masonry-grid').masonry('reloadItems').masonry();
-					});
-				},100);
 			});
-		};
-		$scope.filterSearch = function () {
-			$('#loading-get-stuff').removeClass('hidden');
 			$scope.listItems.forEach(function(e) {
 				var searchQuery = $('#search-stuff').val().toLowerCase();
 				var matches = false;
