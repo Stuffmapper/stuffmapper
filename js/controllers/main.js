@@ -41,7 +41,6 @@ function MainController() {
 				$cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS user (id integer primary key, username text, email text, firstname text, lastname text, password text, verified boolean)').then(function(res) {
 
 				}, function(err) {
-
 				});
 			};
 			$scope.addTestUser = function() {
