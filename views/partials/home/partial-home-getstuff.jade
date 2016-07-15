@@ -10,7 +10,7 @@
 	.search-stuff-container
 		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
 		input#search-stuff.stuff-input(type='search' placeholder='Search' ng-model="searchStuff")
-		i.fa.fa-search(ng-click="filterSearch(); initMasonry()")
+		i.fa.fa-search(ng-click="filterRadius(); filterSearch()")
 	#get-stuff-back-button-container.hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
 		#get-stuff-item-title.hidden.animate-250
@@ -41,14 +41,14 @@
 		#categories
 			p Categories
 			form 
-				.select-deselect
-					ul
-						li
-							i.fa.fa-check
-								span select all
-						li
-							i.fa.fa-times
-								span deselect all
+				//- .select-deselect
+				//- 	ul
+				//- 		li
+				//- 			i.fa.fa-check
+				//- 				span select all
+				//- 		li
+				//- 			i.fa.fa-times
+				//- 				span deselect all
 				.filter
 					select(ng-model="searchStuff", size="10")
 						option.fa.fa-check Arts & Crafts
