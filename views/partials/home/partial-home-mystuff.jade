@@ -1,9 +1,11 @@
-div(ui-view)
-#masonry-container
-	ul.masonry-grid
-		li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
-			.list-item-img-container
-				img(src="{{ list.img }}")
-				.item-info
-					div {{ list.title }}
-			a(ui-sref="stuff.get.item({id:list.id})") {{ item.title }}
+#my-stuff-container
+	div(ui-view)
+	ion-content#masonry-container.animate-250
+		ul.masonry-grid
+			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
+				a(ui-sref="stuff.my.items.item({ id:{{ list.id }} })")
+					| {{ item.title }}
+					.list-item-img-container(id="post-item-{{ list.id }}")
+						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
+						.get-stuff-item-info
+							div {{ list.title }}

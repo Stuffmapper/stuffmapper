@@ -11,8 +11,8 @@ CREATE TABLE status (
 
 CREATE TABLE users (
 	id BIGSERIAL PRIMARY KEY,
-	fname varchar(32) NOT NULL,
-	lname varchar(32) NOT NULL,
+	fname varchar(32),
+	lname varchar(32),
 	uname varchar(32) UNIQUE NOT NULL,
 	email varchar(64) UNIQUE NOT NULL,
 	password text,

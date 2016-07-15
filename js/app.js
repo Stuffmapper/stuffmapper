@@ -1,4 +1,5 @@
 var config = setDefaultSettings();
+var db;
 var stuffMapp = angular
 .module('stuffMapp', config.modules)
 .factory('$userData', function() {
@@ -48,7 +49,54 @@ var stuffMapp = angular
 });
 
 if(config.ionic.isIonic) {
-	stuffMapp.run(function($ionicPlatform) {
+	// stuffMapp.module('starter').factory('QuickActionService', ['$rootScope', '$q', QuickActionService]);
+	// function QuickActionService($rootScope, $q) {
+	//
+	// 	function check3DTouchAvailability() {
+	// 		return $q(function(resolve, reject) {
+	// 			if (window.ThreeDeeTouch) {
+	// 				window.ThreeDeeTouch.isAvailable(function (available) {
+	// 					resolve(available);
+	// 				});
+	// 			} else {
+	// 				reject();
+	// 			}
+	// 		});
+	// 	}
+	//
+	// 	function configure() {
+	// 		// Check if 3D Touch is supported on the device
+	// 		check3DTouchAvailability().then(function(available) {
+	//
+	// 			if (available) {    // Comment out this check if testing in simulator
+	//
+	// 				// Configure Quick Actions
+	// 				window.ThreeDeeTouch.configureQuickActions([
+	// 					{
+	// 						type: 'newNote',
+	// 						title: 'New Note',
+	// 						subtitle: '',
+	// 						iconType: 'compose'
+	// 					}
+	// 				]);
+	//
+	// 				// Set event handler to check which Quick Action was pressed
+	// 				window.ThreeDeeTouch.onHomeIconPressed = function(payload) {
+	// 					if (payload.type == 'newNote') {
+	// 						$rootScope.$broadcast('newNoteQuickAction');
+	// 					}
+	// 				};
+	// 			}
+	// 		});
+	// 	}
+	// 	return {
+	// 		configure: configure
+	// 	};
+	// }
+	// $rootScope.$on('newNoteQuickAction', function() {
+	// 	vm.showNewNoteModal();
+	// });
+	stuffMapp.run(function($ionicPlatform, $cordovaSQLite/*, QuickActionService*/) {
 		$ionicPlatform.ready(function() {
 			if(window.cordova && window.cordova.plugins.Keyboard) {
 				cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -57,18 +105,46 @@ if(config.ionic.isIonic) {
 			if(window.StatusBar) {
 				StatusBar.styleDefault();
 			}
-			var deploy = new Ionic.Deploy();
-			deploy.check().then(function(hasUpdate) {
-				deploy.update().then(function(res) {
-					console.log('Ionic Deploy: Update Success! ', res);
-				}, function(err) {
-					console.log('Ionic Deploy: Update error! ', err);
-				}, function(prog) {
-					console.log('Ionic Deploy: Progress... ', prog);
-				});
-			}, function(err) {
-				console.error('Ionic Deploy: Unable to check for updates', err);
-			});
+			db = $cordovaSQLite.openDB({name:'stuffmapper.db', location: 'default'});
+			//var deploy = new Ionic.Deploy();
+
+			// Update app code with new release from Ionic Deploy
+			// 	$scope.doUpdate = function() {
+			// 		deploy.update().then(function(res) {
+			// 			console.log('Ionic Deploy: Update Success! ', res);
+			// 		}, function(err) {
+			// 			console.log('Ionic Deploy: Update error! ', err);
+			// 		}, function(prog) {
+			// 			console.log('Ionic Deploy: Progress... ', prog);
+			// 		});
+			// 	};
+			//
+			// 	// Check Ionic Deploy for new code
+			// 	$scope.checkForUpdates = function() {
+			// 		console.log('Ionic Deploy: Checking for updates');
+			// 		deploy.check().then(function(hasUpdate) {
+			// 			console.log('Ionic Deploy: Update available: ' + hasUpdate);
+			// 			$scope.hasUpdate = hasUpdate;
+			// 		}, function(err) {
+			// 			console.error('Ionic Deploy: Unable to check for updates', err);
+			// 		});
+			// 	};
+			// });
+
+			//$scope.checkForUpdates();
+			//QuickActionService.configure();
 		});
+	}).directive('goButton', function () {
+		return function (scope, element, attrs) {
+			element.bind('keydown keypress', function (event) {
+				if(event.which === 13) {
+					scope.$apply(function (){
+						scope.$eval(attrs.goButton);
+					});
+
+					event.preventDefault();
+				}
+			});
+		};
 	});
 }

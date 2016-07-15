@@ -1,5 +1,6 @@
 function setDefaultSettings() {
 	var isIonic = $('html').hasClass('ionic');
+	var isElectron = $('html').hasClass('electron');
 	var isDev = $('html').hasClass('dev') || $('html').hasClass('test');
 	var modules = ['ui.router', 'ngAnimate'];
 	var providers = {
@@ -44,7 +45,7 @@ function setDefaultSettings() {
 		},
 		myItem : {
 			url: '/:id',
-			controller: 'myItemController'
+			controller: 'myItemsController'
 		},
 		myMessages : {
 			url: '/messages',
@@ -68,15 +69,23 @@ function setDefaultSettings() {
 		},
 		loginSteps : {
 			url: '/login-steps',
-			templateUrl: 'templates/partial-login-steps.html'
+			templateUrl: 'templates/partial-login-steps.html',
+			controller: 'loginStepsController'
 		},
 		loginSetupOne : {
 			url: '/login-setup1',
-			templateUrl: 'templates/partial-login-setup1.html'
+			templateUrl: 'templates/partial-login-setup1.html',
+			controller: 'loginSetupOneController'
 		},
 		loginSetupTwo : {
 			url: '/login-setup2',
-			templateUrl: 'templates/partial-login-setup2.html'
+			templateUrl: 'templates/partial-login-setup2.html',
+			controller: 'loginSetupTwoController'
+		},
+		loginPage : {
+			url: '/login-page',
+			templateUrl: 'templates/partial-login-page.html',
+			controller: 'loginPageController'
 		},
 		about : {
 			url: '/about',
@@ -112,6 +121,9 @@ function setDefaultSettings() {
 	return {
 		ionic : {
 			isIonic : isIonic
+		},
+		electron : {
+			isElectron: isElectron
 		},
 		modules : modules,
 		api : {

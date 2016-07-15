@@ -7,18 +7,11 @@
 					i.fa.fa-check-circle.give-accept1(ng-click="acceptPhoto()")
 			.give-image-container
 				.give-image-bg
-					.give-image-bg-top-left.give-image-bg-corner
-					.give-image-bg-top-right.give-image-bg-corner
-					.give-image-bg-bottom-left.give-image-bg-corner
-					.give-image-bg-bottom-right.give-image-bg-corner
 					.give-image-bg-content
 						.give-image-take-a-pic Take a Picture!
 						i.give-image-icon-1.fa.fa-camera
 						.give-image-choose-option Choose one of the options below
-						i.give-image-icon-2.fa.fa-arrow-down
 			.give-image-options
-				button#give-camera-button.give-image-capture.give-image-buttons(ng-click="getCamera()")
-					i.fa.fa-camera
 				button#give-photo-button.give-image-select-container.give-image-buttons(ng-click="getPhoto()")
 					i.fa.fa-photo
 				input#give-image-select.give-image-select(type="file" name="file")

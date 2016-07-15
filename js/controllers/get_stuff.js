@@ -96,7 +96,6 @@ function GetStuffController() {
 			else initMarkers();
 		}
 	});
-
 	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
 		$scope.getLocation();
 	});
@@ -136,15 +135,15 @@ function GetStuffController() {
 					lng: position.coords.longitude
 				});
 				var marker = new google.maps.Marker({
-          position: {
+					position: {
 						lat: position.coords.latitude,
 						lng: position.coords.longitude
 					},
-          map: $scope.map,
+					map: $scope.map,
 					icon: {
 						url: '/img/currentlocation1.png'
 					}
-        });
+				});
 			}, function() {
 				//handleLocationError(true, infoWindow, map.getCenter());
 			});

@@ -1,0 +1,17 @@
+ion-content#login-setup-one-container(scroll='false' style="top: 0px; height: calc(100% + 40px); position: fixed; width: 100%; display: block; background-color: white;")
+	#setup-logo-container(style="height: 50%; background-size: cover; width: 100%; background-position: 50% 50%; background-image: url(img/stuffmapper-logo.png);")
+	#setup-login-info(style="display: inline-block;width: 100%;position: relative")
+		a.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
+			span.social-sign-in-icon.social-sign-in-icon-google
+				i.fa.fa-google-plus
+			span.social-sign-in-text Sign in with Google
+		a.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
+			span.social-sign-in-icon.social-sign-in-icon-facebook
+				i.fa.fa-facebook
+			span.social-sign-in-text Sign in with Facebook
+		div(style="text-align: center;") or
+		br
+		a(ui-sref="setup2" style="width: 100%; text-align: center; display: block;") sign up with your email address
+		br
+		br
+		a(ui-sref="login-page" style="width: 100%; text-align: center; display: block;") already have an account?  click here!

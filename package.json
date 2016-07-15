@@ -39,7 +39,9 @@
   },
   "devDependencies": {
     "bower": "^1.3.3",
+    "gulp-jshint": "^2.0.1",
     "gulp-util": "^2.2.14",
+    "jshint": "^2.9.2",
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
@@ -51,7 +53,8 @@
     "ionic-plugin-keyboard",
     "cordova-plugin-inappbrowser",
     "cordova-plugin-geolocation",
-    "ionic-plugin-deploy"
+    "ionic-plugin-deploy",
+    "cordova-plugin-3dtouch"
   ],
   "cordovaPlatforms": [
     "ios",

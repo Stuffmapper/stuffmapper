@@ -1,5 +1,4 @@
 var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope'];
-var db = null;
 if (config.ionic.isIonic) {
 	mainControllerArgs.push('$cordovaOauth');
 	mainControllerArgs.push('$ionicPlatform');
@@ -27,10 +26,6 @@ function MainController() {
 				navigator.app.backHistory();
 			}
 		}, 100);
-		db = $cordovaSQLite.openDB({name:'stuffmapper.db', iosDatabaseLocation: 'default'});
-		db.transaction(function(transaction){
-			transaction.executeSql('CREATE TABLE IF NOT EXISTS user (id integer primary key, username text, email text, firstname text, lastname text, password text, verified boolean)');
-		});
 	}
 	$scope.counterFlipperHeader = new CounterFlipper('landfill-tracker-header', 0, 7);
 	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
@@ -38,27 +33,71 @@ function MainController() {
 	$scope.counterFlipperHeader.setCounter(2738391);
 	$scope.counterFlipperHeader.setCounter(3345678);
 	$scope.counterFlipperHeader.setCounter(4765432);
-	$scope.counterFlipperHeader.setCounter(3);
-	$scope.counterFlipperMenu.setCounter(3);
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data) {
+		$scope.counterFlipperHeader.setCounter(data.res.lt);
+		$scope.counterFlipperMenu.setCounter(data.res.lt);
 		if ($cordovaSQLite) {
-			db.transaction(function(transaction){
-				transaction.executeSql('SELECT * FROM users', function(tx, results) {
-					console.log('banana1',tx);
-					console.log('banana2',results);
+			$scope.initDB = function() {
+				$cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS user (id integer primary key, username text, email text, firstname text, lastname text, password text, verified boolean)').then(function(res) {
+
+				}, function(err) {
+
 				});
-			});
-			$cordovaSQLite.execute(db, 'SELECT * FROM users').then(function(results, maybe) {
-				console.log('asdfasdf');
-				console.log('results:', results);
-				console.log('maybe:', maybe);
+			};
+			$scope.addTestUser = function() {
+				$cordovaSQLite.execute(db, 'INSERT INTO user(id, username, email, firstname, lastname, password, verified) VALUES(1, \'RyanTheFarmer\', \'ryandafarmer@gmail.com\', \'Ryan\', \'Farmer\', \'Password1!\', \'true\')').then(function(res) {
+
+				}, function(err) {
+
+				});
+			};
+			$scope.setUser = function(email, password, verified) {
+				$scope.deleteUser();
+				$cordovaSQLite.execute(db, 'INSERT INTO user(id, email, password, verified) VALUES(1, $1, $2, $3)', [email, password, verified]).then(function(res) {
+
+				}, function(err) {
+
+				});
+			};
+			$scope.deleteUser = function() {
+				$cordovaSQLite.execute(db, 'DELETE FROM user WHERE id = 1').then(function(res) {
+
+				}, function(err) {
+
+				});
+			};
+			$scope.getUserData = function() {
+				$cordovaSQLite.execute(db, 'SELECT * FROM user').then(function(result) {
+					if(result.rows.length > 0) {
+						return result.rows.item(0);
+					}
+					else {
+						console.log('no user data');
+					}
+				}, function(error) {
+					console.log('err: ');
+					console.log(error);
+				});
+			};
+			$ionicPlatform.ready(function() {
+				$scope.initDB();
+				$scope.addTestUser();
+				var userData = $scope.getUserData();
+				console.log(data);
+				if(!data.res) {
+
+				} else {
+					//$state.go('stuff.get');
+				}
+				// console.log(data);
+				// console.log(userData);
 			});
 		}
 		else initUserData(data);
 	});
 
 	function initUserData(data) {
-		if (!data.err) {
+		if (!data.res.user) {
 			$scope.socket = io('http://ducks.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function(data) {
 				var lPath = $location.$$path.split('/');
@@ -68,7 +107,7 @@ function MainController() {
 					var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 					$('#conversation-messages').append([
 						'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="conversation-message conversation-in-message">',
-						data.messages.message,
+						'	'+data.messages.message,
 						'</div></li>'
 					].join(''));
 					if (isScrolledToBottom) {
@@ -135,7 +174,6 @@ function MainController() {
 				'https://www.googleapis.com/auth/userinfo.email',
 				'https://www.googleapis.com/auth/userinfo.profile'
 			]).then(function(data) {
-				console.log(data);
 				$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', {
 					type: 'google',
 					oauth: data

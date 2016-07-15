@@ -73,9 +73,7 @@ app.get('/auth/facebook_oauth2/callback', passport.authenticate('facebook', {
 }));
 
 io.on('connection', function(socket){
-  console.log('a user connected');
 	socket.on('message', function(data) {
-		console.log(data);
 		if(data.to) {
 			io.sockets.emit((''+data.to), {
 				messages: {

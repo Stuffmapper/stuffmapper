@@ -1,7 +1,7 @@
 var mandrill = require('mandrill-api/mandrill');
 var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
 
-var template_name = "dibber-notification-test";
+var template_name = "dibber-notification-1";
 var template_content = [{
 	"name":"FIRSTNAME",
 	"content":"Delaney"
@@ -21,11 +21,14 @@ var template_content = [{
 var message = {
 	"html": "<p>Example HTML content</p>",
 	"text": "Example text content",
-	"subject": "Doh's Dibs Doh",
-	"from_email": "support@stuffmapper.com",
-	"from_name": "Stuffmapper Support",
+	"subject": "You Dibbsed a Balloon",
+	"from_email": "supporty@stuffmapper.com",
+	"from_name": "Stuffmapper Supporty",
 	"to": [{
-		//"email": "delaney.cunningham@gmail.com",
+		"email": "delaney.cunningham@gmail.com",
+		"name": "Delaney Cunningham",
+		"type": "to"
+	},{
 		"email": "ryan.the.farmer@gmail.com",
 		"name": "Delaney Cunningham",
 		"type": "to"

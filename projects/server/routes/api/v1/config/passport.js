@@ -26,6 +26,7 @@ passport.use(new LocalStrategy(
 		User.findOne({email:username}, function (err, user) {
 			if (err) return done(err);
 			if (!user) return done(null, false);
+			if (user && !user.verified_email) return done(null, false);
 			User.validatePassword(password, user.password, function(err, res) {
 				if(err || !res) return done(null, false);
 				return done(null, user);

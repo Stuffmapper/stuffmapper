@@ -9,11 +9,8 @@ function GetItemController() {
 
 	var singleItemTemplateMap;
 
-	console.log($scope.mapIsOpen);
-
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
-		console.log(data.res);
 		function openInfoWindow(e) {
 			e.category = 'test-category';
 			var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
@@ -69,7 +66,6 @@ function GetItemController() {
 		].join('\n'));
 		$scope.detailsContainer.html([
 			'<a id="get-single-item-dibs-button'+$stateParams.id+'" class="get-item-single-dibs-button">Dibs!</a>',
-			'<h2 class="get-item-single-title">'+data.res.title+'</h2>',
 			'<p class="get-item-single-description">'+data.res.description+'</p>',
 			'<div class="">',
 			'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',

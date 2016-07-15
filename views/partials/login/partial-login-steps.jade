@@ -1,0 +1,18 @@
+ion-content#slide-container(style="background-color: #8BC34A;" scroll='false')
+	ion-slides#slide-container-not-container(options='options', slider='slider')
+		ion-slide-page
+			#login-step-one.box
+				img.animate-750(src="img/FRE-1.png")
+		ion-slide-page
+			#login-step-two.box
+				img.move-in.animated.animate-750(src="img/FRE-2.png")
+		ion-slide-page
+			#login-step-three.box
+				img.animate-750(src="img/FRE-3.png")
+	#login-steps-footer
+		#login-steps-skip-button.login-steps-footer-button.login-steps-footer-button-left.animate-250.active(ng-click="toSetup()") Skip
+		#login-steps-prev-button.login-steps-footer-button.login-steps-footer-button-left.animate-250(ng-click="previousSlide()") Prev
+		#login-steps-next-button.login-steps-footer-button.login-steps-footer-button-right.animate-250.active(ng-click="nextSlide()") Next
+		#login-steps-continue-button.login-steps-footer-button.login-steps-footer-button-right.animate-250(ng-click="toSetup()") Sign in
+		#login-steps-message-one.login-steps-message.animate-250.active Give Stuff!
+		#login-steps-message-two.login-steps-message.animate-250 Get Stuff!

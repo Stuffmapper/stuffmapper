@@ -57,6 +57,10 @@ input:read-only{
 	@include transition(all 500ms);
 }
 
+.animate-750 {
+	@include transition(all 750ms);
+}
+
 /* Main Styling -  END  */
 
 .side-menu {
@@ -452,7 +456,7 @@ input:read-only{
 	padding: 5px;
 }
 
-#get-stuff-container {
+#get-stuff-container, #my-stuff-container {
 	height: 100%;
 	width: 100%;
 	position: absolute;
@@ -493,6 +497,15 @@ input:read-only{
 	height: calc(100% - 40px);
 	position: absolute;
 	top: 40px;
+	left: 0;
+	display: block;
+}
+
+.my-item-single-container {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0px;
 	left: 0;
 	display: block;
 }
@@ -1004,7 +1017,7 @@ input:read-only{
 		display: block;
 		position: relative;
 		.give-image-buttons {
-			width: 50%;
+			width: 100%;
 			height: 50px;
 			margin: 0 auto;
 			display: inline-block;
@@ -2089,6 +2102,220 @@ input:read-only{
 
 /* Settings - End */
 
+/* FRE - START */
+.box {
+	width: 100%;
+	height: 100%;
+	display: block;
+	position: absolute;
+}
+#slide-container {
+	height: calc(100% + 40px);
+	display: block;
+	position: fixed;
+	top: -40px;
+	width: 100%;
+}
+#slide-container-not-container {
+	height: 100%;
+	display: block;
+	position: relative;
+}
+#login-step-one {
+	background-color: $grass-light;
+	overflow: hidden;
+	& img {
+		height: calc(80% - 80px);
+		bottom: 80px;
+		left: 10%;
+		position: absolute;
+		@include transform(translate3d(0%, 100%, 0));
+		&.move-in {
+			@include transform(translate3d(0%, 0%, 0));
+		}
+		&.move-across {
+			@include transform(translate3d(25%, 0%, 0));
+		}
+	}
+}
+#login-step-two {
+	background-color: $aqua-dark;
+	left: 100%;
+	overflow: hidden;
+	& img {
+		height: calc(80% - 80px);
+		bottom: 30px;
+		right: 0%;
+		position: absolute;
+		@include transform(translate3d(0%, 0%, 0));
+		&.move-in {
+			@include transform(translate3d(-25%, 0%, 0));
+		}
+		animation-duration: 1500ms;
+		animation-delay: 0s;
+		animation-iteration-count: infinite;
+		-webkit-animation-duration: 1500ms;
+		-webkit-animation-delay: 0s;
+		-webkit-animation-iteration-count: infinite;
+	}
+}
+#login-step-three {
+	background-color: $charcoal-light;
+	left: 200%;
+	overflow: hidden;
+	& img {
+		width: 120%;
+		left: 50%;
+		top: 50%;
+		@include transform(translate3d(-50%, calc(-50% - 80px), 0));
+		position: absolute;
+		width: 120%;
+	}
+}
+
+#login-steps-footer {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	height: 80px;
+	background-color: $fog-light;
+	color: $charcoal-dark;
+}
+
+.login-steps-footer-button {
+	position: absolute;
+	top: 0px;
+	line-height: 80px;
+	font-size: 24px;
+	opacity: 0.0001;
+	pointer-events: none;
+	@include transform(translate3d(50%, 0, 0));
+	&.active {
+		opacity: 1;
+		pointer-events: all;
+		@include transform(translate3d(0%, 0, 0));
+	}
+	&.inactive {
+		opacity: 0.0001;
+		@include transform(translate3d(-50%, 0, 0));
+	}
+}
+
+.login-steps-footer-button-left {
+	padding-left: 25px;
+	left: 0px;
+	z-index: 3;
+	color: $pewter-dark;
+}
+.login-steps-footer-button-right {
+	padding-right: 25px;
+	right: 0px;
+	z-index: 3;
+	color: $pewter-dark;
+}
+.login-steps-footer-button-center {
+	left: 50%;
+	@include transform(translate3d(0%, 0, 0));
+	&.active {
+		@include transform(translate3d(-50%, 0, 0));
+	}
+	&.inactive {
+		@include transform(translate3d(-100%, 0, 0));
+	}
+}
+.login-steps-message {
+	position: absolute;
+	top: 0px;
+	line-height: 80px;
+	font-size: 24px;
+	color: $charcoal-dark;
+	opacity: 0.0001;
+	left: 50%;
+	@include transform(translate3d(0%, 0, 0));
+	&.active {
+		opacity: 1;
+		@include transform(translate3d(-50%, 0, 0));
+	}
+	&.inactive {
+		opacity: 0.0001;
+		@include transform(translate3d(-100%, 0, 0));
+	}
+}
+
+
+
+#login-setup-two-container {
+	top: 0px;
+	height: calc(100% + 40px);
+	position: fixed;
+	width: 100%;
+	display: block;
+	background-color: $grass-light;
+}
+.login-setup-two-label {
+	margin: 25px auto 0;
+	display: block;
+	width: 90%;
+	font-size: 32px;
+	color: white;
+	margin-bottom: 5px;
+}
+.input-container {
+	width: calc(90% - 20px);
+	margin: 0 auto;
+	display: block;
+	background-color: white;
+	border-radius: 5px;
+	height: 32px;
+	padding: 5px 10px;
+	position: relative;
+}
+.input-container input {
+	box-shadow: none;
+	font-size: 24px;
+	display: block;
+	padding: 0;
+	outline: none;
+	margin: 0;
+	border: 0;
+	height: 100%;
+	width: 100%;
+}
+#login-setup-show-password {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	height:32px;
+	text-align: center;
+	line-height: 42px;
+	width: 32px;
+}
+
+.login-setup-two-button-container {
+	position: absolute;
+	width: 100%;
+	height: 175px;
+	bottom: 0px;
+}
+
+.login-setup-two-button {
+	position: relative;
+	text-align: center;
+	width: 90%;
+	height: 34px;
+	color: $charcoal-dark;
+	margin: 0 auto;
+	display: block;
+	background-color: white;
+	margin-top: 25px;
+	font-size: 24px;
+	border-radius: 5px;
+	line-height: 34px;
+}
+
+/* FRE -  END  */
+
 /* Privacy -START */
 .privacy-container {
 	display: block;
@@ -2251,10 +2478,10 @@ input:read-only{
 	#masonry-container.hide-masonry-container {
 		@include transform(translate3d(0px, 100%, 0));
 	}
-	#get-stuff-container .get-item-single-container {
+	#get-stuff-container .get-item-single-container, #my-stuff-container .get-item-single-container {
 		@include transform(translate3d(0px, 0%, 0));
 	}
-	#get-stuff-container.hide-masonry-container .get-item-single-container {
+	#get-stuff-container.hide-masonry-container .get-item-single-container, #my-stuff-container.hide-masonry-container .get-item-single-container {
 		@include transform(translate3d(0px, 100%, 0));
 	}
 

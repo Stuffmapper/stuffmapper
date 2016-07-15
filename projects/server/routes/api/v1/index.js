@@ -66,7 +66,7 @@ router.get('/stuff/id/:id', function(req, res) {
 			'posts.lat, posts.lng, categories.category, images.image_url ',
 			'FROM posts, images, categories ',
 			'WHERE images.post_id = posts.id AND posts.id = $1 AND ',
-			'categories.id = posts.category_id AND posts.dibbed = false'
+			'categories.id = posts.category_id'
 		].join('');
 		var values = [
 			req.params.id
@@ -87,8 +87,8 @@ router.get('/stuff/id/:id', function(req, res) {
 
 router.get('/stuff/my', isAuthenticated, function(req, res) {
 	var query = [
-		'SELECT * FROM posts WHERE user_id = $1 AND dibber_id = $1 AND ',
-		'archived = false AND images.post_id = posts.id;'
+		'SELECT * FROM posts, images WHERE (user_id = $1 OR dibber_id = $1) AND ',
+		'posts.archived = false AND images.post_id = posts.id;'
 	].join('');
 	var values = [
 		req.session.passport.user.id
@@ -306,25 +306,32 @@ router.get('/views', function() {
 /* USER ACCOUNT MANAGEMENT - START */
 
 router.post('/account/status', function(req, res) {
-	if(req.isAuthenticated()) {
-		res.send({
-			err: null,
-			res: {
-				user: req.session.passport.user
-			}
-		});
-	}
-	else {
-		apiError(res, 'not logged in');
-	}
+	queryServer(res, 'SELECT pick_up_success FROM pick_up_success WHERE pick_up_success = true', [], function(result) {
+		if(req.isAuthenticated()) {
+			res.send({
+				err: null,
+				res: {
+					user: req.session.passport.user,
+					lt: result.rows.length
+				}
+			});
+		}
+		else {
+			res.send({
+				err: null,
+				res : {
+					user: false,
+					lt: result.rows.length
+				}
+			});
+		}
+	});
 });
 
 router.post('/account/register', function(req, res) {
 	var client = new pg.Client(conString);
 	var b = req.body;
-	console.log(b);
 	if(b.type === 'google') {
-		console.log('alskfjlaskjfsadlkfjsdalfkjsdfkj');
 		request({
 			method: 'GET',
 			url:'https://www.googleapis.com/oauth2/v2/userinfo?fields=email%2Cfamily_name%2Cgiven_name%2Cpicture&key='+b.oauth.id_token,
@@ -361,7 +368,36 @@ router.post('/account/register', function(req, res) {
 						redirect: true
 					}
 				});
+				var emailTo = {};
+				emailTo[b.uname] = b.email;
+				console.log(result.rows);
+				sendTemplate(
+					'email-verification',
+					'Stuffmapper needs your confirmation!',
+					emailTo,
+					{
+						'FIRSTNAME' : b.uname,
+						'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
+					}
+				);
 			});
+		});
+	}
+});
+
+router.get('/account/confirmation/:email_token', function(req, res) {
+	if(req.params.email_token) {
+		var query = [
+			'UPDATE users SET verified_email = true',
+			'WHERE verified_email = false AND verify_email_token = $1',
+			'RETURNING *'
+		].join(' ');
+		var values = [
+			req.params.email_token
+		];
+		queryServer(res, query, values, function(result) {
+			console.log(result);
+			if(result.rows.length >= 1) res.redirect('/stuff/get');
 		});
 	}
 });
@@ -369,6 +405,9 @@ router.post('/account/register', function(req, res) {
 router.post('/account/login', function(req, res, next) {
 	var passport = req._passport.instance;
 	passport.authenticate('local', function(err, user, info) {
+		console.log(err);
+		console.log(user);
+		console.log(info);
 		if (err) {
 			return res.send({
 				err: 'local login error: ' + err,
@@ -547,6 +586,19 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 							'res3': result3.rows
 						}
 					});
+					var emailTo = {};
+					emailTo[req.session.user.fname + ' ' + req.session.user.lname] = req.session.user.email;
+					sendTemplate(
+						'dibber-notification-1',
+						'You Dibbed an item!',
+						emailTo,
+						{
+							'FIRSTNAME' : req.session.user.fname,
+							'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/get',
+							'MYSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/my/items',
+							'ITEMTITLE':'I FIGURE THIS OUT LATER'
+						}
+					);
 					return client.end();
 				});
 			});
@@ -948,5 +1000,54 @@ function queryServer(res, query, values, cb) {
 	});
 }
 
+
+
+// sendTemplate(
+// 	'email-verification',
+// 	'Stuffmapper needs your confirmation!',
+// 	{
+// 		'Ryan Farmer' : 'ryan.the.farmer@gmail.com'
+// 	},
+// 	{
+// 		'FIRSTNAME' : 'Ryan',
+// 		'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/confirmation/' + '93j923j0293j493209'
+// 	}
+// );
+
+function sendTemplate(template, subject, to, args) {
+	var mandrill = require('mandrill-api/mandrill');
+	var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
+	var template_name = template;
+	var template_content = [];
+	Object.keys(args).forEach(function(e) {
+		template_content.push({
+			"name" : e,
+			"content" : args[e]
+		});
+	});
+	var emailTo = [];
+	Object.keys(to).forEach(function(e) {
+		emailTo.push({
+			"email" : to[e],
+			"name" : e,
+			"type": "to"
+		});
+	});
+	var message = {
+		"subject": subject,
+		"from_email": "support@stuffmapper.com",
+		"from_name": "Stuffmapper Support",
+		"to": emailTo,
+		"headers": { "Reply-To": "no_reply@stuffmapper.com" },
+		"merge": true,
+		"merge_language": "mailchimp",
+		"global_merge_vars": template_content
+	};
+	mandrill_client.messages.sendTemplate({"template_name": template_name, "template_content": template_content, "message": message, "async": false, "ip_pool": "Main Pool"}, function(result) {
+		console.log(result);
+	}, function(e) {
+		console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
+	});
+}
 
 module.exports = router;

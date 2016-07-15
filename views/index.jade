@@ -35,6 +35,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			base(href="/")
 		else
 			base(href="/")
+		link(href="js/lib/animate.css/animate.min.css" rel="stylesheet")
 		link(href="css/main.app.min.css" rel="stylesheet")
 		link(href="css/font-awesome.min.css" rel="stylesheet")
 		link(href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet")
@@ -57,7 +58,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script(src="https://js.braintreegateway.com/js/braintree-2.26.0.min.js")
 		script(src="https://use.typekit.net/lrm3jdv.js")
 		script try{Typekit.load({ async: true });}catch(e){}
-		script(src="js/all.js")
+		script(src="js/app.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
 		script(id="templates/blank.html" type="text/ng-template").
@@ -89,14 +90,14 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script(id="templates/partial-faq.html" type="text/ng-template")
 			include ./partials/faq/partial-faq
 		if ionic
-			script(id="templates/partial-login.html" type="text/ng-template")
-				include ./partials/login/partial-login
 			script(id="templates/partial-login-steps.html" type="text/ng-template")
 				include ./partials/login/partial-login-steps
 			script(id="templates/partial-login-setup1.html" type="text/ng-template")
 				include ./partials/login/partial-login-setup1
 			script(id="templates/partial-login-setup2.html" type="text/ng-template")
 				include ./partials/login/partial-login-setup2
+			script(id="templates/partial-login-page.html" type="text/ng-template")
+				include ./partials/login/partial-login-page
 	body(ng-controller="MainController")
 		#modal-windows
 			.modal-windows-bg.animate-250
@@ -200,6 +201,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				a.side-menu-link(ui-sref="faq", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-support
 					span FAQ/Help
+			li.side-menu-item
+				a.side-menu-link(ng-click="logout()")
+					.side-menu-icon.fa.fa-sign-out
+					span Sign Out
 			.side-menu-footer
 				a(ui-sref="/faq#landfill-tracker")
 					.new-thing Stuff saved from landfill  
