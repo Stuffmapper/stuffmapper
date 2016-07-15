@@ -28,10 +28,10 @@
 			p Filters
 		#distance-from-me
 			p Distance from me
-			input.distance-slider(type="range", max="20", ng-model="searchStuff")
+			input.distance-slider(type="range",  value="0", max="20")
 		#newlisting
 			p New listing
-			select(ng-model="searchStuff", size="2")
+			select( size="2")
 				option.fa.fa-check only show new listings
 		#item-status
 			p Item status
@@ -61,7 +61,7 @@
 						option.fa.fa-check Kids & Babies
 						option.fa.fa-check Recreation
 				//- li Attended/Unattended
-				//- 	select(ng-model="searchStuff")
+				//- 	select
 				//- 		option Attended
 				//- 		option Unattended
 				//- 		option All
