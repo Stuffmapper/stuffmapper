@@ -8,8 +8,8 @@
 	.settings-header
 		h1 Filter & Settings
 	.search-stuff-container
-		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
-		input#search-stuff.stuff-input(type='search' placeholder='Search' ng-model="searchStuff")
+		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click="toggleMap()")
+		input#search-stuff.stuff-input(type='search' placeholder='Search' ng-init="showDistance()" ng-model="searchStuff")
 		i.fa.fa-search(ng-click="filterSearch()")
 	#get-stuff-back-button-container.hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
@@ -28,7 +28,10 @@
 			p Filters
 		#distance-from-me
 			p Distance from me
-			input.distance-slider(type="range",  value="0", max="20")
+				span
+					label#rangeText
+			input#rangeInput.distance-slider(type="range", name="rangeInput", step="1", value="1", min="1", max="20")
+			
 		#newlisting
 			p New listing
 			select( size="2")

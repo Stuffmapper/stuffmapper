@@ -221,11 +221,7 @@ function GetStuffController() {
 		var searchQuery = $('#search-stuff').val().toLowerCase();
 		var sliderValue = parseInt($('.distance-slider').val());
 		var convertValue = sliderValue * 1609.344;
-		console.log(sliderValue);
-		console.log(searchQuery);
 		if (searchQuery || sliderValue) {
-			console.log(sliderValue);
-			console.log(searchQuery);
 			$scope.getLocation(function(position){
 				$scope.listItems.forEach(function(e) {
 					var radius = google.maps.geometry.spherical.computeDistanceBetween(
@@ -238,7 +234,7 @@ function GetStuffController() {
 							matches = true;
 						}
 					});
-					if(convertValue >= radius || !matches) {
+					if(convertValue <= radius || !matches) {
 						// hide the element
 						$('#post-item-' + e.id).css({'display': 'none'});
 					} else {
@@ -260,5 +256,39 @@ function GetStuffController() {
 				$('.masonry-grid').masonry('reloadItems').masonry();
 			});
 		},100);
+	};
+	$scope.showDistance = function() {
+		var rangeValues = {
+			"1": "1 mile",
+			"2": "2 miles",
+			"3": "3 miles",
+			"4": "4 miles",
+			"5": "5 miles",
+			"6": "6 miles",
+			"7": "7 miles",
+			"8": "8 miles",
+			"9": "9 miles",
+			"10": "10 miles",
+			"11": "11 miles",
+			"12": "12 miles",
+			"13": "13 miles",
+			"14": "14 miles",
+			"15": "15 miles",
+			"16": "16 miles",
+			"17": "17 miles",
+			"18": "18 miles",
+			"19": "19 miles",
+			"20": "20 miles"
+		};
+
+		$(function () {
+
+			$('#rangeText').text(rangeValues[$('#rangeInput').val()]);
+
+			$('#rangeInput').on('input change', function () {
+				$('#rangeText').text(rangeValues[$(this).val()]);
+			});
+
+		});
 	};
 }
