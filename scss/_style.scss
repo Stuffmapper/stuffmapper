@@ -764,28 +764,29 @@ input:read-only{
 	font-size: 17px;
 	padding: 0px;
 }
-.select-deselect ul {
-	padding: 0;
-	margin: 0;
+.select-deselect select {
+	width: 100%;
+	height: 70px;
+	border: 0px;
+	display: inline-flex;
+	overflow: inherit;
 }
-.select-deselect li {
-	list-style-type: none;
+.select-deselect option {
 	font-size: 13px;
 	margin-bottom: 9px;
 	margin-left: 5px;
-	padding: 2px;
-	display: inline-block;
-	border-bottom: 1px solid black;
+	padding: 4px;
+	display: inline-table;
 }
-.select-deselect li:first-of-type {
-	margin-right: 104px;
+.select-deselect option:first-of-type {
+	display: none;
 }
 .filter select {
 	width: 100%;
 	height: 345px;
 	border: 0px;
 	display: inline-flex;
-	overflow: inherit;;
+	overflow: inherit;
 }
 
 .filter option {
@@ -798,12 +799,15 @@ input:read-only{
 	background-color: $grass-light;
 	border-radius: 6px;
 }
+.filter option:first-of-type {
+	display: none;
+}
 #newlisting select {
 	width: 100%;
 	height: 28px;
 	border: 0px;
 	display: inline-flex;
-	overflow: inherit;;
+	overflow: inherit;
 }
 
 #newlisting option {
@@ -821,7 +825,7 @@ input:read-only{
 	height: 80px;
 	border: 0px;
 	display: inline-flex;
-	overflow: inherit;;
+	overflow: inherit;
 }
 
 #item-status option {
@@ -833,6 +837,9 @@ input:read-only{
 	border: 1px solid $grass-dark;
 	background-color: $grass-light;
 	border-radius: 6px;
+}
+#item-status option:first-of-type {
+	display: none;
 }
 #categories form button {
 	margin-top: 10px;

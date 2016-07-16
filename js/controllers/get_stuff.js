@@ -280,15 +280,11 @@ function GetStuffController() {
 			"19": "19 miles",
 			"20": "20 miles"
 		};
-
 		$(function () {
-
 			$('#rangeText').text(rangeValues[$('#rangeInput').val()]);
-
 			$('#rangeInput').on('input change', function () {
 				$('#rangeText').text(rangeValues[$(this).val()]);
 			});
-
 		});
 	};
 }

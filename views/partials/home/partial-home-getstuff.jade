@@ -23,7 +23,8 @@
 						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info
 							div {{ list.title }}
-	#filter-pane.animate-250
+	#filter-pane.animate-250 
+	//- gentle select library
 		#filter-head
 			p Filters
 		#distance-from-me
@@ -44,14 +45,10 @@
 		#categories
 			p Categories
 			form 
-				//- .select-deselect
-				//- 	ul
-				//- 		li
-				//- 			i.fa.fa-check
-				//- 				span select all
-				//- 		li
-				//- 			i.fa.fa-times
-				//- 				span deselect all
+				.select-deselect
+					select(ng-model="searchStuff", size="10")
+						option.fa.fa-check select all
+						option.fa.fa-times deselect all
 				.filter
 					select(ng-model="searchStuff", size="10")
 						option.fa.fa-check Arts & Crafts
@@ -68,26 +65,4 @@
 				//- 		option Attended
 				//- 		option Unattended
 				//- 		option All
-				//- li Distance from Me
-				//- 	select(ng-model="searchStuff")
-				//- 		option 1 miles
-				//- 		option 2 miles
-				//- 		option 3 miles
-				//- 		option 4 miles
-				//- 		option 5 miles
-				//- 		option 6 miles
-				//- 		option 7 miles
-				//- 		option 8 miles
-				//- 		option 9 miles
-				//- 		option 10 miles
-				//- 		option 11 miles
-				//- 		option 12 miles
-				//- 		option 13 miles
-				//- 		option 14 miles
-				//- 		option 15 miles
-				//- 		option 16 miles
-				//- 		option 17 miles
-				//- 		option 18 miles
-				//- 		option 19 miles
-				//- 		option 20 miles
 				
