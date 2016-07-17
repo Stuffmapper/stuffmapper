@@ -9,7 +9,7 @@
 		h1 Filter & Settings
 	.search-stuff-container
 		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click="toggleMap()")
-		input#search-stuff.stuff-input(type='search' placeholder='Search' ng-init="showDistance()" ng-model="searchStuff")
+		input#search-stuff.stuff-input(type='search' placeholder='Search' ng-init="showDistance()" ng-model="searchStuff" multiple="multiple")
 		i.fa.fa-search(ng-click="filterSearch()")
 	#get-stuff-back-button-container.hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
@@ -24,7 +24,6 @@
 						.get-stuff-item-info
 							div {{ list.title }}
 	#filter-pane.animate-250 
-	//- gentle select library
 		#filter-head
 			p Filters
 		#distance-from-me
@@ -35,34 +34,40 @@
 			
 		#newlisting
 			p New listing
-			select( size="2")
-				option.fa.fa-check only show new listings
+			input#newlisting-show(type="checkbox", name="newlisting-show", value="newlisting-show")
+			label.fa.fa-check(for="newlisting-show") only show new listings
+			
 		#item-status
 			p Item status
-			select(ng-model="searchStuff", size="2")
-				option.fa.fa-check unattended
-				option.fa.fa-check contact for pickup
+			label.fa.fa-check(for="item-status-unattended") unattended
+			input#item-status-unattended(type="checkbox", name="item-status-unattended", value="item-status-unattended")
+			label.fa.fa-check(for="item-status-contact") contact for pickup
+			input#item-status-contact(type="checkbox", name="item-status-contact", value="item-status-contact")
 		#categories
 			p Categories
 			form 
 				.select-deselect
-					select(ng-model="searchStuff", size="10")
-						option.fa.fa-check select all
-						option.fa.fa-times deselect all
+					label.fa.fa-check(for="selectall") select all
+					input#select-all(type="checkbox", name="select-all", value="select-all")
+					label.fa.fa-times(for="deselect-all") deselect all
+					input#deselect-all(type="checkbox", name="deselect-all", value="deselect-all")
 				.filter
-					select(ng-model="searchStuff", size="10")
-						option.fa.fa-check Arts & Crafts
-						option.fa.fa-check Books, Games, Media
-						option.fa.fa-check Building & Garden Materials
-						option.fa.fa-check Clothes & Accessories
-						option.fa.fa-check Electronics
-						option.fa.fa-check Furniture & Household
-						option.fa.fa-check General
-						option.fa.fa-check Kids & Babies
-						option.fa.fa-check Recreation
-				//- li Attended/Unattended
-				//- 	select
-				//- 		option Attended
-				//- 		option Unattended
-				//- 		option All
+					label.fa.fa-check(for="arts-crafts") arts & crafts
+					input#arts-crafts(type="checkbox", name="arts-crafts", value="arts-crafts")
+					label.fa.fa-check(for="books-games-media") books, games, media
+					input#books-games-media(type="checkbox", name="books-games-media", value="books-games-media")
+					label.fa.fa-check(for="building") building & garden materials
+					input#building(type="checkbox", name="building", value="building")
+					label.fa.fa-check(for="clothes") clothes & accessories
+					input#clothes(type="checkbox", name="clothes", value="clothes")
+					label.fa.fa-check(for="electronics") electronics
+					input#electronics(type="checkbox", name="electronics", value="electronics")
+					label.fa.fa-check(for="furniture") furniture & household
+					input#furniture(type="checkbox", name="furniture", value="furniture")
+					label.fa.fa-check(for="general") general
+					input#general(type="checkbox", name="general", value="general")
+					label.fa.fa-check(for="kids-babies") kids & babies
+					input#kids-babies(type="checkbox", name="kids-babies", value="kids-babies")
+					label.fa.fa-check(for="recreation") recreation
+					input#recreation(type="checkbox", name="recreation", value="recreation")
 				

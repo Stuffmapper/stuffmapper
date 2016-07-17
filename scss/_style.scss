@@ -740,7 +740,7 @@ input:read-only{
 /* Filter - START */
 #filter-pane {
 	width: 100%;
-	height: 100%;
+	height: calc(100% - 38px);
 	position: absolute;
 	top: 39px;
 	background-color: $white;
@@ -764,93 +764,48 @@ input:read-only{
 	font-size: 17px;
 	padding: 0px;
 }
-.select-deselect select {
-	width: 100%;
-	height: 70px;
-	border: 0px;
-	display: inline-flex;
-	overflow: inherit;
+#newlisting-show, #item-status-unattended, #item-status-contact, #select-all, #deselect-all, #arts-crafts, #books-games-media, #building, #clothes, #electronics, #furniture, #general, #kids-babies, #recreation {
+	display: none;
 }
-.select-deselect option {
+.select-deselect input {
+	display: none;
+}
+.select-deselect label:first-of-type {
 	font-size: 13px;
 	margin-bottom: 9px;
-	margin-left: 5px;
+	margin-right: 144px;
 	padding: 4px;
 	display: inline-table;
 }
-.select-deselect option:first-of-type {
-	display: none;
-}
-.filter select {
-	width: 100%;
-	height: 345px;
-	border: 0px;
-	display: inline-flex;
-	overflow: inherit;
-}
-
-.filter option {
+#newlisting label {
 	font-size: 13px;
 	margin-bottom: 9px;
-	margin-left: 5px;
-	padding: 4px;
-	display: inline-table;
-	border: 1px solid $grass-dark;
-	background-color: $grass-light;
-	border-radius: 6px;
-}
-.filter option:first-of-type {
-	display: none;
-}
-#newlisting select {
-	width: 100%;
-	height: 28px;
-	border: 0px;
-	display: inline-flex;
-	overflow: inherit;
-}
-
-#newlisting option {
-	font-size: 13px;
-	margin-bottom: 9px;
-	margin-left: 5px;
+	margin-right: 5px;
 	padding: 4px;
 	display: inline-table;
 	border: 1px solid $pewter-dark;
 	background-color: $fog-dark;
 	border-radius: 6px;
 }
-#item-status select {
-	width: 100%;
-	height: 80px;
-	border: 0px;
-	display: inline-flex;
-	overflow: inherit;
-}
-
-#item-status option {
+#item-status label {
 	font-size: 13px;
 	margin-bottom: 9px;
-	margin-left: 5px;
+	margin-right: 5px;
 	padding: 4px;
 	display: inline-table;
 	border: 1px solid $grass-dark;
 	background-color: $grass-light;
 	border-radius: 6px;
 }
-#item-status option:first-of-type {
-	display: none;
-}
-#categories form button {
-	margin-top: 10px;
-	height: 40px;
-	width: 100%;
-	width: 100%;
-	cursor: pointer;
-	-moz-box-shadow: inset -2px -2px grey;
-	-webkit-box-shadow: inset -2px -2px grey;
-	box-shadow: inset -2px -2px grey;
-	border: none;
+.filter label {
+	font-size: 13px;
+	margin-bottom: 9px;
+	margin-right: 5px;
+	padding: 4px;
+	display: inline-table;
+	border: 1px solid $grass-dark;
+	background-color: $grass-light;
+	border-radius: 6px;
 }
 input[type=range].distance-slider {
   -webkit-appearance: none;
@@ -1117,7 +1072,7 @@ input[type=range].distance-slider:focus::-ms-fill-upper {
 #distance-from-me, #newlisting, #item-status {
 	padding-bottom: 10px;
 }
-#distance-from-me p, #newlisting p, #item-status p, #categories p {
+#distance-from-me p, #newlisting p, #item-status p, #categories p, #attended-unattended p {
 	color: $pewter-dark;
 }
 #get-stuff-container .settings-header {
@@ -2784,6 +2739,12 @@ input[type=range].distance-slider:focus::-ms-fill-upper {
 		margin: 5px;
 	}
 	/* Faq - END */
+	/* Filter - Start */
+	.select-deselect label:first-of-type {
+		margin-right: 99px;
+	}
+
+	/* Filter - End */
 }
 
 @media screen and (min-width: 767px) {
@@ -2831,7 +2792,6 @@ input[type=range].distance-slider:focus::-ms-fill-upper {
 		text-decoration: none;
 	}
 	/* About Us - END */
-
 }
 
 

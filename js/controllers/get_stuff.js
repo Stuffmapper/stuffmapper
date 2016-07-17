@@ -234,6 +234,11 @@ function GetStuffController() {
 							matches = true;
 						}
 					});
+					$scope.categories_id.forEach(function(f) {
+						if(f.toLowerCase().startsWith(searchQuery)) {
+							matches = true;
+						}
+					});
 					if(convertValue <= radius || !matches) {
 						// hide the element
 						$('#post-item-' + e.id).css({'display': 'none'});
