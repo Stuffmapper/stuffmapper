@@ -763,9 +763,14 @@ input:read-only{
 	overflow-y: auto;
 	font-size: 17px;
 	padding: 0px;
+	display: inline-flex;
+  flex-wrap: wrap;
 }
 #newlisting-show, #item-status-unattended, #item-status-contact, #select-all, #deselect-all, #arts-crafts, #books-games-media, #building, #clothes, #electronics, #furniture, #general, #kids-babies, #recreation {
 	display: none;
+}
+.select-deselect {
+	display: inline-flex;
 }
 .select-deselect input {
 	display: none;
@@ -773,39 +778,22 @@ input:read-only{
 .select-deselect label:first-of-type {
 	font-size: 13px;
 	margin-bottom: 9px;
-	margin-right: 144px;
+	margin-right: 110px;
 	padding: 4px;
-	display: inline-table;
+	width: 98px;
 }
-#newlisting label {
+.filter-label label {
 	font-size: 13px;
 	margin-bottom: 9px;
 	margin-right: 5px;
 	padding: 4px;
-	display: inline-table;
 	border: 1px solid $pewter-dark;
 	background-color: $fog-dark;
 	border-radius: 6px;
 }
-#item-status label {
-	font-size: 13px;
-	margin-bottom: 9px;
-	margin-right: 5px;
-	padding: 4px;
-	display: inline-table;
+input[type=checkbox]:checked + label {
 	border: 1px solid $grass-dark;
 	background-color: $grass-light;
-	border-radius: 6px;
-}
-.filter label {
-	font-size: 13px;
-	margin-bottom: 9px;
-	margin-right: 5px;
-	padding: 4px;
-	display: inline-table;
-	border: 1px solid $grass-dark;
-	background-color: $grass-light;
-	border-radius: 6px;
 }
 input[type=range].distance-slider {
   -webkit-appearance: none;
@@ -2741,7 +2729,7 @@ input[type=range].distance-slider:focus::-ms-fill-upper {
 	/* Faq - END */
 	/* Filter - Start */
 	.select-deselect label:first-of-type {
-		margin-right: 99px;
+		margin-right: 95px;
 	}
 
 	/* Filter - End */

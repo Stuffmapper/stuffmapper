@@ -234,11 +234,6 @@ function GetStuffController() {
 							matches = true;
 						}
 					});
-					$scope.categories_id.forEach(function(f) {
-						if(f.toLowerCase().startsWith(searchQuery)) {
-							matches = true;
-						}
-					});
 					if(convertValue <= radius || !matches) {
 						// hide the element
 						$('#post-item-' + e.id).css({'display': 'none'});
@@ -263,28 +258,10 @@ function GetStuffController() {
 		},100);
 	};
 	$scope.showDistance = function() {
-		var rangeValues = {
-			"1": "1 mile",
-			"2": "2 miles",
-			"3": "3 miles",
-			"4": "4 miles",
-			"5": "5 miles",
-			"6": "6 miles",
-			"7": "7 miles",
-			"8": "8 miles",
-			"9": "9 miles",
-			"10": "10 miles",
-			"11": "11 miles",
-			"12": "12 miles",
-			"13": "13 miles",
-			"14": "14 miles",
-			"15": "15 miles",
-			"16": "16 miles",
-			"17": "17 miles",
-			"18": "18 miles",
-			"19": "19 miles",
-			"20": "20 miles"
-		};
+		var rangeValues = {};
+	for(var i = 1; i < 21; i++) {
+		rangeValues[i.toString()] = i + " miles";
+	}
 		$(function () {
 			$('#rangeText').text(rangeValues[$('#rangeInput').val()]);
 			$('#rangeInput').on('input change', function () {
