@@ -221,7 +221,14 @@ function GetStuffController() {
 		var searchQuery = $('#search-stuff').val().toLowerCase();
 		var sliderValue = parseInt($('.distance-slider').val());
 		var convertValue = sliderValue * 1609.344;
-		if (searchQuery || sliderValue) {
+		var categories = [];
+		$('#categories .filter input').each(function(i, e){
+			if($(e).is(':checked')) {
+				categories.push($(e).val());
+			}
+		});
+		categories = categories.join(' ');
+		if (categories || searchQuery || sliderValue) {
 			$scope.getLocation(function(position){
 				$scope.listItems.forEach(function(e) {
 					var radius = google.maps.geometry.spherical.computeDistanceBetween(
@@ -230,10 +237,12 @@ function GetStuffController() {
 					);
 					var matches = false;
 					e.title.split(' ').forEach(function(f) {
-						if(f.toLowerCase().startsWith(searchQuery)) {
+						if(f.toLowerCase().startsWith(searchQuery) &&
+						(categories.toLowerCase().indexOf(e.category.toLowerCase()) > -1)) {
 							matches = true;
 						}
 					});
+
 					if(convertValue <= radius || !matches) {
 						// hide the element
 						$('#post-item-' + e.id).css({'display': 'none'});
@@ -257,16 +266,39 @@ function GetStuffController() {
 			});
 		},100);
 	};
+	$scope.attendedUnattended = function() {
+		var attended;
+		if($('#item-status-unattended').is(':checked')) {
+			$scope.listItems.forEach(function(e) {
+				if(e.attended) {
+					// hide the element
+					$('#post-item-' + e.id).css({'display': 'none'});
+				} else {
+					$('#post-item-' + e.id).css({'display': ''});
+				}
+			});
+		}
+	};
 	$scope.showDistance = function() {
 		var rangeValues = {};
-	for(var i = 1; i < 21; i++) {
-		rangeValues[i.toString()] = i + " miles";
-	}
+		for(var i = 1; i < 21; i++) {
+			rangeValues[i.toString()] = i + " mile(s)";
+		}
 		$(function () {
 			$('#rangeText').text(rangeValues[$('#rangeInput').val()]);
 			$('#rangeInput').on('input change', function () {
 				$('#rangeText').text(rangeValues[$(this).val()]);
 			});
 		});
+	};
+	$scope.selectAll = function() {
+		if($('#select-all').is(':checked')) {
+			$('#categories .filter input').prop(':checked', true);
+		}
+	};
+	$scope.deselectAll = function() {
+		if($('#deselect-all').is(':checked')) {
+			$('#select-all').prop(':checked', false);
+		}
 	};
 }
