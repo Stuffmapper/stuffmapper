@@ -83,7 +83,7 @@ io.on('connection', function(socket){
 				}
 			});
 		}
-		socket.emit('test', {data:'pants'});
+		// 	socket.emit('test', {data:'pants'});
 	});
 });
 io.on('disconnect', function(socket){

@@ -27,7 +27,7 @@ module.exports = (function() {
 					client.end();
 					return cb('pg connect error: ' + err, null);
 				}
-				var query = 'SELECT * FROM users WHERE '+loginType+' = $1';
+				var query = 'SELECT * FROM users WHERE '+loginType+'_id = $1';
 				var values = [
 					login[loginType]
 				];
@@ -60,9 +60,9 @@ module.exports = (function() {
 					profile.email
 				];
 				client.query(query, values, function(err, result) {
-					if(result.rows.length !== 0) {
+					if(result && result.rows && result.rows.length !== 0) {
 						var rows = result.rows[0];
-						if(!rows[type+'_id']) {
+						if(!rows[type]) {
 							query = 'UPDATE users SET '+type+'_id = $1 where email = $2 RETURNING *';
 							values = [
 								profile.id,
@@ -84,16 +84,15 @@ module.exports = (function() {
 					else {
 						query = [
 							'INSERT INTO users ',
-							'(fname, lname, uname, email, '+type+'_id) ',
-							'VALUES ($1, $2, $3, $4, $5) ',
+							'(fname, lname, uname, email) ',
+							'VALUES ($1, $2, $3, $4) ',
 							'RETURNING *'
 						].join('');
 						values = [
 							profile.name.givenName,
 							profile.name.familyName,
 							profile.displayName,
-							profile.email || profile.emails[0].value,
-							profile.id
+							profile.email || profile.emails[0].value
 						];
 						client.query(query, values, function(err, result) {
 							if(err) {

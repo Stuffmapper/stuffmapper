@@ -48,7 +48,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="http://localhost:3000/socket.io/socket.io.js")
+			script(src="http://ducks.stuffmapper.com/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
@@ -117,7 +117,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 											i.fa.fa-google-plus
 										span.social-sign-in-text Sign in with Google
 								else
-									a.sign-in-up-input.social-button.google-plus-sign-in(href="http://localhost:3000/api/v1/account/login/google" target="_self")
+									a.sign-in-up-input.social-button.google-plus-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/google" target="_self")
 										span.social-sign-in-icon.social-sign-in-icon-google
 											i.fa.fa-google-plus
 										span.social-sign-in-text Sign in with Google
@@ -127,14 +127,14 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 											i.fa.fa-facebook
 										span.social-sign-in-text Sign in with Facebook
 								else
-									a.sign-in-up-input.social-button.facebook-sign-in(href="http://localhost:3000/api/v1/account/login/facebook" target="_self")
+									a.sign-in-up-input.social-button.facebook-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/facebook" target="_self")
 										span.social-sign-in-icon.social-sign-in-icon-facebook
 											i.fa.fa-facebook
 										span.social-sign-in-text Sign in with Facebook
 								hr
 								span.sign-in-local-text or sign in with your email address 
-								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address" value="ryan.the.farmer@gmail.com")
-								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password" value="Password1!")
+								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
+								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
 								hr
 								input#sign-in-sign-in-button.sign-in-up-input(type="button" value="Sign In" ng-click="login()")
 								input#sign-in-sign-up-button.sign-in-up-input(type="button" value="Sign Up" ng-click="signUpStep()")
@@ -155,19 +155,19 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		#popups
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
 				li
-					i.fa.fa-rocket
+					i.fa.fa-archive
 					span(ui-sref="stuff.my.items") My Stuff
 				li
-					i.fa.fa-bell
+					i.fa.fa-envelope
 					span(ui-sref="stuff.my.messages") Messages
 				li
-					i.fa.fa-bookmark
+					i.fa.fa-clock-o
 					span(ui-sref="stuff.my.watchlist") Watchlist
 				li
 					i.fa.fa-cog
-					span(ui-sref="stuff.my.settings") Profile/Settings
+					span(ui-sref="stuff.my.settings") Settings
 				li
-					i.fa.fa-question
+					i.fa.fa.question-circle-o
 					span(ui-sref="faq") FAQ
 				li
 					i.fa.fa-user-secret
@@ -182,7 +182,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			#close-menu-button.fa.fa-times(ng-click="toggleSideMenu()")
 			li.side-menu-header
 			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my", ng-click="toggleSideMenu()")
+				a.side-menu-link(ui-sref="stuff.my.items", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-rocket
 					span My Stuff
 			li.side-menu-item
@@ -202,7 +202,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					.side-menu-icon.fa.fa-support
 					span FAQ/Help
 			li.side-menu-item
-				a.side-menu-link(ng-click="logout()")
+				a.side-menu-link(ng-click="logout(); toggleSideMenu();")
 					.side-menu-icon.fa.fa-sign-out
 					span Sign Out
 			.side-menu-footer
@@ -228,4 +228,4 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				#user-portal
 					a#sign-in-button(ng-click="userButton()")
 						i.fa.fa-user
-			#content(ui-view)
+			#content.animate-500(ui-view)

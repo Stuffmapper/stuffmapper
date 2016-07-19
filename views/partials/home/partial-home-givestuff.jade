@@ -9,8 +9,8 @@
 				.give-image-bg
 					.give-image-bg-content
 						.give-image-take-a-pic Take a Picture!
-						i.give-image-icon-1.fa.fa-camera
-						.give-image-choose-option Choose one of the options below
+						img.give-image-icon-1(src="/img/give-pic-empty-01.png")
+						.give-image-choose-option Click the button below
 			.give-image-options
 				button#give-photo-button.give-image-select-container.give-image-buttons(ng-click="getPhoto()")
 					i.fa.fa-photo
@@ -27,8 +27,6 @@
 					.loader.give-loader
 					.give-loader-text uploading stuff...
 			#give-image-detail-container
-				#give-static-map1-container
-					img#give-static-map1
 				#give-image-details
 			input#give-description-title(type="text" placeholder="Title" ng-model="giveItem.title")
 			h3.give-category-header Category
@@ -41,6 +39,8 @@
 					span This is outside -- do not contact for pickup
 				i.fa.fa-question.give-checkbox-question
 			textarea#give-description(name="Description" ng-model="giveItem.description" rows="8" cols="40" placeholder="Description")
+			#give-static-map1-container
+				img#give-static-map1
 			button#give-description-submit(ng-click="uploadItem()") Submit 
 		li#give-step4.give-steps.animate-250
 			#give-another-question

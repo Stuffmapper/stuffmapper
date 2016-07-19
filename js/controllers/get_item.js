@@ -143,6 +143,7 @@ function GetItemController() {
 		// 	console.log(data.err);
 		// 	console.log(data.res);
 		// });
+		console.log('asdf');
 	}
 	function checkScroll() {
 		var div = $scope.detailsContainer[0];

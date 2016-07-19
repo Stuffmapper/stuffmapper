@@ -1,6 +1,6 @@
 #my-stuff-container
 	div(ui-view)
-	ion-content#masonry-container.animate-250
+	ion-content#masonry-container.animate-250(style="height: 100%;")
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
 				a(ui-sref="stuff.my.items.item({ id:{{ list.id }} })")

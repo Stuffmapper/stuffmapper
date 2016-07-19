@@ -141,7 +141,7 @@ function GetStuffController() {
 					},
 					map: $scope.map,
 					icon: {
-						url: '/img/currentlocation1.png'
+						url: '/img/currentlocation2.png'
 					}
 				});
 			}, function() {

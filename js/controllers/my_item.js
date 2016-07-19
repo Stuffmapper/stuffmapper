@@ -9,6 +9,7 @@ function MyItemsController() {
 
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
+		console.log('user id: ' + $userData.getUserId());
 		/* jshint ignore:start */
 		function getWordsBetweenCurlies(str) {
 			var results = [], re = /{{([^}]+)}}/g, text;

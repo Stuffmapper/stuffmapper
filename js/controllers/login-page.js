@@ -1,8 +1,9 @@
-stuffMapp.controller('loginPageController', ['$scope', '$http', '$state', LoginPageController]);
+stuffMapp.controller('loginPageController', ['$scope', '$http', '$state', '$userData', LoginPageController]);
 function LoginPageController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $state = arguments[2];
+	var $userData = arguments[3];
 
 
 	$scope.loginPagelogin = function() {
@@ -18,6 +19,9 @@ function LoginPageController() {
 			}
 		}).success(function(data) {
 			if(!data.err) {
+				$('html').addClass('loggedIn');
+				$userData.setUserId(data.res.user.id);
+				$userData.setLoggedIn(true);
 				return $state.go('stuff.get');
 			}
 		});

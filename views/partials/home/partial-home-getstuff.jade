@@ -22,6 +22,8 @@
 						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info
 							div {{ list.title }}
+						.stuff-item-category-distance-owner(style="float: left") {{ list.category }}
+						.stuff-item-category-distance-owner(style="float: right;") 5 mi.
 	#filter-pane.animate-250
 		form
 			ul.filter

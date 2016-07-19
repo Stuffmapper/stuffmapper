@@ -312,7 +312,7 @@ router.post('/account/status', function(req, res) {
 				err: null,
 				res: {
 					user: req.session.passport.user,
-					lt: result.rows.length
+					lt: (27 + parseInt(result.rows.length))
 				}
 			});
 		}
@@ -321,7 +321,7 @@ router.post('/account/status', function(req, res) {
 				err: null,
 				res : {
 					user: false,
-					lt: result.rows.length
+					lt: (27 + parseInt(result.rows.length))
 				}
 			});
 		}
@@ -334,12 +334,45 @@ router.post('/account/register', function(req, res) {
 	if(b.type === 'google') {
 		request({
 			method: 'GET',
-			url:'https://www.googleapis.com/oauth2/v2/userinfo?fields=email%2Cfamily_name%2Cgiven_name%2Cpicture&key='+b.oauth.id_token,
+			url:'https://www.googleapis.com/oauth2/v2/userinfo?key='+b.oauth.id_token,
 			headers: {
 				'Authorization':'Bearer '+b.oauth.access_token
 			}
-		}, function(data) {
-			console.log('AHHHHHHH I DID IT AHHHHHHHHHH', data);
+		}, function(err, result, body) {
+			body = JSON.parse(body);
+			var query = [
+				'INSERT INTO users ',
+				'(fname, lname, uname, email, google_id) ',
+				'VALUES ($1, $2, $3, $4, $5) ',
+				'RETURNING *'
+			].join('');
+			var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
+			var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
+			var number = Math.floor(Math.random() * 9999) + 1;
+
+			function capitalizeFirstLetter(string) {
+				return string.charAt(0).toUpperCase() + string.slice(1);
+			}
+
+			var values = [
+				body.given_name,
+				body.family_name,
+				capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number,
+				body.email,
+				body.id
+			];
+			queryServer(res, query, values, function(result) {
+				req.session.passport = {};
+				req.session.passport.user = {};
+				req.session.passport.user.id = result.rows[0].id;
+				req.session.passport.user.fname = result.rows[0].fname;
+				req.session.passport.user.lname = result.rows[0].lname;
+				req.session.passport.user.email = result.rows[0].email;
+				res.send({
+					err : null,
+					res : result.rows[0]
+				});
+			});
 		});
 	}
 	else if(b.type === 'facebook') {
@@ -745,7 +778,7 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 		}
 		var query = [
 			'SELECT watchlist_keys.* FROM watchlist_items, watchlist_keys',
-			'WHERE user_id = $1 AND watchlist_keys.watchlist_item = watchlist_items.id'
+			'WHERE watchlist_items.user_id = $1 AND watchlist_keys.watchlist_item = watchlist_items.id'
 		].join(' ');
 		var values = [
 			req.session.passport.user.id

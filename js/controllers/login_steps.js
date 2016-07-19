@@ -1,5 +1,5 @@
 stuffMapp.controller('loginStepsController', ['$scope', '$http', '$ionicSlideBoxDelegate', '$state', '$timeout', LoginStepsController]);
-function LoginStepsController() {
+function LoginStepsController(){
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $ionicSlideBoxDelegate = arguments[2];
@@ -12,15 +12,15 @@ function LoginStepsController() {
 		speed: 500
 	};
 
-	$scope.toSetup = function() {
+	$scope.toSetup = function(){
 		$state.go('setup1');
 	};
 
-	$scope.previousSlide = function() {
+	$scope.previousSlide = function(){
 		$scope.slider.slideTo(($scope.slider.activeIndex - 1), 500);
 	};
 
-	$scope.nextSlide = function() {
+	$scope.nextSlide = function(){
 		$scope.slider.slideTo(($scope.slider.activeIndex + 1), 500);
 	};
 
@@ -33,36 +33,36 @@ function LoginStepsController() {
 
 	var slideOneTimeout;
 	var slideTwoTimeout;
-	function initSlideOne() {
+	function initSlideOne(){
 		$('#login-step-one img').addClass('move-in');
-		slideOneTimeout = $timeout(function() {
+		slideOneTimeout = $timeout(function(){
 			$('#login-step-one img').addClass('move-across');
 		}, 1500);
 	}
-	function resetSlideOne() {
+	function resetSlideOne(){
 		$timeout.cancel(slideOneTimeout);
 		$('#login-step-one img').removeClass('animate-750');
-		requestAnimationFrame(function() {requestAnimationFrame(function() {
+		requestAnimationFrame(function(){requestAnimationFrame(function(){
 			$('#login-step-one img').removeClass('move-in').removeClass('move-across');
-			requestAnimationFrame(function() {requestAnimationFrame(function() {
+			requestAnimationFrame(function(){requestAnimationFrame(function(){
 				$('#login-step-one img').addClass('animate-750');
 			});});
 		});});
 	}
-	function initSlideTwo() {
+	function initSlideTwo(){
 		slideTwoTimeout = $timeout(function(){
 			$('#login-step-two img').removeClass('move-in');
-			slideTwoTimeout = $timeout(function() {
+			slideTwoTimeout = $timeout(function(){
 				$('#login-step-two img').addClass('bounce');
 			}, 500);
 		}, 500);
 	}
-	function resetSlideTwo() {
+	function resetSlideTwo(){
 		$timeout.cancel(slideTwoTimeout);
 		$('#login-step-two img').removeClass('animate-750');
-		requestAnimationFrame(function() {requestAnimationFrame(function() {
+		requestAnimationFrame(function(){requestAnimationFrame(function(){
 			$('#login-step-two img').addClass('move-in').removeClass('bounce');
-			requestAnimationFrame(function() {requestAnimationFrame(function() {
+			requestAnimationFrame(function(){requestAnimationFrame(function(){
 				$('#login-step-two img').addClass('animate-750');
 			});});
 		});});
@@ -112,7 +112,7 @@ function LoginStepsController() {
 		}
 	});
 
-	$scope.$on('$destroy', function() {
+	$scope.$on('$destroy', function(){
 
 	});
 }

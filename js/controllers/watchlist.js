@@ -5,10 +5,10 @@ function WatchListController() {
 	var $location = arguments[2];
 	var $state = arguments[3];
 	var authenticated = arguments[4];
-	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
+	//	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
 
 	$scope.getAll = function() {
-		$http.get('/api/v1/watchlist')
+		$http.get(config.api.host + '/api/v' + config.api.version + '/watchlist')
 		.then(function(res) {
 			$scope.watchlist = res.data.res;
 			console.log('get', $scope.watchlist);
@@ -57,8 +57,8 @@ function WatchListController() {
 		$('#watchlist-select').val('');
 	};
 	$scope.selections = function() {
-		$("#watchlist-select").select2({
-			placeholder: "Search for tag names",
+		$('#watchlist-select').select2({
+			placeholder: 'Search for tag names',
 			allowClear: true,
 			tags: true,
 			tokenSeparators: [',', ' '],

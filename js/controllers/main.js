@@ -39,30 +39,23 @@ function MainController() {
 		if ($cordovaSQLite) {
 			$scope.initDB = function() {
 				$cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS user (id integer primary key, username text, email text, firstname text, lastname text, password text, verified boolean)').then(function(res) {
-
 				}, function(err) {
 				});
 			};
 			$scope.addTestUser = function() {
 				$cordovaSQLite.execute(db, 'INSERT INTO user(id, username, email, firstname, lastname, password, verified) VALUES(1, \'RyanTheFarmer\', \'ryandafarmer@gmail.com\', \'Ryan\', \'Farmer\', \'Password1!\', \'true\')').then(function(res) {
-
 				}, function(err) {
-
 				});
 			};
 			$scope.setUser = function(email, password, verified) {
 				$scope.deleteUser();
 				$cordovaSQLite.execute(db, 'INSERT INTO user(id, email, password, verified) VALUES(1, $1, $2, $3)', [email, password, verified]).then(function(res) {
-
 				}, function(err) {
-
 				});
 			};
 			$scope.deleteUser = function() {
 				$cordovaSQLite.execute(db, 'DELETE FROM user WHERE id = 1').then(function(res) {
-
 				}, function(err) {
-
 				});
 			};
 			$scope.getUserData = function() {
@@ -96,7 +89,8 @@ function MainController() {
 	});
 
 	function initUserData(data) {
-		if (!data.res.user) {
+		if (data.res.user) {
+			$userData.setUserId(data.res.user.id);
 			$scope.socket = io('http://ducks.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function(data) {
 				var lPath = $location.$$path.split('/');
@@ -171,8 +165,11 @@ function MainController() {
 		if ($cordovaOauth) {
 			$cordovaOauth.google('11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com', [
 				'https://www.googleapis.com/auth/userinfo.email',
-				'https://www.googleapis.com/auth/userinfo.profile'
+				'https://www.googleapis.com/auth/userinfo.profile',
+				'https://www.googleapis.com/auth/plus.me',
+				'https://www.googleapis.com/auth/plus.login'
 			]).then(function(data) {
+				console.log(data);
 				$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', {
 					type: 'google',
 					oauth: data
@@ -184,7 +181,12 @@ function MainController() {
 						return $.param(data);
 					}
 				}).success(function(data) {
-					console.log(data);
+					if(!data.err) {
+						$('html').addClass('loggedIn');
+						$userData.setUserId(data.res.id);
+						$userData.setLoggedIn(true);
+						$state.go('stuff.get');
+					}
 				});
 			});
 		}
@@ -261,6 +263,7 @@ function MainController() {
 			if (data.err || !data.res.isValid) return console.log(data.err);
 			location.hash = '';
 			$('html').addClass('loggedIn');
+			$userData.setUserId(data.res.user.id);
 			$userData.setLoggedIn(true);
 			if ($scope.redirectState) $state.go($scope.redirectState);
 			// $scope.redirectState = '';

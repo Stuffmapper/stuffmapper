@@ -124,7 +124,7 @@ function GiveController() {
 		$scope.initStep3 = function() {
 			$(window).off('resize', watchSize);
 			$('#tab-content-container').css({'pointer-events':''});
-			$('#give-static-map1').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
+			$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
 			$('#give-image-details').css('background-image', $('#give-image-verify').css('background-image'));
 		};
 
