@@ -56,6 +56,15 @@ input:read-only{
 .animate-500 {
 	@include transition(all 500ms);
 }
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
 
 /* Main Styling -  END  */
 
@@ -752,9 +761,25 @@ input:read-only{
 		@include transform(translate3d(0%, 0%, 0));
 	}
 }
-#filter-head {
+.filter-header {
 	padding-top: 23px;
 	font-weight: 600;
+	display: inline-flex;
+}
+.filter-header .fa-times {
+	margin-right: 5px;
+}
+.filter-header p {
+	width: 90px;
+}
+.clear-filters {
+	margin-top: 14px;
+	position: absolute;
+	right: 7px;
+	width: 90px;
+	cursor: pointer;
+	color: $grapefruit-dark;
+	border-bottom: 1px solid $grapefruit-dark;
 }
 .filter {
 	height: 100%;
@@ -769,32 +794,63 @@ input:read-only{
 label .fa-check {
 	margin-right: 5px;
 }
-#newlisting-show, #item-status-unattended, #item-status-contact, #select-all, #deselect-all, #arts-crafts, #books-games-media, #building, #clothes, #electronics, #furniture, #general, #kids-babies, #recreation {
+#newlisting-show, #item-status-unattended, #item-status-contact, #arts-crafts, #books-games-media, #building, #clothes, #electronics, #furniture, #general, #kids-babies, #recreation {
 	display: none;
 }
 .select-deselect {
 	display: inline-flex;
+	margin-bottom: 10px;
 }
-.select-deselect input {
-	display: none;
+.select-deselect .fa-check {
+	margin-right: 5px;
+	color: $white;
+	text-shadow: -1px -1px 0 $grass-dark, 1px -1px 0 $grass-dark, -1px 1px 0 $grass-dark, 1px 1px 0 $grass-dark;
+	&.select-deselect-checked {
+		color: $grass-dark;
+	}
 }
-.select-deselect label:first-of-type {
-	font-size: 13px;
-	margin-bottom: 9px;
-	margin-right: 110px;
-	padding: 4px;
-	width: 98px;
+.select-deselect .fa-times {
+	margin-right: 5px;
+	color: $white;
+	text-shadow: -1px -1px 0 $grapefruit-dark, 1px -1px 0 $grapefruit-dark, -1px 1px 0 $grapefruit-dark, 1px 1px 0 $grapefruit-dark;
+	&.select-deselect-checked {
+		color: $grapefruit-dark;
+	}
 }
-.filter-label label {
+#deselect-all {
+	position: absolute;
+	right: 7px;
+	width: 90px;
+	cursor: pointer;
+	border-bottom: 1px solid $grapefruit-dark;
+	text-align: center;
+}
+#select-all {
+	width: 90px;
+	cursor: pointer;
+	border-bottom: 1px solid $grass-dark;
+	text-align: center;
+}
+.filter-label {
 	font-size: 13px;
 	margin-bottom: 9px;
 	margin-right: 5px;
-	padding: 4px;
 	border: 1px solid $pewter-dark;
 	background-color: $fog-dark;
 	border-radius: 6px;
 }
+.filter-label span {
+	font-size: 13px;
+	margin-left: 5px;
+	color: $charcoal-dark;
+}
+.filter-label label {
+	padding: 4px;
+	color: $white;
+	cursor: pointer;
+}
 input[type=checkbox]:checked + label {
+	color: $grass-dark;
 	border: 1px solid $grass-dark;
 	background-color: $grass-light;
 }
@@ -2734,9 +2790,7 @@ input[type=range].distance-slider:focus::-ms-fill-upper {
 	}
 	/* Faq - END */
 	/* Filter - Start */
-	.select-deselect label:first-of-type {
-		margin-right: 95px;
-	}
+
 
 	/* Filter - End */
 }

@@ -221,6 +221,8 @@ function GetStuffController() {
 		var searchQuery = $('#search-stuff').val().toLowerCase();
 		var sliderValue = parseInt($('.distance-slider').val());
 		var convertValue = sliderValue * 1609.344;
+		var attended = $('#item-status-contact').is(':checked');
+		var unattended = $('#item-status-unattended').is(':checked');
 		var categories = [];
 		$('#categories .filter input').each(function(i, e){
 			if($(e).is(':checked')) {
@@ -237,17 +239,16 @@ function GetStuffController() {
 					);
 					var matches = false;
 					e.title.split(' ').forEach(function(f) {
-						if(f.toLowerCase().startsWith(searchQuery) &&
-						(categories.toLowerCase().indexOf(e.category.toLowerCase()) > -1)) {
+						if(f.toLowerCase().startsWith(searchQuery)) {
 							matches = true;
 						}
 					});
-
-					if(convertValue <= radius || !matches) {
-						// hide the element
-						$('#post-item-' + e.id).css({'display': 'none'});
-					} else {
+					if(((convertValue >= radius) && matches) &&
+					((categories.toLowerCase().indexOf(e.category.toLowerCase()) > -1) &&
+					((e.attended && attended) || (!e.attended && unattended)))) {
 						$('#post-item-' + e.id).css({'display': ''});
+					} else {
+						$('#post-item-' + e.id).css({'display': 'none'});
 					}
 				});
 			});
@@ -266,19 +267,6 @@ function GetStuffController() {
 			});
 		},100);
 	};
-	$scope.attendedUnattended = function() {
-		var attended;
-		if($('#item-status-unattended').is(':checked')) {
-			$scope.listItems.forEach(function(e) {
-				if(e.attended) {
-					// hide the element
-					$('#post-item-' + e.id).css({'display': 'none'});
-				} else {
-					$('#post-item-' + e.id).css({'display': ''});
-				}
-			});
-		}
-	};
 	$scope.showDistance = function() {
 		var rangeValues = {};
 		for(var i = 1; i < 21; i++) {
@@ -292,13 +280,24 @@ function GetStuffController() {
 		});
 	};
 	$scope.selectAll = function() {
-		if($('#select-all').is(':checked')) {
-			$('#categories .filter input').prop(':checked', true);
-		}
+		$('.category-input').prop('checked', true);
+		$('#select-all .fa.fa-check').addClass('select-deselect-checked');
+		$('#deselect-all .fa.fa-times').removeClass('select-deselect-checked');
 	};
 	$scope.deselectAll = function() {
-		if($('#deselect-all').is(':checked')) {
-			$('#select-all').prop(':checked', false);
-		}
+		$('.category-input').prop('checked', false);
+		$('#select-all .fa.fa-check').removeClass('select-deselect-checked');
+		$('#deselect-all .fa.fa-times').addClass('select-deselect-checked');
+	};
+	$scope.clearAll = function() {
+		$('.category-input, .item-status-checkbox').prop('checked', true);
+		$('#rangeInput').val(20);
+		$('#rangeText').val(20);
+		$('#select-all .fa.fa-check').removeClass('select-deselect-checked');
+		$('#deselect-all .fa.fa-times').removeClass('select-deselect-checked');
+	};
+	$scope.clearSelectDeselect = function() {
+		$('#select-all .fa.fa-check').removeClass('select-deselect-checked');
+		$('#deselect-all .fa.fa-times').removeClass('select-deselect-checked');
 	};
 }
