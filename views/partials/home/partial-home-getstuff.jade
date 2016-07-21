@@ -5,9 +5,12 @@
 			.double-bounce1
 			.double-bounce2
 		.loading-text Finding Stuff...
+	.settings-header
+		h1 Filter & Settings
 	.search-stuff-container
-		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click='toggleMap()')
-		input#search-stuff.stuff-input(type='search' placeholder='Search by name or category' ng-model="searchStuff")
+		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click="toggleMap()")
+		input#search-stuff.stuff-input(type='search' placeholder='Search' ng-init="showDistance()" ng-model="searchStuff" multiple="multiple")
+		i.fa.fa-search(ng-click="filterSearch()")
 	#get-stuff-back-button-container.hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
 		#get-stuff-item-title.hidden.animate-250
@@ -24,46 +27,82 @@
 							div {{ list.title }}
 						.stuff-item-category-distance-owner(style="float: left") {{ list.category }}
 						.stuff-item-category-distance-owner(style="float: right;") 5 mi.
-	#filter-pane.animate-250
-		form
-			ul.filter
-				li Choose a Category
-					select(ng-model="searchStuff")
-						option Arts & Crafts
-						option Books, Games, Media
-						option Building & Garden Materials
-						option Clothes & Accessories
-						option Electronics
-						option Furniture & Household
-						option General
-						option Kids & Babies
-						option Recreation
-				//- li Attended/Unattended
-				//- 	select(ng-model="searchStuff")
-				//- 		option Attended
-				//- 		option Unattended
-				//- 		option All
-				//- li Distance from Me
-				//- 	select(ng-model="searchStuff")
-				//- 		option 1 miles
-				//- 		option 2 miles
-				//- 		option 3 miles
-				//- 		option 4 miles
-				//- 		option 5 miles
-				//- 		option 6 miles
-				//- 		option 7 miles
-				//- 		option 8 miles
-				//- 		option 9 miles
-				//- 		option 10 miles
-				//- 		option 11 miles
-				//- 		option 12 miles
-				//- 		option 13 miles
-				//- 		option 14 miles
-				//- 		option 15 miles
-				//- 		option 16 miles
-				//- 		option 17 miles
-				//- 		option 18 miles
-				//- 		option 19 miles
-				//- 		option 20 miles
-				button(type='submit', ng-click="initMasonry()") Filter
-				
+	form#filter-pane.animate-250
+		#filter-head.filter-header
+			p Filters
+			#clear-filters-button.clear-filters(ng-click="clearAll(); showDistance()")
+				span.fa.fa-times
+				span clear filters
+		#distance-from-me
+			p Distance from me
+				span
+					label#rangeText
+			input#rangeInput.distance-slider(type="range", name="rangeInput", step="1", value="20", min="0", max="20")
+			
+		//- #newlisting
+		//- 	p New listing
+		//- 	.filter-label
+		//- 		input#newlisting-show(type="checkbox", name="newlisting-show", value="newlisting-show")
+		//- 		label.fa.fa-check(for="newlisting-show") 
+		//- 			span only show new listings
+			
+		#item-status
+			p Item status
+			.filter
+				.filter-label
+					input#item-status-unattended.item-status-checkbox(type="checkbox", name="item-status-unattended", value="item-status-unattended" checked)
+					label.fa.fa-check(for="item-status-unattended") 
+						span unattended
+				.filter-label
+					input#item-status-contact.item-status-checkbox(type="checkbox", name="item-status-contact", value="item-status-contact" checked)
+					label.fa.fa-check(for="item-status-contact") 
+						span contact for pickup
+		#categories
+			p Categories
+			.select-deselect
+
+					#select-all(ng-click="selectAll()") 
+						span.fa.fa-check.animate-250
+						span select all
+
+					#deselect-all(ng-click="deselectAll()") 
+						span.fa.fa-times.animate-250
+						span deselect all
+			.filter
+				.filter-label
+					input#arts-crafts.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="arts-crafts", value="arts & crafts" checked)
+					label.fa.fa-check(for="arts-crafts") 
+						span arts & crafts
+				.filter-label
+					input#books-games-media.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="books-games-media", value="books, games, media" checked)
+					label.fa.fa-check(for="books-games-media") 
+						span books, games, media
+				.filter-label
+					input#building.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="building", value="building & garden materials" checked)
+					label.fa.fa-check(for="building") 
+						span building & garden materials
+				.filter-label
+					input#clothes.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="clothes", value="clothes & accessories" checked)
+					label.fa.fa-check(for="clothes") 
+						span clothes & accessories
+				.filter-label
+					input#electronics.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="electronics", value="electronics" checked)
+					label.fa.fa-check(for="electronics") 
+						span electronics
+				.filter-label
+					input#furniture.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="furniture", value="furniture & household" checked)
+					label.fa.fa-check(for="furniture") 
+						span furniture & household
+				.filter-label
+					input#general.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="general", value="general" checked)
+					label.fa.fa-check(for="general") 
+						span general					
+				.filter-label
+					input#kids-babies.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="kids-babies", value="kids & babies" checked)
+					label.fa.fa-check(for="kids-babies") 
+						span kids & babies
+				.filter-label
+					input#recreation.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="recreation", value="recreation" checked)
+					label.fa.fa-check(for="recreation") 
+						span recreation
+>>>>>>> refs/remotes/origin/master
