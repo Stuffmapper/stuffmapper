@@ -11,6 +11,7 @@ function GetItemController() {
 
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
+		console.log(data.res);
 		function openInfoWindow(e) {
 			e.category = 'test-category';
 			var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
@@ -143,7 +144,12 @@ function GetItemController() {
 		// 	console.log(data.err);
 		// 	console.log(data.res);
 		// });
-		console.log('asdf');
+		if($userData.isLoggedIn()) {
+			if(/*within first 15 minutes*/0) openDibs(5);
+			else if(/*after first 15 minutes, within first hour and 15 minutes*/1) openDibs(1);
+			else dibsItem();
+		}
+		else window.location.hash = 'signin';
 	}
 	function checkScroll() {
 		var div = $scope.detailsContainer[0];
