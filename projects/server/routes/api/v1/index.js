@@ -36,14 +36,20 @@ router.get('/stuff', function(req, res) {
 			'FROM posts, images, categories WHERE images.post_id = posts.id AND ',
 			'categories.id = posts.category_id AND posts.dibbed = false'
 		].join('');
-		client.query(query, function(err, result) {
+		var values = [];
+		if(req.session.passport && req.session.passport.user) {
+			query += ' AND NOT posts.user_id = $1';
+			values.push(req.session.passport.user.id);
+		}
+		client.query(query, values, function(err, result) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
 			result.rows.forEach(function(e, i) {
-				result.rows[i].lat += ((Math.random() * 0.002) - 0.001);
-				result.rows[i].lng += ((Math.random() * 0.002) - 0.001);
+				var randVal = 0.0002;
+				result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
+				result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
 			});
 			res.send({
 				err: null,

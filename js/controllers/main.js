@@ -33,6 +33,7 @@ function MainController() {
 	$scope.counterFlipperHeader.setCounter(2738391);
 	$scope.counterFlipperHeader.setCounter(3345678);
 	$scope.counterFlipperHeader.setCounter(4765432);
+	initChatra();
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data) {
 		$scope.counterFlipperHeader.setCounter(data.res.lt);
 		$scope.counterFlipperMenu.setCounter(data.res.lt);
@@ -87,7 +88,19 @@ function MainController() {
 		}
 		else initUserData(data);
 	});
-
+	function initChatra() {
+		ChatraID = '5oMzBM7byxDdNPuMf';
+		(function(d, w, c) {
+			var n = d.getElementsByTagName('script')[0],
+			s = d.createElement('script');
+			w[c] = w[c] || function() {
+				(w[c].q = w[c].q || []).push(arguments);
+			};
+			s.async = true;
+			s.src = (d.location.protocol === 'https:' ? 'https:': 'http:') + '//call.chatra.io/chatra.js';
+			n.parentNode.insertBefore(s, n);
+		})(document, window, 'Chatra');
+	}
 	function initUserData(data) {
 		if (data.res.user) {
 			$userData.setUserId(data.res.user.id);
