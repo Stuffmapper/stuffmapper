@@ -1,3 +1,3 @@
-function FaqtController($scope, $userData) {
+function FaqController($scope, $userData) {
 
 }

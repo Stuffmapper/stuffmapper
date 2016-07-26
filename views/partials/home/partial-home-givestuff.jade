@@ -7,21 +7,14 @@
 					i.fa.fa-check-circle.give-accept1(ng-click="acceptPhoto()")
 			.give-image-container
 				.give-image-bg
-					.give-image-bg-top-left.give-image-bg-corner
-					.give-image-bg-top-right.give-image-bg-corner
-					.give-image-bg-bottom-left.give-image-bg-corner
-					.give-image-bg-bottom-right.give-image-bg-corner
 					.give-image-bg-content
 						.give-image-take-a-pic Take a Picture!
-						i.give-image-icon-1.fa.fa-camera
-						.give-image-choose-option Choose one of the options below
-						i.give-image-icon-2.fa.fa-arrow-down
+						img.give-image-icon-1(src="/img/give-pic-empty-01.png")
+						.give-image-choose-option Click the button below
 			.give-image-options
-				button#give-camera-button.give-image-capture.give-image-buttons(ng-click="getCamera()")
-					i.fa.fa-camera
 				button#give-photo-button.give-image-select-container.give-image-buttons(ng-click="getPhoto()")
 					i.fa.fa-photo
-				input#give-image-select.give-image-select(type="file" name="file")
+				input#give-image-select.give-image-select(type="file" accept=".jpg,.jpeg,.png" name="file")
 		li#give-step2.give-steps.animate-250
 			#give-location-container
 				#give-location-text1.give-location-text move the map around
@@ -34,8 +27,6 @@
 					.loader.give-loader
 					.give-loader-text uploading stuff...
 			#give-image-detail-container
-				#give-static-map1-container
-					img#give-static-map1
 				#give-image-details
 			input#give-description-title(type="text" placeholder="Title" ng-model="giveItem.title")
 			h3.give-category-header Category
@@ -48,6 +39,8 @@
 					span This is outside -- do not contact for pickup
 				i.fa.fa-question.give-checkbox-question
 			textarea#give-description(name="Description" ng-model="giveItem.description" rows="8" cols="40" placeholder="Description")
+			#give-static-map1-container
+				img#give-static-map1
 			button#give-description-submit(ng-click="uploadItem()") Submit 
 		li#give-step4.give-steps.animate-250
 			#give-another-question

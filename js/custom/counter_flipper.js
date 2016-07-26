@@ -193,6 +193,7 @@ var CounterFlipper = (function() {
 						var bottomNode = strToNode('<div class="bottomElementEnter bottomElement counterElements">'+str.charAt(i+1)+'</div>');
 						bottomElement.appendChild(bottomNode);
 						topSections[topSections.length - 1].classList.add('topElementEnter');
+						/* jshint ignore:start */
 						setTimeout(function(){
 							requestAnimationFrame(function() {
 								var ele = document.querySelector('#'+self.id+' .bottomElement.bottomElementEnter');
@@ -201,6 +202,7 @@ var CounterFlipper = (function() {
 								}
 							});
 						}, 50);
+						/* jshint ignore:end */
 					}
 				}
 				setTimeout(function() {

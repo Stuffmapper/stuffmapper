@@ -1,12 +1,18 @@
-stuffMapp.controller('myController', ['$scope', '$state', '$location', 'authenticated', MyController]);
+stuffMapp.controller('myController', ['$scope', '$state', '$location', 'authenticator', MyController]);
 function MyController() {
 	var $scope = arguments[0];
 	var $state = arguments[1];
 	var $location = arguments[2];
-	var authenticated = arguments[3];
-	if((authenticated.res && !authenticated.res.user) || authenticated.err) return $state.go('stuff.get');
-	if($location.$$path === '/stuff/my') {
-		$state.go('stuff.my.items');
-		return;
-	}
+	var authenticator = arguments[3];
+	authenticator.then(function(data) {
+		if(!data.res.user) {
+			$state.go('stuff.get');
+			window.location.hash = '#signin';
+		} else {
+			if($location.$$path === '/stuff/my') {
+				$state.go('stuff.my.items');
+				return;
+			}
+		}
+	});
 }

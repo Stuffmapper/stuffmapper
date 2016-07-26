@@ -113,7 +113,7 @@ gulp.task('js', function(done) {
 			gulp.dest('./www/js'),
 			gulp.dest('./projects/electron/js')
 		))
-		.pipe(rename('all.min.js'))
+		.pipe(rename('app.js'))
 		.pipe(uglify({
 			mangle: false
 		}))
@@ -130,6 +130,12 @@ gulp.task('js', function(done) {
 		));
 		gulp.src(['./js/lib/ionic/**/*','./js/lib/ngCordova/dist/*.js'], {base: './js/lib/'})
 		.pipe(gulp.dest('./www/lib/'));
+		gulp.src(['./js/lib/animate.css/animate.min.css'])
+		.pipe(multistream(
+			gulp.dest('./projects/web/js/lib/animate.css/'),
+			gulp.dest('./projects/electron/js/lib/animate.css/'),
+			gulp.dest('./www/js/lib/animate.css/')
+		));
 	} catch (e) {
 		console.log(e);
 	}
