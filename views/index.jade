@@ -55,7 +55,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="http://ducks.stuffmapper.com/socket.io/socket.io.js")
+			script(src="http://localhost:3000/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
@@ -124,7 +124,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 											i.fa.fa-google-plus
 										span.social-sign-in-text Sign in with Google
 								else
-									a.sign-in-up-input.social-button.google-plus-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/google" target="_self")
+									a.sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
 										span.social-sign-in-icon.social-sign-in-icon-google
 											i.fa.fa-google-plus
 										span.social-sign-in-text Sign in with Google
@@ -134,7 +134,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 											i.fa.fa-facebook
 										span.social-sign-in-text Sign in with Facebook
 								else
-									a.sign-in-up-input.social-button.facebook-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/facebook" target="_self")
+									a.sign-in-up-input.social-button.facebook-sign-in(href="//localhost:3000/api/v1/account/login/facebook" target="_self")
 										span.social-sign-in-icon.social-sign-in-icon-facebook
 											i.fa.fa-facebook
 										span.social-sign-in-text Sign in with Facebook
