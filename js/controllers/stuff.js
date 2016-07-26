@@ -57,5 +57,4 @@ function StuffController() {
 		$scope.map.mapTypes.set('map_style', styledMap);
 		$scope.map.setMapTypeId('map_style');
 	}
-	$userData.setUserId(1);
 }

@@ -10,11 +10,14 @@ function GetStuffController() {
 	$scope.listItems = [];
 	$scope.markers = [];
 	google.maps.event.addListenerOnce($scope.map, 'idle', function() {
-		console.log(this.getBounds());
+		//console.log(this.getBounds());
 	});
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
 		$scope.listItems = data.res;
 		if($scope.listItems) {
+			$scope.refresh = function() {
+				//console.log('refresh');
+			};
 			$scope.initMasonry = function() {
 				$('.masonry-grid').masonry({
 					columnWidth: $('.masonry-grid').width()/2,
@@ -44,7 +47,7 @@ function GetStuffController() {
 						$scope.filterText = tempSearchText;
 						if(tempSearchText !== lastSearch) lastSearch = tempSearchText;
 					}
-					else if(tempSearchText !== undefined) console.log('Search for everything');
+					//else if(tempSearchText !== undefined) console.log('Search for everything');
 				}, 250);
 			});
 			if ($scope.mapbox) {
@@ -93,7 +96,6 @@ function GetStuffController() {
 			else initMarkers();
 		}
 	});
-
 	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
 		$scope.getLocation();
 	});
@@ -136,6 +138,18 @@ function GetStuffController() {
 					callback({
 						lat: position.coords.latitude,
 						lng: position.coords.longitude
+					});
+				}
+				else {
+					var marker = new google.maps.Marker({
+						position: {
+							lat: position.coords.latitude,
+							lng: position.coords.longitude
+						},
+						map: $scope.map,
+						icon: {
+							url: '/img/currentlocation2.png'
+						}
 					});
 				}
 			}, function() {
