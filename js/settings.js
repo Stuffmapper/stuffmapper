@@ -1,5 +1,6 @@
 function setDefaultSettings() {
 	var isIonic = $('html').hasClass('ionic');
+	var isElectron = $('html').hasClass('electron');
 	var isDev = $('html').hasClass('dev') || $('html').hasClass('test');
 	var modules = ['ui.router', 'ngAnimate'];
 	var providers = {
@@ -44,7 +45,7 @@ function setDefaultSettings() {
 		},
 		myItem : {
 			url: '/:id',
-			controller: 'myItemController'
+			controller: 'myItemsController'
 		},
 		myMessages : {
 			url: '/messages',
@@ -66,33 +67,25 @@ function setDefaultSettings() {
 			templateUrl: 'templates/partial-home-settings.html',
 			controller: 'settingsController'
 		},
-		loginMain : {
-			url: '/login',
-			templateUrl: 'templates/partial-login.html'
+		loginSteps : {
+			url: '/login-steps',
+			templateUrl: 'templates/partial-login-steps.html',
+			controller: 'loginStepsController'
 		},
-		loginOne : {
-			url: '/step1',
-			templateUrl: 'templates/partial-login-steps.html'
+		loginSetupOne : {
+			url: '/login-setup1',
+			templateUrl: 'templates/partial-login-setup1.html',
+			controller: 'loginSetupOneController'
 		},
-		loginTwo : {
-			url: '/step2',
-			templateUrl: 'templates/partial-login-steps.html'
+		loginSetupTwo : {
+			url: '/login-setup2',
+			templateUrl: 'templates/partial-login-setup2.html',
+			controller: 'loginSetupTwoController'
 		},
-		loginThree : {
-			url: '/step3',
-			templateUrl: 'templates/partial-login-steps.html'
-		},
-		loginFour : {
-			url: '/step4',
-			templateUrl: 'templates/partial-login-steps.html'
-		},
-		setupOne : {
-			url: '/setup1',
-			templateUrl: 'templates/partial-login-setup1.html'
-		},
-		setupTwo : {
-			url: '/setup2',
-			templateUrl: 'templates/partial-login-setup2.html'
+		loginPage : {
+			url: '/login-page',
+			templateUrl: 'templates/partial-login-page.html',
+			controller: 'loginPageController'
 		},
 		about : {
 			url: '/about',
@@ -129,10 +122,13 @@ function setDefaultSettings() {
 		ionic : {
 			isIonic : isIonic
 		},
+		electron : {
+			isElectron: isElectron
+		},
 		modules : modules,
 		api : {
-			// host : 'http://ducks.stuffmapper.com',
-			host : isDev?'/':'http://localhost:3000',
+			host : 'http://ducks.stuffmapper.com',
+			//host : isDev?'/':'http://localhost:3000',
 			version : 1
 		},
 		html5 : !!window.history && !!window.history.pushState,

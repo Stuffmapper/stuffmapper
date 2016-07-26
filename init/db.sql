@@ -11,8 +11,8 @@ CREATE TABLE status (
 
 CREATE TABLE users (
 	id BIGSERIAL PRIMARY KEY,
-	fname varchar(32) NOT NULL,
-	lname varchar(32) NOT NULL,
+	fname varchar(32),
+	lname varchar(32),
 	uname varchar(32) UNIQUE NOT NULL,
 	email varchar(64) UNIQUE NOT NULL,
 	password text,
@@ -23,8 +23,8 @@ CREATE TABLE users (
 	admin boolean DEFAULT false,
 	date_created timestamp DEFAULT current_timestamp,
 	last_sign_in timestamp DEFAULT current_timestamp,
-	google_id varchar(64),
-	facebook_id varchar(64),
+	google_id text,
+	facebook_id text,
 	image_url text,
 	news_letter boolean DEFAULT false,
 	date_archived timestamp DEFAULT current_timestamp,
@@ -33,7 +33,8 @@ CREATE TABLE users (
 	city varchar(32),
 	state varchar(32),
 	zip_code varchar(10),
-	address varchar(64)
+	address varchar(64),
+	braintree_token text
 );
 
 CREATE TABLE ip_addresses (
@@ -72,8 +73,13 @@ CREATE TABLE posts (
 	dibbed boolean DEFAULT false,
 	dibber_id integer REFERENCES users(id),
 	quality integer,
-	date_archived timestamp DEFAULT current_timestamp,
-	archived boolean DEFAULT false
+	date_archived timestamp,
+	archived boolean DEFAULT false,
+	expired boolean DEFAULT false,
+	date_expired timestamp,
+	transaction_id text,
+	suspended boolean DEFAULT false,
+	date_suspended timestamp
 );
 
 CREATE TABLE pick_up_success (

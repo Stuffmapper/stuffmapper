@@ -5,8 +5,15 @@ var bcrypt = require('bcrypt');
 var saltRounds = 10;
 var passport = require('passport');
 var request = require('request');
-
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
+var braintree = require("braintree");
+
+var gateway = braintree.connect({
+	environment: braintree.Environment.Production,
+	merchantId: "7t82byzdjdbkwp8m",
+	publicKey: "5hnt7srpm7x5d2qp",
+	privateKey: "6f8520869e0dd6bf8eec2956752166d9"
+});
 
 function isAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) { return next(); }
@@ -37,14 +44,20 @@ router.get('/stuff', function(req, res) {
 			'FROM posts, images, categories WHERE images.post_id = posts.id AND ',
 			'categories.id = posts.category_id AND posts.dibbed = false'
 		].join('');
-		client.query(query, function(err, result) {
+		var values = [];
+		if(req.session.passport && req.session.passport.user) {
+			query += ' AND NOT posts.user_id = $1';
+			values.push(req.session.passport.user.id);
+		}
+		client.query(query, values, function(err, result) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
 			result.rows.forEach(function(e, i) {
-				result.rows[i].lat += ((Math.random() * 0.002) - 0.001);
-				result.rows[i].lng += ((Math.random() * 0.002) - 0.001);
+				var randVal = 0.0002;
+				result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
+				result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
 			});
 			res.send({
 				err: null,
@@ -63,12 +76,13 @@ router.get('/stuff/id/:id', function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended, ',
-			'posts.lat, posts.lng, categories.category, images.image_url ',
-			'FROM posts, images, categories ',
-			'WHERE images.post_id = posts.id AND posts.id = $1 AND ',
-			'categories.id = posts.category_id AND posts.dibbed = false'
-		].join('');
+			'SELECT posts.id, posts.title, posts.description, posts.attended,',
+			'posts.lat, posts.lng, categories.category, images.image_url,',
+			'posts.date_created',
+			'FROM posts, images, categories',
+			'WHERE images.post_id = posts.id AND posts.id = $1 AND',
+			'categories.id = posts.category_id'
+		].join(' ');
 		var values = [
 			req.params.id
 		];
@@ -88,8 +102,8 @@ router.get('/stuff/id/:id', function(req, res) {
 
 router.get('/stuff/my', isAuthenticated, function(req, res) {
 	var query = [
-		'SELECT * FROM posts WHERE user_id = $1 AND dibber_id = $1 AND ',
-		'archived = false AND images.post_id = posts.id;'
+		'SELECT * FROM posts, images WHERE (user_id = $1 OR dibber_id = $1) AND ',
+		'posts.archived = false AND images.post_id = posts.id;'
 	].join('');
 	var values = [
 		req.session.passport.user.id
@@ -307,62 +321,155 @@ router.get('/views', function() {
 /* USER ACCOUNT MANAGEMENT - START */
 
 router.post('/account/status', function(req, res) {
-	if(req.isAuthenticated()) {
-		res.send({
-			err: null,
-			res: {
-				user: req.session.passport.user
-			}
-		});
-	}
-	else {
-		apiError(res, 'not logged in');
-	}
+	queryServer(res, 'SELECT pick_up_success FROM pick_up_success WHERE pick_up_success = true', [], function(result) {
+		console.log('loggedIn');
+		console.log(req.session);
+		console.log('loggedIn');
+		if(req.session.passport && req.session.passport.user) {
+			res.send({
+				err: null,
+				res: {
+					user: req.session.passport.user,
+					lt: (27 + parseInt(result.rows.length))
+				}
+			});
+		}
+		else {
+			res.send({
+				err: null,
+				res : {
+					user: false,
+					lt: (27 + parseInt(result.rows.length))
+				}
+			});
+		}
+	});
 });
 
 router.post('/account/register', function(req, res) {
 	var client = new pg.Client(conString);
 	var b = req.body;
-	console.log(b);
 	if(b.type === 'google') {
-		console.log('alskfjlaskjfsadlkfjsdalfkjsdfkj');
 		request({
 			method: 'GET',
-			url:'https://www.googleapis.com/oauth2/v2/userinfo?fields=email%2Cfamily_name%2Cgiven_name%2Cpicture&key='+b.oauth.id_token,
+			url:'https://www.googleapis.com/oauth2/v2/userinfo?key='+b.oauth.id_token,
 			headers: {
 				'Authorization':'Bearer '+b.oauth.access_token
 			}
-		}, function(data) {
-			console.log('AHHHHHHH I DID IT AHHHHHHHHHH', data);
+		}, function(err, result, body) {
+			gateway.clientToken.generate({}, function (err, response) {
+				//res.send(response.clientToken);
+				body = JSON.parse(body);
+				var query = [
+					'INSERT INTO users',
+					'(fname, lname, uname, email, google_id, braintree_token)',
+					'VALUES ($1, $2, $3, $4, $5, $6)',
+					'RETURNING *'
+				].join(' ');
+				var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
+				var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
+				var number = Math.floor(Math.random() * 9999) + 1;
+
+				function capitalizeFirstLetter(string) {
+					return string.charAt(0).toUpperCase() + string.slice(1);
+				}
+
+				var values = [
+					body.given_name,
+					body.family_name,
+					capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number,
+					body.email,
+					body.id,
+					response.clientToken
+				];
+				queryServer(res, query, values, function(result) {
+					req.session.passport = {};
+					req.session.passport.user = {};
+					req.session.passport.user.id = result.rows[0].id;
+					req.session.passport.user.fname = result.rows[0].fname;
+					req.session.passport.user.lname = result.rows[0].lname;
+					req.session.passport.user.email = result.rows[0].email;
+					req.session.passport.user.braintree_token = result.rows[0].braintree_token;
+					console.log('REGISTER GOOGLE START');
+					console.log(req.session);
+					console.log('REGISTER GOOGLE  END');
+					res.send({
+						err : null,
+						res : result.rows[0]
+					});
+				});
+			});
 		});
 	}
 	else if(b.type === 'facebook') {
 
 	}
 	else {
-		bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
-			var query = [
-				'INSERT INTO users ',
-				'(fname, lname, uname, email, password, phone_number) ',
-				'VALUES ($1, $2, $3, $4, $5, $6) ',
-				'RETURNING *'
-			].join('');
-			var values = [
-				b.fname,
-				b.lname,
-				b.uname,
-				b.email,
-				hashedPassword,
-				b.phone_number
-			];
-			queryServer(res, query, values, function(result) {
-				res.send({
-					err : null,
-					res : {
-						redirect: true
-					}
+		gateway.clientToken.generate({}, function (err, response) {
+			bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
+				var query = [
+					'INSERT INTO users ',
+					'(fname, lname, uname, email, password, phone_number, braintree_token)',
+					'VALUES ($1, $2, $3, $4, $5, $6, $7)',
+					'RETURNING *'
+				].join(' ');
+				var values = [
+					b.fname,
+					b.lname,
+					b.uname,
+					b.email,
+					hashedPassword,
+					b.phone_number,
+					response.clientToken
+				];
+				queryServer(res, query, values, function(result) {
+					res.send({
+						err : null,
+						res : {
+							redirect: true,
+							user: result.rows[0]
+						}
+					});
+					var emailTo = {};
+					req.session.passport = {};
+					req.session.passport.user = {};
+					req.session.passport.user.id = result.rows[0].id;
+					req.session.passport.user.fname = result.rows[0].fname;
+					req.session.passport.user.lname = result.rows[0].lname;
+					req.session.passport.user.email = result.rows[0].email;
+					req.session.passport.user.braintree_token = result.rows[0].braintree_token;
+					console.log('REGISTER LOCAL START');
+					console.log(req.session);
+					console.log('REGISTER LOCAL  END');
+					emailTo[b.uname] = b.email;
+					sendTemplate(
+						'email-verification',
+						'Stuffmapper needs your confirmation!',
+						emailTo,
+						{
+							'FIRSTNAME' : b.uname,
+							'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
+						}
+					);
 				});
 			});
+		});
+	}
+});
+
+router.get('/account/confirmation/:email_token', function(req, res) {
+	if(req.params.email_token) {
+		var query = [
+			'UPDATE users SET verified_email = true',
+			'WHERE verified_email = false AND verify_email_token = $1',
+			'RETURNING *'
+		].join(' ');
+		var values = [
+			req.params.email_token
+		];
+		queryServer(res, query, values, function(result) {
+			console.log(result);
+			if(result.rows.length >= 1) res.redirect('/stuff/get');
 		});
 	}
 });
@@ -497,10 +604,10 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'UPDATE posts SET dibber_id = $1, dibbed = true ',
-			'WHERE dibbed = false AND id = $2 ',
+			'UPDATE posts SET dibber_id = $1, dibbed = true',
+			'WHERE dibbed = false AND id = $2',
 			'RETURNING *'
-		].join('');
+		].join(' ');
 		var values = [
 			req.session.passport.user.id,
 			req.params.id
@@ -511,10 +618,10 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 				return client.end();
 			}
 			var query = [
-				'INSERT INTO pick_up_success ',
-				'(post_id, dibber_id, lister_id) ',
+				'INSERT INTO pick_up_success',
+				'(post_id, dibber_id, lister_id)',
 				'VALUES ($1, $2, $3) RETURNING *'
-			].join('');
+			].join(' ');
 			var values = [
 				req.params.id,
 				req.session.passport.user.id,
@@ -526,10 +633,10 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 					return client.end();
 				}
 				var query = [
-					'INSERT INTO conversations ',
-					'(post_id, dibber_id, lister_id) ',
+					'INSERT INTO conversations',
+					'(post_id, dibber_id, lister_id)',
 					'VALUES ($1, $2, $3) RETURNING *'
-				].join('');
+				].join(' ');
 				var values = [
 					req.params.id,
 					req.session.passport.user.id,
@@ -548,12 +655,27 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 							'res3': result3.rows
 						}
 					});
+					var emailTo = {};
+					emailTo[req.session.user.fname + ' ' + req.session.user.lname] = req.session.user.email;
+					sendTemplate(
+						'dibber-notification-1',
+						'You Dibbed an item!',
+						emailTo,
+						{
+							'FIRSTNAME' : req.session.user.fname,
+							'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/get',
+							'MYSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/my/items',
+							'ITEMTITLE':'I FIGURE THIS OUT LATER'
+						}
+					);
 					return client.end();
 				});
 			});
 		});
 	});
 });
+
+
 
 router.delete('/undib/:id', isAuthenticated, function(req, res) {
 
@@ -694,7 +816,7 @@ router.get('/watchlist', isAuthenticated, function(req, res) {
 		}
 		var query = [
 			'SELECT watchlist_keys.* FROM watchlist_items, watchlist_keys',
-			'WHERE user_id = $1 AND watchlist_keys.watchlist_item = watchlist_items.id'
+			'WHERE watchlist_items.user_id = $1 AND watchlist_keys.watchlist_item = watchlist_items.id'
 		].join(' ');
 		var values = [
 			req.session.passport.user.id
@@ -949,5 +1071,54 @@ function queryServer(res, query, values, cb) {
 	});
 }
 
+
+
+// sendTemplate(
+// 	'email-verification',
+// 	'Stuffmapper needs your confirmation!',
+// 	{
+// 		'Ryan Farmer' : 'ryan.the.farmer@gmail.com'
+// 	},
+// 	{
+// 		'FIRSTNAME' : 'Ryan',
+// 		'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/confirmation/' + '93j923j0293j493209'
+// 	}
+// );
+
+function sendTemplate(template, subject, to, args) {
+	var mandrill = require('mandrill-api/mandrill');
+	var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
+	var template_name = template;
+	var template_content = [];
+	Object.keys(args).forEach(function(e) {
+		template_content.push({
+			"name" : e,
+			"content" : args[e]
+		});
+	});
+	var emailTo = [];
+	Object.keys(to).forEach(function(e) {
+		emailTo.push({
+			"email" : to[e],
+			"name" : e,
+			"type": "to"
+		});
+	});
+	var message = {
+		"subject": subject,
+		"from_email": "support@stuffmapper.com",
+		"from_name": "Stuffmapper Support",
+		"to": emailTo,
+		"headers": { "Reply-To": "no_reply@stuffmapper.com" },
+		"merge": true,
+		"merge_language": "mailchimp",
+		"global_merge_vars": template_content
+	};
+	mandrill_client.messages.sendTemplate({"template_name": template_name, "template_content": template_content, "message": message, "async": false, "ip_pool": "Main Pool"}, function(result) {
+		console.log(result);
+	}, function(e) {
+		console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
+	});
+}
 
 module.exports = router;
