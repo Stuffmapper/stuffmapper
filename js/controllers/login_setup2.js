@@ -1,8 +1,11 @@
-stuffMapp.controller('loginSetupTwoController', ['$scope', '$http', '$state', LoginSetupTwoController]);
+stuffMapp.controller('loginSetupTwoController', ['$scope', '$http', '$state', '$userData', LoginSetupTwoController]);
 function LoginSetupTwoController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $state = arguments[2];
+	var $userData = arguments[3];
+
+	$('#content').addClass('fre');
 
 
 	var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
@@ -42,8 +45,11 @@ function LoginSetupTwoController() {
 				return $.param(data);
 			}
 		}).success(function(data) {
-			if(!data.err && data.res.redirect) {
-
+			if(!data.err) {
+				$userData.setLoggedIn(true);
+				$userData.setUserId(data.res.user.id);
+				$userData.setBraintreeToken(data.res.user.braintree_token);
+				$state.go('stuff.get');
 			}
 		});
 	};
@@ -51,6 +57,7 @@ function LoginSetupTwoController() {
 		history.back();
 	};
 	$scope.$on('$destroy', function() {
-		$('input').off('keydown', hideKeyboard);
+		$('input').off('keydown', $scope.hideKeyboard);
+		$('#content').removeClass('fre');
 	});
 }

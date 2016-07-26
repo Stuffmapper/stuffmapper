@@ -11,7 +11,9 @@ function GetItemController() {
 
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
-		console.log(data.res);
+		console.log($scope.listItem.date_created);
+		$scope.listItem.date_created = new Date(data.res.date_created).getTime();
+		console.log($scope.listItem.date_created);
 		function openInfoWindow(e) {
 			e.category = 'test-category';
 			var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
@@ -58,15 +60,14 @@ function GetItemController() {
 		$scope.imageContainer.css({
 			'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'
 		});
-		$scope.paymentForm = $('<div>', {class:'get-item-single-payment-modal animate-250 hidden'});
-		$scope.paymentForm.html([
-			'<form id="checkout" method="post" action="/checkout">',
-			'	<div id="payment-form'+$stateParams.id+'"></div>',
-			'	<input type="submit" value="Pay $10">',
-			'</form>'
-		].join('\n'));
 		$scope.detailsContainer.html([
 			'<a id="get-single-item-dibs-button'+$stateParams.id+'" class="get-item-single-dibs-button">Dibs!</a>',
+			'<div class="get-item-single-payment-modal animate-250 hidden">',
+			'	<form id="checkout" method="post" action="/checkout">',
+			'		<div id="payment-form'+$stateParams.id+'"></div>',
+			'		<input type="submit" value="Pay $10">',
+			'	</form>',
+			'</div>',
 			'<p class="get-item-single-description">'+data.res.description+'</p>',
 			'<div class="">',
 			'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
@@ -86,7 +87,6 @@ function GetItemController() {
 			'width': (($(this).width()/$(this).height())>(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').height()))?'100%':'auto'),
 			'height': (($(this).width()/$(this).height())<=(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').height()))?'auto':'100%')
 		});
-		$scope.paymentForm.appendTo($scope.container);
 		$scope.containerBackground.appendTo($scope.container);
 		$scope.singleItem.appendTo($scope.imageContainer);
 		$scope.imageContainer.appendTo($scope.container);
@@ -140,17 +140,70 @@ function GetItemController() {
 		$('#get-single-item-dibs-button'+$stateParams.id).on('click', dibs);
 	}
 	function dibs() {
-		// $http.post(config.api.host + '/api/v'+config.api.version+'/dibs/'+$stateParams.id).success(function(data) {
-		// 	console.log(data.err);
-		// 	console.log(data.res);
-		// });
 		if($userData.isLoggedIn()) {
-			if(/*within first 15 minutes*/0) openDibs(5);
-			else if(/*after first 15 minutes, within first hour and 15 minutes*/1) openDibs(1);
-			else dibsItem();
+			var currentTime = new Date().getTime();
+			if(currentTime - $scope.listItem.date_created > 900000)
+				openDibs(5);
+			else if(currentTime - $scope.listItem.date_created > 5400000)
+				openDibs(1);
+			else
+				dibsItem();
 		}
 		else window.location.hash = 'signin';
 	}
+	function dibsItem() {
+		$http.post(config.api.host + '/api/v' + config.api.version + '/dibs/' + $scope.listItem.id, {}, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			transformRequest: function(data) {
+				return $.param(data);
+			}
+		}).success(function(data) {
+			if(!data.err) {
+				$('html').addClass('loggedIn');
+				$userData.setUserId(data.res.user.id);
+				$userData.setLoggedIn(true);
+				return $state.go('stuff.get');
+			}
+		});
+	}
+	function paidDibsItem() {
+		$http.post(config.api.host + '/api/v' + config.api.version + '/paiddibs/' + $scope.listItem.id, {}, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			transformRequest: function(data) {
+				return $.param(data);
+			}
+		}).success(function(data) {
+			if(!data.err) {
+				$('html').addClass('loggedIn');
+				$userData.setUserId(data.res.user.id);
+				$userData.setLoggedIn(true);
+				return $state.go('stuff.get');
+			}
+		});
+	}
+
+	function earlyDibsItem() {
+		$http.post(config.api.host + '/api/v' + config.api.version + '/earlydibs/' + $scope.listItem.id, {}, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+			},
+			transformRequest: function(data) {
+				return $.param(data);
+			}
+		}).success(function(data) {
+			if(!data.err) {
+				$('html').addClass('loggedIn');
+				$userData.setUserId(data.res.user.id);
+				$userData.setLoggedIn(true);
+				return $state.go('stuff.get');
+			}
+		});
+	}
+
 	function checkScroll() {
 		var div = $scope.detailsContainer[0];
 		var hasVerticalScrollbar = div.scrollHeight > div.clientHeight;

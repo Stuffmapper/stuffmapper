@@ -4,8 +4,7 @@ function LoginPageController() {
 	var $http = arguments[1];
 	var $state = arguments[2];
 	var $userData = arguments[3];
-
-
+	$('#content').addClass('fre');
 	$scope.loginPagelogin = function() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/login', {
 			username: $('#login-page-login-uname').val(),
@@ -20,7 +19,8 @@ function LoginPageController() {
 		}).success(function(data) {
 			if(!data.err) {
 				$('html').addClass('loggedIn');
-				$userData.setUserId(data.res.user.id);
+				$userData.setUserId(data.res.id);
+				$userData.setBraintreeToken(data.res.braintree_token);
 				$userData.setLoggedIn(true);
 				return $state.go('stuff.get');
 			}
@@ -32,6 +32,6 @@ function LoginPageController() {
 	};
 
 	$scope.$on('$destroy', function() {
-
+		$('#content').removeClass('fre');
 	});
 }

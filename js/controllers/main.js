@@ -1,4 +1,4 @@
-var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope'];
+var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window'];
 if (config.ionic.isIonic) {
 	mainControllerArgs.push('$cordovaOauth');
 	mainControllerArgs.push('$ionicPlatform');
@@ -15,9 +15,10 @@ function MainController() {
 	var $state = arguments[4];
 	var $location = arguments[5];
 	var $rootScope = arguments[6];
-	var $cordovaOauth = (typeof arguments[7] !== 'function') ? arguments[7] : undefined;
-	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[8] : undefined;
-	var $cordovaSQLite = (typeof arguments[9] !== 'function') ? arguments[9] : undefined;
+	var $window = arguments[7];
+	var $cordovaOauth = (typeof arguments[7] !== 'function') ? arguments[8] : undefined;
+	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
+	var $cordovaSQLite = (typeof arguments[9] !== 'function') ? arguments[10] : undefined;
 	if ($ionicPlatform && $cordovaSQLite) {
 		$ionicPlatform.registerBackButtonAction(function(event) {
 			if ($state.current.name !== 'stuff.get') {
@@ -175,38 +176,49 @@ function MainController() {
 		}, 550);
 	};
 	$scope.googleOAuth = function() {
-		if ($cordovaOauth) {
-			$cordovaOauth.google('11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com', [
-				'https://www.googleapis.com/auth/userinfo.email',
-				'https://www.googleapis.com/auth/userinfo.profile',
-				'https://www.googleapis.com/auth/plus.me',
-				'https://www.googleapis.com/auth/plus.login'
-			]).then(function(data) {
-				console.log(data);
-				$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', {
-					type: 'google',
-					oauth: data
-				}, {
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-					},
-					transformRequest: function(data) {
-						return $.param(data);
-					}
-				}).success(function(data) {
-					if(!data.err) {
-						$('html').addClass('loggedIn');
-						$userData.setUserId(data.res.id);
-						$userData.setLoggedIn(true);
-						$state.go('stuff.get');
-					}
-				});
-			});
+		if(config.ionic.isIonic) {
+			var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no');
+			w.onbeforeunload = function() {
+
+			};
 		}
+		// if ($cordovaOauth) {
+		// 	$cordovaOauth.google('11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com', [
+		// 		'https://www.googleapis.com/auth/userinfo.email',
+		// 		'https://www.googleapis.com/auth/userinfo.profile',
+		// 		'https://www.googleapis.com/auth/plus.me',
+		// 		'https://www.googleapis.com/auth/plus.login'
+		// 	]).then(function(data) {
+		// 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', {
+		// 			type: 'google',
+		// 			oauth: data
+		// 		}, {
+		// 			headers: {
+		// 				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+		// 			},
+		// 			transformRequest: function(data) {
+		// 				return $.param(data);
+		// 			}
+		// 		}).success(function(data) {
+		// 			console.log(data);
+		// 			if(!data.err) {
+		// 				$('html').addClass('loggedIn');
+		// 				$userData.setUserId(data.res.id);
+		// 				$userData.setBraintreeToken(data.res.braintree_token);
+		// 				$userData.setLoggedIn(true);
+		// 				$state.go('stuff.get');
+		// 			}
+		// 		});
+		// 	});
+		// }
 	};
 	$scope.facebookOAuth = function() {
-		if ($cordovaOauth) {
+		if(config.ionic.isIonic) {
+			var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no');
+			w.onbeforeunload = function() {
 
+			};
+			//$window.open('http://ducks.stuffmapper.com/api/v1/account/login/google');
 		}
 	};
 	if (config.html5) {
@@ -263,7 +275,7 @@ function MainController() {
 	$scope.login = function() {
 		// set step to loading
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/login', {
-			username: $('#sign-in-email').val(),
+			email: $('#sign-in-email').val(),
 			password: $('#sign-in-password').val()
 		}, {
 			headers: {
@@ -277,6 +289,7 @@ function MainController() {
 			location.hash = '';
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
+			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
 			if ($scope.redirectState) $state.go($scope.redirectState);
 			// $scope.redirectState = '';
@@ -293,6 +306,9 @@ function MainController() {
 		});
 	};
 	$scope.toGiveStuff = function() {
+		console.log($userData);
+		console.log($userData.isLoggedIn());
+		console.log($userData.getUserId());
 		if ($userData.isLoggedIn()) $state.go('stuff.give');
 		else {
 			$scope.redirectState = 'stuff.give';
@@ -354,6 +370,21 @@ function MainController() {
 		$('#side-menu, #side-menu-background').toggleClass('hidden');
 	};
 }
+
+function onResize() {
+	var sideMenuHeight = 0;
+	$('.side-menu-item').each(function(i,e){
+		sideMenuHeight += $(e).outerHeight();
+	});
+	if(sideMenuHeight > ($(document).height() - $('.side-menu-footer').height() - $('.side-menu-header').height())) {
+		$('.side-menu-footer').css({'position':'relative'});
+	} else {
+		$('.side-menu-footer').css({'position':'absolute'});
+	}
+}
+
+$(document).ready(onResize);
+$(window).on('resize', onResize);
 
 var working = false;
 

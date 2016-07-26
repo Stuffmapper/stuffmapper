@@ -25,8 +25,8 @@
 						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info
 							div.noselect {{ list.title }}
-						.stuff-item-category-distance-owner(style="float: left") {{ list.category }}
-						.stuff-item-category-distance-owner(style="float: right;") 5 mi.
+						.stuff-item-category-distance-owner(style="float: left;max-width:calc(100% - 84px);text-align: center;") {{ list.category }}
+						.stuff-item-category-distance-owner(style="float: right;text-align: center;") 5 mi.
 	form#filter-pane.animate-250
 		#filter-head.filter-header
 			p.noselect Filters

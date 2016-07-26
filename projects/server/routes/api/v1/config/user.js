@@ -19,15 +19,15 @@ module.exports = (function() {
 			var loginType = '';
 			if(login.email) loginType = 'email';
 			else if(login.uname) loginType = 'uname';
-			else if(login.google) loginType = 'google';
-			else if(login.facebook) loginType = 'facebook';
+			else if(login.google) loginType = 'google_id';
+			else if(login.facebook) loginType = 'facebook_id';
 			var client = new pg.Client(conString);
 			client.connect(function(err) {
 				if(err) {
 					client.end();
 					return cb('pg connect error: ' + err, null);
 				}
-				var query = 'SELECT * FROM users WHERE '+loginType+'_id = $1';
+				var query = 'SELECT * FROM users WHERE '+loginType+' = $1';
 				var values = [
 					login[loginType]
 				];

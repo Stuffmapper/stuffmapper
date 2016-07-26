@@ -1,10 +1,12 @@
-stuffMapp.controller('loginStepsController', ['$scope', '$http', '$ionicSlideBoxDelegate', '$state', '$timeout', LoginStepsController]);
+stuffMapp.controller('loginStepsController', ['$scope', '$http', '$ionicSlideBoxDelegate', '$state', '$timeout', '$userData', LoginStepsController]);
 function LoginStepsController(){
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $ionicSlideBoxDelegate = arguments[2];
 	var $state = arguments[3];
 	var $timeout = arguments[4];
+	var $userData = arguments[5];
+	$('#content').addClass('fre');
 
 	$scope.options = {
 		loop: false,
@@ -113,6 +115,7 @@ function LoginStepsController(){
 	});
 
 	$scope.$on('$destroy', function(){
+		$('#content').removeClass('fre');
 
 	});
 }

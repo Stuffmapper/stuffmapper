@@ -3,7 +3,7 @@ var db;
 var stuffMapp = angular
 .module('stuffMapp', config.modules)
 .factory('$userData', function() {
-	var data = { loggedIn: $('html').hasClass('loggedIn'), FirstName: '', LastName: '', email: '', userId: 0 };
+	var data = { loggedIn: $('html').hasClass('loggedIn'), braintreeToken: '', FirstName: '', LastName: '', email: '', userId: 0 };
 	return {
 		isLoggedIn: function () { return data.loggedIn; },
 		setLoggedIn: function (loggedIn) { data.loggedIn = loggedIn; },
@@ -15,8 +15,10 @@ var stuffMapp = angular
 		setUserId: function (userId) { data.UserId = userId; },
 		getEmail: function () { return data.Email; },
 		setEmail: function (email) { data.Email = email; },
+		getBraintreeToken: function () { return data.braintreeToken; },
+		setBraintreeToken: function (braintreeToken) { data.braintreeToken = braintreeToken; },
 		clearData: function () {
-			data = { FirstName: '', LastName: '', email: '', userId: 0 };
+			data = { FirstName: '', LastName: '', email: '', userId: 0, braintreeToken: '' };
 		}
 	};
 })
@@ -30,13 +32,13 @@ var stuffMapp = angular
 		}
 	};
 })
-.service('authenticator', ['$http', '$q', function ($http, $q) {
+.factory('authenticator', function getSession($http, $q) {
 	var deferred = $q.defer();
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status')
 	.success(function (data) { deferred.resolve(data); })
 	.error(function (msg) { deferred.reject(msg); });
 	return deferred.promise;
-}])
+})
 .directive('repeatDone', function() {
 	return function(scope, element, attrs) {
 		if(scope.$last) scope.$eval(attrs.repeatDone);

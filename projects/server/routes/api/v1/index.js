@@ -6,6 +6,14 @@ var saltRounds = 10;
 var passport = require('passport');
 var request = require('request');
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
+var braintree = require("braintree");
+
+var gateway = braintree.connect({
+	environment: braintree.Environment.Production,
+	merchantId: "7t82byzdjdbkwp8m",
+	publicKey: "5hnt7srpm7x5d2qp",
+	privateKey: "6f8520869e0dd6bf8eec2956752166d9"
+});
 
 function isAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) { return next(); }
@@ -68,12 +76,13 @@ router.get('/stuff/id/:id', function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended, ',
-			'posts.lat, posts.lng, categories.category, images.image_url ',
-			'FROM posts, images, categories ',
-			'WHERE images.post_id = posts.id AND posts.id = $1 AND ',
+			'SELECT posts.id, posts.title, posts.description, posts.attended,',
+			'posts.lat, posts.lng, categories.category, images.image_url,',
+			'posts.date_created',
+			'FROM posts, images, categories',
+			'WHERE images.post_id = posts.id AND posts.id = $1 AND',
 			'categories.id = posts.category_id'
-		].join('');
+		].join(' ');
 		var values = [
 			req.params.id
 		];
@@ -313,7 +322,10 @@ router.get('/views', function() {
 
 router.post('/account/status', function(req, res) {
 	queryServer(res, 'SELECT pick_up_success FROM pick_up_success WHERE pick_up_success = true', [], function(result) {
-		if(req.isAuthenticated()) {
+		console.log('loggedIn');
+		console.log(req.session);
+		console.log('loggedIn');
+		if(req.session.passport && req.session.passport.user) {
 			res.send({
 				err: null,
 				res: {
@@ -345,38 +357,46 @@ router.post('/account/register', function(req, res) {
 				'Authorization':'Bearer '+b.oauth.access_token
 			}
 		}, function(err, result, body) {
-			body = JSON.parse(body);
-			var query = [
-				'INSERT INTO users ',
-				'(fname, lname, uname, email, google_id) ',
-				'VALUES ($1, $2, $3, $4, $5) ',
-				'RETURNING *'
-			].join('');
-			var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
-			var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
-			var number = Math.floor(Math.random() * 9999) + 1;
+			gateway.clientToken.generate({}, function (err, response) {
+				//res.send(response.clientToken);
+				body = JSON.parse(body);
+				var query = [
+					'INSERT INTO users',
+					'(fname, lname, uname, email, google_id, braintree_token)',
+					'VALUES ($1, $2, $3, $4, $5, $6)',
+					'RETURNING *'
+				].join(' ');
+				var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
+				var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
+				var number = Math.floor(Math.random() * 9999) + 1;
 
-			function capitalizeFirstLetter(string) {
-				return string.charAt(0).toUpperCase() + string.slice(1);
-			}
+				function capitalizeFirstLetter(string) {
+					return string.charAt(0).toUpperCase() + string.slice(1);
+				}
 
-			var values = [
-				body.given_name,
-				body.family_name,
-				capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number,
-				body.email,
-				body.id
-			];
-			queryServer(res, query, values, function(result) {
-				req.session.passport = {};
-				req.session.passport.user = {};
-				req.session.passport.user.id = result.rows[0].id;
-				req.session.passport.user.fname = result.rows[0].fname;
-				req.session.passport.user.lname = result.rows[0].lname;
-				req.session.passport.user.email = result.rows[0].email;
-				res.send({
-					err : null,
-					res : result.rows[0]
+				var values = [
+					body.given_name,
+					body.family_name,
+					capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number,
+					body.email,
+					body.id,
+					response.clientToken
+				];
+				queryServer(res, query, values, function(result) {
+					req.session.passport = {};
+					req.session.passport.user = {};
+					req.session.passport.user.id = result.rows[0].id;
+					req.session.passport.user.fname = result.rows[0].fname;
+					req.session.passport.user.lname = result.rows[0].lname;
+					req.session.passport.user.email = result.rows[0].email;
+					req.session.passport.user.braintree_token = result.rows[0].braintree_token;
+					console.log('REGISTER GOOGLE START');
+					console.log(req.session);
+					console.log('REGISTER GOOGLE  END');
+					res.send({
+						err : null,
+						res : result.rows[0]
+					});
 				});
 			});
 		});
@@ -385,40 +405,53 @@ router.post('/account/register', function(req, res) {
 
 	}
 	else {
-		bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
-			var query = [
-				'INSERT INTO users ',
-				'(fname, lname, uname, email, password, phone_number) ',
-				'VALUES ($1, $2, $3, $4, $5, $6) ',
-				'RETURNING *'
-			].join('');
-			var values = [
-				b.fname,
-				b.lname,
-				b.uname,
-				b.email,
-				hashedPassword,
-				b.phone_number
-			];
-			queryServer(res, query, values, function(result) {
-				res.send({
-					err : null,
-					res : {
-						redirect: true
-					}
+		gateway.clientToken.generate({}, function (err, response) {
+			bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
+				var query = [
+					'INSERT INTO users ',
+					'(fname, lname, uname, email, password, phone_number, braintree_token)',
+					'VALUES ($1, $2, $3, $4, $5, $6, $7)',
+					'RETURNING *'
+				].join(' ');
+				var values = [
+					b.fname,
+					b.lname,
+					b.uname,
+					b.email,
+					hashedPassword,
+					b.phone_number,
+					response.clientToken
+				];
+				queryServer(res, query, values, function(result) {
+					res.send({
+						err : null,
+						res : {
+							redirect: true,
+							user: result.rows[0]
+						}
+					});
+					var emailTo = {};
+					req.session.passport = {};
+					req.session.passport.user = {};
+					req.session.passport.user.id = result.rows[0].id;
+					req.session.passport.user.fname = result.rows[0].fname;
+					req.session.passport.user.lname = result.rows[0].lname;
+					req.session.passport.user.email = result.rows[0].email;
+					req.session.passport.user.braintree_token = result.rows[0].braintree_token;
+					console.log('REGISTER LOCAL START');
+					console.log(req.session);
+					console.log('REGISTER LOCAL  END');
+					emailTo[b.uname] = b.email;
+					sendTemplate(
+						'email-verification',
+						'Stuffmapper needs your confirmation!',
+						emailTo,
+						{
+							'FIRSTNAME' : b.uname,
+							'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
+						}
+					);
 				});
-				var emailTo = {};
-				emailTo[b.uname] = b.email;
-				console.log(result.rows);
-				sendTemplate(
-					'email-verification',
-					'Stuffmapper needs your confirmation!',
-					emailTo,
-					{
-						'FIRSTNAME' : b.uname,
-						'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
-					}
-				);
 			});
 		});
 	}
@@ -444,9 +477,6 @@ router.get('/account/confirmation/:email_token', function(req, res) {
 router.post('/account/login', function(req, res, next) {
 	var passport = req._passport.instance;
 	passport.authenticate('local', function(err, user, info) {
-		console.log(err);
-		console.log(user);
-		console.log(info);
 		if (err) {
 			return res.send({
 				err: 'local login error: ' + err,
@@ -574,10 +604,10 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'UPDATE posts SET dibber_id = $1, dibbed = true ',
-			'WHERE dibbed = false AND id = $2 ',
+			'UPDATE posts SET dibber_id = $1, dibbed = true',
+			'WHERE dibbed = false AND id = $2',
 			'RETURNING *'
-		].join('');
+		].join(' ');
 		var values = [
 			req.session.passport.user.id,
 			req.params.id
@@ -588,10 +618,10 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 				return client.end();
 			}
 			var query = [
-				'INSERT INTO pick_up_success ',
-				'(post_id, dibber_id, lister_id) ',
+				'INSERT INTO pick_up_success',
+				'(post_id, dibber_id, lister_id)',
 				'VALUES ($1, $2, $3) RETURNING *'
-			].join('');
+			].join(' ');
 			var values = [
 				req.params.id,
 				req.session.passport.user.id,
@@ -603,10 +633,10 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 					return client.end();
 				}
 				var query = [
-					'INSERT INTO conversations ',
-					'(post_id, dibber_id, lister_id) ',
+					'INSERT INTO conversations',
+					'(post_id, dibber_id, lister_id)',
 					'VALUES ($1, $2, $3) RETURNING *'
-				].join('');
+				].join(' ');
 				var values = [
 					req.params.id,
 					req.session.passport.user.id,
@@ -644,6 +674,8 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 		});
 	});
 });
+
+
 
 router.delete('/undib/:id', isAuthenticated, function(req, res) {
 

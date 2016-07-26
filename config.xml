@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.ionicframework.stuffmapper744562" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.stuffmapper.stuffmapper" version="0.0.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Stuffmapper</name>
   <description>
-        An Ionic Framework and Cordova project.
+        Stuffmapper
     </description>
   <author email="admin@stuffmapper.com" href="https://www.stuffmapper.com/">
         Stuffmapper
@@ -10,9 +10,9 @@
   <content src="index.html"/>
   <access origin="*"/>
   <access origin="https://assets.braintreegateway.com/*"/>
-  <access origin="http://ducks.stuffmapper.com:3000/*"/>
+  <access origin="http://ducks.stuffmapper.com/*"/>
   <access origin="about:blank"/>
-  <allow-navigation href="http://ducks.stuffmapper.com:3000/*"/>
+  <allow-navigation href="http://ducks.stuffmapper.com/*"/>
   <allow-navigation href="https://assets.braintreegateway.com/*"/>
   <allow-navigation href="about:*"/>
   <allow-navigation href="https://checkout.paypal.com/*"/>
