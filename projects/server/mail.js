@@ -115,8 +115,8 @@ sendTemplate(
 		'APPSTORELINK' : 'appleappstorelink',
 		'PLAYSTORELINK' : 'playstorelink',
 		'FIRSTNAME' : 'Delaney',
-		'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/verificaiton/239jr092fj9eyfoaeu9fwur',
-		'UPDATE_PROFILE' : 'http://ducks.stuffmapper.com/stuff/my/settings'
+		'CONFIRMEMAIL' : 'http://localhost:3000/api/v1/account/verificaiton/239jr092fj9eyfoaeu9fwur',
+		'UPDATE_PROFILE' : 'http://localhost:3000/stuff/my/settings'
 	}
 );
 //

@@ -55,7 +55,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="http://ducks.stuffmapper.com/socket.io/socket.io.js")
+			script(src="http://localhost:3000/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
@@ -119,32 +119,45 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							#sign-in-step.modal-step.animate-250.active
 								h2.modal-title.animate-250 Sign In
 								if ionic
+									.privacy-and-terms-container
+										p 
+											| By clicking "Sign Up"/ "Sign In", you agree to the 
+											a(ui-sref="privacy", ng-click="hideModal()") Privacy 
+											| and 
+											a(ui-sref="useragreement", ng-click="hideModal()") Terms
 									a.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
 										span.social-sign-in-icon.social-sign-in-icon-google
 											i.fa.fa-google-plus
-										span.social-sign-in-text Sign in with Google
+										span.social-sign-in-text Continue with Google
 								else
-									a.sign-in-up-input.social-button.google-plus-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/google" target="_self")
+									a.sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
 										span.social-sign-in-icon.social-sign-in-icon-google
 											i.fa.fa-google-plus
-										span.social-sign-in-text Sign in with Google
+										span.social-sign-in-text Continue with Google
 								if ionic
 									a.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
 										span.social-sign-in-icon.social-sign-in-icon-facebook
 											i.fa.fa-facebook
-										span.social-sign-in-text Sign in with Facebook
+										span.social-sign-in-text Continue with Facebook
 								else
-									a.sign-in-up-input.social-button.facebook-sign-in(href="//ducks.stuffmapper.com/api/v1/account/login/facebook" target="_self")
+									a.sign-in-up-input.social-button.facebook-sign-in(href="//localhost:3000/api/v1/account/login/facebook" target="_self")
 										span.social-sign-in-icon.social-sign-in-icon-facebook
 											i.fa.fa-facebook
-										span.social-sign-in-text Sign in with Facebook
+										span.social-sign-in-text Continue with Facebook
 								hr
-								span.sign-in-local-text or sign in with your email address 
+								span.sign-in-local-text or sign in 
 								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
 								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
-								hr
 								input#sign-in-sign-in-button.sign-in-up-input(type="button" value="Sign In" ng-click="login()")
+								
+								hr
 								input#sign-in-sign-up-button.sign-in-up-input(type="button" value="Sign Up" ng-click="signUpStep()")
+								.privacy-and-terms-container
+									p 
+										| By clicking "Sign Up"/ "Sign In", you agree to the 
+										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
+										| and 
+										a(ui-sref="useragreement", ng-click="hideModal()") Terms of Use
 							#sign-up-step.modal-step.animate-250.hidden-modal
 								h2.modal-title Sign Up
 								.modal-back-button(ng-click="signUpBack()")
@@ -155,6 +168,13 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								input#sign-up-fname.sign-in-up-input.local-sign-in-up(type="text" placeholder="first name")
 								input#sign-up-lname.sign-in-up-input.local-sign-in-up(type="text" placeholder="last name")
 								hr
+								.privacy-and-terms-container
+									p 
+										| By clicking "Sign Up", you agree to the 
+										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
+										| and 
+										a(ui-sref="useragreement", ng-click="hideModal()") Terms
+										
 								input#-sign-up-button.sign-in-up-input(type="button" value="Sign Up" ng-click="signUp()")
 							#authorizing-step.modal-step.animate-250.hidden-modal
 								h2.modal-title Authorizing...

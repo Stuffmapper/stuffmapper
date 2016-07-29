@@ -1,14 +1,20 @@
 ion-content#login-setup-one-container(scroll='false')
 	#setup-logo-container(style="height: 50%; background-size: cover; width: 100%; background-position: 50% 50%; background-image: url(img/stuffmapper-logo.png);")
 	#setup-login-info(style="display: inline-block;width: 100%;position: relative")
+		.privacy-and-terms-container
+			p 
+				| By clicking "Sign Up", you agree to the 
+				a(ui-sref="privacy", ng-click="hideModal()") Privacy 
+				| and 
+				a(ui-sref="useragreement", ng-click="hideModal()") Terms
 		a.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
 			span.social-sign-in-icon.social-sign-in-icon-google
 				i.fa.fa-google-plus
-			span.social-sign-in-text Sign in with Google
+			span.social-sign-in-text Continue with Google
 		a.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
 			span.social-sign-in-icon.social-sign-in-icon-facebook
 				i.fa.fa-facebook
-			span.social-sign-in-text Sign in with Facebook
+			span.social-sign-in-text Continue with Facebook
 		div(style="text-align: center;") or
 		br
 		a(ui-sref="setup2" style="width: 100%; text-align: center; display: block;") sign up with your email address

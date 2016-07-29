@@ -105,7 +105,7 @@ function MainController() {
 	function initUserData(data) {
 		if (data.res.user) {
 			$userData.setUserId(data.res.user.id);
-			$scope.socket = io('http://ducks.stuffmapper.com');
+			$scope.socket = io('http://localhost:3000');
 			$scope.socket.on((data.res.user.id), function(data) {
 				var lPath = $location.$$path.split('/');
 				lPath.shift();
@@ -177,7 +177,7 @@ function MainController() {
 	};
 	$scope.googleOAuth = function() {
 		if(config.ionic.isIonic) {
-			var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no');
+			var w = window.open('http://localhost:3000/api/v1/account/login/google', '_blank', 'location=no');
 			w.onbeforeunload = function() {
 
 			};
@@ -214,7 +214,7 @@ function MainController() {
 	};
 	$scope.facebookOAuth = function() {
 		if(config.ionic.isIonic) {
-			var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no');
+			var w = window.open('http://localhost:3000/api/v1/account/login/google', '_blank', 'location=no');
 			w.onbeforeunload = function() {
 
 			};
