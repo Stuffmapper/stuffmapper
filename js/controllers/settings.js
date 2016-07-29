@@ -5,19 +5,20 @@ function SettingsController() {
 	var $http = arguments[1];
 	var authenticator = arguments[2];
 	var $state = arguments[3];
-	authenticator.then(function(data) {
+	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
+		console.log('SETTINGS');
+		console.log(data.res);
+		console.log(data.res.user);
+		console.log(!data.res.user);
+		console.log(!!data.res.user);
 		if(!data.res.user) {
-			$state.go('stuff.get');
-			window.location.hash = '#signin';
+			console.log('what?!?!?!?!');
+			$state.go('stuff.get', {'#':'signin'});
 		} else {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/account/info').success(function(data){
-				if(data.err) {
-					console.log(data.err);
-					return;
-				}
+				if(data.err) return console.log(data.err);
 				$scope.users = data.res;
 			});
-
 			// Editing user data
 
 			$scope.update = function(users) {

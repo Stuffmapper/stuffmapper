@@ -7,9 +7,7 @@ function GiveController() {
 	var $location = arguments[4];
 	var $stuffTabs = arguments[5];
 	var authenticator = arguments[6];
-	console.log('in give controller!');
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
-		console.log('ummmmmmmm api plz?');
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
 		} else {

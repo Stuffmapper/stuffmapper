@@ -62,13 +62,15 @@ require(path.join(__dirname, '/routes/api/v1/config/passport'));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get('/redirect',function(req,res){res.render('redirect');});
+
 app.get('/auth/google_oauth2/callback', passport.authenticate('google', {
-	successRedirect: '/stuff/get',
+	successRedirect: '/redirect',
 	failureRedirect: '/api/v1/account/login/google'
 }));
 
 app.get('/auth/facebook_oauth2/callback', passport.authenticate('facebook', {
-	successRedirect: '/stuff/get',
+	successRedirect: '/redirect',
 	failureRedirect: '/api/v1/account/login/facebook'
 }));
 

@@ -48,6 +48,12 @@ function GetItemController() {
 				//$scope.resizeMarkers();
 				google.maps.event.trigger($scope.map, 'zoom_changed');
 				$scope.map.panTo(new google.maps.LatLng(e.data.lat, e.data.lng));
+				$scope.googleMapStaticUrl = [
+					'https://maps.googleapis.com/maps/api/staticmap?',
+					'zoom=13&size=600x300&maptype=roadmap&',
+					'markers=color:red%7C'+e.data.lat+','+e.data.lng+'&',
+					'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
+				].join('');
 			}
 		});
 		$scope.imgScale = 1;
@@ -60,6 +66,7 @@ function GetItemController() {
 		$scope.imageContainer.css({
 			'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'
 		});
+
 		$scope.detailsContainer.html([
 			'<a id="get-single-item-dibs-button'+$stateParams.id+'" class="get-item-single-dibs-button">Dibs!</a>',
 			'<div class="get-item-single-payment-modal animate-250 hidden">',
@@ -71,7 +78,8 @@ function GetItemController() {
 			'<p class="get-item-single-description">'+data.res.description+'</p>',
 			'<div class="">',
 			'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
-			'</div>'
+			'</div>',
+			'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl+'" />'
 		].join('\n'));
 		$scope.singleItem = $('#post-item-' + $stateParams.id + ' img')
 		.clone()
@@ -141,13 +149,14 @@ function GetItemController() {
 	}
 	function dibs() {
 		if($userData.isLoggedIn()) {
-			var currentTime = new Date().getTime();
-			if(currentTime - $scope.listItem.date_created > 900000)
-				openDibs(5);
-			else if(currentTime - $scope.listItem.date_created > 5400000)
-				openDibs(1);
-			else
-				dibsItem();
+			dibsItem();
+			// var currentTime = new Date().getTime();
+			// if(currentTime - $scope.listItem.date_created > 900000)
+			// 	openDibs(5);
+			// else if(currentTime - $scope.listItem.date_created > 5400000)
+			// 	openDibs(1);
+			// else
+			// 	dibsItem();
 		}
 		else window.location.hash = 'signin';
 	}

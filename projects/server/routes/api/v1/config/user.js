@@ -19,8 +19,8 @@ module.exports = (function() {
 			var loginType = '';
 			if(login.email) loginType = 'email';
 			else if(login.uname) loginType = 'uname';
-			else if(login.google) loginType = 'google_id';
-			else if(login.facebook) loginType = 'facebook_id';
+			else if(login.google) loginType = 'google';
+			else if(login.facebook) loginType = 'facebook';
 			var client = new pg.Client(conString);
 			client.connect(function(err) {
 				if(err) {
@@ -54,6 +54,7 @@ module.exports = (function() {
 					client.end();
 					return cb(err, null);
 				}
+				console.log(type);
 				var query = 'SELECT * FROM users WHERE '+type+'_id = $1 OR email = $2';
 				var values = [
 					profile.id,
@@ -84,15 +85,16 @@ module.exports = (function() {
 					else {
 						query = [
 							'INSERT INTO users ',
-							'(fname, lname, uname, email) ',
-							'VALUES ($1, $2, $3, $4) ',
+							'(fname, lname, uname, email, '+type+'_id) ',
+							'VALUES ($1, $2, $3, $4, $5) ',
 							'RETURNING *'
 						].join('');
 						values = [
 							profile.name.givenName,
 							profile.name.familyName,
 							profile.displayName,
-							profile.email || profile.emails[0].value
+							profile.email || profile.emails[0].value,
+							profile.id
 						];
 						client.query(query, values, function(err, result) {
 							if(err) {

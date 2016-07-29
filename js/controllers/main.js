@@ -176,51 +176,51 @@ function MainController() {
 		}, 550);
 	};
 	$scope.googleOAuth = function() {
-		if(config.ionic.isIonic) {
-			var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no');
-			w.onbeforeunload = function() {
-
-			};
-		}
-		// if ($cordovaOauth) {
-		// 	$cordovaOauth.google('11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com', [
-		// 		'https://www.googleapis.com/auth/userinfo.email',
-		// 		'https://www.googleapis.com/auth/userinfo.profile',
-		// 		'https://www.googleapis.com/auth/plus.me',
-		// 		'https://www.googleapis.com/auth/plus.login'
-		// 	]).then(function(data) {
-		// 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', {
-		// 			type: 'google',
-		// 			oauth: data
-		// 		}, {
-		// 			headers: {
-		// 				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-		// 			},
-		// 			transformRequest: function(data) {
-		// 				return $.param(data);
-		// 			}
-		// 		}).success(function(data) {
-		// 			console.log(data);
-		// 			if(!data.err) {
-		// 				$('html').addClass('loggedIn');
-		// 				$userData.setUserId(data.res.id);
-		// 				$userData.setBraintreeToken(data.res.braintree_token);
-		// 				$userData.setLoggedIn(true);
-		// 				$state.go('stuff.get');
-		// 			}
-		// 		});
-		// 	});
-		// }
+		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
+		var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
+		var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+		var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
+		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
+		var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
+		w.loginSuccess = function() {
+			console.log('login success?  ahhhhh!');
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
+				if (data.err) return console.log(data.err);
+				location.hash = '';
+				$('html').addClass('loggedIn');
+				$userData.setUserId(data.res.user.id);
+				$userData.setBraintreeToken(data.res.user.braintree_token);
+				$userData.setLoggedIn(true);
+			});
+		};
+		w.beforeUnload = function() {
+			console.log('testing 1 2 3');
+		};
 	};
 	$scope.facebookOAuth = function() {
-		if(config.ionic.isIonic) {
-			var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no');
-			w.onbeforeunload = function() {
-
-			};
-			//$window.open('http://ducks.stuffmapper.com/api/v1/account/login/google');
-		}
+		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
+		var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
+		var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+		var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
+		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
+		var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/facebook', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
+		w.loginSuccess = function() {
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
+				if (data.err) return console.log(data.err);
+				location.hash = '';
+				$('html').addClass('loggedIn');
+				$userData.setUserId(data.res.user.id);
+				$userData.setBraintreeToken(data.res.user.braintree_token);
+				$userData.setLoggedIn(true);
+			});
+		};
 	};
+	function PopupCenter() {
+
+		if (window.focus) newWindow.focus();
+	}
 	if (config.html5) {
 		var value = location.hash;
 		if (value) {
