@@ -231,6 +231,25 @@ function GetStuffController() {
 			});
 		}
 	});
+	$scope.getDistance = function() {
+		var milesAway;
+		// var $grid = $('.masonry-grid').isotope({
+		// 	getSortData: {
+		// 		number: '.number parseInt'
+		// 	},
+		// 	sortBy: 'number'
+		// });
+		$scope.getLocation(function(position) {
+			$scope.listItems.forEach(function(e) {
+				var radius = google.maps.geometry.spherical.computeDistanceBetween(
+					new google.maps.LatLng(position.lat, position.lng),
+					new google.maps.LatLng(e.lat, e.lng)
+				);
+				e.milesAway = Math.ceil(radius/1609.344);
+				$scope.milesAway = e.milesAway;
+			});
+		});
+	};
 	$scope.filterSearch = function () {
 		var searchQuery = $('#search-stuff').val().toLowerCase();
 		var sliderValue = parseInt($('.distance-slider').val());
@@ -264,6 +283,7 @@ function GetStuffController() {
 					} else {
 						$('#post-item-' + e.id).css({'display': 'none'});
 					}
+
 				});
 			});
 		}
