@@ -2,10 +2,12 @@
 	div(ui-view)
 	ion-content#masonry-container.animate-250(style="height: 100%;")
 		ul.masonry-grid
-			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry()")
+			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry(); getDistance()")
 				a(ui-sref="stuff.my.items.item({ id:{{ list.id }} })")
 					| {{ item.title }}
 					.list-item-img-container(id="post-item-{{ list.id }}")
 						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info
-							div {{ list.title }}
+							div.noselect {{ list.title }}
+						.stuff-item-category-distance-owner(style="float: left;max-width:calc(100% - 84px);text-align: center;") {{ list.category }}
+						.stuff-item-category-distance-owner.number(style="float: right;text-align: center;") {{ list.milesAway }} mi.
