@@ -24,6 +24,7 @@
     "ngCordova": "^0.1.26-alpha",
     "fastclick": "^1.0.6",
     "ng-cordova-oauth": "^0.2.9",
-    "select2": "^4.0.3"
+    "select2": "^4.0.3",
+		"isotope": "^3.0.1"
   }
 }

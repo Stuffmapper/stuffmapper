@@ -19,18 +19,17 @@ function GetStuffController() {
 				//console.log('refresh');
 			};
 			$scope.initMasonry = function() {
-				$('.masonry-grid').masonry({
-					columnWidth: $('.masonry-grid').width()/2,
-					itemSelector: '.masonry-grid-item',
-					isAnimated: true
-				}).imagesLoaded(function(){
-					$('.masonry-grid').masonry('reloadItems').masonry();
+				$('.masonry-grid').imagesLoaded( function() {
 					$('#loading-get-stuff').addClass('hidden');
 				});
 				$(window).resize(function() {
-					$('.masonry-grid').masonry({
+					$('.masonry-grid').isotope({
 						columnWidth: $('.masonry-grid').width()/2,
 						itemSelector: '.masonry-grid-item',
+						getSortData: {
+							number: '.number parseInt'
+						},
+						sortBy: 'number',
 						isAnimated: true
 					});
 				});
@@ -233,12 +232,6 @@ function GetStuffController() {
 	});
 	$scope.getDistance = function() {
 		var milesAway;
-		// var $grid = $('.masonry-grid').isotope({
-		// 	getSortData: {
-		// 		number: '.number parseInt'
-		// 	},
-		// 	sortBy: 'number'
-		// });
 		$scope.getLocation(function(position) {
 			$scope.listItems.forEach(function(e) {
 				var radius = google.maps.geometry.spherical.computeDistanceBetween(
@@ -289,15 +282,20 @@ function GetStuffController() {
 		}
 		//refresh masonry
 		setTimeout(function () {
-			$('.masonry-grid').masonry({
-				columnWidth: function(columnWidth) {
-					return $('.masonry-grid').width()/2;
-				}(),
-				itemSelector: '.masonry-grid-item',
-				isAnimated: true
-			}).imagesLoaded(function(){
+			$('.masonry-grid').imagesLoaded( function() {
 				$('#loading-get-stuff').addClass('hidden');
-				$('.masonry-grid').masonry('reloadItems').masonry();
+				$('.masonry-grid').isotope({
+					columnWidth: function(columnWidth) {
+						return $('.masonry-grid').width()/2;
+					}(),
+					itemSelector: '.masonry-grid-item',
+					getSortData: {
+						number: '.number parseInt'
+					},
+					sortAscending: true,
+					sortBy: 'number',
+					isAnimated: true
+				});
 			});
 		},100);
 	};
