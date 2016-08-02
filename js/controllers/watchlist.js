@@ -1,4 +1,5 @@
 stuffMapp.controller('watchlistController', ['$scope', '$http', '$location', '$state', 'authenticator', WatchListController]);
+console.log('watchlistController1');
 function WatchListController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
@@ -58,40 +59,45 @@ function WatchListController() {
 			$scope.clearField = function() {
 				$('#watchlist-select').val('');
 			};
-			$scope.selections = function() {
-				$('#watchlist-select').select2({
-					placeholder: 'Search for tag names',
-					allowClear: true,
-					tags: true,
-					tokenSeparators: [',', ' '],
-					ajax: {
-						url: '/api/v1/categoriesandtags',
-						dataType: 'json',
-						delay: 250,
-						data: function (params) {
-							return {
-								q: params.term, // search term
-								page: params.page
-							};
-						},
-						processResults: function (data, params) {
-							// parse the results into the format expected by Select2
-							// since we are using custom formatting functions we do not need to
-							// alter the remote JSON data, except to indicate that infinite
-							// scrolling can be used
-							console.log(data);
-							params.page = params.page || 1;
-
-							return {
-								results: data.res
-							};
-						},
-						cache: true
-					},
-					escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-					minimumInputLength: 1
-				});
-			};
 		}
 	});
+
+	$scope.selections = function() {
+		console.log('asdfasdfasf');
+		$('#watchlist-select').select2({
+			placeholder: 'Search for tag names',
+			allowClear: true,
+			tags: true,
+			tokenSeparators: [',', ' '],
+			ajax: {
+				url: '/api/v1/categoriesandtags',
+				dataType: 'json',
+				delay: 250,
+				data: function (params) {
+					return {
+						q: params.term, // search term
+						page: params.page
+					};
+				},
+				processResults: function (data, params) {
+					// parse the results into the format expected by Select2
+					// since we are using custom formatting functions we do not need to
+					// alter the remote JSON data, except to indicate that infinite
+					// scrolling can be used
+					console.log(data);
+					params.page = params.page || 1;
+
+					return {
+						results: data.res
+					};
+				},
+				cache: true
+			},
+			escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+			minimumInputLength: 1
+		});
+	};
+
+
+
 }
