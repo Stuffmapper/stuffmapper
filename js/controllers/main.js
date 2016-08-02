@@ -110,7 +110,7 @@ function MainController() {
 	function initUserData(data) {
 		if (data.res.user) {
 			$userData.setUserId(data.res.user.id);
-			$scope.socket = io('http://localhost:3000');
+			$scope.socket = io('http://ducks.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function(data) {
 				var lPath = $location.$$path.split('/');
 				lPath.shift();
