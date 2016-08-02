@@ -5,7 +5,7 @@ function MyStuffController() {
 	var $userData = arguments[2];
 	var authenticator = arguments[3];
 	var $state = arguments[4];
-	authenticator.then(function(data) {
+	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
 		} else {

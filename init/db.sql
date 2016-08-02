@@ -113,11 +113,13 @@ CREATE TABLE images (
 
 CREATE TABLE tag_names (
 	id BIGSERIAL PRIMARY KEY,
+	date_created timestamp DEFAULT current_timestamp,
 	tag_name varchar(32) UNIQUE NOT NULL
 );
 
 CREATE TABLE tags (
 	id BIGSERIAL PRIMARY KEY,
+	date_created timestamp DEFAULT current_timestamp,
 	post_id integer REFERENCES posts(id),
 	name integer REFERENCES tag_names(id)
 );

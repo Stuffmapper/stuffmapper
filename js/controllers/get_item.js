@@ -11,9 +11,7 @@ function GetItemController() {
 
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
-		console.log($scope.listItem.date_created);
 		$scope.listItem.date_created = new Date(data.res.date_created).getTime();
-		console.log($scope.listItem.date_created);
 		function openInfoWindow(e) {
 			e.category = 'test-category';
 			var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
@@ -43,11 +41,16 @@ function GetItemController() {
 		openInfoWindow(data.res);
 		$scope.markers.forEach(function(e) {
 			if(e.data.id === $scope.listItem.id) {
-				console.log(e.data.id);
 				e.data.selected = true;
 				//$scope.resizeMarkers();
 				google.maps.event.trigger($scope.map, 'zoom_changed');
 				$scope.map.panTo(new google.maps.LatLng(e.data.lat, e.data.lng));
+				$scope.googleMapStaticUrl = [
+					'https://maps.googleapis.com/maps/api/staticmap?',
+					'zoom=13&size=600x300&maptype=roadmap&',
+					'markers=color:red%7C'+e.data.lat+','+e.data.lng+'&',
+					'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
+				].join('');
 			}
 		});
 		$scope.imgScale = 1;
@@ -60,18 +63,20 @@ function GetItemController() {
 		$scope.imageContainer.css({
 			'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'
 		});
+
 		$scope.detailsContainer.html([
 			'<a id="get-single-item-dibs-button'+$stateParams.id+'" class="get-item-single-dibs-button">Dibs!</a>',
 			'<div class="get-item-single-payment-modal animate-250 hidden">',
-			'	<form id="checkout" method="post" action="/checkout">',
+			'	<form id="checkout" method="post" action="/checkout" target="_blank">',
 			'		<div id="payment-form'+$stateParams.id+'"></div>',
-			'		<input type="submit" value="Pay $10">',
+			'		<input id="dibs-submit-button" type="submit" value="Pay">',
 			'	</form>',
 			'</div>',
 			'<p class="get-item-single-description">'+data.res.description+'</p>',
 			'<div class="">',
 			'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
-			'</div>'
+			'</div>',
+			'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl+'" />'
 		].join('\n'));
 		$scope.singleItem = $('#post-item-' + $stateParams.id + ' img')
 		.clone()
@@ -128,12 +133,26 @@ function GetItemController() {
 		});
 	});
 	function initPayment() {
-		console.log('Payment initialized');
-		console.log($('#get-single-item-dibs-button'+$stateParams.id));
-		var clientToken = "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJiYjdjOTBlNzQ2MDk1ZWUzNjQ3ZTk0NDkxNzU2MWY5ZjJiMWUzM2FhZjQ4M2YwMWRjZGQwZThhMWUzYTgwNmQxfGNyZWF0ZWRfYXQ9MjAxNi0wNy0wMVQxNzoxNjo1MS4zODU3OTMwNDQrMDAwMFx1MDAyNm1lcmNoYW50X2lkPTM0OHBrOWNnZjNiZ3l3MmJcdTAwMjZwdWJsaWNfa2V5PTJuMjQ3ZHY4OWJxOXZtcHIiLCJjb25maWdVcmwiOiJodHRwczovL2FwaS5zYW5kYm94LmJyYWludHJlZWdhdGV3YXkuY29tOjQ0My9tZXJjaGFudHMvMzQ4cGs5Y2dmM2JneXcyYi9jbGllbnRfYXBpL3YxL2NvbmZpZ3VyYXRpb24iLCJjaGFsbGVuZ2VzIjpbXSwiZW52aXJvbm1lbnQiOiJzYW5kYm94IiwiY2xpZW50QXBpVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5icmFpbnRyZWVnYXRld2F5LmNvbTo0NDMvbWVyY2hhbnRzLzM0OHBrOWNnZjNiZ3l3MmIvY2xpZW50X2FwaSIsImFzc2V0c1VybCI6Imh0dHBzOi8vYXNzZXRzLmJyYWludHJlZWdhdGV3YXkuY29tIiwiYXV0aFVybCI6Imh0dHBzOi8vYXV0aC52ZW5tby5zYW5kYm94LmJyYWludHJlZWdhdGV3YXkuY29tIiwiYW5hbHl0aWNzIjp7InVybCI6Imh0dHBzOi8vY2xpZW50LWFuYWx5dGljcy5zYW5kYm94LmJyYWludHJlZWdhdGV3YXkuY29tLzM0OHBrOWNnZjNiZ3l3MmIifSwidGhyZWVEU2VjdXJlRW5hYmxlZCI6dHJ1ZSwicGF5cGFsRW5hYmxlZCI6dHJ1ZSwicGF5cGFsIjp7ImRpc3BsYXlOYW1lIjoiQWNtZSBXaWRnZXRzLCBMdGQuIChTYW5kYm94KSIsImNsaWVudElkIjpudWxsLCJwcml2YWN5VXJsIjoiaHR0cDovL2V4YW1wbGUuY29tL3BwIiwidXNlckFncmVlbWVudFVybCI6Imh0dHA6Ly9leGFtcGxlLmNvbS90b3MiLCJiYXNlVXJsIjoiaHR0cHM6Ly9hc3NldHMuYnJhaW50cmVlZ2F0ZXdheS5jb20iLCJhc3NldHNVcmwiOiJodHRwczovL2NoZWNrb3V0LnBheXBhbC5jb20iLCJkaXJlY3RCYXNlVXJsIjpudWxsLCJhbGxvd0h0dHAiOnRydWUsImVudmlyb25tZW50Tm9OZXR3b3JrIjp0cnVlLCJlbnZpcm9ubWVudCI6Im9mZmxpbmUiLCJ1bnZldHRlZE1lcmNoYW50IjpmYWxzZSwiYnJhaW50cmVlQ2xpZW50SWQiOiJtYXN0ZXJjbGllbnQzIiwiYmlsbGluZ0FncmVlbWVudHNFbmFibGVkIjp0cnVlLCJtZXJjaGFudEFjY291bnRJZCI6ImFjbWV3aWRnZXRzbHRkc2FuZGJveCIsImN1cnJlbmN5SXNvQ29kZSI6IlVTRCJ9LCJjb2luYmFzZUVuYWJsZWQiOmZhbHNlLCJtZXJjaGFudElkIjoiMzQ4cGs5Y2dmM2JneXcyYiIsInZlbm1vIjoib2ZmIn0=";
-
-		braintree.setup(clientToken, "dropin", {
-			container: 'payment-form'+$stateParams.id
+		var clientToken = $userData.getBraintreeToken();
+		braintree.setup(clientToken, 'dropin', {
+			container: 'payment-form'+$stateParams.id,
+			paymentMethodNonceReceived: function (event, nonce) {
+				if($userData.isLoggedIn()) {
+					var currentTime = new Date().getTime();
+					if(currentTime - $scope.listItem.date_created < 900000) {
+						$.post('/checkout/earlydibs', {payment_method_nonce:nonce}, function(data, textStatus, xhr) {
+							console.log('earlydibs!');
+						});
+					}
+					else if(currentTime - $scope.listItem.date_created < 5400000) {
+						$.post('/checkout/paiddibs', {payment_method_nonce:nonce}, function(data, textStatus, xhr) {
+							console.log('paiddibs!');
+						});
+					}
+					else dibsItem();
+				}
+				else window.location.hash = 'signin';
+			}
 		});
 	}
 	function initListener() {
@@ -142,31 +161,83 @@ function GetItemController() {
 	function dibs() {
 		if($userData.isLoggedIn()) {
 			var currentTime = new Date().getTime();
-			if(currentTime - $scope.listItem.date_created > 900000)
-				openDibs(5);
-			else if(currentTime - $scope.listItem.date_created > 5400000)
-				openDibs(1);
-			else
-				dibsItem();
+			if(currentTime - $scope.listItem.date_created < 900000) earlyDibs();
+			else if(currentTime - $scope.listItem.date_created < 5400000) paidDibs();
+			else dibsItem();
 		}
 		else window.location.hash = 'signin';
 	}
+	var dibbing = false;
+	function earlyDibs() {
+		$('#dibs-submit-button').val('5 Dollar Dibs!')
+		if(!dibbing) {
+			dibbing = true;
+			$('get-single-item-dibs-button'+$stateParams.id).css({
+				'background-color': 'gray'
+			}).html('dibsing...');
+			$http.post(config.api.host + '/api/v' + config.api.version + '/dibs/' + $scope.listItem.id, {}, {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+				},
+				transformRequest: function(data) {
+					return $.param(data);
+				}
+			}).success(function(data) {
+				if(!data.err) {
+					$('html').addClass('loggedIn');
+					$userData.setUserId(data.res.user.id);
+					$userData.setLoggedIn(true);
+					return $state.go('stuff.get');
+				}
+			});
+		}
+	}
+	function paidDibs() {
+		$('#dibs-submit-button').val('1 Dollar Dibs!')
+		if(!dibbing) {
+			dibbing = true;
+			$('get-single-item-dibs-button'+$stateParams.id).css({
+				'background-color': 'gray'
+			}).html('dibsing...');
+			$http.post(config.api.host + '/api/v' + config.api.version + '/dibs/' + $scope.listItem.id, {}, {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+				},
+				transformRequest: function(data) {
+					return $.param(data);
+				}
+			}).success(function(data) {
+				if(!data.err) {
+					$('html').addClass('loggedIn');
+					$userData.setUserId(data.res.user.id);
+					$userData.setLoggedIn(true);
+					return $state.go('stuff.get');
+				}
+			});
+		}
+	}
 	function dibsItem() {
-		$http.post(config.api.host + '/api/v' + config.api.version + '/dibs/' + $scope.listItem.id, {}, {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-			},
-			transformRequest: function(data) {
-				return $.param(data);
-			}
-		}).success(function(data) {
-			if(!data.err) {
-				$('html').addClass('loggedIn');
-				$userData.setUserId(data.res.user.id);
-				$userData.setLoggedIn(true);
-				return $state.go('stuff.get');
-			}
-		});
+		if(!dibbing) {
+			dibbing = true;
+			$('get-single-item-dibs-button'+$stateParams.id).css({
+				'background-color': 'gray'
+			}).html('dibsing...');
+			$http.post(config.api.host + '/api/v' + config.api.version + '/dibs/' + $scope.listItem.id, {}, {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+				},
+				transformRequest: function(data) {
+					return $.param(data);
+				}
+			}).success(function(data) {
+				if(!data.err) {
+					$('html').addClass('loggedIn');
+					$userData.setUserId(data.res.user.id);
+					$userData.setLoggedIn(true);
+					return $state.go('stuff.get');
+				}
+			});
+		}
 	}
 	function paidDibsItem() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/paiddibs/' + $scope.listItem.id, {}, {
@@ -211,7 +282,7 @@ function GetItemController() {
 	$('#map-view').on('mousedown', backToGetStuff);
 	function backToGetStuff() {
 		//if($scope.mapMode){
-			$state.go('stuff.get');
+		$state.go('stuff.get');
 		//}
 		//else {
 
@@ -232,7 +303,6 @@ function GetItemController() {
 		$('#get-single-item-dibs-button'+$stateParams.id).off('click', dibs);
 		$scope.markers.forEach(function(e) {
 			if(e.data.id === $scope.listItem.id) {
-				console.log(e.data.id);
 				e.data.selected = false;
 				//$scope.resizeMarkers();
 				google.maps.event.trigger($scope.map, 'zoom_changed');

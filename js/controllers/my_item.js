@@ -6,7 +6,7 @@ function MyItemsController() {
 	var $stateParams = arguments[3];
 	var $userData = arguments[4];
 	var $state = arguments[5];
-	authenticator.then(function(data) {
+	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
 		} else {

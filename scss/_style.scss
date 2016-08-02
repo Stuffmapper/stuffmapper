@@ -505,8 +505,8 @@ input:read-only{
 .get-single-item-dibs-button {
 	width: 96%;
 	margin: 2%;
+	margin-bottom: 20px;
 	height: 40px;
-	font-size: 20px;
 	background-color: $aqua-dark;
 	border-radius: 3px;
 	border: none;
@@ -599,7 +599,7 @@ input:read-only{
 
 .get-item-single-description {
 	margin: 0 auto;
-	width: 95%;
+	width: 88%;
 }
 
 .get-item-single-title {
@@ -613,6 +613,7 @@ input:read-only{
 	height: 40px;
 	line-height: 40px;
 	margin: 10px;
+	margin-bottom: 20px;
 	z-index: 1;
 	width: calc(100% - 20px);
 	background-color: $aqua-dark;
@@ -2171,7 +2172,7 @@ input[type=range].distance-slider:focus::-ms-fill-upper {
 #conversation-send-reply {
 	right: 0px;
 }
-#cnversation-input {
+#conversation-input {
 	border-radius: 5px;
 	background-color: $white;
 	resize: none;
