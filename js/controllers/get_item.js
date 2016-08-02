@@ -141,13 +141,15 @@ function GetItemController() {
 					if($userData.isLoggedIn()) {
 						var currentTime = new Date().getTime();
 						if(currentTime - $scope.listItem.date_created < 900000) {
-							$.post('/checkout/earlydibs', {payment_method_nonce:nonce}, function(data, textStatus, xhr) {
+							$.post('/checkout/earlydibs', {payment_method_nonce: nonce}, function(data, textStatus, xhr) {
 								console.log('earlydibs!');
+								$state.go('stuff.my.items', {id: $stateParams.id});
 							});
 						}
 						else if(currentTime - $scope.listItem.date_created < 5400000) {
-							$.post('/checkout/paiddibs', {payment_method_nonce:nonce}, function(data, textStatus, xhr) {
+							$.post('/checkout/paiddibs', {payment_method_nonce: nonce}, function(data, textStatus, xhr) {
 								console.log('paiddibs!');
+								$state.go('stuff.my.items', {id: $stateParams.id});
 							});
 						}
 						else dibsItem();
