@@ -448,7 +448,7 @@ router.post('/account/register', function(req, res) {
 						emailTo,
 						{
 							'FIRSTNAME' : b.uname,
-							'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
+							'CONFIRMEMAIL' : 'http://localhost:3000/api/v1/account/confirmation/' + result.rows[0].verify_email_token
 						}
 					);
 				});

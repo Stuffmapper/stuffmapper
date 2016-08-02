@@ -19,18 +19,17 @@ function GetStuffController() {
 				//console.log('refresh');
 			};
 			$scope.initMasonry = function() {
-				$('.masonry-grid').masonry({
-					columnWidth: $('.masonry-grid').width()/2,
-					itemSelector: '.masonry-grid-item',
-					isAnimated: true
-				}).imagesLoaded(function(){
-					$('.masonry-grid').masonry('reloadItems').masonry();
+				$('.masonry-grid').imagesLoaded( function() {
 					$('#loading-get-stuff').addClass('hidden');
 				});
 				$(window).resize(function() {
-					$('.masonry-grid').masonry({
+					$('.masonry-grid').isotope({
 						columnWidth: $('.masonry-grid').width()/2,
 						itemSelector: '.masonry-grid-item',
+						getSortData: {
+							number: '.number parseInt'
+						},
+						sortBy: 'number',
 						isAnimated: true
 					});
 				});
@@ -231,6 +230,19 @@ function GetStuffController() {
 			});
 		}
 	});
+	$scope.getDistance = function() {
+		var milesAway;
+		$scope.getLocation(function(position) {
+			$scope.listItems.forEach(function(e) {
+				var radius = google.maps.geometry.spherical.computeDistanceBetween(
+					new google.maps.LatLng(position.lat, position.lng),
+					new google.maps.LatLng(e.lat, e.lng)
+				);
+				e.milesAway = Math.ceil(radius/1609.344);
+				$scope.milesAway = e.milesAway;
+			});
+		});
+	};
 	$scope.filterSearch = function () {
 		var searchQuery = $('#search-stuff').val().toLowerCase();
 		var sliderValue = parseInt($('.distance-slider').val());
@@ -264,20 +276,26 @@ function GetStuffController() {
 					} else {
 						$('#post-item-' + e.id).css({'display': 'none'});
 					}
+
 				});
 			});
 		}
 		//refresh masonry
 		setTimeout(function () {
-			$('.masonry-grid').masonry({
-				columnWidth: function(columnWidth) {
-					return $('.masonry-grid').width()/2;
-				}(),
-				itemSelector: '.masonry-grid-item',
-				isAnimated: true
-			}).imagesLoaded(function(){
+			$('.masonry-grid').imagesLoaded( function() {
 				$('#loading-get-stuff').addClass('hidden');
-				$('.masonry-grid').masonry('reloadItems').masonry();
+				$('.masonry-grid').isotope({
+					columnWidth: function(columnWidth) {
+						return $('.masonry-grid').width()/2;
+					}(),
+					itemSelector: '.masonry-grid-item',
+					getSortData: {
+						number: '.number parseInt'
+					},
+					sortAscending: true,
+					sortBy: 'number',
+					isAnimated: true
+				});
 			});
 		},100);
 	};
