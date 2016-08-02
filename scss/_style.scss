@@ -3078,7 +3078,9 @@ input[type=range].distance-slider:focus::-ms-fill-upper {
 	}
 	/* Faq - END */
 	/* Filter - Start */
-
+	#filter-pane {
+		height: calc(100% - 59px);
+	}
 
 	/* Filter - End */
 }
