@@ -134,26 +134,28 @@ function GetItemController() {
 	});
 	function initPayment() {
 		var clientToken = $userData.getBraintreeToken();
-		braintree.setup(clientToken, 'dropin', {
-			container: 'payment-form'+$stateParams.id,
-			paymentMethodNonceReceived: function (event, nonce) {
-				if($userData.isLoggedIn()) {
-					var currentTime = new Date().getTime();
-					if(currentTime - $scope.listItem.date_created < 900000) {
-						$.post('/checkout/earlydibs', {payment_method_nonce:nonce}, function(data, textStatus, xhr) {
-							console.log('earlydibs!');
-						});
+		if(clientToken) {
+			braintree.setup(clientToken, 'dropin', {
+				container: 'payment-form'+$stateParams.id,
+				paymentMethodNonceReceived: function (event, nonce) {
+					if($userData.isLoggedIn()) {
+						var currentTime = new Date().getTime();
+						if(currentTime - $scope.listItem.date_created < 900000) {
+							$.post('/checkout/earlydibs', {payment_method_nonce:nonce}, function(data, textStatus, xhr) {
+								console.log('earlydibs!');
+							});
+						}
+						else if(currentTime - $scope.listItem.date_created < 5400000) {
+							$.post('/checkout/paiddibs', {payment_method_nonce:nonce}, function(data, textStatus, xhr) {
+								console.log('paiddibs!');
+							});
+						}
+						else dibsItem();
 					}
-					else if(currentTime - $scope.listItem.date_created < 5400000) {
-						$.post('/checkout/paiddibs', {payment_method_nonce:nonce}, function(data, textStatus, xhr) {
-							console.log('paiddibs!');
-						});
-					}
-					else dibsItem();
+					else window.location.hash = 'signin';
 				}
-				else window.location.hash = 'signin';
-			}
-		});
+			});
+		}
 	}
 	function initListener() {
 		$('#get-single-item-dibs-button'+$stateParams.id).on('click', dibs);
@@ -193,7 +195,7 @@ function GetItemController() {
 		}
 	}
 	function paidDibs() {
-		$('#dibs-submit-button').val('1 Dollar Dibs!')
+		$('#dibs-submit-button').val('1 Dollar Dibs!');
 		if(!dibbing) {
 			dibbing = true;
 			$('get-single-item-dibs-button'+$stateParams.id).css({
