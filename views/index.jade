@@ -55,7 +55,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="http://localhost:3000/socket.io/socket.io.js")
+			script(src="http://ducks.stuffmapper.com/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
@@ -118,32 +118,14 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 						.modal-steps
 							#sign-in-step.modal-step.animate-250.active
 								h2.modal-title.animate-250 Sign In
-								if ionic
-									.privacy-and-terms-container
-										p 
-											| By clicking "Sign Up"/ "Sign In", you agree to the 
-											a(ui-sref="privacy", ng-click="hideModal()") Privacy 
-											| and 
-											a(ui-sref="useragreement", ng-click="hideModal()") Terms
-									a.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
-										span.social-sign-in-icon.social-sign-in-icon-google
-											i.fa.fa-google-plus
-										span.social-sign-in-text Continue with Google
-								else
-									a.sign-in-up-input.social-button.google-plus-sign-in(href="//localhost:3000/api/v1/account/login/google" target="_self")
-										span.social-sign-in-icon.social-sign-in-icon-google
-											i.fa.fa-google-plus
-										span.social-sign-in-text Continue with Google
-								if ionic
-									a.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
-										span.social-sign-in-icon.social-sign-in-icon-facebook
-											i.fa.fa-facebook
-										span.social-sign-in-text Continue with Facebook
-								else
-									a.sign-in-up-input.social-button.facebook-sign-in(href="//localhost:3000/api/v1/account/login/facebook" target="_self")
-										span.social-sign-in-icon.social-sign-in-icon-facebook
-											i.fa.fa-facebook
-										span.social-sign-in-text Continue with Facebook
+								.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
+									span.social-sign-in-icon.social-sign-in-icon-google
+										i.fa.fa-google-plus
+									span.social-sign-in-text Sign in with Google
+								.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
+									span.social-sign-in-icon.social-sign-in-icon-facebook
+										i.fa.fa-facebook
+									span.social-sign-in-text Sign in with Facebook
 								hr
 								span.sign-in-local-text or sign in 
 								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")

@@ -12,6 +12,9 @@ var passport = require('passport');
 var User = require('./routes/api/v1/config/user');
 var multer = require('multer');
 var multerS3 = require('multer-s3');
+var braintree = require('braintree');
+var pg = require('pg');
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
 AWS.config = new AWS.Config();
 AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
 AWS.config.secretAccessKey = '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';
@@ -62,13 +65,53 @@ require(path.join(__dirname, '/routes/api/v1/config/passport'));
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+var gateway = braintree.connect({
+	environment: braintree.Environment.Production,
+	merchantId: '7t82byzdjdbkwp8m',
+	publicKey: '5hnt7srpm7x5d2qp',
+	privateKey: '6f8520869e0dd6bf8eec2956752166d9'
+});
+
+app.post('/checkout/paiddibs', function(req, res) {
+	var nonceFromTheClient = req.body.payment_method_nonce;
+	if(!nonceFromTheClient) return res.send('failure');
+	gateway.transaction.sale({
+		amount: '1.00',
+		paymentMethodNonce: nonceFromTheClient,
+		options: {
+			submitForSettlement: true
+		}
+	}, function (err, result) {
+		if(err) return res.send('failure');
+		res.send('success');
+	});
+});
+
+app.post('/checkout/earlydibs', function(req, res) {
+	var nonceFromTheClient = req.body.payment_method_nonce;
+	if(!nonceFromTheClient) return res.send('failure');
+	gateway.transaction.sale({
+		amount: '5.00',
+		paymentMethodNonce: nonceFromTheClient,
+		options: {
+			submitForSettlement: true
+		}
+	}, function (err, result) {
+		if(err) return res.send('failure');
+		res.send('success');
+	});
+});
+
+app.get('/redirect',function(req,res){res.render('redirect');});
+
 app.get('/auth/google_oauth2/callback', passport.authenticate('google', {
-	successRedirect: '/stuff/get',
+	successRedirect: '/redirect',
 	failureRedirect: '/api/v1/account/login/google'
 }));
 
 app.get('/auth/facebook_oauth2/callback', passport.authenticate('facebook', {
-	successRedirect: '/stuff/get',
+	successRedirect: '/redirect',
 	failureRedirect: '/api/v1/account/login/facebook'
 }));
 
