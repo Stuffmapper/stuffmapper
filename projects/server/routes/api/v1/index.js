@@ -669,8 +669,8 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 						emailTo,
 						{
 							'FIRSTNAME' : req.session.passport.user.uname,
-							'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/get',
-							'MYSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/my/items',
+							'CHATLINK' : 'http://localhost:3000/stuff/get',
+							'MYSTUFFLINK' : 'http://localhost:3000/stuff/my/items',
 							'ITEMTITLE':'I FIGURE THIS OUT LATER'
 						}
 					);

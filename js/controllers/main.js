@@ -187,7 +187,7 @@ function MainController() {
 		var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
 		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
 		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
-		var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
+		var w = window.open('http://localhost:3000/api/v1/account/login/google', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
 		if(config.ionic.isIonic) {
 			w.addEventListener('loadstart', function(event) {
 				if (event.url.match('/redirect')) {
@@ -215,7 +215,7 @@ function MainController() {
 		var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
 		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
 		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
-		var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/facebook', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
+		var w = window.open('http://localhost:3000/api/v1/account/login/facebook', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
 		if(config.ionic.isIonic) {
 			w.addEventListener('loadstart', function(event) {
 				if (event.url.match('/redirect')) {
