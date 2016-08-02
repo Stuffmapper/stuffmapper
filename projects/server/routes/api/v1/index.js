@@ -6,13 +6,13 @@ var saltRounds = 10;
 var passport = require('passport');
 var request = require('request');
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
-var braintree = require("braintree");
+var braintree = require('braintree');
 
 var gateway = braintree.connect({
 	environment: braintree.Environment.Production,
-	merchantId: "7t82byzdjdbkwp8m",
-	publicKey: "5hnt7srpm7x5d2qp",
-	privateKey: "6f8520869e0dd6bf8eec2956752166d9"
+	merchantId: '7t82byzdjdbkwp8m',
+	publicKey: '5hnt7srpm7x5d2qp',
+	privateKey: '6f8520869e0dd6bf8eec2956752166d9'
 });
 
 function isAuthenticated(req, res, next) {
@@ -594,6 +594,12 @@ router.delete('/account/info', isAuthenticated, function(req, res) {
 
 /* USER ACCOUNT MANAGEMENT -  END  */
 
+
+
+
+
+
+
 /* DIBS MANAGEMENT - START */
 
 router.post('/dibs/:id', isAuthenticated, function(req, res) {
@@ -656,13 +662,13 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 						}
 					});
 					var emailTo = {};
-					emailTo[req.session.user.fname + ' ' + req.session.user.lname] = req.session.user.email;
+					emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
 					sendTemplate(
 						'dibber-notification-1',
 						'You Dibbed an item!',
 						emailTo,
 						{
-							'FIRSTNAME' : req.session.user.fname,
+							'FIRSTNAME' : req.session.passport.user.uname,
 							'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/get',
 							'MYSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/my/items',
 							'ITEMTITLE':'I FIGURE THIS OUT LATER'

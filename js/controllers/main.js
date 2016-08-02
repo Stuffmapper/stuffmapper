@@ -36,6 +36,12 @@ function MainController() {
 	$scope.counterFlipperHeader.setCounter(4765432);
 	initChatra();
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data) {
+		if(data.res.user) {
+			$('html').addClass('loggedIn');
+			$userData.setUserId(data.res.user.id);
+			$userData.setBraintreeToken(data.res.user.braintree_token);
+			$userData.setLoggedIn(true);
+		}
 		$scope.counterFlipperHeader.setCounter(data.res.lt);
 		$scope.counterFlipperMenu.setCounter(data.res.lt);
 		if ($cordovaSQLite) {
@@ -77,7 +83,6 @@ function MainController() {
 				$scope.initDB();
 				$scope.addTestUser();
 				var userData = $scope.getUserData();
-				console.log(data);
 				if(!data.res) {
 
 				} else {
@@ -183,20 +188,25 @@ function MainController() {
 		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
 		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
 		var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
-		w.loginSuccess = function() {
-			console.log('login success?  ahhhhh!');
-			$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
-				if (data.err) return console.log(data.err);
-				location.hash = '';
-				$('html').addClass('loggedIn');
-				$userData.setUserId(data.res.user.id);
-				$userData.setBraintreeToken(data.res.user.braintree_token);
-				$userData.setLoggedIn(true);
+		if(config.ionic.isIonic) {
+			w.addEventListener('loadstart', function(event) {
+				if (event.url.match('/redirect')) {
+					w.close();
+					getAccountStatus();
+				}
 			});
-		};
-		w.beforeUnload = function() {
-			console.log('testing 1 2 3');
-		};
+		}
+		else {
+			var interval = window.setInterval(function() {
+				try {
+					if (w === null || w.closed) {
+						clearInterval(interval);
+						getAccountStatus();
+					}
+				}
+				catch (e){}
+			}, 500);
+		}
 	};
 	$scope.facebookOAuth = function() {
 		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
@@ -206,46 +216,60 @@ function MainController() {
 		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
 		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
 		var w = window.open('http://ducks.stuffmapper.com/api/v1/account/login/facebook', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
-		w.loginSuccess = function() {
-			$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
-				if (data.err) return console.log(data.err);
-				location.hash = '';
-				$('html').addClass('loggedIn');
-				$userData.setUserId(data.res.user.id);
-				$userData.setBraintreeToken(data.res.user.braintree_token);
-				$userData.setLoggedIn(true);
+		if(config.ionic.isIonic) {
+			w.addEventListener('loadstart', function(event) {
+				if (event.url.match('/redirect')) {
+					w.close();
+					getAccountStatus();
+				}
 			});
-		};
+		}
+		else {
+			var interval = window.setInterval(function() {
+				try {
+					if (w === null || w.closed) {
+						clearInterval(interval);
+						getAccountStatus();
+					}
+				}
+				catch (e){}
+			}, 500);
+		}
 	};
-	function PopupCenter() {
-
-		if (window.focus) newWindow.focus();
+	function getAccountStatus() {
+		$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
+			if (data.err) return console.log(data.err);
+			location.hash = '';
+			$('html').addClass('loggedIn');
+			$userData.setUserId(data.res.user.id);
+			$userData.setBraintreeToken(data.res.user.braintree_token);
+			$userData.setLoggedIn(true);
+		});
 	}
 	if (config.html5) {
 		var value = location.hash;
 		if (value) {
 			if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 			var hash = value.split('#').pop();
-			if (hash === "signin") $scope.showModal();
+			if (hash === 'signin') $scope.showModal();
 		} else removeHash();
 		$(window).on('hashchange', function(event) {
 			var value = location.hash;
 			if (value) {
 				if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 				var hash = value.split('#').pop();
-				if (hash === "signin") $scope.showModal();
+				if (hash === 'signin') $scope.showModal();
 			} else if ($scope.popUpOpen) $scope.hideModal();
 			if (!value) removeHash();
 		});
 	}
-
 	function removeHash() {
 		var scrollV, scrollH, loc = window.location;
-		if ("pushState" in history) history.pushState("", document.title, loc.pathname + loc.search);
+		if ('pushState' in history) history.pushState('', document.title, loc.pathname + loc.search);
 		else {
 			scrollV = document.body.scrollTop;
 			scrollH = document.body.scrollLeft;
-			loc.hash = "";
+			loc.hash = '';
 			document.body.scrollTop = scrollV;
 			document.body.scrollLeft = scrollH;
 		}
@@ -306,9 +330,6 @@ function MainController() {
 		});
 	};
 	$scope.toGiveStuff = function() {
-		console.log($userData);
-		console.log($userData.isLoggedIn());
-		console.log($userData.getUserId());
 		if ($userData.isLoggedIn()) $state.go('stuff.give');
 		else {
 			$scope.redirectState = 'stuff.give';
