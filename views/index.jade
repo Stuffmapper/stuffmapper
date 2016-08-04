@@ -55,7 +55,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="http://ducks.stuffmapper.com/socket.io/socket.io.js")
+			script(src="http://localhost:3000/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
@@ -176,7 +176,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					i.fa.fa-cog
 					span(ui-sref="stuff.my.settings") Settings
 				li
-					i.fa.fa.question-circle-o
+					i.fa.fa-question
 					span(ui-sref="faq") FAQ
 				li
 					i.fa.fa-user-secret
@@ -208,7 +208,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					span Profile & Settings
 			li.side-menu-item
 				a.side-menu-link(ui-sref="faq", ng-click="toggleSideMenu()")
-					.side-menu-icon.fa.fa-support
+					.side-menu-icon.fa.fa-question
 					span FAQ/Help
 			li.side-menu-item
 				a.side-menu-link(ng-click="logout(); toggleSideMenu();")
