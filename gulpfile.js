@@ -19,7 +19,8 @@ var paths = {
 gulp.task('default', ['sass', 'jade', 'js', 'images']);
 
 gulp.task('sass', function(done) {
-	gulp.src('./scss/**/**/*.app.scss')
+	gulp.src(['./scss/**/**/*.app.scss',
+						'./js/lib/cropper-master/src/scss'])
 	.pipe(sass())
 	.on('error', sass.logError)
 	.pipe(gulp.dest('./www/css/'))
@@ -101,6 +102,7 @@ gulp.task('js', function(done) {
 			'./js/lib/angular-ui-router/release/angular-ui-router.min.js',
 			'./js/lib/angular-animate/angular-animate.min.js',
 			'./js/lib/select2/dist/js/select2.full.min.js',
+			'./js/lib/cropper-master/src/js',
 			'./js/app.js',
 			'./js/settings.js',
 			'./js/controllers/*.js',
