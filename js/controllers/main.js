@@ -3,6 +3,7 @@ if (config.ionic.isIonic) {
 	mainControllerArgs.push('$cordovaOauth');
 	mainControllerArgs.push('$ionicPlatform');
 	mainControllerArgs.push('$cordovaSQLite');
+	mainControllerArgs.push('$cordovaPush');
 }
 mainControllerArgs.push(MainController);
 stuffMapp.controller('MainController', mainControllerArgs);
@@ -16,9 +17,10 @@ function MainController() {
 	var $location = arguments[5];
 	var $rootScope = arguments[6];
 	var $window = arguments[7];
-	var $cordovaOauth = (typeof arguments[7] !== 'function') ? arguments[8] : undefined;
-	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
-	var $cordovaSQLite = (typeof arguments[9] !== 'function') ? arguments[10] : undefined;
+	var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[8] : undefined;
+	var $ionicPlatform = (typeof arguments[9] !== 'function') ? arguments[9] : undefined;
+	var $cordovaSQLite = (typeof arguments[10] !== 'function') ? arguments[10] : undefined;
+	var $cordovaPush = (typeof arguments[11] !== 'function') ? arguments[11] : undefined;
 	if ($ionicPlatform && $cordovaSQLite) {
 		$ionicPlatform.registerBackButtonAction(function(event) {
 			if ($state.current.name !== 'stuff.get') {
@@ -238,12 +240,68 @@ function MainController() {
 	};
 	function getAccountStatus() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
-			if (data.err) return console.log(data.err);
+			if (data.err || !data.res.user) return console.log(data.err);
 			location.hash = '';
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
+			$state.go('stuff.get');
+			if(config.ionic.isIonic) {
+				$ionicPlatform.ready(function () {
+					var push = $cordovaPush.init({
+						android: {
+							senderID: "11148716793"
+						},
+						browser: {
+							pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+						},
+						ios: {
+							alert: "true",
+							badge: "true",
+							sound: "true"
+						},
+						windows: {}
+					});
+
+					push.on('registration', function(data) {
+						// data.registrationId
+						console.log(data);
+					});
+
+					push.on('notification', function(data) {
+						// data.message,
+						// data.title,
+						// data.count,
+						// data.sound,
+						// data.image,
+						// data.additionalData
+						console.log(data);
+					});
+
+					push.on('error', function(e) {
+						// e.message
+						console.log(e);
+					});
+					// $cordovaPush.register({
+					// 	badge: true,
+					// 	sound: true,
+					// 	alert: true
+					// }).then(function (result) {
+					// 	UserService.registerDevice({
+					// 		user: user,
+					// 		token: result
+					// 	}).then(function () {
+					// 		console.log('did it.');
+					// 		//$ionicLoading.hide();
+					// 	}, function (err) {
+					// 		console.log(err);
+					// 	});
+					// }, function (err) {
+					// 	console.log('reg device error', err);
+					// });
+				});
+			}
 		});
 	}
 	if (config.html5) {
@@ -315,8 +373,31 @@ function MainController() {
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
-			if ($scope.redirectState) $state.go($scope.redirectState);
-			// $scope.redirectState = '';
+			if ($scope.redirectState) {
+				$state.go($scope.redirectState);
+				$scope.redirectState = '';
+			}
+			if(config.ionic.isIonic) {
+				$ionicPlatform.ready(function () {
+					// $cordovaPush.register({
+					// 	badge: true,
+					// 	sound: true,
+					// 	alert: true
+					// }).then(function (result) {
+					// 	UserService.registerDevice({
+					// 		user: user,
+					// 		token: result
+					// 	}).then(function () {
+					// 		$ionicLoading.hide();
+					// 		$state.go('tab.news');
+					// 	}, function (err) {
+					// 		console.log(err);
+					// 	});
+					// }, function (err) {
+					// 	console.log('reg device error', err);
+					// });
+				});
+			}
 		});
 	};
 	$scope.logout = function() {

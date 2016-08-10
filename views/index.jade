@@ -134,24 +134,23 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								
 								hr
 								input#sign-in-sign-up-button.sign-in-up-input(type="button" value="Sign Up" ng-click="signUpStep()")
-								.privacy-and-terms-container
-									p 
-										| By clicking "Sign Up"/ "Sign In", you agree to the 
-										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
-										| and 
-										a(ui-sref="useragreement", ng-click="hideModal()") Terms of Use
+								//- .privacy-and-terms-container
+								//- 	p 
+								//- 		| By clicking "Sign Up"/ "Sign In", you agree to the 
+								//- 		a(ui-sref="privacy", ng-click="hideModal()") Privacy 
+								//- 		| and 
+								//- 		a(ui-sref="useragreement", ng-click="hideModal()") Terms of Use
 							#sign-up-step.modal-step.animate-250.hidden-modal
 								h2.modal-title Sign Up
 								.modal-back-button(ng-click="signUpBack()")
 								input#sign-up-uname.sign-in-up-input.local-sign-in-up(type="text" placeholder="username")
 								input#sign-up-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
 								input#sign-up-password1.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
-								input#sign-up-password2.sign-in-up-input.local-sign-in-up(type="password" placeholder="confirm password")
 								input#sign-up-fname.sign-in-up-input.local-sign-in-up(type="text" placeholder="first name")
 								input#sign-up-lname.sign-in-up-input.local-sign-in-up(type="text" placeholder="last name")
 								hr
 								.privacy-and-terms-container
-									p 
+									p(style="margin: 0 auto;font-size: 14px;text-align: center;width:90%;")
 										| By clicking "Sign Up", you agree to the 
 										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
 										| and 
