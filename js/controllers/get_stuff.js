@@ -176,13 +176,13 @@ function GetStuffController() {
 	}
 	$('#search-stuff').focus(function() {
 		if($scope.mapIsOpen) $scope.toggleMap();
-		$('#filter-pane').addClass('open-filter-pane');
-		$('.search-stuff-container .fa-map', '.search-stuff-container .toggle-stuff').css({'display': 'none'});
-		$('.stuff-input').css({'width': 'calc(100% - 57px)', 'left': '5px'});
-		$('.search-stuff-container .fa-search').css({'margin-left': '20px', 'display': 'inline-block'});
-		$('#get-stuff-container .settings-header').css({'display': 'block', 'height': '24px'});
-		$('.fa-map').css({'display': 'none'});
+		$('#filter-container > .sm-background-semi-opaque').removeClass('hidden');
+		$('#filter-container > .filter-content-container').removeClass('hidden');
 	});
+	$scope.hideFilter = function() {
+		$('#filter-container > .sm-background-semi-opaque').addClass('hidden');
+		$('#filter-container > .filter-content-container').addClass('hidden');
+	};
 	$('.search-stuff-container .fa-search').click(function() {
 		$('#filter-pane').removeClass('open-filter-pane');
 		$('.search-stuff-container .fa-map', '.search-stuff-container .toggle-stuff').css({'display': ''});
