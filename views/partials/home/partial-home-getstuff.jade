@@ -7,11 +7,7 @@
 		.noselect.loading-text Finding Stuff...
 	.search-stuff-container(style="height:40px;background-color:white;padding:0px 15px;")
 		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click="toggleMap()")
-		.sm-input-group(style="top:50%;transform:translateY(-50%);position:relative;left:0px;width:100%;display:block;")
-			input#search-stuff.sm-text-input(type='search' placeholder='Search' ng-init="showDistance()" ng-model="searchStuff" multiple="multiple" style="width:calc(100% - 26px);")
-			.sm-input-button(style="display: inline-block;width: 26px;position: relative;height: 26px;vertical-align: bottom;border-radius: 3px;")
-				i.fa.fa-arrow-right(style="display:block;line-height: 26px;width:100%;text-align: center;")
-		i.fa.fa-search(ng-click="filterSearch()")
+		sm-input-group-button(placeholder="placeholder text" width="100%" submit="testFunction()")
 	#get-stuff-back-button-container.hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
 		#get-stuff-item-title.hidden.animate-250

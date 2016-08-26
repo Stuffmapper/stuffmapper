@@ -238,7 +238,8 @@ input:read-only{
 .stuff-button {
 	display: none;
 }
-.search-stuff-container i {
+
+.search-stuff-container > i {
 	display: none;
 }
 
