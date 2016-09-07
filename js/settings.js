@@ -127,8 +127,7 @@ function setDefaultSettings() {
 		},
 		modules : modules,
 		api : {
-			host : 'http://ducks.stuffmapper.com',
-			// host : isDev?'/':'http://localhost:3000',
+			host : 'https://www.stuffmapper.com',
 			version : 1
 		},
 		html5 : !!window.history && !!window.history.pushState,
