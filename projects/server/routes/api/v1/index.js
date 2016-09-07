@@ -102,8 +102,8 @@ router.get('/stuff/id/:id', function(req, res) {
 
 router.get('/stuff/my', isAuthenticated, function(req, res) {
 	var query = [
-		'SELECT * FROM posts, images WHERE (user_id = $1 OR dibber_id = $1) AND ',
-		'posts.archived = false AND images.post_id = posts.id;'
+		'SELECT * FROM posts, images WHERE (posts.user_id = $1 OR posts.dibber_id = $1) AND ',
+		'posts.archived = false AND images.post_id = posts.id'
 	].join('');
 	var values = [
 		req.session.passport.user.id
@@ -124,16 +124,18 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended, ',
-			'posts.lat, posts.lng, categories.category, images.image_url FROM posts, ',
-			'images, categories',
-			'WHERE images.post_id = posts.id AND posts.user_id = $1 AND ',
+			'SELECT posts.id, posts.title, posts.description, posts.attended,',
+			'posts.lat, posts.lng, categories.category, images.image_url,',
+			'conversations.id AS conversation_id',
+			'FROM posts, images, categories, conversations',
+			'WHERE images.post_id = posts.id AND posts.user_id = $1 AND',
 			'posts.id = $2 AND categories.id = posts.category_id'
-		].join('');
+		].join(' ');
 		var values = [
 			req.session.passport.user.id,
 			req.params.id
 		];
+		console.log(values);
 		client.query(query, values, function(err, result) {
 			if(err) {
 				apiError(res, err);
@@ -323,8 +325,7 @@ router.get('/views', function() {
 router.post('/account/status', function(req, res) {
 	queryServer(res, 'SELECT pick_up_success FROM pick_up_success WHERE pick_up_success = true', [], function(result) {
 		console.log('loggedIn');
-		console.log(req.session);
-		console.log('loggedIn');
+//		console.log(req.session);
 		if(req.session.passport && req.session.passport.user) {
 			res.send({
 				err: null,
@@ -683,8 +684,84 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 
 
 
-router.delete('/undib/:id', isAuthenticated, function(req, res) {
-
+router.post('/undib/:id', isAuthenticated, function(req, res) {
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'UPDATE posts SET dibber_id = NULL, dibbed = false',
+			'WHERE dibbed = true AND id = $2 AND dibber_id = $1',
+			'RETURNING *'
+		].join(' ');
+		var values = [
+			req.session.passport.user.id,
+			req.params.id
+		];
+		client.query(query, values, function(err, result1) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			var query = [
+				'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
+				'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3',
+				'RETURNING *'
+			].join(' ');
+			console.log(result1.rows[0]);
+			var values = [
+				result1.rows[0].id,
+				req.session.passport.user.id,
+				result1.rows[0].user_id
+			];
+			client.query(query, values, function(err, result2) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
+				}
+				var query = [
+					'UPDATE conversations SET archived = true, date_edited = current_timestamp',
+					'WHERE dibber_id = $2 AND lister_id = $3 AND post_id = $1',
+					'RETURNING *'
+				].join(' ');
+				var values = [
+					req.params.id,
+					req.session.passport.user.id,
+					result1.rows[0].user_id
+				];
+				client.query(query, values, function(err, result3) {
+					if(err) {
+						apiError(res, err);
+						return client.end();
+					}
+					res.send({
+						err: null,
+						res: {
+							'res1': result1.rows,
+							'res2': result2.rows,
+							'res3': result3.rows
+						}
+					});
+					var emailTo = {};
+					emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
+					sendTemplate(
+						'dibber-notification-1',
+						'You unDibbed an item!',
+						emailTo,
+						{
+							'FIRSTNAME' : req.session.passport.user.uname,
+							'CHATLINK' : 'http://localhost:3000/stuff/get',
+							'MYSTUFFLINK' : 'http://localhost:3000/stuff/my/items',
+							'ITEMTITLE':'NAH MANG THIS IS AN UNDIB'
+						}
+					);
+					return client.end();
+				});
+			});
+		});
+	});
 });
 
 router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {

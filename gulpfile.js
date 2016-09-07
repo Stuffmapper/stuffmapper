@@ -97,11 +97,12 @@ gulp.task('js', function(done) {
 			'./js/custom/counter_flipper.js',
 			'./js/lib/imagesloaded/imagesloaded.pkgd.min.js',
 			'./js/lib/masonry/dist/masonry.pkgd.js',
-			'./js/lib/isotope/isotope.pkgd.min.js',
+			'./js/lib/isotope/dist/isotope.pkgd.min.js',
 			'./js/lib/angular-ui-router/release/angular-ui-router.min.js',
 			'./js/lib/angular-animate/angular-animate.min.js',
 			'./js/lib/select2/dist/js/select2.full.min.js',
 			'./js/app.js',
+			'./../stuffmapper-styleguide/js/directives.js',
 			'./js/settings.js',
 			'./js/controllers/*.js',
 			'./js/config.js'
@@ -114,15 +115,15 @@ gulp.task('js', function(done) {
 			gulp.dest('./www/js'),
 			gulp.dest('./projects/electron/js')
 		))
-		.pipe(rename('app.js'))
-		.pipe(uglify({
-			mangle: false
-		}))
-		.pipe(multistream(
-			gulp.dest('./projects/web/js'),
-			gulp.dest('./www/js'),
-			gulp.dest('./projects/electron/js')
-		))
+		// .pipe(rename('app.js'))
+		// .pipe(uglify({
+		// 	mangle: false
+		// }))
+		// .pipe(multistream(
+		// 	gulp.dest('./projects/web/js'),
+		// 	gulp.dest('./www/js'),
+		// 	gulp.dest('./projects/electron/js')
+		// ))
 		.on('end', done);
 		gulp.src('./js/lib/angular/angular.*', {base: './js/lib/angular/'})
 		.pipe(multistream(

@@ -25,6 +25,7 @@
     "fastclick": "^1.0.6",
     "ng-cordova-oauth": "^0.2.9",
     "select2": "^4.0.3",
-		"isotope": "^3.0.1"
+    "normalize-css": "^4.2.0",
+    "isotope": "^3.0.1"
   }
 }

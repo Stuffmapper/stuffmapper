@@ -89,6 +89,8 @@ CREATE TABLE pick_up_success (
 	lister_id integer REFERENCES users(id),
 	pick_up_init timestamp DEFAULT current_timestamp,
 	pick_up_success boolean DEFAULT FALSE,
+	undibbed boolean DEFAULT FALSE,
+	undibbed_date timestamp,
 	pick_up_date timestamp,
 	rejected boolean,
 	rejection_date timestamp,

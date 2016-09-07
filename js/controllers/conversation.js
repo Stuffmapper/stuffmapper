@@ -8,6 +8,7 @@ function ConversationController() {
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
+			$scope.showModal();
 		} else {
 			$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+$stateParams.conversation).success(function(data) {
 				$scope.conversation = data.res.conversation;
@@ -70,12 +71,6 @@ function ConversationController() {
 				$('#conversation-input-container').height(this.scrollHeight-2);
 				if(isScrolledToBottom) {
 					out.scrollTop = out.scrollHeight - out.clientHeight;
-				}
-			});
-			$('#conversation-input').on('keydown', function(e){
-				if(e.which === 13) {
-					$scope.sendMessage();
-					e.preventDefault();
 				}
 			});
 			$scope.$on('$destroy', function() {
