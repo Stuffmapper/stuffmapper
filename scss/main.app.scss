@@ -1,22 +1,37 @@
 /* COLORS - START */
 
-$aqua-dark: #33AEDC;
+$aqua-dark: #109BC6;
+$aqua: #33AEDC;
 $aqua-light: #48C0EB;
 $charcoal-dark: #3C3B3D;
+$charcoal: #474747;
 $charcoal-light: #555555;
+$silver-light: #9D9D9E;
+$silver: #898B8C;
+$silver-dark: #78797A;
 $fog-light: #F5F7FA;
-$fog-dark: #E6E9ED;
+$fog: #E6E9ED;
+$fog-dark: #DCE1E5;
 $grapefruit-dark: #DC4250;
-$grapefruit-light: #ED5565;
+$grapefruit: #ED5565;
+$grapefruit-light: #F2798B;
 $grass-dark: #8BC34A;
-$grass-light: #9FD661;
-$pewter-dark: #AAB2BE;
+$grass: #9FD661;
+$grass-light: #B1E271;
+$pewter-dark: #99A1AA;
+$pewter: #AAB2BE;
 $pewter-light: #CCD1D9;
 $plum-dark: #6A4DA9;
-$plum-light: #8065B9;
+$plum: #8065B9;
+$plum-light: #917EC4;
 $sunflower-dark: #F7BC31;
-$sunflower-light: #FFCF47;
-$white: #FFFFFF;
+$sunflower: #FFCF47;
+$sunflower-light: #FFDB80;
+
+$default: $aqua;
+$positive: $grass;
+$negative: $grapefruit;
+$warning: $sunflower;
 
 
 /* COLORS -  END  */

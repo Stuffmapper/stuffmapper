@@ -1,8 +1,9 @@
-.info-windows.hidden.animate-250(id="info-window-{{id}}")
+.info-windows.sm-hidden.animate-250(id="info-window-{{id}}")
 	.info-window-header
 		span.info-window-image(style="background-image: url(https://cdn.stuffmapper.com{{image_url}});")
 		span.info-window-header-text
-			.info-window-header-description {{description}}
+			.info-window-title.sm-text-m {{title}}
+			.info-window-header-description.sm-text-s {{description}}
 		.info-window-dibs-button Dibs!
 	.info-window-text
 		.info-window-title {{title}}
@@ -10,3 +11,4 @@
 	.info-window-footer
 		span.info-window-category {{category}}
 		span.info-window-attended {{attended}}
+		span.info-window-distance {{distance}}

@@ -13,6 +13,7 @@ var User = require('./routes/api/v1/config/user');
 var multer = require('multer');
 var multerS3 = require('multer-s3');
 var braintree = require('braintree');
+var proxy = require('express-http-proxy');
 var pg = require('pg');
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
 AWS.config = new AWS.Config();
@@ -22,6 +23,7 @@ var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+app.use('/styleguide', proxy('http://localhost:3002/'));
 app.use(multer({
 	storage: multerS3({
 		s3: s3,

@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
+    "apn": "^1.7.8",
     "aws-sdk": "^2.3.16",
     "bcrypt": "^0.8.6",
     "body-parser": "~1.13.2",
@@ -53,7 +54,13 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
-    "cordova-plugin-inappbrowser"
+    "cordova-plugin-inappbrowser",
+		{
+      "variables": {
+        "SENDER_ID": "11148716793"
+      },
+      "locator": "phonegap-plugin-push"
+    }
   ],
   "cordovaPlatforms": [
     "ios",

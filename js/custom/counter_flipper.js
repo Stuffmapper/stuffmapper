@@ -155,8 +155,10 @@ var CounterFlipper = (function() {
 			var topElements = document.querySelectorAll('#'+self.id+' .topElement');
 			var bottomElements = document.querySelectorAll('#'+self.id+' .bottomElement');
 			Object.keys(topElements).forEach(function(e) {
-				topElements[e].classList.remove('topElementEnter');
-				bottomElements[e].classList.remove('bottomElementEnter');
+				if(topElements[e].classList) {
+					topElements[e].classList.remove('topElementEnter');
+					bottomElements[e].classList.remove('bottomElementEnter');
+				}
 			});
 			self.ready = true;
 			if(self.updateQueue.length) setCounter(self, self.updateQueue[0],false);

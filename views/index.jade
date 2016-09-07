@@ -35,10 +35,13 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			base(href="/")
 		else
 			base(href="/")
+		link(href="js/lib/normalize-css/normalize.css" rel="stylesheet")
 		link(href="js/lib/animate.css/animate.min.css" rel="stylesheet")
+		link(href="/styleguide/css/main.css" rel="stylesheet")
 		link(href="css/main.app.min.css" rel="stylesheet")
+		//- link(href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet")
+		link(href="js/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet")
 		link(href="css/font-awesome.min.css" rel="stylesheet")
-		link(href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet")
 		script(src="http://maps.google.com/maps/api/js?libraries=geometry")
 		script.
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -55,7 +58,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="http://localhost:3000/socket.io/socket.io.js")
+			script(src="http://ducks.stuffmapper.com:3000/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
@@ -64,8 +67,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			script(src="/js/angular.js")
 		script(src="https://js.braintreegateway.com/js/braintree-2.26.0.min.js")
 		script(src="https://use.typekit.net/lrm3jdv.js")
-		script try{Typekit.load({ async: true });}catch(e){}
-		script(src="js/app.js")
+		script.
+			try{Typekit.load({ async: true });}catch(e){}
+		script(src="js/all.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
 		script(id="templates/blank.html" type="text/ng-template").
@@ -114,64 +118,51 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					.modal-header
 					.modal-close(ng-click="hideModal()")
 						i.fa.fa-close
-					.modal-content
+					.sm-modal-content
 						.modal-steps
 							#sign-in-step.modal-step.animate-250.active
 								h2.modal-title.animate-250 Sign In
 								.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
-									span.social-sign-in-icon.social-sign-in-icon-google
-										i.fa.fa-google-plus
-									span.social-sign-in-text Sign in with Google
+									img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
+									span.social-sign-in-text.sm-text-m Sign in with Google
 								.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
-									span.social-sign-in-icon.social-sign-in-icon-facebook
-										i.fa.fa-facebook
-									span.social-sign-in-text Sign in with Facebook
-								hr
-								span.sign-in-local-text or sign in 
-								input#sign-in-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
-								input#sign-in-password.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
-								input#sign-in-sign-in-button.sign-in-up-input(type="button" value="Sign In" ng-click="login()")
-								
-								hr
-								input#sign-in-sign-up-button.sign-in-up-input(type="button" value="Sign Up" ng-click="signUpStep()")
-								.privacy-and-terms-container
-									p 
-										| By clicking "Sign Up"/ "Sign In", you agree to the 
-										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
-										| and 
-										a(ui-sref="useragreement", ng-click="hideModal()") Terms of Use
+									img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
+									span.social-sign-in-text.sm-text-m Sign in with Facebook
+								span.sign-in-local-text — or use your email —
+								input#sign-in-email.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
+								input#sign-in-password.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
+								.sm-button-group(style="width: 100%;display:block;")
+									.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+										input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign In" ng-click="login()" style="margin:20px 10px;width:calc(100% - 10px);")
+									.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+										input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign Up" ng-click="signUpStep()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
 							#sign-up-step.modal-step.animate-250.hidden-modal
 								h2.modal-title Sign Up
 								.modal-back-button(ng-click="signUpBack()")
-								input#sign-up-uname.sign-in-up-input.local-sign-in-up(type="text" placeholder="username")
-								input#sign-up-email.sign-in-up-input.local-sign-in-up(type="text" placeholder="email address")
-								input#sign-up-password1.sign-in-up-input.local-sign-in-up(type="password" placeholder="password")
-								input#sign-up-password2.sign-in-up-input.local-sign-in-up(type="password" placeholder="confirm password")
-								input#sign-up-fname.sign-in-up-input.local-sign-in-up(type="text" placeholder="first name")
-								input#sign-up-lname.sign-in-up-input.local-sign-in-up(type="text" placeholder="last name")
+								input#sign-up-uname.sm-text-input.sm-text-input-full-width(type="text" placeholder="username")
+								input#sign-up-email.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
+								input#sign-up-password1.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
+								input#sign-up-fname.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name")
+								input#sign-up-lname.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name")
 								hr
 								.privacy-and-terms-container
-									p 
+									p(style="margin: 0 auto;font-size: 14px;text-align: center;width:90%;")
 										| By clicking "Sign Up", you agree to the 
 										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
 										| and 
 										a(ui-sref="useragreement", ng-click="hideModal()") Terms
-										
-								input#-sign-up-button.sign-in-up-input(type="button" value="Sign Up" ng-click="signUp()")
+								input#-sign-up-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(type="button" value="Sign Up" ng-click="signUp()")
 							#authorizing-step.modal-step.animate-250.hidden-modal
 								h2.modal-title Authorizing...
 								div loading...
 		#popups
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
 				li
-					i.fa.fa-archive
-					span(ui-sref="stuff.my.items") My Stuff
-				li
 					i.fa.fa-envelope
 					span(ui-sref="stuff.my.messages") Messages
-				li
-					i.fa.fa-clock-o
-					span(ui-sref="stuff.my.watchlist") Watchlist
+				//- li
+				//- 	i.fa.fa-clock-o
+				//- 	span(ui-sref="stuff.my.watchlist") Watchlist
 				li
 					i.fa.fa-cog
 					span(ui-sref="stuff.my.settings") Settings
@@ -187,7 +178,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				li
 					i.fa.fa-sign-out
 					span(ng-click="logout()") Sign Out
-		ul#side-menu.side-menu.hidden.animate-250
+		ul#side-menu.side-menu.sm-hidden.animate-250
 			#close-menu-button.fa.fa-times(ng-click="toggleSideMenu()")
 			li.side-menu-header
 			li.side-menu-item
@@ -226,7 +217,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 						a(ui-sref="useragreement", ng-click="toggleSideMenu()") terms
 						span.tiny-links-separator |
 						a(ui-sref="privacy", ng-click="toggleSideMenu()") privacy
-		#side-menu-background.side-menu-background.animate-250.hidden(ng-click="toggleSideMenu()")
+		#side-menu-background.side-menu-background.animate-250.sm-hidden(ng-click="toggleSideMenu()")
 		#container
 			#header
 				#header-menu-icon-container(ng-click="toggleSideMenu()")
@@ -235,6 +226,5 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					img#logo(src="img/logo-txt-only-bold.png" )
 				#landfill-tracker-header
 				#user-portal
-					a#sign-in-button(ng-click="userButton()")
-						i.fa.fa-user
+					i#sign-in-button.fa.fa-user(ng-click="userButton()")
 			#content.animate-500(ui-view)

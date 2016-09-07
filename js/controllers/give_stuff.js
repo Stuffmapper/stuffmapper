@@ -10,6 +10,7 @@ function GiveController() {
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
+			$scope.showModal();
 		} else {
 			$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 			$http.get(config.api.host + '/api/v' + config.api.version + '/categories').success(function(data) {
@@ -40,8 +41,6 @@ function GiveController() {
 					'markers=color:red%7C{lat},{lng}&',
 					'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
 				].join('');
-
-
 				/* STEP 1 - Get photo - START */
 				$scope.getPhoto = function(){
 					$('#give-image-select').click();
@@ -55,6 +54,7 @@ function GiveController() {
 								requestAnimationFrame(function() {
 									$('#give-image-verify').css({'background-image': 'url('+e.target.result+')'});
 									$('#give-image-verify-container').addClass('visible');
+									$('#give-photo-button').addClass('sm-hidden');
 								});
 							});
 						};
@@ -65,6 +65,7 @@ function GiveController() {
 					readURL(this);
 				});
 				$scope.rejectPhoto = function() {
+					$('#give-photo-button').removeClass('sm-hidden');
 					$('#give-image-verify-container').removeClass('visible');
 					$timeout(function() {
 						requestAnimationFrame(function() {
@@ -84,6 +85,7 @@ function GiveController() {
 				};
 				$scope.acceptPhoto = function() {
 					nextStep();
+					$('#give-photo-button').removeClass('sm-hidden');
 				};
 				/* STEP 1 - Get photo -  END  */
 				/* STEP 2 - Get location - START */
@@ -138,18 +140,19 @@ function GiveController() {
 						});
 					});
 					var fd = new FormData();
-					fd.set('title', $scope.giveItem.title);
-					fd.set('description', $scope.giveItem.description);
-					fd.set('attended', !$scope.giveItem.outside);
-					fd.set('lat', $scope.lat);
-					fd.set('lng', $scope.lng);
-					fd.set('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
-					fd.set('category', $('#give-category-selector').val());
+					fd.append('title', $scope.giveItem.title);
+					fd.append('description', $scope.giveItem.description);
+					fd.append('attended', !$scope.giveItem.outside);
+					fd.append('lat', $scope.lat);
+					fd.append('lng', $scope.lng);
+					fd.append('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
+					fd.append('category', $scope.category);
 					$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
 						transformRequest: angular.identity,
 						headers: {'Content-Type': undefined}
 					}).success(function(data){
 						$scope.published = true;
+						fd = null;
 						nextStep();
 					});
 				};
@@ -160,7 +163,7 @@ function GiveController() {
 				$scope.initStep4 = function() {
 					setTimeout(function() {
 						requestAnimationFrame(function() {
-							$('#give-item-uploading-screen-container').css({'display':'hidden'});
+							$('#give-item-uploading-screen-container').css({'display':'sm-hidden'});
 							$('#give-item-uploading-screen-container').removeClass('visible');
 						});
 					}, 250);
@@ -189,8 +192,25 @@ function GiveController() {
 					$('#give-step' + (--$scope.currentStep)).removeClass('completed').addClass('active');
 				}
 
+				$scope.goToMyStuffItem = function() {
+					$state.go('stuff.my');
+				};
+
+				$scope.resetGiveStuff = function() {
+					$('#give-description-title').val('');
+					$('#give-description').val('');
+					$("#give-category-selector select option:eq(0)").prop("selected", true);
+					$('#give-item-uploading-screen-container').css({'display':''});
+					$scope.rejectPhoto();
+					prevStep();
+					prevStep();
+					prevStep();
+				};
+
 				/* Misc Functions -  END  */
 				$scope.$on('$destroy', function() {
+					$('#center-marker').css({'display':''});
+					$('#center-marker').removeClass('dropped');
 					$(window).off('resize', watchSize);
 				});
 			});

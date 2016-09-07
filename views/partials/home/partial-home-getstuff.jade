@@ -5,15 +5,12 @@
 			.double-bounce1
 			.double-bounce2
 		.noselect.loading-text Finding Stuff...
-	.settings-header
-		h1.noselect Filter & Settings
-	.search-stuff-container
-		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff(ng-click="toggleMap()")
-		input#search-stuff.stuff-input(type='search' placeholder='Search' ng-init="showDistance()" ng-model="searchStuff" multiple="multiple")
-		i.fa.fa-search(ng-click="filterSearch()")
-	#get-stuff-back-button-container.hidden.animate-250
-		i.get-stuff-back-button.fa.fa-arrow-left.hidden.animate-250(ng-click="setGetStuff()")
-		#get-stuff-item-title.hidden.animate-250
+	.search-stuff-container(style="height:74px;background-color:white;padding:7px 20px;")
+		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff.sm-button.sm-button-default.sm-button-ghost(ng-click="toggleMap()" style="border-width: 1px;")
+		sm-input-group-button#search-stuff(placeholder="search & filter" submit="search()")
+	#get-stuff-back-button-container.sm-hidden.animate-250
+		i.get-stuff-back-button.fa.fa-arrow-left.sm-hidden.animate-250(ng-click="setGetStuff()")
+		#get-stuff-item-title.sm-text-m.sm-hidden.animate-250
 	ion-content#masonry-container.animate-250.hide-masonry-container
 		//- if ionic
 		//- 	ion-refresher(pulling-text="Pull to refresh..." on-refresh="refresh()")
@@ -24,84 +21,52 @@
 					.list-item-img-container(id="post-item-{{ list.id }}")
 						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info
-							div.noselect {{ list.title }}
-						.stuff-item-category-distance-owner(style="float: left;max-width:calc(100% - 84px);text-align: center;") {{ list.category }}
-						.stuff-item-category-distance-owner.number(style="float: right;text-align: center;") {{ list.milesAway }} mi.
-	form#filter-pane.animate-250
-		#filter-head.filter-header
-			p.noselect Filters
-			#clear-filters-button.clear-filters(ng-click="clearAll(); showDistance()")
+							.noselect(style="font-size: 16px;") {{ list.title }}
+							.noselect(style="font-size: 12px;") {{ ( (list.description.length>50) ? shorten(list.description):(list.description)) }}
+						.stuff-item-category-distance-owner(style="left: 7px;") {{ list.category }}
+						//- .stuff-item-category-distance-owner.number(style="right: 7px;") {{ list.milesAway }} mi.
+	#filter-container.filter-container.sm-tab-container
+		.filter-content-container.sm-hidden.animate-250
+			.sm-text-m.sm-full-width.noselect Filters
+			#clear-filters-button.sm-text-m.sm-full-width.clear-filters(ng-click="clearAll(); showDistance()")
 				span.fa.fa-times
 				span.noselect clear filters
-		#distance-from-me
-			p.noselect Distance from me
-				span
-					label#rangeText
-			input#rangeInput.distance-slider(type="range", name="rangeInput", step="1", value="20", min="0", max="20")
-			
-		//- #newlisting
-		//- 	p New listing
-		//- 	.filter-label
-		//- 		input#newlisting-show(type="checkbox", name="newlisting-show", value="newlisting-show")
-		//- 		label.fa.fa-check(for="newlisting-show") 
-		//- 			span only show new listings
-			
-		#item-status
-			p.noselect Item status
-			.filter
-				.filter-label
-					input#item-status-unattended.item-status-checkbox(type="checkbox", name="item-status-unattended", value="item-status-unattended" checked)
-					label.fa.fa-check(for="item-status-unattended") 
-						span.noselect unattended
-				.filter-label
-					input#item-status-contact.item-status-checkbox(type="checkbox", name="item-status-contact", value="item-status-contact" checked)
-					label.fa.fa-check(for="item-status-contact") 
-						span.noselect contact for pickup
-		#categories
-			p.noselect Categories
-			.select-deselect
-
-					#select-all(ng-click="selectAll()") 
-						span.fa.fa-check.animate-250
-						span.noselect select all
-
-					#deselect-all(ng-click="deselectAll()") 
-						span.fa.fa-times.animate-250
-						span.noselect deselect all
-			.filter
-				.filter-label
-					input#arts-crafts.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="arts-crafts", value="arts & crafts" checked)
-					label.fa.fa-check(for="arts-crafts") 
-						span.noselect arts & crafts
-				.filter-label
-					input#books-games-media.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="books-games-media", value="books, games, media" checked)
-					label.fa.fa-check(for="books-games-media") 
-						span.noselect books, games, media
-				.filter-label
-					input#building.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="building", value="building & garden materials" checked)
-					label.fa.fa-check(for="building") 
-						span.noselect building & garden materials
-				.filter-label
-					input#clothes.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="clothes", value="clothes & accessories" checked)
-					label.fa.fa-check(for="clothes") 
-						span.noselect clothes & accessories
-				.filter-label
-					input#electronics.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="electronics", value="electronics" checked)
-					label.fa.fa-check(for="electronics") 
-						span.noselect electronics
-				.filter-label
-					input#furniture.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="furniture", value="furniture & household" checked)
-					label.fa.fa-check(for="furniture") 
-						span.noselect furniture & household
-				.filter-label
-					input#general.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="general", value="general" checked)
-					label.fa.fa-check(for="general") 
-						span.noselect general					
-				.filter-label
-					input#kids-babies.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="kids-babies", value="kids & babies" checked)
-					label.fa.fa-check(for="kids-babies") 
-						span.noselect kids & babies
-				.filter-label
-					input#recreation.category-input(ng-click="clearSelectDeselect()", type="checkbox", name="recreation", value="recreation" checked)
-					label.fa.fa-check(for="recreation") 
-						span.noselect recreation
+			#distance-from-me.sm-text-m.sm-full-width
+				p.noselect Distance from me
+					span
+						label#rangeText
+				input#rangeInput.distance-slider(type="range", name="rangeInput", step="1", value="20", min="0", max="20")
+			//- #newlisting
+			//- 	p New listing
+			//- 	.filter-label
+			//- 		input#newlisting-show(type="checkbox", name="newlisting-show", value="newlisting-show")
+			//- 		label(for="newlisting-show") 
+			//- 				i.fa.fa-check
+			//- 			span only show new listings
+			#item-status.sm-text-m.sm-full-width
+				p.noselect Item status
+				.filter
+					.filter-label
+						input#item-status-unattended.item-status-checkbox(type="checkbox", name="item-status-unattended", value="item-status-unattended" checked)
+						label(for="item-status-unattended") 
+							span.noselect unattended
+					.filter-label
+						input#item-status-contact.item-status-checkbox(type="checkbox", name="item-status-contact", value="item-status-contact" checked)
+						label(for="item-status-contact") 
+							span.noselect contact for pickup
+			#categories.sm-text-m.sm-full-width
+				p.noselect Categories
+				.select-deselect
+						#select-all.select-option(ng-click="selectAll()") 
+							span.fa.fa-check.animate-250
+							span.noselect select all
+						#deselect-all.deselect-option(ng-click="deselectAll()") 
+							span.fa.fa-times.animate-250
+							span.noselect deselect all
+				.filter
+					- each category in ['general', 'arts & crafts', 'books, games, & media', 'building & garden materials', 'clothing & accessories', 'electronics', 'furniture & household', 'kid & baby items', 'sporting goods']
+						.filter-label
+							input.category-input(id="#{category.replace(' ','-')}" ng-click="clearSelectDeselect()", type="checkbox", name="#{category.replace(' ','-')}", value="#{category.replace(' ','-')}" checked)
+							label(for="#{category.replace(' ','-')}") 
+								span.noselect #{category}
+		.sm-background-semi-opaque.sm-background-dark.sm-hidden.animate-250(ng-click="hideFilter()")
