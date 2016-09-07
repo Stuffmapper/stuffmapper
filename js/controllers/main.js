@@ -112,7 +112,7 @@ function MainController() {
 	function initUserData(data) {
 		if (data.res.user) {
 			$userData.setUserId(data.res.user.id);
-			$scope.socket = io('http://localhost:3000');
+			$scope.socket = io('http://ducks.stuffmapper.com:3000');
 			$scope.socket.on((data.res.user.id), function(data) {
 				var lPath = $location.$$path.split('/');
 				lPath.shift();
@@ -189,7 +189,7 @@ function MainController() {
 		var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
 		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
 		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
-		var w = window.open('http://localhost:3000/api/v1/account/login/google', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
+		var w = window.open('http://ducks.stuffmapper.com:3000/api/v1/account/login/google', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
 		if(config.ionic.isIonic) {
 			w.addEventListener('loadstart', function(event) {
 				if (event.url.match('/redirect')) {
@@ -217,7 +217,7 @@ function MainController() {
 		var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
 		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
 		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
-		var w = window.open('http://localhost:3000/api/v1/account/login/facebook', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
+		var w = window.open('http://ducks.stuffmapper.com:3000/api/v1/account/login/facebook', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
 		if(config.ionic.isIonic) {
 			w.addEventListener('loadstart', function(event) {
 				if (event.url.match('/redirect')) {
@@ -247,6 +247,7 @@ function MainController() {
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
 			$state.go('stuff.get');
+			$state.reload();
 			if(config.ionic.isIonic) {
 				$ionicPlatform.ready(function () {
 					var push = $cordovaPush.init({
@@ -406,7 +407,8 @@ function MainController() {
 			$('html').removeClass('loggedIn');
 			$userData.setLoggedIn(false);
 			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
-				$location.path('/stuff/get');
+				$state.go('stuff.get');
+				$state.reload();
 			}
 		});
 	};
@@ -469,7 +471,7 @@ function MainController() {
 		$('#sign-up-step').addClass('hidden-modal').removeClass('active');
 	};
 	$scope.toggleSideMenu = function() {
-		$('#side-menu, #side-menu-background').toggleClass('hidden');
+		$('#side-menu, #side-menu-background').toggleClass('sm-hidden');
 	};
 }
 

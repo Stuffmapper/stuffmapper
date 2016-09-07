@@ -20,7 +20,16 @@ function GetStuffController() {
 			};
 			$scope.initMasonry = function() {
 				$('.masonry-grid').imagesLoaded( function() {
-					$('#loading-get-stuff').addClass('hidden');
+					$('#loading-get-stuff').addClass('sm-hidden');
+					$('.masonry-grid').isotope({
+						columnWidth: $('.masonry-grid').width()/2,
+						itemSelector: '.masonry-grid-item',
+						getSortData: {
+							number: '.number parseInt'
+						},
+						sortBy: 'number',
+						isAnimated: true
+					});
 				});
 				$(window).resize(function() {
 					$('.masonry-grid').isotope({
@@ -40,6 +49,7 @@ function GetStuffController() {
 			$scope.$watch('searchStuff', function (val) {
 				if (searchTextTimeout) $timeout.cancel(searchTextTimeout);
 				tempSearchText = val;
+				if(!tempSearchText) tempSearchText = '';
 				searchTextTimeout = $timeout(function() {
 					$scope.filterSearch();
 					if(tempSearchText) {
@@ -51,6 +61,7 @@ function GetStuffController() {
 			});
 			if ($scope.mapbox) {
 				$scope.listItems.forEach(function(e) {
+					console.log($scope.map.getCenter());
 					$scope.markers.push({
 						"type": "Feature",
 						"geometry": {
@@ -174,14 +185,17 @@ function GetStuffController() {
 			});
 		});
 	}
+	$scope.search = function() {
+
+	};
 	$('#search-stuff').focus(function() {
 		if($scope.mapIsOpen) $scope.toggleMap();
-		$('#filter-container > .sm-background-semi-opaque').removeClass('hidden');
-		$('#filter-container > .filter-content-container').removeClass('hidden');
+		$('#filter-container > .sm-background-semi-opaque').removeClass('sm-hidden');
+		$('#filter-container > .filter-content-container').removeClass('sm-hidden');
 	});
 	$scope.hideFilter = function() {
-		$('#filter-container > .sm-background-semi-opaque').addClass('hidden');
-		$('#filter-container > .filter-content-container').addClass('hidden');
+		$('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
+		$('#filter-container > .filter-content-container').addClass('sm-hidden');
 	};
 	$('.search-stuff-container .fa-search').click(function() {
 		$('#filter-pane').removeClass('open-filter-pane');
@@ -244,6 +258,7 @@ function GetStuffController() {
 		});
 	};
 	$scope.filterSearch = function () {
+		if(!$('#search-stuff').val()) return;
 		var searchQuery = $('#search-stuff').val().toLowerCase();
 		var sliderValue = parseInt($('.distance-slider').val());
 		var convertValue = sliderValue * 1609.344;
@@ -283,7 +298,7 @@ function GetStuffController() {
 		//refresh masonry
 		setTimeout(function () {
 			$('.masonry-grid').imagesLoaded( function() {
-				$('#loading-get-stuff').addClass('hidden');
+				$('#loading-get-stuff').addClass('sm-hidden');
 				$('.masonry-grid').isotope({
 					columnWidth: function(columnWidth) {
 						return $('.masonry-grid').width()/2;
@@ -295,6 +310,9 @@ function GetStuffController() {
 					sortAscending: true,
 					sortBy: 'number',
 					isAnimated: true
+				});
+				requestAnimationFrame(function(){
+					setTimeout(function(){$(window).resize();},250);
 				});
 			});
 		},100);
@@ -331,5 +349,22 @@ function GetStuffController() {
 	$scope.clearSelectDeselect = function() {
 		$('#select-all .fa.fa-check').removeClass('select-deselect-checked');
 		$('#deselect-all .fa.fa-times').removeClass('select-deselect-checked');
+	};
+	var maxLength = 110;
+	$scope.shorten = function(str) {
+		if(str.length < maxLength) return str;
+		str = str.substring(0, maxLength).split(' ');
+		str.pop();
+		str.pop();
+		if(str[str.length-1]===',')str.pop();
+		if(str[str.length-1]===',')str.pop();
+		if(str[str.length-1]===' ')str.pop();
+		if(str[str.length-1]===' ')str.pop();
+		if(str[str.length-1]==='')str.pop();
+		if(str[str.length-1]==='')str.pop();
+		if(str[str.length-1]===' ')str.pop();
+		if(str[str.length-1]===' ')str.pop();
+		str = str.join(' ');
+		return str + ' ...';
 	};
 }

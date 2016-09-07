@@ -8,6 +8,7 @@ function SettingsController() {
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
+			$scope.showModal();
 		} else {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/account/info').success(function(data){
 				if(data.err) return console.log(data.err);

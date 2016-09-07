@@ -115,15 +115,15 @@ gulp.task('js', function(done) {
 			gulp.dest('./www/js'),
 			gulp.dest('./projects/electron/js')
 		))
-		.pipe(rename('app.js'))
-		.pipe(uglify({
-			mangle: false
-		}))
-		.pipe(multistream(
-			gulp.dest('./projects/web/js'),
-			gulp.dest('./www/js'),
-			gulp.dest('./projects/electron/js')
-		))
+		// .pipe(rename('app.js'))
+		// .pipe(uglify({
+		// 	mangle: false
+		// }))
+		// .pipe(multistream(
+		// 	gulp.dest('./projects/web/js'),
+		// 	gulp.dest('./www/js'),
+		// 	gulp.dest('./projects/electron/js')
+		// ))
 		.on('end', done);
 		gulp.src('./js/lib/angular/angular.*', {base: './js/lib/angular/'})
 		.pipe(multistream(
