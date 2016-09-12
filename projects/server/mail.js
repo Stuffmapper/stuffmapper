@@ -10,10 +10,10 @@
 // 	"content":"http://cdn.stuffmapper.com/test/1464416108525.jpg"
 // },{
 // 	"name":"CHATLINK",
-// 	"content":"http://ducks.stuffmapper.com/stuff/my/messages/1"
+// 	"content":"https://www.stuffmapper.com/stuff/my/messages/1"
 // },{
 // 	"name":"MYSTUFFLINK",
-// 	"content":"http://ducks.stuffmapper.com/stuff/get/4"
+// 	"content":"https://www.stuffmapper.com/stuff/get/4"
 // },{
 // 	"name":"ITEMTITLE",
 // 	"content":"Balloon!"
@@ -97,11 +97,11 @@ function sendTemplate(template, subject, to, args) {
 // 	},
 // 	{
 // 		'ITEMTITLE' : 'item title goes here',
-// 		'ITEMIMAGE' : 'http://ducks.stuffmapper.com/img/give-pic-empty-01.png',
+// 		'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
 // 		'FIRSTNAME' : 'Delaney',
 // 		'ITEMNAME' : 'item name goes here',
-// 		'GETSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/get/1',
-// 		'UPDATE_PROFILE' : 'http://ducks.stuffmapper.com/stuff/my/settings'
+// 		'GETSTUFFLINK' : 'https://www.stuffmapper.com/stuff/get/1',
+// 		'UPDATE_PROFILE' : 'https://www.stuffmapper.com/stuff/my/settings'
 // 	}
 // );
 //
@@ -129,10 +129,10 @@ sendTemplate(
 // 	},
 // 	{
 // 		'ITEMTITLE' : 'item title goes here',
-// 		'ITEMIMAGE' : 'http://ducks.stuffmapper.com/img/give-pic-empty-01.png',
+// 		'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
 // 		'FIRSTNAME' : 'Delaney',
-// 		'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/my/messages/1',
-// 		'UPDATE_PROFILE' : 'http://ducks.stuffmapper.com/stuff/my/settings'
+// 		'CHATLINK' : 'https://www.stuffmapper.com/stuff/my/messages/1',
+// 		'UPDATE_PROFILE' : 'https://www.stuffmapper.com/stuff/my/settings'
 // 	}
 // );
 //
@@ -144,13 +144,13 @@ sendTemplate(
 // 	},
 // 	{
 // 		'ITEMTITLE' : 'item title goes here',
-// 		'ITEMIMAGE' : 'http://ducks.stuffmapper.com/img/give-pic-empty-01.png',
+// 		'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
 // 		'FIRSTNAME' : 'Delaney',
 // 		'USERNAME' : 'JankyToaster420',
 // 		'MESSAGE' : 'I heard you like janky toasters.',
-// 		'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/my/messages/1',
-// 		'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/verificaiton/239jr092fj9eyfoaeu9fwur',
-// 		'UPDATE_PROFILE' : 'http://ducks.stuffmapper.com/stuff/my/settings'
+// 		'CHATLINK' : 'https://www.stuffmapper.com/stuff/my/messages/1',
+// 		'CONFIRMEMAIL' : 'https://www.stuffmapper.com/api/v1/account/verificaiton/239jr092fj9eyfoaeu9fwur',
+// 		'UPDATE_PROFILE' : 'https://www.stuffmapper.com/stuff/my/settings'
 // 	}
 // );
 
@@ -163,11 +163,11 @@ sendTemplate(
 // 	},
 // 	{
 // 		'ITEMTITLE' : 'item title goes here',
-// 		'ITEMIMAGE' : 'http://ducks.stuffmapper.com/img/give-pic-empty-01.png',
+// 		'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
 // 		'FIRSTNAME' : 'Delaney',
 // 		'USERNAME' : 'JankyToaster420',
-// 		'ITEMURL' : 'http://ducks.stuffmapper.com/stuff/get/1',
-// 		'UPDATE_PROFILE' : 'http://ducks.stuffmapper.com/stuff/my/settings'
+// 		'ITEMURL' : 'https://www.stuffmapper.com/stuff/get/1',
+// 		'UPDATE_PROFILE' : 'https://www.stuffmapper.com/stuff/my/settings'
 // 	}
 // );
 //
@@ -179,6 +179,6 @@ sendTemplate(
 // 	},
 // 	{
 // 		'FIRSTNAME' : 'Delaney',
-// 		'CHANGEPASSWORD' : 'http://ducks.stuffmapper.com/changepassword/830fj238jf309fj39fj'
+// 		'CHANGEPASSWORD' : 'https://www.stuffmapper.com/changepassword/830fj238jf309fj39fj'
 // 	}
 // );
