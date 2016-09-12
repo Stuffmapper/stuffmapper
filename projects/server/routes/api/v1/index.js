@@ -1164,7 +1164,7 @@ function queryServer(res, query, values, cb) {
 // 	},
 // 	{
 // 		'FIRSTNAME' : 'Ryan',
-// 		'CONFIRMEMAIL' : 'http://ducks.stuffmapper.com/api/v1/account/confirmation/' + '93j923j0293j493209'
+// 		'CONFIRMEMAIL' : 'https://www.stuffmapper.com/api/v1/account/confirmation/' + '93j923j0293j493209'
 // 	}
 // );
 

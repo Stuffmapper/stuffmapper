@@ -10,9 +10,9 @@
 	<content src="index.html"/>
 	<access origin="*"/>
 	<access origin="https://assets.braintreegateway.com/*"/>
-	<access origin="http://ducks.stuffmapper.com/*"/>
+	<access origin="https://www.stuffmapper.com/*"/>
 	<access origin="about:blank"/>
-	<allow-navigation href="http://ducks.stuffmapper.com/*"/>
+	<allow-navigation href="https://www.stuffmapper.com/*"/>
 	<allow-navigation href="https://assets.braintreegateway.com/*"/>
 	<allow-navigation href="about:*"/>
 	<allow-navigation href="https://checkout.paypal.com/*"/>
