@@ -4,6 +4,8 @@ var FacebookStrategy = require( 'passport-facebook' ).Strategy;
 var LocalStrategy = require('passport-local').Strategy;
 var pg = require('pg');
 var User = require('./user.js');
+var stageType = process.env.STAGE || 'development';
+var config = require('../../../../../../config')[stageType];
 
 var GOOGLE_CLIENT_ID = '11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com';
 var GOOGLE_CLIENT_SECRET = 't7-XA3IXfFZs3q3_5h1hxQwv';
@@ -38,8 +40,7 @@ passport.use(new LocalStrategy(
 passport.use(new GoogleStrategy({
 	clientID:     GOOGLE_CLIENT_ID,
 	clientSecret: GOOGLE_CLIENT_SECRET,
-	callbackURL: 'https://www.stuffmapper.com/auth/google_oauth2/callback'
-	// callbackURL: 'http://localhost:3000/auth/google_oauth2/callback'
+	callbackURL: 'https://'+config.subdomain+'.stuffmapper.com/auth/google_oauth2/callback'
 },
 function(accessToken, refreshToken, profile, done) {
 	User.findOrCreateOne('google', profile, function (err, user) {
@@ -52,9 +53,8 @@ function(accessToken, refreshToken, profile, done) {
 passport.use(new FacebookStrategy({
 	clientID:     FACEBOOK_CLIENT_ID,
 	clientSecret: FACEBOOK_CLIENT_SECRET,
-	callbackURL: 'https://www.stuffmapper.com/auth/facebook_oauth2/callback',
-	// callbackURL: 'http://localhost:3000/auth/facebook_oauth2/callback',
-  profileFields: ['id', 'displayName', 'photos', 'email', 'name']
+	callbackURL: 'https://'+config.subdomain+'.stuffmapper.com/auth/facebook_oauth2/callback',
+	profileFields: ['id', 'displayName', 'photos', 'email', 'name']
 },
 function(accessToken, refreshToken, profile, done) {
 	User.findOrCreateOne('facebook', profile, function (err, user) {

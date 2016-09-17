@@ -11,6 +11,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, height=device-height")
 		meta(name="theme-color" content="#9FD661")
 		//- link(rel="icon" sizes="192x192" href="nice-highres.png")
+		script var subdomain = "#{config.subdomain}";
 		title Stuffmapper
 		if ionic
 			script.
@@ -58,7 +59,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		if ionic
 			//- link(href="lib/ionic/css/ionic.css" rel="stylesheet")
 			script(src="cordova.js")
-			script(src="//www.stuffmapper.com/socket.io/socket.io.js")
+			script(src="https://#{config.subdomain}.stuffmapper.com/socket.io/socket.io.js")
 			script(src="lib/ionic/js/ionic.bundle.js")
 			script(src="lib/ngCordova/dist/ng-cordova.min.js")
 			script(src="lib/ng-cordova-oauth/dist/ng-cordova-oauth.min.js")
@@ -110,6 +111,53 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			script(id="templates/partial-login-page.html" type="text/ng-template")
 				include ./partials/login/partial-login-page
 	body(ng-controller="MainController")
+		#lock-screen(style="z-index: 999999;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:rgba(0,0,0,0.4);")
+			#lock-modal
+				img#lock-logo(src="/img/sharing-header.png" style="width:100%;")
+				link(href='//cdn-images.mailchimp.com/embedcode/classic-10_7.css', rel='stylesheet', type='text/css')
+				style(type='text/css').
+					#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
+				#mc_embed_signup
+					form#mc-embedded-subscribe-form.validate(action='//stuffmapper.us8.list-manage.com/subscribe/post?u=1457dd037ad3832bd31680813&id=784c72162a', method='post', name='mc-embedded-subscribe-form', target='_blank', novalidate='')
+						#mc_embed_signup_scroll
+							h2 Want to know when we're ready? We'll let you know!
+							.indicates-required
+								span.asterisk *
+								|  indicates required
+							.mc-field-group
+								label(for='mce-EMAIL')
+										| Email Address  
+									span.asterisk *
+								input#mce-EMAIL.required.email(type='email', value='', name='EMAIL')
+							.mc-field-group
+								label(for='mce-FNAME') First Name 
+								input#mce-FNAME(type='text', value='', name='FNAME')
+							.mc-field-group
+								label(for='mce-LNAME') Last Name 
+								input#mce-LNAME(type='text', value='', name='LNAME')
+							.mc-field-group
+								label(for='mce-WHERE') How did you hear about us? 
+								input#mce-WHERE(type='text', value='', name='WHERE')
+							#mce-responses.clear
+								#mce-error-response.response(style='display:none')
+								#mce-success-response.response(style='display:none')
+							// real people should not fill this in and expect good things - do not remove this or risk form bot signups
+							div(style='position: absolute; left: -5000px;', aria-hidden='true')
+								input(type='text', name='b_1457dd037ad3832bd31680813_784c72162a', tabindex='-1', value='')
+							.clear
+								input#mc-embedded-subscribe.button(type='submit', value='Subscribe', name='subscribe')
+				script(type='text/javascript', src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js')
+				script(type='text/javascript') (function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[4]='WHERE';ftypes[4]='text';}(jQuery));var $mcj = jQuery.noConflict(true);
+				#lock-sm
+					a#lock-fb(href="https://www.facebook.com/stuffmapper")
+						i.fa.fa-facebook-square
+						| facebook.com/stuffmapper
+					a#lock-twitter(href="https://www.twitter.com/stuffmapper")
+						i.fa.fa-twitter-square
+						| @stuffmapper
+					a#lock-instagram(href="https://www.instagram.com/stuffmapper")
+						i.fa.fa-instagram
+						| @stuffmapper
 		#modal-windows
 			.modal-windows-bg.animate-250
 			.modal-container.modal-container.animate-500
