@@ -2880,9 +2880,50 @@ input:read-only{
 }
 
 /* Sign Up - END */
+#lock-modal {
+	background-color:#fff;width: 500px;height:auto;left: 50%;top: 50%;transform: translate3d(-50%,-50%,0);position: absolute;
+	overflow-x: hidden;
+	overflow-y:scroll;
+	max-height: 100%;
+}
+#lock-sm {
+	width: 100%;
+}
+#lock-sm a {
+	padding: 10px;
+	bottom: 10px;
+	bottom: 10px;
+	position: relative;
+	color: $charcoal-dark;
+	padding-right:15px;
+	height: 40px;
+  font-weight: 700;
+}
+#lock-sm a i {
+	padding-right:5px;
+  font-weight: 700;
+}
+#lock-fb {
+	width: 170px;
+}
+#lock-twitter {
+	width: 115px;
+}
+#lock-instagram {
+	width: 115px;
+}
 
 @media screen and (max-width: 436px) {
-
+	#lock-modal {
+		height: 100%;
+		width: 100%;
+	}
+	#lock-sm a {
+		float: left;
+    position: relative;
+    clear: both;
+    width: 100%;
+	}
 	#chatra {
 		bottom: -100px;
 		@include transform(translate3d(0, 100%, 0) !important);

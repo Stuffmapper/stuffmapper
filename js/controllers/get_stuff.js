@@ -138,36 +138,36 @@ function GetStuffController() {
 		});
 	}
 	$scope.getLocation = function(callback) {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function(position) {
-				$scope.map.setCenter({
-					lat: position.coords.latitude,
-					lng: position.coords.longitude
-				});
-				if(callback) {
-					callback({
-						lat: position.coords.latitude,
-						lng: position.coords.longitude
-					});
-				}
-				else {
-					var marker = new google.maps.Marker({
-						position: {
-							lat: position.coords.latitude,
-							lng: position.coords.longitude
-						},
-						map: $scope.map,
-						icon: {
-							url: '/img/currentlocation2.png'
-						}
-					});
-				}
-			}, function() {
-				//handleLocationError(true, infoWindow, map.getCenter());
-			});
-		} else {
-			//handleLocationError(false, infoWindow, map.getCenter());
-		}
+		// if (navigator.geolocation) {
+		// 	navigator.geolocation.getCurrentPosition(function(position) {
+		// 		$scope.map.setCenter({
+		// 			lat: position.coords.latitude,
+		// 			lng: position.coords.longitude
+		// 		});
+		// 		if(callback) {
+		// 			callback({
+		// 				lat: position.coords.latitude,
+		// 				lng: position.coords.longitude
+		// 			});
+		// 		}
+		// 		else {
+		// 			var marker = new google.maps.Marker({
+		// 				position: {
+		// 					lat: position.coords.latitude,
+		// 					lng: position.coords.longitude
+		// 				},
+		// 				map: $scope.map,
+		// 				icon: {
+		// 					url: '/img/currentlocation2.png'
+		// 				}
+		// 			});
+		// 		}
+		// 	}, function() {
+		// 		//handleLocationError(true, infoWindow, map.getCenter());
+		// 	});
+		// } else {
+		// 	//handleLocationError(false, infoWindow, map.getCenter());
+		// }
 	};
 	$scope.setGetStuff = function() {
 		$state.go('stuff.get');

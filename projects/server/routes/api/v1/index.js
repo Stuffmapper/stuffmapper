@@ -128,7 +128,7 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 			'posts.lat, posts.lng, categories.category, images.image_url,',
 			'conversations.id AS conversation_id',
 			'FROM posts, images, categories, conversations',
-			'WHERE images.post_id = posts.id AND posts.user_id = $1 AND',
+			'WHERE images.post_id = posts.id AND (posts.user_id = $1 OR posts.dibber_id = $1) AND',
 			'posts.id = $2 AND categories.id = posts.category_id'
 		].join(' ');
 		var values = [

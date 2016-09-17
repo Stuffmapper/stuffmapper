@@ -10,6 +10,8 @@ var methodOverride = require('method-override');
 var session = require('express-session');
 var passport = require('passport');
 var User = require('./routes/api/v1/config/user');
+var stage = process.env.STAGE || 'development';
+var config = require('../../config')[stage];
 var multer = require('multer');
 var multerS3 = require('multer-s3');
 var braintree = require('braintree');
@@ -138,7 +140,8 @@ app.use('/api/v1', require('./routes/api/v1/index'));
 app.use('*', function(req,res){
 	res.render('index', {
 		loggedIn : req.isAuthenticated(),
-		isDev : true
+		isDev : true,
+		config: config
 	});
 });
 

@@ -10,6 +10,9 @@ var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var multistream = require('gulp-multistream');
 var sh = require('shelljs');
+var stage = process.env.STAGE || 'development';
+var config = require('./config')[stage];
+
 
 var paths = {
 	sass: ['./scss/**/*.scss'],
@@ -51,7 +54,8 @@ gulp.task('jade', function(done) {
 	.pipe(jade({
 		locals : {
 			ionic: true,
-			dev: true
+			dev: true,
+			config: config
 		},
 		pretty : true,
 		doctype: 'html'
@@ -63,7 +67,8 @@ gulp.task('jade', function(done) {
 	.pipe(jade({
 		locals : {
 			electron: true,
-			dev: true
+			dev: true,
+			config: config
 		},
 		pretty : true,
 		doctype: 'html'
@@ -73,7 +78,8 @@ gulp.task('jade', function(done) {
 	gulp.src('./views/index.jade')
 	.pipe(jade({
 		locals : {
-			dev: true
+			dev: true,
+			config: config
 		},
 		pretty : true,
 		doctype: 'html'

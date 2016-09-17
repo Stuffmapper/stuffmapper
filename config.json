@@ -1,30 +1,44 @@
 {
-    "global" : {},
-    "test" : {},
-    "development" : {
-        "db" : {
-            "host" : "localhost",
-            "port" : 5432,
-            "pass" : "Password1!"
-        },
-        "auth" : {
-            "facebookAuth" : {
-                "clientID"      : "1497795170480964",
-                "clientSecret"  : "79eb3898f556146e5645f666cbb27f6b",
-                "callbackURL"   : "http://localhost:8080/auth/facebook/callback"
-            },
-            "googleAuth" : {
-                "clientID"      : "11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com",
-                "clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
-                "callbackURL"   : "http://localhost:8080/auth/google/callback"
-            }
-        }
-    },
-    "production" : {
-        "db" : {
-            "host" : "localhost",
-            "port" : 5432,
-            "pass" : "Password1!"
-        }
-    }
+	"global" : {},
+	"test" : {},
+	"development" : {
+		"subdomain" : "ducks",
+		"db" : {
+			"host" : "localhost",
+			"port" : 5432,
+			"pass" : "Password1!"
+		},
+		"auth" : {
+			"facebookAuth" : {
+				"clientID"      : "1497795170480964",
+				"clientSecret"  : "79eb3898f556146e5645f666cbb27f6b",
+				"callbackURL"   : "http://ducks.stuffmapper.com/auth/facebook/callback"
+			},
+			"googleAuth" : {
+				"clientID"      : "11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com",
+				"clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
+				"callbackURL"   : "http://ducks.stuffmapper.com/auth/google/callback"
+			}
+		}
+	},
+	"production" : {
+		"subdomain" : "www",
+		"db" : {
+			"host" : "localhost",
+			"port" : 5432,
+			"pass" : "Password1!"
+		},
+		"auth" : {
+			"facebookAuth" : {
+				"clientID"      : "1497795170480964",
+				"clientSecret"  : "79eb3898f556146e5645f666cbb27f6b",
+				"callbackURL"   : "http://www.stuffmapper.com/auth/facebook/callback"
+			},
+			"googleAuth" : {
+				"clientID"      : "11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com",
+				"clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
+				"callbackURL"   : "http://www.stuffmapper.com/auth/google/callback"
+			}
+		}
+	}
 }
