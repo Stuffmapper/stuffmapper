@@ -137,37 +137,43 @@ function GetStuffController() {
 			});
 		});
 	}
+	$scope.geoLocation = undefined;
+	console.log($scope.geoLocation);
 	$scope.getLocation = function(callback) {
-		// if (navigator.geolocation) {
-		// 	navigator.geolocation.getCurrentPosition(function(position) {
-		// 		$scope.map.setCenter({
-		// 			lat: position.coords.latitude,
-		// 			lng: position.coords.longitude
-		// 		});
-		// 		if(callback) {
-		// 			callback({
-		// 				lat: position.coords.latitude,
-		// 				lng: position.coords.longitude
-		// 			});
-		// 		}
-		// 		else {
-		// 			var marker = new google.maps.Marker({
-		// 				position: {
-		// 					lat: position.coords.latitude,
-		// 					lng: position.coords.longitude
-		// 				},
-		// 				map: $scope.map,
-		// 				icon: {
-		// 					url: '/img/currentlocation2.png'
-		// 				}
-		// 			});
-		// 		}
-		// 	}, function() {
-		// 		//handleLocationError(true, infoWindow, map.getCenter());
-		// 	});
-		// } else {
-		// 	//handleLocationError(false, infoWindow, map.getCenter());
-		// }
+		if($scope.geoLocation) {
+			$scope.map.setCenter($scope.geoLocation);
+		}
+		else if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				$scope.geoLocation = {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				};
+				$scope.map.setCenter($scope.geoLocation);
+				if(callback) {
+					callback({
+						lat: position.coords.latitude,
+						lng: position.coords.longitude
+					});
+				}
+				else {
+					var marker = new google.maps.Marker({
+						position: {
+							lat: position.coords.latitude,
+							lng: position.coords.longitude
+						},
+						map: $scope.map,
+						icon: {
+							url: '/img/currentlocation2.png'
+						}
+					});
+				}
+			}, function() {
+				//handleLocationError(true, infoWindow, map.getCenter());
+			});
+		} else {
+			//handleLocationError(false, infoWindow, map.getCenter());
+		}
 	};
 	$scope.setGetStuff = function() {
 		$state.go('stuff.get');
@@ -317,18 +323,14 @@ function GetStuffController() {
 			});
 		},100);
 	};
-	$scope.showDistance = function() {
-		var rangeValues = {};
-		for(var i = 1; i < 21; i++) {
-			rangeValues[i.toString()] = i + " mile(s)";
-		}
-		$(function () {
-			$('#rangeText').text(rangeValues[$('#rangeInput').val()]);
-			$('#rangeInput').on('input change', function () {
-				$('#rangeText').text(rangeValues[$(this).val()]);
-			});
-		});
-	};
+	var rangeValues = {};
+	for(var i = 1; i < 21; i++) {
+		rangeValues[i.toString()] = i + " mile(s)";
+	}
+	$('#rangeText').text(rangeValues[$('#rangeInput').val()]);
+	$('#rangeInput').on('input change', function () {
+		$('#rangeText').text(rangeValues[$(this).val()]);
+	});
 	$scope.selectAll = function() {
 		$('.category-input').prop('checked', true);
 		$('#select-all .fa.fa-check').addClass('select-deselect-checked');

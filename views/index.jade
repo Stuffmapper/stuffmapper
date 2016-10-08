@@ -111,53 +111,53 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			script(id="templates/partial-login-page.html" type="text/ng-template")
 				include ./partials/login/partial-login-page
 	body(ng-controller="MainController")
-		#lock-screen(style="z-index: 999999;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:rgba(0,0,0,0.4);")
-			#lock-modal
-				img#lock-logo(src="/img/sharing-header.png" style="width:100%;")
-				link(href='//cdn-images.mailchimp.com/embedcode/classic-10_7.css', rel='stylesheet', type='text/css')
-				style(type='text/css').
-					#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
-				#mc_embed_signup
-					form#mc-embedded-subscribe-form.validate(action='//stuffmapper.us8.list-manage.com/subscribe/post?u=1457dd037ad3832bd31680813&id=784c72162a', method='post', name='mc-embedded-subscribe-form', target='_blank', novalidate='')
-						#mc_embed_signup_scroll
-							h2 Want to know when we're ready? We'll let you know!
-							.indicates-required
-								span.asterisk *
-								|  indicates required
-							.mc-field-group
-								label(for='mce-EMAIL')
-										| Email Address  
-									span.asterisk *
-								input#mce-EMAIL.required.email(type='email', value='', name='EMAIL')
-							.mc-field-group
-								label(for='mce-FNAME') First Name 
-								input#mce-FNAME(type='text', value='', name='FNAME')
-							.mc-field-group
-								label(for='mce-LNAME') Last Name 
-								input#mce-LNAME(type='text', value='', name='LNAME')
-							.mc-field-group
-								label(for='mce-WHERE') How did you hear about us? 
-								input#mce-WHERE(type='text', value='', name='WHERE')
-							#mce-responses.clear
-								#mce-error-response.response(style='display:none')
-								#mce-success-response.response(style='display:none')
-							// real people should not fill this in and expect good things - do not remove this or risk form bot signups
-							div(style='position: absolute; left: -5000px;', aria-hidden='true')
-								input(type='text', name='b_1457dd037ad3832bd31680813_784c72162a', tabindex='-1', value='')
-							.clear
-								input#mc-embedded-subscribe.button(type='submit', value='Subscribe', name='subscribe')
-				script(type='text/javascript', src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js')
-				script(type='text/javascript') (function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[4]='WHERE';ftypes[4]='text';}(jQuery));var $mcj = jQuery.noConflict(true);
-				#lock-sm
-					a#lock-fb(href="https://www.facebook.com/stuffmapper")
-						i.fa.fa-facebook-square
-						| facebook.com/stuffmapper
-					a#lock-twitter(href="https://www.twitter.com/stuffmapper")
-						i.fa.fa-twitter-square
-						| @stuffmapper
-					a#lock-instagram(href="https://www.instagram.com/stuffmapper")
-						i.fa.fa-instagram
-						| @stuffmapper
+		//- #lock-screen(style="z-index: 999999;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:rgba(0,0,0,0.4);")
+		//- 	#lock-modal
+		//- 		img#lock-logo(src="/img/sharing-header.png" style="width:100%;")
+		//- 		link(href='//cdn-images.mailchimp.com/embedcode/classic-10_7.css', rel='stylesheet', type='text/css')
+		//- 		style(type='text/css').
+		//- 			#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
+		//- 		#mc_embed_signup
+		//- 			form#mc-embedded-subscribe-form.validate(action='//stuffmapper.us8.list-manage.com/subscribe/post?u=1457dd037ad3832bd31680813&id=784c72162a', method='post', name='mc-embedded-subscribe-form', target='_blank', novalidate='')
+		//- 				#mc_embed_signup_scroll
+		//- 					h2 Want to know when we're ready? We'll let you know!
+		//- 					.indicates-required
+		//- 						span.asterisk *
+		//- 						|  indicates required
+		//- 					.mc-field-group
+		//- 						label(for='mce-EMAIL')
+		//- 								| Email Address  
+		//- 							span.asterisk *
+		//- 						input#mce-EMAIL.required.email(type='email', value='', name='EMAIL')
+		//- 					.mc-field-group
+		//- 						label(for='mce-FNAME') First Name 
+		//- 						input#mce-FNAME(type='text', value='', name='FNAME')
+		//- 					.mc-field-group
+		//- 						label(for='mce-LNAME') Last Name 
+		//- 						input#mce-LNAME(type='text', value='', name='LNAME')
+		//- 					.mc-field-group
+		//- 						label(for='mce-WHERE') How did you hear about us? 
+		//- 						input#mce-WHERE(type='text', value='', name='WHERE')
+		//- 					#mce-responses.clear
+		//- 						#mce-error-response.response(style='display:none')
+		//- 						#mce-success-response.response(style='display:none')
+		//- 					// real people should not fill this in and expect good things - do not remove this or risk form bot signups
+		//- 					div(style='position: absolute; left: -5000px;', aria-hidden='true')
+		//- 						input(type='text', name='b_1457dd037ad3832bd31680813_784c72162a', tabindex='-1', value='')
+		//- 					.clear
+		//- 						input#mc-embedded-subscribe.button(type='submit', value='Subscribe', name='subscribe')
+		//- 		script(type='text/javascript', src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js')
+		//- 		script(type='text/javascript') (function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[4]='WHERE';ftypes[4]='text';}(jQuery));var $mcj = jQuery.noConflict(true);
+		//- 		#lock-sm
+		//- 			a#lock-fb(href="https://www.facebook.com/stuffmapper")
+		//- 				i.fa.fa-facebook-square
+		//- 				| facebook.com/stuffmapper
+		//- 			a#lock-twitter(href="https://www.twitter.com/stuffmapper")
+		//- 				i.fa.fa-twitter-square
+		//- 				| @stuffmapper
+		//- 			a#lock-instagram(href="https://www.instagram.com/stuffmapper")
+		//- 				i.fa.fa-instagram
+		//- 				| @stuffmapper
 		#modal-windows
 			.modal-windows-bg.animate-250
 			.modal-container.modal-container.animate-500
@@ -169,7 +169,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					.sm-modal-content
 						.modal-steps
 							#sign-in-step.modal-step.animate-250.active
-								h2.modal-title.animate-250 Sign In
+								h2.sm-modal-title.animate-250 Sign In
 								.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
 									img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
 									span.social-sign-in-text.sm-text-m Sign in with Google
@@ -185,32 +185,40 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
 										input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign Up" ng-click="signUpStep()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
 							#sign-up-step.modal-step.animate-250.hidden-modal
-								h2.modal-title Sign Up
+								h2.sm-modal-title Sign Up
 								.modal-back-button(ng-click="signUpBack()")
-								input#sign-up-uname.sm-text-input.sm-text-input-full-width(type="text" placeholder="username")
-								input#sign-up-email.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
-								input#sign-up-password1.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
-								input#sign-up-fname.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name")
-								input#sign-up-lname.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name")
-								hr
+								input#sign-up-uname.sm-text-input.sm-text-input-full-width(type="text" placeholder="username *")
+								input#sign-up-email.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address *")
+								input#sign-up-password1.sm-text-input.sm-text-input-full-width(type="password" placeholder="password *")
+								input#sign-up-fname.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name *")
+								input#sign-up-lname.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name *")
+								#toggle-password-visibility.fa.fa-eye(ng-click="toggleVisibility()")
+								.sm-text-s.sm-full-width(style="margin-bottom: 0px") *required field
+								#sign-up-step-message-container.sm-full-width
+									#sign-up-step-message.sm-text-s no error
 								.privacy-and-terms-container
 									p(style="margin: 0 auto;font-size: 14px;text-align: center;width:90%;")
 										| By clicking "Sign Up", you agree to the 
 										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
 										| and 
 										a(ui-sref="useragreement", ng-click="hideModal()") Terms
-								input#-sign-up-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(type="button" value="Sign Up" ng-click="signUp()")
-							#authorizing-step.modal-step.animate-250.hidden-modal
-								h2.modal-title Authorizing...
-								div loading...
+								input#sm-sign-up-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(type="button" value="Sign Up" ng-click="signUp()")
+							#confirmation-step.modal-step.animate-250.hidden-modal
+								h2.sm-modal-title Almost Done!
+								.modal-back-button(ng-click="signUpBack()")
+								.confirmation-container
+									.sm-text-l.sm-full-width.confirmation-text-top Please check your email
+									#confirmation-step-icon.fa.fa-check-circle.sm-hidden
+									.sm-text-l.sm-full-width.confirmation-text-bottom to verify your account
+								input#sm-sign-up-ok-fine-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Ok" ng-click="hideModal()")
 		#popups
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
-				li
-					i.fa.fa-envelope
-					span(ui-sref="stuff.my.messages") Messages
 				//- li
 				//- 	i.fa.fa-clock-o
 				//- 	span(ui-sref="stuff.my.watchlist") Watchlist
+				li
+					i.fa.fa-rocket
+					span(ui-sref="about") About Us
 				li
 					i.fa.fa-cog
 					span(ui-sref="stuff.my.settings") Settings
@@ -223,24 +231,20 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				li
 					i.fa.fa-file-text
 					span(ui-sref="useragreement") Terms
-				li
+				li#sign-out-option-dropdown(style="display:none;")
 					i.fa.fa-sign-out
 					span(ng-click="logout()") Sign Out
 		ul#side-menu.side-menu.sm-hidden.animate-250
 			#close-menu-button.fa.fa-times(ng-click="toggleSideMenu()")
 			li.side-menu-header
 			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my.items", ng-click="toggleSideMenu()")
+				a.side-menu-link(ui-sref="about", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-rocket
-					span My Stuff
-			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my.messages", ng-click="toggleSideMenu()")
-					.side-menu-icon.fa.fa-bell
-					span Messages
-			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my.watchlist", ng-click="toggleSideMenu()")
-					.side-menu-icon.fa.fa-bookmark
-					span Watchlist
+					span About Us
+			//- li.side-menu-item
+			//- 	a.side-menu-link(ui-sref="stuff.my.watchlist", ng-click="toggleSideMenu()")
+			//- 		.side-menu-icon.fa.fa-bookmark
+			//- 		span Watchlist
 			li.side-menu-item
 				a.side-menu-link(ui-sref="stuff.my.settings", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-wrench
@@ -249,7 +253,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				a.side-menu-link(ui-sref="faq", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-question
 					span FAQ/Help
-			li.side-menu-item
+			li#side-menu-logout.side-menu-item(style="display:none;")
 				a.side-menu-link(ng-click="logout(); toggleSideMenu();")
 					.side-menu-icon.fa.fa-sign-out
 					span Sign Out
@@ -273,6 +277,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				a(ui-sref="stuff.get")
 					img#logo(src="img/logo-txt-only-bold.png" )
 				#landfill-tracker-header
+				#landfill-tracker-description.sm-text-xs Stuff saved from the landfill
 				#user-portal
-					i#sign-in-button.fa.fa-user(ng-click="userButton()")
+					i#sign-in-button.fa.fa-bars(ng-click="userButton()")
 			#content.animate-500(ui-view)

@@ -5,7 +5,7 @@
 			.double-bounce1
 			.double-bounce2
 		.noselect.loading-text Finding Stuff...
-	.search-stuff-container(style="height:74px;background-color:white;padding:7px 20px;")
+	.search-stuff-container
 		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff.sm-button.sm-button-default.sm-button-ghost(ng-click="toggleMap()" style="border-width: 1px;")
 		sm-input-group-button#search-stuff(placeholder="search & filter" submit="search()")
 	#get-stuff-back-button-container.sm-hidden.animate-250
@@ -28,8 +28,13 @@
 	#filter-container.filter-container.sm-tab-container
 		.filter-content-container.sm-hidden.animate-250
 			.sm-text-m.sm-full-width.noselect Filters
+			.sm-button-group(style="width: 100%;display:block;height: 34px;")
+				.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+					input#sign-in-sign-in-button.sm-button.sm-button-s.sm-button-negative.sm-text-m(type="button" value="cancel" ng-click="goToMyStuffItem()" style="margin:5px 10px;width:calc(100% - 10px);color:#F5F7FA;height:36px;line-height: 12px;")
+				.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+					input#sign-in-sign-up-button.sm-button.sm-button-s.sm-button-default.sm-text-m(type="button" value="search" ng-click="resetGiveStuff()" style="margin:5px 10px;width:calc(100% - 10px);float: left;height:36px;line-height: 12px;")
 			#clear-filters-button.sm-text-m.sm-full-width.clear-filters(ng-click="clearAll(); showDistance()")
-				span.fa.fa-times
+				span.fa.fa-times(style="padding-right: 5px;padding-left: 1px;")
 				span.noselect clear filters
 			#distance-from-me.sm-text-m.sm-full-width
 				p.noselect Distance from me
@@ -58,10 +63,10 @@
 				p.noselect Categories
 				.select-deselect
 						#select-all.select-option(ng-click="selectAll()") 
-							span.fa.fa-check.animate-250
+							span.fa.fa-check.animate-250(style="padding-right: 5px;padding-left: 1px;")
 							span.noselect select all
 						#deselect-all.deselect-option(ng-click="deselectAll()") 
-							span.fa.fa-times.animate-250
+							span.fa.fa-times.animate-250(style="padding-right: 5px;padding-left: 1px;")
 							span.noselect deselect all
 				.filter
 					- each category in ['general', 'arts & crafts', 'books, games, & media', 'building & garden materials', 'clothing & accessories', 'electronics', 'furniture & household', 'kid & baby items', 'sporting goods']

@@ -14,6 +14,7 @@ function MyItemsController() {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my/id/' + $stateParams.id).success(function(data) {
 				if(!data.err) {
 					$scope.listItem = data.res;
+					console.log($scope.listItem);
 					/* jshint ignore:start */
 					function getWordsBetweenCurlies(str) {
 						var results = [], re = /{{([^}]+)}}/g, text;
@@ -23,6 +24,12 @@ function MyItemsController() {
 						return results;
 					}
 					/* jshint ignore:end */
+					$scope.googleMapStaticUrl = [
+						'https://maps.googleapis.com/maps/api/staticmap?',
+						'zoom=13&size=600x300&maptype=roadmap&',
+						'markers=color:red%7C{lat},{lng}&',
+						'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
+					].join('');
 					$scope.imgScale = 1;
 					var aspectRatio = (($('#my-item-single-container-'+$stateParams.id).width()/$('#my-item-single-container-'+$stateParams.id).height())>(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container').height())));
 					$scope.imgScale = ($('#post-item-' + $stateParams.id + ' img').height())/($('#masonry-container').height()*0.4);
@@ -33,13 +40,14 @@ function MyItemsController() {
 					$scope.imageContainer.css({
 						'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'
 					});
-					console.log(data);
 					$scope.detailsContainer.html([
 						'<div class="sm-text-m sm-full-width">'+data.res.title+'</div>',
 						// '<button id="get-single-item-edit-dibs-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Edit</button>',
-						'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>',
-						'<button id="get-single-item-undibs-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">unDibs</button>',
-						'<p class="sm-text-m sm-full-width">'+data.res.description+'</p>'
+						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
+						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'<button id="get-single-item-archive-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">Archive</button>':(($scope.listItem.type==='dibber')?'<button id="get-single-item-undibs-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">unDibs</button>':'<button id="get-single-item-reject-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">Reject Dibber</button>'),
+						'<p class="sm-text-m sm-full-width">'+data.res.description+'</p>',
+						((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
+						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />')
 					].join('\n'));
 					$scope.singleItem = $('#post-item-' + $stateParams.id + ' img')
 					.clone()
@@ -93,6 +101,8 @@ function MyItemsController() {
 						});
 					});
 					$('#get-single-item-undibs-button'+$scope.listItem.id).on('click', undibs);
+					$('#get-single-item-archive-button'+$stateParams.id).on('click', archive);
+					$('#get-single-item-reject-button'+$stateParams.id).on('click', reject);
 					$('#get-single-item-conversation-button'+$scope.listItem.id).on('click', goToConversation);
 				}
 			});
@@ -102,6 +112,62 @@ function MyItemsController() {
 			};
 			var goToConversation = function() {
 				$state.go('stuff.my.conversation', {conversation:$scope.listItem.conversation_id});
+			};
+			var archive = function() {
+				$http.delete(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $scope.listItem.id, {}, {
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+					},
+					transformRequest: function(data) {
+						return $.param(data);
+					}
+				}).success(function(data) {
+					if(!data.err) {
+						$('#post-item-'+$scope.listItem.id).parent().parent().remove();
+						requestAnimationFrame(function(){
+							$('.masonry-grid').isotope({
+								columnWidth: $('.masonry-grid').width()/2,
+								itemSelector: '.masonry-grid-item',
+								getSortData: {
+									number: '.number parseInt'
+								},
+								sortBy: 'number',
+								isAnimated: true
+							});
+							setTimeout(function() {
+								$state.go('stuff.my.items');
+							}, 250);
+						});
+					}
+				});
+			};
+			var reject = function() {
+				$http.delete(config.api.host + '/api/v' + config.api.version + '/dibs/reject/' + $scope.listItem.id, {}, {
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+					},
+					transformRequest: function(data) {
+						return $.param(data);
+					}
+				}).success(function(data) {
+					if(!data.err) {
+						$('#post-item-'+$scope.listItem.id).parent().parent().remove();
+						requestAnimationFrame(function(){
+							$('.masonry-grid').isotope({
+								columnWidth: $('.masonry-grid').width()/2,
+								itemSelector: '.masonry-grid-item',
+								getSortData: {
+									number: '.number parseInt'
+								},
+								sortBy: 'number',
+								isAnimated: true
+							});
+							setTimeout(function() {
+								$state.go('stuff.my.items');
+							}, 250);
+						});
+					}
+				});
 			};
 			var undibs = function() {
 				$http.post(config.api.host + '/api/v' + config.api.version + '/undib/' + $scope.listItem.id, {}, {

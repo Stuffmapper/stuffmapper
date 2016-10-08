@@ -24,8 +24,9 @@ passport.deserializeUser(function(obj, done) {
 
 passport.use(new LocalStrategy(
 	function(username, password, done) {
-		// emailorusername?
+		console.log(username, password);
 		User.findOne({email:username}, function (err, user) {
+			console.log(user);
 			if (err) return done(err);
 			if (!user) return done(null, false);
 			if (user && !user.verified_email) return done(null, false);
@@ -57,7 +58,19 @@ passport.use(new FacebookStrategy({
 	profileFields: ['id', 'displayName', 'photos', 'email', 'name']
 },
 function(accessToken, refreshToken, profile, done) {
+	console.log(profile);
 	User.findOrCreateOne('facebook', profile, function (err, user) {
+		console.log('Should find one? :o');
+		console.log('Should find one? :o');
+		console.log('Should find one? :o');
+		console.log('Should find one? :o');
+		console.log(err);
+		console.log(user);
+		console.log('Should find one? :o');
+		console.log('Should find one? :o');
+		console.log('Should find one? :o');
+		console.log('Should find one? :o');
+		console.log('Should find one? :o');
 		if (err) return done(err);
 		if (!user) return done(null, false);
 		return done(null, user);

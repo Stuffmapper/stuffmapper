@@ -17,7 +17,7 @@ var multerS3 = require('multer-s3');
 var braintree = require('braintree');
 var proxy = require('express-http-proxy');
 var pg = require('pg');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
 AWS.config = new AWS.Config();
 AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
 AWS.config.secretAccessKey = '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';
@@ -92,19 +92,8 @@ app.post('/checkout/paiddibs', function(req, res) {
 	});
 });
 
-app.post('/checkout/earlydibs', function(req, res) {
-	var nonceFromTheClient = req.body.payment_method_nonce;
-	if(!nonceFromTheClient) return res.send('failure');
-	gateway.transaction.sale({
-		amount: '5.00',
-		paymentMethodNonce: nonceFromTheClient,
-		options: {
-			submitForSettlement: true
-		}
-	}, function (err, result) {
-		if(err) return res.send('failure');
-		res.send('success');
-	});
+app.get('/changepassword/:passid', function() {
+
 });
 
 app.get('/redirect',function(req,res){res.render('redirect');});
@@ -115,6 +104,7 @@ app.get('/auth/google_oauth2/callback', passport.authenticate('google', {
 }));
 
 app.get('/auth/facebook_oauth2/callback', passport.authenticate('facebook', {
+	//session: false,
 	successRedirect: '/redirect',
 	failureRedirect: '/api/v1/account/login/facebook'
 }));

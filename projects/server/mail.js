@@ -105,20 +105,20 @@ function sendTemplate(template, subject, to, args) {
 // 	}
 // );
 //
-sendTemplate(
-	'email-verification',
-	'Activate your Stuffmapper account!',
-	{
-		'Delaney Cunningham' : 'delaney.cunningham@gmail.com'
-	},
-	{
-		'APPSTORELINK' : 'appleappstorelink',
-		'PLAYSTORELINK' : 'playstorelink',
-		'FIRSTNAME' : 'Delaney',
-		'CONFIRMEMAIL' : 'http://localhost:3000/api/v1/account/verificaiton/239jr092fj9eyfoaeu9fwur',
-		'UPDATE_PROFILE' : 'http://localhost:3000/stuff/my/settings'
-	}
-);
+// sendTemplate(
+// 	'email-verification',
+// 	'Activate your Stuffmapper account!',
+// 	{
+// 		'Delaney Cunningham' : 'delaney.cunningham@gmail.com'
+// 	},
+// 	{
+// 		'APPSTORELINK' : 'appleappstorelink',
+// 		'PLAYSTORELINK' : 'playstorelink',
+// 		'FIRSTNAME' : 'Delaney',
+// 		'CONFIRMEMAIL' : 'http://localhost:3000/api/v1/account/verificaiton/239jr092fj9eyfoaeu9fwur',
+// 		'UPDATE_PROFILE' : 'http://localhost:3000/stuff/my/settings'
+// 	}
+// );
 //
 //
 // sendTemplate(
@@ -155,21 +155,21 @@ sendTemplate(
 // );
 
 
-// sendTemplate(
-// 	'notify-undib',
-// 	'Your *|ITEMNAME|* has been unDibs',
-// 	{
-// 		'Delaney Cunningham' : 'delaney.cunningham@gmail.com'
-// 	},
-// 	{
-// 		'ITEMTITLE' : 'item title goes here',
-// 		'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
-// 		'FIRSTNAME' : 'Delaney',
-// 		'USERNAME' : 'JankyToaster420',
-// 		'ITEMURL' : 'https://www.stuffmapper.com/stuff/get/1',
-// 		'UPDATE_PROFILE' : 'https://www.stuffmapper.com/stuff/my/settings'
-// 	}
-// );
+sendTemplate(
+	'notify-undib',
+	'Your *|ITEMNAME|* has been unDibs',
+	{
+		'Delaney Cunningham' : 'ryan.the.farmer@gmail.com'
+	},
+	{
+		'ITEMTITLE' : 'item title goes here',
+		'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
+		'FIRSTNAME' : 'Delaney',
+		'USERNAME' : 'JankyToaster420',
+		'ITEMURL' : 'https://www.stuffmapper.com/stuff/get/1',
+		'UPDATE_PROFILE' : 'https://www.stuffmapper.com/stuff/my/settings'
+	}
+);
 //
 // sendTemplate(
 // 	'password-reset',

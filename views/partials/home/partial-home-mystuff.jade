@@ -1,5 +1,10 @@
 #my-stuff-container
 	div(ui-view)
+	#loading-get-stuff.noselect.loading-screen.animate-250
+		.spinner
+			.double-bounce1
+			.double-bounce2
+		.noselect.loading-text Finding Stuff...
 	ion-content#masonry-container.animate-250(style="height: 100%;")
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry(); getDistance()")

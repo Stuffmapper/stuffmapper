@@ -19,7 +19,7 @@
 			#give-location-container
 				#give-location-text1.give-location-text move the map around
 				i.fa.fa-location-arrow.give-location-icon
-				#give-location-text2.give-location-text to set the pick up location
+				#give-location-text2.give-location-text to set the pick-up location
 			button#give-location-next-step.sm-button.sm-button-default.sm-button-full-width.sm-text-l(ng-click="setMarker()") Next Step
 		li#give-step3.give-steps.animate-250
 			//- #give-item-uploading-screen-container.animate-250
@@ -32,13 +32,13 @@
 				input#give-description-title.sm-text-input.sm-text-input-full-width.sm-text-input-give-stuff(type="text" placeholder="Title" ng-model="giveItem.title")
 				sm-select#give-category-selector(placeholder="Choose a category..." full-width="true" ng-model="category" options="categories")
 				sm-checkbox(name="testName" ng-model="giveItem.outside" full-width="true") This item is outside <span class="sm-text-s">(do not contact me about this item)</span>
-				textarea#give-description.sm-text-area.sm-text-area-full-width.sm-text-input-give-stuff(name="Description" ng-model="giveItem.description" style="height: 80px;" placeholder="Description")
+				textarea#give-description.sm-text-area.sm-text-area-full-width.sm-text-input-give-stuff(name="Description" ng-model="giveItem.description" style="height: 80px;" placeholder="Description (i.e. size, dimensions, condition, etc.)")
 				//- #give-static-map1-container
 				//- 	img#give-static-map1
 			button#give-description-submit.sm-button.sm-button-default.sm-button-full-width.sm-text-l(ng-click="uploadItem()") Submit 
 		li#give-step4.give-steps.animate-250
 			.sm-alert-dialog
-				.sm-alert-dialog-message Good job!  Your stuff has been listed!
+				.sm-alert-dialog-message Your stuff has been mapped!
 				.sm-button-group(style="width: 100%;display:block;height: 94px;")
 					.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
 						input#sign-in-sign-in-button.sm-button.sm-button-ghost.sm-button-default.sm-text-l(type="button" value="OK!" ng-click="goToMyStuffItem()" style="margin:20px 10px;width:calc(100% - 10px);")

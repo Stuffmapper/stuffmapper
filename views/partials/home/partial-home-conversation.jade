@@ -4,13 +4,4 @@
 			li.conversation-message-container(ng-repeat="message in conversation | reverse" class="conversation-message-container-{{ message.type }}")
 				.conversation-message(class="conversation-{{ message.type }}-message") {{ message.message }}
 	#conversation-input-container
-		//- .conversation-input-button-container
-		//- 	#conversation-auto-reply.conversation-input-button
-		//- 		i.fa.fa-comment
-		sm-textarea-group-button.sm-full-width#conversation-input(rows="1" placeholder="placeholder text" submit="sendMessage()")
-		//- sm-input-group-button#search-stuff(placeholder="placeholder text" submit="search()")
-		
-		//- textarea#conversation-input(rows="1" placeholder="type a message...")
-		//- .conversation-input-button-container
-		//- 	#conversation-send-reply.conversation-input-button(ng-click="sendMessage()")
-		//- 		i.fa.fa-send
+		sm-textarea-group-button.sm-full-width#conversation-input(rows="1" placeholder="send a message" submit="sendMessage()")
