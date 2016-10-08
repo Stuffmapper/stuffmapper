@@ -32,18 +32,21 @@ function MainController() {
 	}
 	$scope.counterFlipperHeader = new CounterFlipper('landfill-tracker-header', 0, 7);
 	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
-	$scope.counterFlipperHeader.setCounter(1283746);
-	$scope.counterFlipperHeader.setCounter(2738391);
-	$scope.counterFlipperHeader.setCounter(3345678);
-	$scope.counterFlipperHeader.setCounter(4765432);
 	initChatra();
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data) {
+		$scope.toastCounter = 0;
 		if(data.res.user) {
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
 		}
+		var lt = parseInt(data.res.lt);
+		var count = 0;
+		var variability = lt/8;
+		var stuff = lt/4;
+		(Math.floor(Math.random() * stuff) + 1) - variability
+
 		$scope.counterFlipperHeader.setCounter(data.res.lt);
 		$scope.counterFlipperMenu.setCounter(data.res.lt);
 		if ($cordovaSQLite) {
@@ -121,7 +124,7 @@ function MainController() {
 					var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 					$('#conversation-messages').append([
 						'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="conversation-message conversation-in-message">',
-						'	'+data.messages.message,
+						''+data.messages.message,
 						'</div></li>'
 					].join(''));
 					if (isScrolledToBottom) {
@@ -172,14 +175,14 @@ function MainController() {
 		$('#modal-windows .modal-container').removeClass('modal-window-open');
 		$scope.popUpTimeout = $timeout(function() {
 			$('#modal-windows').removeClass('modal-windows-open');
-			$('#sign-in-step').css({
-				'transform': ''
-			});
-			$('#sign-in-step .modal-title').css({
-				'transform': ''
-			});
-			$('#sign-in-step .modal-title').removeClass('visible');
+			$('#sign-in-step').css({'transform':''});
+			$('#sign-in-step .sm-modal-title').css({'transform':''});
+			$('#sign-up-step').css({'transform':''});
+			$('#sign-in-step .sm-modal-title').css({'transform':''});
+			$('#sign-in-step .sm-modal-title').removeClass('visible');
 			$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+			$('#confirmation-step').addClass('hidden-modal').removeClass('active');
+			$('#confirmation-step-icon').addClass('sm-hidden');
 		}, 550);
 	};
 	$scope.googleOAuth = function() {
@@ -241,6 +244,7 @@ function MainController() {
 	function getAccountStatus() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
 			if (data.err || !data.res.user) return console.log(data.err);
+			initUserData(data);
 			location.hash = '';
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
@@ -349,16 +353,30 @@ function MainController() {
 		}
 	};
 	$scope.userButton = function() {
-		if ($userData.isLoggedIn()) $scope.showPopup();
-		else $scope.showModal();
+		$scope.showPopup();
 	};
 	$scope.aboutUs = function() {
 		$state.go('about');
 	};
+	var passwordVisible = false;
+	$scope.toggleVisibility = function() {
+		if(!passwordVisible) {
+			$('#toggle-password-visibility').removeClass('fa-eye').addClass('fa-eye-slash');
+			$('#sign-up-password1').attr('type', 'text');
+		}
+		else {
+			$('#toggle-password-visibility').addClass('fa-eye').removeClass('fa-eye-slash');
+			$('#sign-up-password1').attr('type', 'password');
+		}
+		passwordVisible = !passwordVisible;
+	};
+	$scope.resetVisibility = function() {
+
+	};
 	$scope.login = function() {
 		// set step to loading
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/login', {
-			email: $('#sign-in-email').val(),
+			username: $('#sign-in-email').val(),
 			password: $('#sign-in-password').val()
 		}, {
 			headers: {
@@ -378,6 +396,19 @@ function MainController() {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
+			var toastId = 'sm-toast'+$scope.toastCounter++;
+			$('<div id="'+toastId+'" class="sm-toast sm-hidden animate-250">You have successfully logged in!</div>').appendTo('body');
+			requestAnimationFrame(function() {
+				setTimeout(function() {
+					$('#'+toastId).removeClass('sm-hidden');
+					setTimeout(function(){
+						$('#'+toastId).addClass('sm-hidden');
+						setTimeout(function() {
+							$('#'+toastId).remove();
+						}, 550);
+					},3000);
+				}, 100);
+			});
 			if(config.ionic.isIonic) {
 				$ionicPlatform.ready(function () {
 					// $cordovaPush.register({
@@ -423,52 +454,87 @@ function MainController() {
 		$('#sign-in-step').css({
 			'transform': 'translate3d(-100%, 0%, 0)'
 		});
-		$('#sign-in-step .modal-title').css({
+		$('#sign-in-step .sm-modal-title').css({
 			'transform': 'translate3d(65%, 0%, 0) scale3d(0.75, 0.75, 1)'
 		});
-		$('#sign-in-step .modal-title').addClass('visible');
+		$('#sign-in-step .sm-modal-title').addClass('visible');
 		$('#sign-up-step').removeClass('hidden-modal').addClass('active');
 	};
-	$scope.signUpBack = function() {
-		$('#sign-in-step').css({
-			'transform': ''
+	$scope.signUpConfirmationStep = function() {
+		$('#sign-up-step').css({
+			'transform': 'translate3d(-100%, 0%, 0)'
 		});
-		$('#sign-in-step .modal-title').css({
-			'transform': ''
+		$('#sign-in-step .sm-modal-title').css({
+			'transform': 'translate3d(0%, 0%, 0) scale3d(0.75, 0.75, 1)'
 		});
-		$('#sign-in-step .modal-title').removeClass('visible');
+		$('#confirmation-step').removeClass('hidden-modal');
 		$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+		setTimeout(function() {
+			$('#confirmation-step-icon').removeClass('sm-hidden');
+		}, 500);
 	};
+	$scope.signUpBack = function() {
+		$('#sign-in-step').css({'transform':''});
+		$('#sign-in-step .sm-modal-title').css({'transform':''});
+		$('#sign-in-step .sm-modal-title').removeClass('visible');
+		$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+		$('#sign-up-step').css({'transform':''});
+		$('#confirmation-step').addClass('hidden-modal').removeClass('active');
+		$('#confirmation-step-icon').addClass('sm-hidden');
+
+		signingUp = false;
+	};
+	var signingUp = false;
+	var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+	var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-+_!@#$%^&*.,?]).{6,32}/;
 	$scope.signUp = function() {
-		var fd = {
-			uname: $('#sign-up-uname').val(),
-			email: $('#sign-up-email').val(),
-			password: $('#sign-up-password1').val(),
-			fname: $('#sign-up-fname').val(),
-			lname: $('#sign-up-lname').val()
-		};
-		$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', fd, {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-			},
-			transformRequest: function(data) {
-				return $.param(data);
+		if(!signingUp) {
+			$('#sm-sign-up-button').attr('disabled', '');
+			var valid = true;
+			var message = '';
+			var fd = {
+				uname: $('#sign-up-uname').val(),
+				email: $('#sign-up-email').val(),
+				password: $('#sign-up-password1').val(),
+				fname: $('#sign-up-fname').val(),
+				lname: $('#sign-up-lname').val()
+			};
+			$('#sign-up-uname, #sign-up-email, #sign-up-password1, #sign-up-fname, #sign-up-lname').css({border:''});
+			if(!fd.lname) {valid=false;$('#sign-up-lname').css({border:'1px solid red'});message='please insert a last name';}
+			if(!fd.fname) {valid=false;$('#sign-up-fname').css({border:'1px solid red'});message='please insert a first name';}
+			if(!fd.password || !passRe.test(fd.password)) {valid=false;$('#sign-up-password1').css({border:'1px solid red'});message='your password needs to be at least 8 characters long and have at least one of the following: an uppercase letter, a lowercase letter, a number, and a symbol';}
+			if(!fd.email || !emailRe.test(fd.email)) {valid=false;$('#sign-up-email').css({border:'1px solid red'});message='invalid email address';}
+			if(!fd.uname || !/^[a-zA-Z-+_!@#$%^&*.,?\d]{1,32}/i.test(fd.uname)) {valid=false;$('#sign-up-uname').css({border:'1px solid red'});((!fd.uname)?(message='please insert a username'):(message='your username is too long'));}
+
+			if(!valid) {
+				signingUp = false;
+				$('#sm-sign-up-button').removeAttr('disabled');
+				$('#sign-up-step-message').text(message).css({'opacity':1});
 			}
-		})
-		.success(function(data) {
-			if (data.err) return console.log(data.err);
-			location.hash = '';
-		});
+			else {
+				$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', fd,
+				{headers:{'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest:function(data){return $.param(data);}})
+				.success(function(data) {
+					$('#sm-sign-up-button').removeAttr('disabled');
+					if (data.err) return console.log(data.err);
+					$scope.signUpConfirmationStep();
+				});
+			}
+
+		}
+
 	};
 	$scope.resetModal = function() {
 		$('#sign-in-step').css({
 			'transform': ''
 		});
-		$('#sign-in-step .modal-title').css({
+		$('#sign-in-step .sm-modal-title').css({
 			'transform': ''
 		});
-		$('#sign-in-step .modal-title').removeClass('visible');
+		$('#sign-in-step .sm-modal-title').removeClass('visible');
 		$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+		$('#confirmation-step').addClass('hidden-modal').removeClass('active');
+		$('#confirmation-step-icon').addClass('sm-hidden');
 	};
 	$scope.toggleSideMenu = function() {
 		$('#side-menu, #side-menu-background').toggleClass('sm-hidden');

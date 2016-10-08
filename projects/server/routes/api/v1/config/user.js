@@ -1,6 +1,6 @@
 var bcrypt = require('bcrypt');
 var pg = require('pg');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
 
 var braintree = require("braintree");
 
@@ -36,7 +36,7 @@ module.exports = (function() {
 					client.end();
 					return cb('pg connect error: ' + err, null);
 				}
-				var query = 'SELECT * FROM users WHERE '+loginType+' = $1';
+				var query = 'SELECT * FROM users WHERE '+loginType+' = $1 AND verified_email = true';
 				var values = [
 					login[loginType]
 				];
@@ -63,7 +63,6 @@ module.exports = (function() {
 					client.end();
 					return cb(err, null);
 				}
-				console.log(type);
 				var query = 'SELECT * FROM users WHERE '+type+'_id = $1 OR email = $2';
 				var values = [
 					profile.id,
@@ -72,7 +71,7 @@ module.exports = (function() {
 				client.query(query, values, function(err, result) {
 					if(result && result.rows && result.rows.length !== 0) {
 						var rows = result.rows[0];
-						if(!rows[type]) {
+						if(!rows[type+'_id']) {
 							query = 'UPDATE users SET '+type+'_id = $1 where email = $2 RETURNING *';
 							values = [
 								profile.id,

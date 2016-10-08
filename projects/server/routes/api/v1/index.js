@@ -5,14 +5,21 @@ var bcrypt = require('bcrypt');
 var saltRounds = 10;
 var passport = require('passport');
 var request = require('request');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
 var braintree = require('braintree');
 
+// var gateway = braintree.connect({
+// 	environment: braintree.Environment.Production,
+// 	merchantId: '7t82byzdjdbkwp8m',
+// 	publicKey: '5hnt7srpm7x5d2qp',
+// 	privateKey: '6f8520869e0dd6bf8eec2956752166d9'
+// });
+
 var gateway = braintree.connect({
-	environment: braintree.Environment.Production,
-	merchantId: '7t82byzdjdbkwp8m',
-	publicKey: '5hnt7srpm7x5d2qp',
-	privateKey: '6f8520869e0dd6bf8eec2956752166d9'
+	environment: braintree.Environment.Sandbox,
+	merchantId: 'jbp33kzvs7tp3djq',
+	publicKey: 'swm4xbv63c7rgt7v',
+	privateKey: 'b7a045a67ae6fc5489c5cb1ac3f0797a'
 });
 
 function isAuthenticated(req, res, next) {
@@ -42,7 +49,7 @@ router.get('/stuff', function(req, res) {
 			'SELECT posts.id, posts.title, posts.description, posts.attended, ',
 			'posts.lat, posts.lng, categories.category, images.image_url ',
 			'FROM posts, images, categories WHERE images.post_id = posts.id AND ',
-			'categories.id = posts.category_id AND posts.dibbed = false'
+			'categories.id = posts.category_id AND posts.dibbed = false AND posts.archived = false'
 		].join('');
 		var values = [];
 		if(req.session.passport && req.session.passport.user) {
@@ -124,10 +131,9 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended,',
-			'posts.lat, posts.lng, categories.category, images.image_url,',
-			'conversations.id AS conversation_id',
-			'FROM posts, images, categories, conversations',
+			'SELECT posts.id, posts.dibbed, posts.dibber_id, posts.user_id, posts.title, posts.description, posts.attended,',
+			'posts.lat, posts.lng, categories.category, images.image_url',
+			'FROM posts, images, categories',
 			'WHERE images.post_id = posts.id AND (posts.user_id = $1 OR posts.dibber_id = $1) AND',
 			'posts.id = $2 AND categories.id = posts.category_id'
 		].join(' ');
@@ -135,17 +141,22 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 			req.session.passport.user.id,
 			req.params.id
 		];
-		console.log(values);
 		client.query(query, values, function(err, result) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
-			res.send({
-				err: null,
-				res: result.rows[0]
+			result.rows[0].type = (parseInt(result.rows[0].dibber_id) === parseInt(req.session.passport.user.id))?'dibber':'lister';
+			query = 'SELECT id FROM conversations WHERE post_id = $1 AND archived = false';
+			values = [result.rows[0].id];
+			client.query(query, values, function(err, result2) {
+				if(!err && result2.rows.length) result.rows[0].conversation_id = result2.rows[0].id;
+				res.send({
+					err: null,
+					res: result.rows[0]
+				});
+				client.end();
 			});
-			client.end();
 		});
 	});
 });
@@ -250,19 +261,69 @@ router.put('/stuff/id/:id', isAuthenticated, function(req, res) {
 });
 
 router.delete('/stuff/id/:id', isAuthenticated, function(req, res) {
-	var stuff = [];
-	if(req.params.id <= db.users.length) {
-		var uname = db.users[req.params.id-1].uname;
-		res.json(db.stuff[uname]);
-	}
-	else {
-		res.json({
-			err: {
-				mesage : 'Could not delete stuff',
-				redirect : true
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'UPDATE posts SET archived = true',
+			'WHERE dibbed = false AND id = $2 AND user_id = $1',
+			'RETURNING *'
+		].join(' ');
+		var values = [
+			req.session.passport.user.id,
+			req.params.id
+		];
+		client.query(query, values, function(err, result1) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
 			}
+			var query = [
+				'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
+				'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3',
+				'RETURNING *'
+			].join(' ');
+			var values = [
+				result1.rows[0].id,
+				result1.rows[0].user_id,
+				req.session.passport.user.id
+			];
+			client.query(query, values, function(err, result2) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
+				}
+				var query = [
+					'UPDATE conversations SET archived = true, date_edited = current_timestamp',
+					'WHERE dibber_id = $2 AND lister_id = $3 AND post_id = $1',
+					'RETURNING *'
+				].join(' ');
+				var values = [
+					req.params.id,
+					result1.rows[0].user_id,
+					req.session.passport.user.id
+				];
+				client.query(query, values, function(err, result3) {
+					if(err) {
+						apiError(res, err);
+						return client.end();
+					}
+					res.send({
+						err: null,
+						res: {
+							'res1': result1.rows,
+							'res2': result2.rows,
+							'res3': result3.rows
+						}
+					});
+					return client.end();
+				});
+			});
 		});
-	}
+	});
 });
 
 /* STUFF MANAGEMENT -  END  */
@@ -324,9 +385,9 @@ router.get('/views', function() {
 
 router.post('/account/status', function(req, res) {
 	queryServer(res, 'SELECT pick_up_success FROM pick_up_success WHERE pick_up_success = true', [], function(result) {
-		console.log('loggedIn');
-//		console.log(req.session);
+		//		console.log(req.session);
 		if(req.session.passport && req.session.passport.user) {
+			console.log('logged in');
 			res.send({
 				err: null,
 				res: {
@@ -336,6 +397,7 @@ router.post('/account/status', function(req, res) {
 			});
 		}
 		else {
+			console.log('not logged in');
 			res.send({
 				err: null,
 				res : {
@@ -431,17 +493,17 @@ router.post('/account/register', function(req, res) {
 							user: result.rows[0]
 						}
 					});
+					// req.session.passport = {};
+					// req.session.passport.user = {};
+					// req.session.passport.user.id = result.rows[0].id;
+					// req.session.passport.user.fname = result.rows[0].fname;
+					// req.session.passport.user.lname = result.rows[0].lname;
+					// req.session.passport.user.email = result.rows[0].email;
+					// req.session.passport.user.braintree_token = result.rows[0].braintree_token;
+					// console.log('REGISTER LOCAL START');
+					// console.log(req.session);
+					// console.log('REGISTER LOCAL  END');
 					var emailTo = {};
-					req.session.passport = {};
-					req.session.passport.user = {};
-					req.session.passport.user.id = result.rows[0].id;
-					req.session.passport.user.fname = result.rows[0].fname;
-					req.session.passport.user.lname = result.rows[0].lname;
-					req.session.passport.user.email = result.rows[0].email;
-					req.session.passport.user.braintree_token = result.rows[0].braintree_token;
-					console.log('REGISTER LOCAL START');
-					console.log(req.session);
-					console.log('REGISTER LOCAL  END');
 					emailTo[b.uname] = b.email;
 					sendTemplate(
 						'email-verification',
@@ -449,7 +511,7 @@ router.post('/account/register', function(req, res) {
 						emailTo,
 						{
 							'FIRSTNAME' : b.uname,
-							'CONFIRMEMAIL' : 'http://localhost:3000/api/v1/account/confirmation/' + result.rows[0].verify_email_token
+							'CONFIRMEMAIL' : 'https://ducks.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
 						}
 					);
 				});
@@ -469,15 +531,22 @@ router.get('/account/confirmation/:email_token', function(req, res) {
 			req.params.email_token
 		];
 		queryServer(res, query, values, function(result) {
-			console.log(result);
-			if(result.rows.length >= 1) res.redirect('/stuff/get');
+			console.log(query);
+			console.log(values);
+			console.log(result.rows[0].uname);
+			if(result.rows.length >= 1) res.send('Thank you for confirming your email address, ' + result.rows[0].uname+'!<br>Click <a href="https://ducks.stuffmapper.com/get/stuff#signin">here</a> to sign in.');
+			else res.send('There was an issue confirming your email address.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.');
 		});
 	}
 });
 
 router.post('/account/login', function(req, res, next) {
 	var passport = req._passport.instance;
+	console.log('account login');
 	passport.authenticate('local', function(err, user, info) {
+		console.log('passport authenticate');
+		console.log(err, user, info);
+		console.log('passport authenticated');
 		if (err) {
 			return res.send({
 				err: 'local login error: ' + err,
@@ -533,6 +602,7 @@ router.get('/account/login/google', passport.authenticate('google', {
 }));
 
 router.get('/account/login/facebook', passport.authenticate('facebook', {
+	//session: false,
 	scope: 'email'
 }));
 
@@ -580,7 +650,6 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 });
 
 router.delete('/account/info', isAuthenticated, function(req, res) {
-	// ARCHIVE DO NOT DELETE
 	// auto sign out when complete
 	var id = req.session.passport.user.id;
 
@@ -602,6 +671,21 @@ router.delete('/account/info', isAuthenticated, function(req, res) {
 
 
 /* DIBS MANAGEMENT - START */
+// router.post('/checkout/paiddibs', function(req, res) {
+// 	var nonceFromTheClient = req.body.payment_method_nonce;
+// 	if(!nonceFromTheClient) return res.send('failure');
+// 	gateway.transaction.sale({
+// 		amount: '1.00',
+// 		paymentMethodNonce: nonceFromTheClient,
+// 		options: {
+// 			submitForSettlement: true
+// 		}
+// 	}, function (err, result) {
+// 		if(err) return res.send('failure');
+// 		res.send('success');
+// 	});
+// });
+
 
 router.post('/dibs/:id', isAuthenticated, function(req, res) {
 	var client = new pg.Client(conString);
@@ -624,23 +708,18 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 				apiError(res, err);
 				return client.end();
 			}
-			var query = [
-				'INSERT INTO pick_up_success',
-				'(post_id, dibber_id, lister_id)',
-				'VALUES ($1, $2, $3) RETURNING *'
-			].join(' ');
-			var values = [
-				req.params.id,
-				req.session.passport.user.id,
-				result1.rows[0].user_id
-			];
-			client.query(query, values, function(err, result2) {
-				if(err) {
-					apiError(res, err);
-					return client.end();
+			var nonceFromTheClient = req.body.payment_method_nonce;
+			if(!nonceFromTheClient) return res.send('failure');
+			gateway.transaction.sale({
+				amount: '1.00',
+				paymentMethodNonce: nonceFromTheClient,
+				options: {
+					submitForSettlement: true
 				}
+			}, function (err, result) {
+				if(err) return res.send('failure');
 				var query = [
-					'INSERT INTO conversations',
+					'INSERT INTO pick_up_success',
 					'(post_id, dibber_id, lister_id)',
 					'VALUES ($1, $2, $3) RETURNING *'
 				].join(' ');
@@ -649,33 +728,59 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 					req.session.passport.user.id,
 					result1.rows[0].user_id
 				];
-				client.query(query, values, function(err, result3) {
+				client.query(query, values, function(err, result2) {
 					if(err) {
 						apiError(res, err);
 						return client.end();
 					}
-					res.send({
-						err: null,
-						res: {
-							'res1': result1.rows,
-							'res2': result2.rows,
-							'res3': result3.rows
+					query = [
+						'INSERT INTO conversations',
+						'(post_id, dibber_id, lister_id)',
+						'VALUES ($1, $2, $3) RETURNING *'
+					].join(' ');
+					values = [
+						req.params.id,
+						req.session.passport.user.id,
+						result1.rows[0].user_id
+					];
+					client.query(query, values, function(err, result3) {
+						if(err) {
+							apiError(res, err);
+							return client.end();
 						}
+						res.send({
+							err: null,
+							res: {
+								'res1': result1.rows,
+								'res2': result2.rows,
+								'res3': result3.rows
+							}
+						});
+						if(result1.rows[0].unattended) return client.end();
+						query = [
+							'SELECT image_url FROM images WHERE post_id = $1'
+						].join(' ');
+						values = [
+							req.params.id,
+						];
+						client.query(query, values, function(err, result4) {
+							var emailTo = {};
+							emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
+							sendTemplate(
+								'dibber-notification-1',
+								'You Dibs\'d an item!',
+								emailTo,
+								{
+									'FIRSTNAME' : req.session.passport.user.uname,
+									'CHATLINK' : 'https://ducks.stuffmapper.com/stuff/my/messages/'+result3.rows[0].id,
+									'MYSTUFFLINK' : 'https://ducks.stuffmapper.com/stuff/my/items',
+									'ITEMTITLE':result1.rows[0].title,
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
+								}
+							);
+							return client.end();
+						});
 					});
-					var emailTo = {};
-					emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
-					sendTemplate(
-						'dibber-notification-1',
-						'You Dibbed an item!',
-						emailTo,
-						{
-							'FIRSTNAME' : req.session.passport.user.uname,
-							'CHATLINK' : 'http://localhost:3000/stuff/get',
-							'MYSTUFFLINK' : 'http://localhost:3000/stuff/my/items',
-							'ITEMTITLE':'I FIGURE THIS OUT LATER'
-						}
-					);
-					return client.end();
 				});
 			});
 		});
@@ -744,19 +849,19 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 							'res3': result3.rows
 						}
 					});
-					var emailTo = {};
-					emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
-					sendTemplate(
-						'dibber-notification-1',
-						'You unDibbed an item!',
-						emailTo,
-						{
-							'FIRSTNAME' : req.session.passport.user.uname,
-							'CHATLINK' : 'http://localhost:3000/stuff/get',
-							'MYSTUFFLINK' : 'http://localhost:3000/stuff/my/items',
-							'ITEMTITLE':'NAH MANG THIS IS AN UNDIB'
-						}
-					);
+					// var emailTo = {};
+					// emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
+					// sendTemplate(
+					// 	'dibber-notification-1',
+					// 	'You unDibbed an item!',
+					// 	emailTo,
+					// 	{
+					// 		'FIRSTNAME' : req.session.passport.user.uname,
+					// 		'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/get',
+					// 		'MYSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/my/items',
+					// 		'ITEMTITLE':'NAH MANG THIS IS AN UNDIB'
+					// 	}
+					// );
 					return client.end();
 				});
 			});
@@ -765,7 +870,83 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 });
 
 router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
-
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'UPDATE posts SET dibbed = false',
+			'WHERE dibbed = true AND id = $2 AND user_id = $1',
+			'RETURNING *'
+		].join(' ');
+		var values = [
+			req.session.passport.user.id,
+			req.params.id
+		];
+		client.query(query, values, function(err, result1) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			var query = [
+				'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
+				'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3',
+				'RETURNING *'
+			].join(' ');
+			console.log(result1.rows[0]);
+			var values = [
+				result1.rows[0].id,
+				result1.rows[0].dibber_id,
+				req.session.passport.user.id
+			];
+			client.query(query, values, function(err, result2) {
+				if(err) {
+					apiError(res, err);
+					return client.end();
+				}
+				var query = [
+					'UPDATE conversations SET archived = true, date_edited = current_timestamp',
+					'WHERE dibber_id = $2 AND lister_id = $3 AND post_id = $1',
+					'RETURNING *'
+				].join(' ');
+				var values = [
+					req.params.id,
+					result1.rows[0].user_id,
+					req.session.passport.user.id
+				];
+				client.query(query, values, function(err, result3) {
+					if(err) {
+						apiError(res, err);
+						return client.end();
+					}
+					res.send({
+						err: null,
+						res: {
+							'res1': result1.rows,
+							'res2': result2.rows,
+							'res3': result3.rows
+						}
+					});
+					// var emailTo = {};
+					// emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
+					// sendTemplate(
+					// 	'dibber-notification-1',
+					// 	'You unDibbed an item!',
+					// 	emailTo,
+					// 	{
+					// 		'FIRSTNAME' : req.session.passport.user.uname,
+					// 		'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/get',
+					// 		'MYSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/my/items',
+					// 		'ITEMTITLE':''
+					// 	}
+					// );
+					return client.end();
+				});
+			});
+		});
+	});
 });
 
 /* DIBS MANAGEMENT -  END  */
@@ -816,7 +997,7 @@ router.get('/messages', isAuthenticated, function(req, res) {
 				var query = [
 					'SELECT messages.message, messages.conversation_id, posts.title FROM messages, posts',
 					'WHERE messages.conversation_id = $1 AND posts.id = $2',
-					'ORDER BY messages.date_created DESC LIMIT 1'
+					'ORDER BY messages.date_created DESC LIMIT(1)'
 				].join(' ');
 				var values = [
 					result1.rows[i].id,

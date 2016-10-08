@@ -12,6 +12,9 @@ function MyStuffController() {
 			$state.go('stuff.get', {'#':'signin'});
 			$scope.showModal();
 		} else {
+			['dibs','gives'].forEach(function(e) {
+
+			});
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my').success(function(data) {
 				$scope.listItems = data.res.rows;
 				console.log(data);

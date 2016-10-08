@@ -12,9 +12,14 @@ function ConversationController() {
 		} else {
 			$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+$stateParams.conversation).success(function(data) {
 				$scope.conversation = data.res.conversation;
+
 				$scope.info = data.res.info;
 				requestAnimationFrame(function() {
 					out.scrollTop = out.scrollHeight - out.clientHeight;
+					var len = $('li.conversation-message-container').length;
+					if(!len) {
+						$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
+					}
 				});
 				$scope.sendMessage = function() {
 					if(!$('#conversation-input').val()) return;
@@ -29,6 +34,7 @@ function ConversationController() {
 							return $.param(data);
 						}
 					}).success(function(data) {
+						console.log($scope.socket);
 						$scope.socket.emit('message', {
 							to: $scope.info.inboundMessenger,
 							from: $scope.info.outboundMessenger,
@@ -54,7 +60,7 @@ function ConversationController() {
 				var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 				$('#conversation-messages').append([
 					'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="conversation-message conversation-'+type+'-message">',
-					message,
+					message.trim(),
 					'</div></li>'
 				].join(''));
 				if(isScrolledToBottom) {

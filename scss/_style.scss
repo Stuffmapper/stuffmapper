@@ -49,9 +49,9 @@ html.ionic.ios {
 	z-index: 1 !important;
 }
 
-input:read-only{
-	background-color: #FFF;
-}
+// input:read-only{
+// 	background-color: #FFF;
+// }
 
 .animate-250 {
 	@include transition(all 250ms);
@@ -453,8 +453,8 @@ input:read-only{
 	width: 40px;
 	height: 40px;
 	line-height: 40px;
-	font-size: 30px;
-	color: #ffffff;
+	font-size: 26px;
+	color: #fff;
 	text-align: center;
 	cursor: pointer;
 }
@@ -591,7 +591,7 @@ input:read-only{
 	background-color: #fff;
 	position: fixed;
 	z-index: 1;
-	height: 250px;
+	height: 320px;
 	overflow: hidden;
 	padding: 0px;
 	width: 100%;
@@ -599,6 +599,9 @@ input:read-only{
 	&.sm-hidden {
 		height: 0px;
 	}
+}
+#checkout > .payment-form {
+	margin: 5%;
 }
 
 .get-item-single-image-container {
@@ -612,11 +615,12 @@ input:read-only{
 .get-item-single-details-container {
 	display: block;
 	width: 100%;
-	height: 60%;
 	position: relative;
+	min-height: 60%;
 	z-index: 2;
-	transform: translate3d(0px, 0%, 0);
+	transform: translate3d(0,0,0);
 	background-color: #fff;
+	overflow: hidden;
 	&.sm-hidden {
 		transform: translate3d(0px, 100%, 0);
 	}
@@ -658,7 +662,21 @@ input:read-only{
 	display: inline-block;
 	overflow: hidden;
 }
-
+.tab-message-badge {
+	border-radius: 9px;
+	width: 24px;
+	height: 18px;
+	position: relative;
+	background: #8065B9;
+	z-index: 2;
+	line-height: 18px;
+	font-size: 12px;
+	color: #fff;
+	text-align: center;
+	display: inline-block;
+	margin-left: 5px;
+	top: -1px;
+}
 .stuff-tabs {
 	margin: 0;
 	padding: 0;
@@ -814,13 +832,10 @@ input:read-only{
 /* Search - START */
 
 .search-stuff-container {
-	// padding: 8px;
-	// height: 24px;
 	pointer-events: all;
-	// background-color: #fff;
-	// z-index: 5;
-	// position: relative;
-
+	background-color: #ffffff;
+	padding: 7px 20px;
+	height: 42px;
 }
 
 /* Search -  END  */
@@ -1223,9 +1238,10 @@ input:read-only{
 // #distance-from-me p, #newlisting p, #item-status p, #categories p, #attended-unattended p {
 // 	color: $pewter-dark;
 // }
-// #rangeText {
-// 	color: $charcoal-dark;
-// }
+#rangeText {
+	//color: $charcoal-dark;
+	margin-left: 5px;
+}
 // #get-stuff-container .settings-header {
 // 	display: none;
 // }
@@ -1541,6 +1557,11 @@ input:read-only{
 
 #give-step3 {
 	background-color: #fff;
+	#give-step3-container {
+		height: calc(100% - 70px);
+		overflow-y: scroll;
+		overflow-x: hidden;
+	}
 	#give-item-uploading-screen-container {
 		background-color: $fog-dark;
 		height: 100%;
@@ -1645,6 +1666,8 @@ input:read-only{
 }
 #give-step4 {
 	background-color: #fff;
+	overflow-y: scroll;
+	overflow-x: hidden;
 }
 #give-finished-map-container {
 	display: none;
@@ -1725,7 +1748,7 @@ input:read-only{
 	position: relative;
 }
 
-.modal-title {
+.sm-modal-title {
 	position: absolute;
 	width: 100%;
 	height: 48px;
@@ -1736,17 +1759,39 @@ input:read-only{
 	top: -39px;
 	@include transform(translate3d(0%, 0%, 0) scale3d(1, 1, 1));
 }
-
-#sign-in-step .modal-title::before {
+#sign-up-step-message-container {
+	height: 50px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+#sign-up-step-message {
+	position: relative;
+	color: $grapefruit-dark;
+	text-align: center;
+	opacity: 0.0001;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+#sign-in-step .sm-modal-title::before {
 	content : '<';
 	opacity: 0.0001;
 	@include transform(translate3d(-20px, 0px, 0) scale3d(1,1.7, 1));
 	position: absolute;
 }
-#sign-in-step .modal-title.visible::before {
+#sign-in-step .sm-modal-title.visible::before {
 	opacity: 1;
 }
-
+#toggle-password-visibility{
+	position: absolute;
+	top: 101px;
+	right: 21px;
+	padding: 7px;
+	cursor: pointer;
+	z-index: 2;
+}
 .modal-back-button {
 	width: 110px;
 	height: 33px;
@@ -1871,6 +1916,58 @@ input:read-only{
 
 /* Sign In Content -  END  */
 
+/* Confirmation Content - START */
+
+.confirmation-container {
+	width: 100%;
+	height: calc(100% - 84px);
+	position: relative;
+}
+
+#confirmation-step-icon {
+	color: $grass;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-size: 140px;
+	opacity: 1;
+	-webkit-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	-moz-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	-o-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	-webkit-transition: all 500ms cubic-bezier(0.365, 1, 0.465, 1);
+	-webkit-transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
+	-moz-transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
+	-o-transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
+	transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
+	&.sm-hidden {
+		opacity: 0.0001;
+		-webkit-transform: translate3d(0%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+		-moz-transform: translate3d(0%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+		-o-transform: translate3d(0%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+		transform: translate3d(0%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+	}
+}
+
+.confirmation-text-top {
+	position: absolute;
+	top: 15%;
+	text-align: center;
+}
+
+.confirmation-text-bottom {
+	position: absolute;
+	bottom: 15%;
+	text-align: center;
+}
+
+#sm-sign-up-ok-fine-button {
+	position: absolute;
+	bottom: 0px;
+}
+
+/* Confirmation Content -  END  */
+
 /* Modal Windows -  END  */
 
 /* Popups - START */
@@ -1992,11 +2089,13 @@ input:read-only{
 		background-color: $landfill-tracker-color-base;
 		color: $landfill-tracker-font-color;
 		font-family: $landfill-tracker-font-family;
+		font-size: 12px;
 	}
 	.bottomElement {
 		background-color: $landfill-tracker-color-base;
 		color: $landfill-tracker-font-color;
 		font-family: $landfill-tracker-font-family;
+		font-size: 12px;
 	}
 	.topElementEnter {
 		background-color: $landfill-tracker-color-fold;
@@ -2007,9 +2106,11 @@ input:read-only{
 }
 #landfill-tracker-header {
 	width: $landfill-tracker-width;
-	height: calc(100% - 10px);
+	height: calc(100% - 22px);
 	display: inline-block;
-	margin: 5px;
+	margin: 5px 15px;
+	font-size: 12px;
+	margin-top: 4px;
 	.topElement {
 		background-color: $landfill-tracker-color-base;
 		color: $landfill-tracker-font-color;
@@ -2027,7 +2128,12 @@ input:read-only{
 		background-color: $landfill-tracker-color-fold;
 	}
 }
-
+#landfill-tracker-description {
+	position: absolute;
+	color: #fff;
+	top: 23px;
+	left: 159px;
+}
 /* Landfill Tracker -  END  */
 
 
@@ -2070,7 +2176,7 @@ input:read-only{
 }
 
 #about-us-image-div {
-	background-image: url('../img/team-photo.JPG');
+	background-image: url('../img/teamphoto1-min.jpg');
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;
@@ -2103,6 +2209,7 @@ input:read-only{
 }
 .about-us-article {
 	// height: 100%;
+	padding-bottom: 40px;
 	display: flex;
 	align-items: stretch;
 	flex-direction: row;
@@ -2156,6 +2263,30 @@ input:read-only{
 
 /* Messages -  END  */
 
+
+
+.sm-toast {
+	border: 1px solid $grass-light;
+	position: relative;
+	display: block;
+	color: $charcoal-dark;
+	background-color: #fff;
+	z-index: 20;
+	position: fixed;
+	bottom: 0px;
+	-webkit-transform: translate3d(-50%, 150%, 0);
+	-moz-transform: translate3d(-50%, 150%, 0);
+	-o-transform: translate3d(-50%, 150%, 0);
+	transform: translate3d(-50%, 150%, 0);
+	&.sm-hidden {
+		-webkit-transform: translate3d(-50%, -150%, 0);
+		-moz-transform: translate3d(-50%, -150%, 0);
+		-o-transform: translate3d(-50%, -150%, 0);
+		transform: translate3d(-50%, -150%, 0);
+	}
+}
+
+
 /* Conversations - START */
 
 #conversation-container {
@@ -2205,9 +2336,7 @@ input:read-only{
 	white-space: -pre-wrap;
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;
-	color: #fff;
 	max-width: 80%;
-	padding: 3px;
 	color: #fff;
 	position: relative;
 	display: inline-block;
@@ -2216,6 +2345,14 @@ input:read-only{
 	padding: 10px 15px;
 	border-top: 1px solid $grass-light;
 	border-bottom: 1px solid $grass-light;
+}
+.conversation-initial-message {
+	border: 1px solid $grass-light;
+	position: relative;
+	display: block;
+	color: $charcoal-dark;
+	background-color: #fff;
+	max-width: 100%;
 }
 .conversation-in-message {
 	margin-left: 10px;
@@ -2897,11 +3034,11 @@ input:read-only{
 	color: $charcoal-dark;
 	padding-right:15px;
 	height: 40px;
-  font-weight: 700;
+	font-weight: 700;
 }
 #lock-sm a i {
 	padding-right:5px;
-  font-weight: 700;
+	font-weight: 700;
 }
 #lock-fb {
 	width: 170px;
@@ -2914,15 +3051,21 @@ input:read-only{
 }
 
 @media screen and (max-width: 436px) {
+	#landfill-tracker-description {
+		display: none;
+	}
+	.search-stuff-container {
+		height: 74px;
+	}
 	#lock-modal {
 		height: 100%;
 		width: 100%;
 	}
 	#lock-sm a {
 		float: left;
-    position: relative;
-    clear: both;
-    width: 100%;
+		position: relative;
+		clear: both;
+		width: 100%;
 	}
 	#chatra {
 		bottom: -100px;
@@ -2933,9 +3076,6 @@ input:read-only{
 	}
 	.info-windows {
 		display: block;
-	}
-	#map-view-container #get-location {
-		bottom: 20px;
 	}
 	#landfill-tracker-header {
 		display: none;
@@ -2957,6 +3097,7 @@ input:read-only{
 	#tab-content-container {
 		width: 100%;
 	}
+
 	#give-step2 {
 		#give-location-container{
 			display: none;
@@ -2974,23 +3115,23 @@ input:read-only{
 	.modal-window {
 		width: 100%;
 	}
-	.search-stuff-container {
-		padding: 8px;
-		height: 24px;
-		border-top: 1px solid $fog-dark;
-	}
 
 	#search-stuff {
-		width: calc(100% - 26px);
-		left: 26px;
+		width: calc(100% - 61px);
+		left: 61px;
+		height: 54px;
+	}
+	#search-stuff .sm-text-input-button {
+		height: 52px;
+		line-height: 52px;
 	}
 
 	.stuff-button {
 		width: 54px;
-    height: 54px;
-    line-height: 54px;
-    left: 20px;
-    font-size: 24px !important;
+		height: 54px;
+		line-height: 54px;
+		left: 20px;
+		font-size: 24px !important;
 		text-align: center;
 		display: inline-block;
 		position: absolute;
@@ -3159,7 +3300,7 @@ input:read-only{
 	/* About Us - START */
 
 	#about-us-image-div {
-		height: 32em;
+		height: 38em;
 		margin-bottom: 0;
 		text-align: left;
 	}

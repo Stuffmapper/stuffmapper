@@ -14,6 +14,7 @@ function GiveController() {
 		} else {
 			$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 			$http.get(config.api.host + '/api/v' + config.api.version + '/categories').success(function(data) {
+				$scope.giveMarker;
 				$scope.data = data.res;
 				$scope.categories = [];
 				$scope.data.forEach(function(e, i) {
@@ -98,6 +99,7 @@ function GiveController() {
 					}
 				}
 				$scope.initStep2 = function() {
+					if($scope.giveMarker) $scope.giveMarker.setMap(null);
 					requestAnimationFrame(function() {
 						$('#center-marker').css({'display':'block'});
 						requestAnimationFrame(function() {
@@ -113,6 +115,21 @@ function GiveController() {
 					var mapCenter = $scope.map.getCenter();
 					$scope.lat = mapCenter.lat();
 					$scope.lng = mapCenter.lng();
+					var mapZoom = $scope.map.getZoom();
+					var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
+					var mapAnchor = mapSize/2;
+					$scope.giveMarker = new google.maps.Marker({
+						position: {
+							lat: $scope.lat,
+							lng : $scope.lng
+						},
+						icon: {
+							url: 'img/Marker-all.png',
+							scaledSize: new google.maps.Size(mapSize, mapSize),
+							anchor: new google.maps.Point(mapAnchor, mapAnchor)
+						},
+						map: $scope.map
+					});
 					$('#center-marker').removeClass('dropped');
 					$timeout(function() {
 						requestAnimationFrame(function() {
@@ -132,29 +149,44 @@ function GiveController() {
 					$('#give-image-details').css('background-image', $('#give-image-verify').css('background-image'));
 				};
 
+				var lockUpload = false;
 				$scope.uploadItem = function() {
-					requestAnimationFrame(function() {
-						$('#give-item-uploading-screen-container').css({'display':'block'});
+					$('#give-description-submit').attr('disabled', '');
+					$('#give-description-title').css({border: ''});
+					$('#give-description').css({border: ''});
+					if(!lockUpload){
+						lockUpload = true;
+						if(!$scope.giveItem || !$scope.giveItem.title) {
+							$('#give-description-title').css({border: '1px solid red'});
+							lockUpload = false;
+							$('#give-description-submit').removeAttr('disabled');
+							return;
+						}
 						requestAnimationFrame(function() {
-							$('#give-item-uploading-screen-container').addClass('visible');
+							$('#give-item-uploading-screen-container').css({'display':'block'});
+							requestAnimationFrame(function() {
+								$('#give-item-uploading-screen-container').addClass('visible');
+							});
 						});
-					});
-					var fd = new FormData();
-					fd.append('title', $scope.giveItem.title);
-					fd.append('description', $scope.giveItem.description);
-					fd.append('attended', !$scope.giveItem.outside);
-					fd.append('lat', $scope.lat);
-					fd.append('lng', $scope.lng);
-					fd.append('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
-					fd.append('category', $scope.category);
-					$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
-						transformRequest: angular.identity,
-						headers: {'Content-Type': undefined}
-					}).success(function(data){
-						$scope.published = true;
-						fd = null;
-						nextStep();
-					});
+						var fd = new FormData();
+						fd.append('title', $scope.giveItem.title);
+						fd.append('description', $scope.giveItem.description || ' ');
+						fd.append('attended', !$scope.giveItem.outside);
+						fd.append('lat', $scope.lat);
+						fd.append('lng', $scope.lng);
+						fd.append('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
+						fd.append('category', $scope.category);
+						$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
+							transformRequest: angular.identity,
+							headers: {'Content-Type': undefined}
+						}).success(function(data){
+							$scope.published = true;
+							fd = null;
+							nextStep();
+							lockUpload = false;
+							$('#give-description-submit').removeAttr('disabled');
+						});
+					}
 				};
 
 				/* STEP 3 - Set description -  END  */
@@ -172,7 +204,7 @@ function GiveController() {
 				};
 
 				$scope.editPost = function() {
-					prevStep();
+					$scope.prevStep();
 				};
 
 				/* STEP 4 - Done! -  END  */
@@ -186,11 +218,11 @@ function GiveController() {
 					$scope['initStep' + $scope.currentStep]();
 				}
 
-				function prevStep() {
+				$scope.prevStep = function() {
 					$('#give-step' + $scope.currentStep).removeClass('active');
 					$('#give-stuff-progress').removeClass('step'+$scope.currentStep+'-done');
 					$('#give-step' + (--$scope.currentStep)).removeClass('completed').addClass('active');
-				}
+				};
 
 				$scope.goToMyStuffItem = function() {
 					$state.go('stuff.my');
@@ -202,13 +234,14 @@ function GiveController() {
 					$("#give-category-selector select option:eq(0)").prop("selected", true);
 					$('#give-item-uploading-screen-container').css({'display':''});
 					$scope.rejectPhoto();
-					prevStep();
-					prevStep();
-					prevStep();
+					$scope.prevStep();
+					$scope.prevStep();
+					$scope.prevStep();
 				};
 
 				/* Misc Functions -  END  */
 				$scope.$on('$destroy', function() {
+					if($scope.giveMarker) $scope.giveMarker.setMap(null);
 					$('#center-marker').css({'display':''});
 					$('#center-marker').removeClass('dropped');
 					$(window).off('resize', watchSize);
