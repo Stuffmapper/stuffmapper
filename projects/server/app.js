@@ -17,7 +17,7 @@ var multerS3 = require('multer-s3');
 var braintree = require('braintree');
 var proxy = require('express-http-proxy');
 var pg = require('pg');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper2';
 AWS.config = new AWS.Config();
 AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
 AWS.config.secretAccessKey = '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';
@@ -128,6 +128,7 @@ io.on('disconnect', function(socket){
 });
 app.use('/api/v1', require('./routes/api/v1/index'));
 app.use('*', function(req,res){
+	console.log(config.subdomain);
 	res.render('index', {
 		loggedIn : req.isAuthenticated(),
 		isDev : true,

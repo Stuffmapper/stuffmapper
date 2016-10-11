@@ -5,22 +5,29 @@ var bcrypt = require('bcrypt');
 var saltRounds = 10;
 var passport = require('passport');
 var request = require('request');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper2';
 var braintree = require('braintree');
+var stage = process.env.STAGE || 'development';
+var config = require('../../../../../config')[stage];
 
-// var gateway = braintree.connect({
-// 	environment: braintree.Environment.Production,
-// 	merchantId: '7t82byzdjdbkwp8m',
-// 	publicKey: '5hnt7srpm7x5d2qp',
-// 	privateKey: '6f8520869e0dd6bf8eec2956752166d9'
-// });
+if(stage==='production') {
+	var gateway = braintree.connect({
+		environment: braintree.Environment.Production,
+		merchantId: '7t82byzdjdbkwp8m',
+		publicKey: '5hnt7srpm7x5d2qp',
+		privateKey: '6f8520869e0dd6bf8eec2956752166d9'
+	});
+}
+else if(stage==='development') {
+	var gateway = braintree.connect({
+		environment: braintree.Environment.Sandbox,
+		merchantId: 'jbp33kzvs7tp3djq',
+		publicKey: 'swm4xbv63c7rgt7v',
+		privateKey: 'b7a045a67ae6fc5489c5cb1ac3f0797a'
+	});
+}
 
-var gateway = braintree.connect({
-	environment: braintree.Environment.Sandbox,
-	merchantId: 'jbp33kzvs7tp3djq',
-	publicKey: 'swm4xbv63c7rgt7v',
-	privateKey: 'b7a045a67ae6fc5489c5cb1ac3f0797a'
-});
+
 
 function isAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) { return next(); }
@@ -511,7 +518,7 @@ router.post('/account/register', function(req, res) {
 						emailTo,
 						{
 							'FIRSTNAME' : b.uname,
-							'CONFIRMEMAIL' : 'https://ducks.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
+							'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
 						}
 					);
 				});
@@ -534,7 +541,7 @@ router.get('/account/confirmation/:email_token', function(req, res) {
 			console.log(query);
 			console.log(values);
 			console.log(result.rows[0].uname);
-			if(result.rows.length >= 1) res.send('Thank you for confirming your email address, ' + result.rows[0].uname+'!<br>Click <a href="https://ducks.stuffmapper.com/get/stuff#signin">here</a> to sign in.');
+			if(result.rows.length >= 1) res.send('Thank you for confirming your email address, ' + result.rows[0].uname+'!<br>Click <a href="https://'+config.subdomain+'.stuffmapper.com/get/stuff#signin">here</a> to sign in.');
 			else res.send('There was an issue confirming your email address.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.');
 		});
 	}
@@ -542,11 +549,7 @@ router.get('/account/confirmation/:email_token', function(req, res) {
 
 router.post('/account/login', function(req, res, next) {
 	var passport = req._passport.instance;
-	console.log('account login');
 	passport.authenticate('local', function(err, user, info) {
-		console.log('passport authenticate');
-		console.log(err, user, info);
-		console.log('passport authenticated');
 		if (err) {
 			return res.send({
 				err: 'local login error: ' + err,
@@ -594,15 +597,22 @@ router.post('/account/logout', isAuthenticated, function(req, res) {
 /* OAUTH2.0 - START */
 /* GOOGLE OAUTH - START */
 
-router.get('/account/login/google', passport.authenticate('google', {
+router.get('/account/login/google', function(req, res, next) {next();}, passport.authenticate('google', {
 	scope: [
 		'https://www.googleapis.com/auth/plus.login',
 		'https://www.googleapis.com/auth/plus.profile.emails.read'
 	]
 }));
 
-router.get('/account/login/facebook', passport.authenticate('facebook', {
+router.get('/account/login/facebook', function(req, res, next) {next();}, passport.authenticate('facebook', {
 	//session: false,
+	scope: 'email'
+}));
+
+router.post('/account/add/google', function(req, res, next) {next();}, passport.authenticate('google', {
+	scope: 'email'
+}));
+router.post('/account/add/facebook', function(req, res, next) {next();}, passport.authenticate('facebook', {
 	scope: 'email'
 }));
 
@@ -772,8 +782,8 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 								emailTo,
 								{
 									'FIRSTNAME' : req.session.passport.user.uname,
-									'CHATLINK' : 'https://ducks.stuffmapper.com/stuff/my/messages/'+result3.rows[0].id,
-									'MYSTUFFLINK' : 'https://ducks.stuffmapper.com/stuff/my/items',
+									'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/messages/'+result3.rows[0].id,
+									'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items',
 									'ITEMTITLE':result1.rows[0].title,
 									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
 								}
@@ -857,8 +867,8 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 					// 	emailTo,
 					// 	{
 					// 		'FIRSTNAME' : req.session.passport.user.uname,
-					// 		'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/get',
-					// 		'MYSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/my/items',
+					// 		'CHATLINK' : 'http://'+config.subdomain+'.stuffmapper.com/stuff/get',
+					// 		'MYSTUFFLINK' : 'http://'+config.subdomain+'.stuffmapper.com/stuff/my/items',
 					// 		'ITEMTITLE':'NAH MANG THIS IS AN UNDIB'
 					// 	}
 					// );
@@ -937,8 +947,8 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 					// 	emailTo,
 					// 	{
 					// 		'FIRSTNAME' : req.session.passport.user.uname,
-					// 		'CHATLINK' : 'http://ducks.stuffmapper.com/stuff/get',
-					// 		'MYSTUFFLINK' : 'http://ducks.stuffmapper.com/stuff/my/items',
+					// 		'CHATLINK' : 'http://'+config.subdomain+'.stuffmapper.com/stuff/get',
+					// 		'MYSTUFFLINK' : 'http://'+config.subdomain+'.stuffmapper.com/stuff/my/items',
 					// 		'ITEMTITLE':''
 					// 	}
 					// );
@@ -1345,7 +1355,7 @@ function queryServer(res, query, values, cb) {
 // 	},
 // 	{
 // 		'FIRSTNAME' : 'Ryan',
-// 		'CONFIRMEMAIL' : 'https://www.stuffmapper.com/api/v1/account/confirmation/' + '93j923j0293j493209'
+// 		'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/api/v1/account/confirmation/' + '93j923j0293j493209'
 // 	}
 // );
 

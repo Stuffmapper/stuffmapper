@@ -14,7 +14,6 @@ function MyItemsController() {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my/id/' + $stateParams.id).success(function(data) {
 				if(!data.err) {
 					$scope.listItem = data.res;
-					console.log($scope.listItem);
 					/* jshint ignore:start */
 					function getWordsBetweenCurlies(str) {
 						var results = [], re = /{{([^}]+)}}/g, text;

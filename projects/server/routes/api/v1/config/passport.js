@@ -60,17 +60,6 @@ passport.use(new FacebookStrategy({
 function(accessToken, refreshToken, profile, done) {
 	console.log(profile);
 	User.findOrCreateOne('facebook', profile, function (err, user) {
-		console.log('Should find one? :o');
-		console.log('Should find one? :o');
-		console.log('Should find one? :o');
-		console.log('Should find one? :o');
-		console.log(err);
-		console.log(user);
-		console.log('Should find one? :o');
-		console.log('Should find one? :o');
-		console.log('Should find one? :o');
-		console.log('Should find one? :o');
-		console.log('Should find one? :o');
 		if (err) return done(err);
 		if (!user) return done(null, false);
 		return done(null, user);

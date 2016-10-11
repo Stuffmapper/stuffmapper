@@ -34,7 +34,7 @@ function ConversationController() {
 							return $.param(data);
 						}
 					}).success(function(data) {
-						console.log($scope.socket);
+						// console.log($scope.socket);
 						$scope.socket.emit('message', {
 							to: $scope.info.inboundMessenger,
 							from: $scope.info.outboundMessenger,

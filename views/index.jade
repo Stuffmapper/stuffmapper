@@ -231,7 +231,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				li
 					i.fa.fa-file-text
 					span(ui-sref="useragreement") Terms
-				li#sign-out-option-dropdown(style="display:none;")
+				li#sign-out-option-dropdown()
 					i.fa.fa-sign-out
 					span(ng-click="logout()") Sign Out
 		ul#side-menu.side-menu.sm-hidden.animate-250
@@ -253,7 +253,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				a.side-menu-link(ui-sref="faq", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-question
 					span FAQ/Help
-			li#side-menu-logout.side-menu-item(style="display:none;")
+			li#side-menu-logout.side-menu-item()
 				a.side-menu-link(ng-click="logout(); toggleSideMenu();")
 					.side-menu-icon.fa.fa-sign-out
 					span Sign Out

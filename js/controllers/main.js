@@ -32,10 +32,11 @@ function MainController() {
 	}
 	$scope.counterFlipperHeader = new CounterFlipper('landfill-tracker-header', 0, 7);
 	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
-	initChatra();
+	if(subdomain==='www') initChatra();
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data) {
 		$scope.toastCounter = 0;
-		if(data.res.user) {
+		if(data.err) return console.log(data.err);
+		if(data.res && data.res.user) {
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
@@ -43,10 +44,10 @@ function MainController() {
 		}
 		var lt = parseInt(data.res.lt);
 		var count = 0;
-		var variability = lt/8;
-		var stuff = lt/4;
-		(Math.floor(Math.random() * stuff) + 1) - variability
-
+		for(var i = 0; i < 4; i++) {
+			$scope.counterFlipperHeader.setCounter(Math.floor(Math.random() * ((lt/4)*i)) + 1);
+			$scope.counterFlipperMenu.setCounter(Math.floor(Math.random() * ((lt/4)*i)) + 1);
+		}
 		$scope.counterFlipperHeader.setCounter(data.res.lt);
 		$scope.counterFlipperMenu.setCounter(data.res.lt);
 		if ($cordovaSQLite) {
@@ -502,7 +503,7 @@ function MainController() {
 			$('#sign-up-uname, #sign-up-email, #sign-up-password1, #sign-up-fname, #sign-up-lname').css({border:''});
 			if(!fd.lname) {valid=false;$('#sign-up-lname').css({border:'1px solid red'});message='please insert a last name';}
 			if(!fd.fname) {valid=false;$('#sign-up-fname').css({border:'1px solid red'});message='please insert a first name';}
-			if(!fd.password || !passRe.test(fd.password)) {valid=false;$('#sign-up-password1').css({border:'1px solid red'});message='your password needs to be at least 8 characters long and have at least one of the following: an uppercase letter, a lowercase letter, a number, and a symbol';}
+			if(!fd.password || !passRe.test(fd.password)) {valid=false;$('#sign-up-password1').css({border:'1px solid red'});message='your password needs to be at least 8 characters long and must contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';}
 			if(!fd.email || !emailRe.test(fd.email)) {valid=false;$('#sign-up-email').css({border:'1px solid red'});message='invalid email address';}
 			if(!fd.uname || !/^[a-zA-Z-+_!@#$%^&*.,?\d]{1,32}/i.test(fd.uname)) {valid=false;$('#sign-up-uname').css({border:'1px solid red'});((!fd.uname)?(message='please insert a username'):(message='your username is too long'));}
 

@@ -11,7 +11,7 @@ function MessagesController() {
 		} else {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/messages').success(function(data) {
 				$scope.messages = data.res;
-				console.log(data.res);
+				// console.log(data.res);
 			});
 			$scope.$on('$destroy', function() {
 			});

@@ -13,7 +13,6 @@ var sh = require('shelljs');
 var stage = process.env.STAGE || 'development';
 var config = require('./config')[stage];
 
-
 var paths = {
 	sass: ['./scss/**/*.scss'],
 	jade: ['./scss/**/*.jade']
@@ -61,7 +60,9 @@ gulp.task('jade', function(done) {
 		doctype: 'html'
 	}))
 	.pipe(gulp.dest('./www/'))
-	.on('end', done);
+	.on('end', function(){
+		done();
+	});
 
 	gulp.src('./views/index.jade')
 	.pipe(jade({
@@ -121,15 +122,6 @@ gulp.task('js', function(done) {
 			gulp.dest('./www/js'),
 			gulp.dest('./projects/electron/js')
 		))
-		// .pipe(rename('app.js'))
-		// .pipe(uglify({
-		// 	mangle: false
-		// }))
-		// .pipe(multistream(
-		// 	gulp.dest('./projects/web/js'),
-		// 	gulp.dest('./www/js'),
-		// 	gulp.dest('./projects/electron/js')
-		// ))
 		.on('end', done);
 		gulp.src('./js/lib/angular/angular.*', {base: './js/lib/angular/'})
 		.pipe(multistream(
@@ -144,9 +136,7 @@ gulp.task('js', function(done) {
 			gulp.dest('./projects/electron/js/lib/animate.css/'),
 			gulp.dest('./www/js/lib/animate.css/')
 		));
-	} catch (e) {
-		console.log(e);
-	}
+	} catch (e) {}
 });
 
 gulp.task('build', function() {

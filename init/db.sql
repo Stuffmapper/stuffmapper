@@ -1,8 +1,8 @@
 CREATE USER stuffmapper WITH CREATEDB LOGIN SUPERUSER ENCRYPTED PASSWORD 'SuperSecretPassword1!';
 
-CREATE DATABASE stuffmapper1 WITH OWNER stuffmapper;
+CREATE DATABASE stuffmapper2 WITH OWNER stuffmapper;
 
-\c stuffmapper1;
+\c stuffmapper2;
 
 CREATE TABLE status (
 	id BIGSERIAL PRIMARY KEY,

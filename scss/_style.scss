@@ -67,7 +67,6 @@ html.ionic.ios {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	cursor: default;
 }
 
 .animate-750 {
@@ -2155,7 +2154,7 @@ html.ionic.ios {
 .about-us-main {
 	display: block;
 	height: 100%;
-	max-width: 1020px;
+	// max-width: 1020px;
 	margin-left: auto;
 	margin-right: auto;
 	font-family: Verdana;
@@ -2181,31 +2180,38 @@ html.ionic.ios {
 	background-repeat: no-repeat;
 	background-position: center;
 	height: 38em;
+	max-width: 1024px;
+	margin: 0 auto;
 }
 #about-us-benefit {
-	width: 33%;
-	padding: 4%;
+	width: 100%;
+	padding: 3%;
+	max-width: 1024px;
 	background-color: rgb(139, 195, 74);
+	margin: 0 auto;
 }
 #benefit p {
 	padding: 0;
 }
 #about-us-last{
-	width: 33%;
-	padding: 2em;
+	width: 100%;
+	padding: 3%;
+	max-width: 1024px;
 	background-color: rgb(159, 214, 97);
+	margin: 0 auto;
 }
 .about-us-img {
 	width: 100%;
 }
 .about-us-section {
 	border-top: 1px $charcoal-dark solid;
-	// height: calc(100% - 27.1em);
 }
 .about-us-blockquote {
-	width: 33%;
+	width: 100%;
 	margin: 0;
-	padding: 2em;
+	padding: 3%;
+	max-width: 1024px;
+	margin: 0 auto;
 }
 .about-us-article {
 	// height: 100%;
@@ -2895,7 +2901,7 @@ html.ionic.ios {
 .privacy-container {
 	display: block;
 	height: 98%;
-	max-width: 1020px;
+	// max-width: 1020px;
 	margin-left: auto;
 	margin-right: auto;
 	font-family: Verdana;
@@ -2925,7 +2931,7 @@ html.ionic.ios {
 .useragreement-container {
 	display: block;
 	height: 98%;
-	max-width: 1020px;
+	// max-width: 1020px;
 	margin-left: auto;
 	margin-right: auto;
 	font-family: Verdana;
@@ -2951,29 +2957,27 @@ html.ionic.ios {
 
 .faq-container {
 	display: block;
-	height: 98%;
+	height: 100%;
 	padding: 1%;
 	padding-bottom: 60px;
-	max-width: 1020px;
 	margin-left: auto;
 	margin-right: auto;
-	font-family: Verdana;
+	// font-family: Verdana;
 	font-size: 15px;
 	overflow: auto;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 5px;
-	margin-bottom: 5px;
+	margin: 0 auto;
 	background-color: #fff;
-	outline: #E6E9ED solid 1px;
 }
 .faq-nav {
 	list-style:  none;
 	margin: 0;
 	padding: 13px;
+	display: inline-block;
+	border: 1px solid $charcoal-dark;
+	border-radius: 3px;
 }
 .faq-nav li {
-	margin: 10px;
+	margin: 2px 10px;
 }
 .faq-nav a {
 	color: $charcoal-dark;
@@ -2991,11 +2995,12 @@ html.ionic.ios {
 }
 .faq-container h2 {
 	font-weight: 700;
-	font-size: 15px;
+	font-size: 16px;
 }
 .faq-container h3 {
 	margin: 0;
-	font-size: 15px;
+	font-size: 14px;
+	font-weight: 600;
 }
 #user-agreement,#privacy-policy, .contact-us a {
 	font-size: 16px;
@@ -3180,11 +3185,12 @@ html.ionic.ios {
 		height: 16em;
 		margin-bottom: 0;
 		text-align: left;
+		max-width: 1024px;
+		margin: 0 auto;
 	}
 
-	#about-us-benefit {
-		width: 92%;
-	}
+
+
 	#benefit {
 		padding: 1em;
 	}
@@ -3202,11 +3208,6 @@ html.ionic.ios {
 	.about-us-section {
 		font-size: .7em;
 		// height: calc(100% - 21em);
-	}
-	.about-us-blockquote {
-		width: 94%;
-		margin: 0;
-		padding: 3%;
 	}
 	.about-us-article {
 		flex-direction: column;
@@ -3284,9 +3285,7 @@ html.ionic.ios {
 	/* Useragreement - END */
 	/* Faq - START */
 
-	.faq-container {
-		margin: 5px;
-	}
+
 	/* Faq - END */
 	/* Filter - Start */
 	#filter-pane {
@@ -3305,9 +3304,6 @@ html.ionic.ios {
 		text-align: left;
 	}
 
-	#about-us-benefit {
-		width: 92%;
-	}
 	#benefit {
 		padding: 1em;
 	}
@@ -3324,11 +3320,6 @@ html.ionic.ios {
 	}
 	.about-us-section {
 		height: calc(100% - 21em);
-	}
-	.about-us-blockquote {
-		width: 94%;
-		margin: 0;
-		padding: 3%;
 	}
 	.about-us-article {
 		flex-direction: column;
