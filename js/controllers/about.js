@@ -1,3 +1,0 @@
-function AboutController($scope, $userData) {
-
-}

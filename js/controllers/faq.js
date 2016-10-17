@@ -1,3 +1,0 @@
-function FaqController($scope, $userData) {
-
-}

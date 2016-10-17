@@ -1,3 +1,0 @@
-function UserAgreementController($scope, $userData) {
-
-}

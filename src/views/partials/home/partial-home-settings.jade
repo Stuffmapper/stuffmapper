@@ -1,0 +1,60 @@
+div.settings
+	.success All changes have been saved!
+	.settings-header
+		h1 Your profile &amp; settings
+		//- p Profile
+	//- 	img(src="http://3.bp.blogspot.com/_LQxMQhdo6MQ/SdokfXbd7VI/AAAAAAAAAE8/GOndOJ7Z1A0/s320/twitChair3a.jpg")
+	//- 	button.settings-header-button(ng-click='showEdit=true') Edit Profile
+	//- .user-info
+	//- 	label Display name
+	//- 		input(type='text', placeholder='{{users.uname}}')
+	//- 	label Email
+	//- 		input(type='text', placeholder='{{users.email}}')
+	form.settings-form(data-ng-submit='save({users: users})')
+		ul.edit-profile(data-ng-cloak)
+			p Display Name
+			li
+				input(type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}')
+			p First Name
+			li 
+				input(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
+			p Last Name
+			li 
+				input(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
+			p Phone
+			li
+				input(type='tel', data-ng-model='users.phone_number', placeholder='{{ users.phone_number }}')
+			p Email
+			li 
+				input(type='email', data-ng-model='users.email', placeholder='{{ users.email }}')
+			p Address
+			li 
+				input(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
+			p City
+			li 
+				input(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
+			p State
+			li
+				input(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
+			p Zipcode
+			li
+				input(type='text', data-ng-model='users.zip_code', placeholder='{{ users.zip_code }}')
+			p Country
+			li
+				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
+			button(type='submit', data-ng-click='update(users); showSuccess()') Save
+		//- ul.connections 
+		//- 	li 
+		//- 		strong Connections 
+		//- 		| &ensp;&ensp;&nbsp;&nbsp; log in &amp; share with connections
+		//- 	li
+		//- 		a.settings-sign-in-up-input.social-button.google-plus-sign-in(href="http://localhost:3000/api/v1/account/login/google" target="_self")
+		//- 			span.social-sign-in-icon.social-sign-in-icon-google
+		//- 				i.fa.fa-google-plus
+		//- 			span.social-sign-in-text Connect to Google
+		//- 	li
+		//- 		a.settings-sign-in-up-input.social-button.facebook-sign-in(href="http://localhost:3000/api/v1/account/login/facebook" target="_self")
+		//- 			span.social-sign-in-icon.social-sign-in-icon-facebook
+		//- 				i.fa.fa-facebook
+		//- 			span.social-sign-in-text Connect to Facebook
+		//- 	

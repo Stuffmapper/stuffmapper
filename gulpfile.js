@@ -9,47 +9,45 @@ var sourcemaps = require('gulp-sourcemaps');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var multistream = require('gulp-multistream');
-var sh = require('shelljs');
 var stage = process.env.STAGE || 'development';
 var config = require('./config')[stage];
-
-var paths = {
-	sass: ['./scss/**/*.scss'],
-	jade: ['./scss/**/*.jade']
-};
 
 gulp.task('default', ['sass', 'jade', 'js', 'images']);
 
 gulp.task('sass', function(done) {
-	gulp.src('./scss/**/**/*.app.scss')
+	gulp.src('./src/scss/**/**/*.app.scss')
 	.pipe(sass())
 	.on('error', sass.logError)
-	.pipe(gulp.dest('./www/css/'))
+	.pipe(multistream(
+		gulp.dest('./web/css/'),
+		gulp.dest('./www/css/'),
+		gulp.dest('./electron/css/')
+	))
 	.pipe(minifyCss({
 		keepSpecialComments: 0
 	}))
 	.pipe(rename({ extname: '.min.css' }))
 	.pipe(multistream(
-		gulp.dest('./projects/web/css/'),
+		gulp.dest('./web/css/'),
 		gulp.dest('./www/css/'),
-		gulp.dest('./projects/electron/css/')
+		gulp.dest('./electron/css/')
 	))
 	.on('end', done);
-	gulp.src('./js/lib/font-awesome/css/*', {base: './js/lib/font-awesome/css/'})
+	gulp.src('./src/js/lib/font-awesome/css/*', {base: './src/js/lib/font-awesome/css/'})
 	.pipe(multistream(
-		gulp.dest('./projects/web/css'),
+		gulp.dest('./web/css'),
 		gulp.dest('./www/css'),
-		gulp.dest('./projects/electron/css')
+		gulp.dest('./electron/css')
 	));
-	gulp.src('./js/lib/font-awesome/fonts/*', {base: './js/lib/font-awesome/fonts/'})
+	gulp.src('./src/js/lib/font-awesome/fonts/*', {base: './src/js/lib/font-awesome/fonts/'})
 	.pipe(multistream(
-		gulp.dest('./projects/web/fonts'),
+		gulp.dest('./web/fonts'),
 		gulp.dest('./www/fonts'),
-		gulp.dest('./projects/electron/fonts')
+		gulp.dest('./electron/fonts')
 	));
 });
 gulp.task('jade', function(done) {
-	gulp.src('./views/index.jade')
+	gulp.src('./src/views/index.jade')
 	.pipe(jade({
 		locals : {
 			ionic: true,
@@ -64,7 +62,7 @@ gulp.task('jade', function(done) {
 		done();
 	});
 
-	gulp.src('./views/index.jade')
+	gulp.src('./src/views/index.jade')
 	.pipe(jade({
 		locals : {
 			electron: true,
@@ -74,9 +72,9 @@ gulp.task('jade', function(done) {
 		pretty : true,
 		doctype: 'html'
 	}))
-	.pipe(gulp.dest('./projects/electron/'));
+	.pipe(gulp.dest('./electron/'));
 
-	gulp.src('./views/index.jade')
+	gulp.src('./src/views/index.jade')
 	.pipe(jade({
 		locals : {
 			dev: true,
@@ -85,86 +83,63 @@ gulp.task('jade', function(done) {
 		pretty : true,
 		doctype: 'html'
 	}))
-	.pipe(gulp.dest('./projects/web/'));
+	.pipe(gulp.dest('./web/'));
 });
 
 gulp.task('images', function(){
-	gulp.src('./img/**/*', {base: './img/'})
+	gulp.src('./src/img/**/*', {base: './src/img/'})
 	.pipe(multistream(
-		gulp.dest('./projects/web/img'),
+		gulp.dest('./web/img'),
 		gulp.dest('./www/img'),
-		gulp.dest('./projects/electron/img')
+		gulp.dest('./electron/img')
 	));
 });
 
 gulp.task('js', function(done) {
 	try {
 		gulp.src([
-			'./js/lib/jquery/dist/jquery.min.js',
-			'./js/custom/counter_flipper.js',
-			'./js/lib/imagesloaded/imagesloaded.pkgd.min.js',
-			'./js/lib/masonry/dist/masonry.pkgd.js',
-			'./js/lib/isotope/dist/isotope.pkgd.min.js',
-			'./js/lib/angular-ui-router/release/angular-ui-router.min.js',
-			'./js/lib/angular-animate/angular-animate.min.js',
-			'./js/lib/select2/dist/js/select2.full.min.js',
-			'./js/app.js',
+			'./src/js/lib/jquery/dist/jquery.min.js',
+			'./src/js/custom/counter_flipper.js',
+			'./src/js/lib/imagesloaded/imagesloaded.pkgd.min.js',
+			'./src/js/lib/masonry/dist/masonry.pkgd.js',
+			'./src/js/lib/isotope/dist/isotope.pkgd.min.js',
+			'./src/js/lib/angular-ui-router/release/angular-ui-router.min.js',
+			'./src/js/lib/angular-animate/angular-animate.min.js',
+			'./src/js/lib/select2/dist/js/select2.full.min.js',
+			'./src/js/app.js',
 			'./../stuffmapper-styleguide/js/directives.js',
-			'./js/settings.js',
-			'./js/controllers/*.js',
-			'./js/config.js'
+			'./src/js/settings.js',
+			'./src/js/controllers/*.js',
+			'./src/js/config.js'
 		])
 		.pipe(sourcemaps.init())
 		.pipe(concat('all.js'))
 		.pipe(sourcemaps.write())
 		.pipe(multistream(
-			gulp.dest('./projects/web/js'),
+			gulp.dest('./web/js'),
 			gulp.dest('./www/js'),
-			gulp.dest('./projects/electron/js')
+			gulp.dest('./electron/js')
 		))
 		.on('end', done);
-		gulp.src('./js/lib/angular/angular.*', {base: './js/lib/angular/'})
+		gulp.src('./src/js/lib/angular/angular.*', {base: './src/js/lib/angular/'})
 		.pipe(multistream(
-			gulp.dest('./projects/web/js'),
-			gulp.dest('./projects/electron/js')
+			gulp.dest('./web/js'),
+			gulp.dest('./electron/js')
 		));
-		gulp.src(['./js/lib/ionic/**/*','./js/lib/ngCordova/dist/*.js'], {base: './js/lib/'})
+		gulp.src(['./src/js/lib/ionic/**/*','./src/js/lib/ngCordova/dist/*.js'], {base: './src/js/lib/'})
 		.pipe(gulp.dest('./www/lib/'));
-		gulp.src(['./js/lib/animate.css/animate.min.css'])
+		gulp.src(['./src/js/lib/animate.css/animate.min.css'])
 		.pipe(multistream(
-			gulp.dest('./projects/web/js/lib/animate.css/'),
-			gulp.dest('./projects/electron/js/lib/animate.css/'),
+			gulp.dest('./web/js/lib/animate.css/'),
+			gulp.dest('./electron/js/lib/animate.css/'),
 			gulp.dest('./www/js/lib/animate.css/')
 		));
 	} catch (e) {}
 });
 
-gulp.task('build', function() {
-});
-
 gulp.task('watch', function() {
-	gulp.watch(['./views/**/**/*.jade'],['jade']);
-	gulp.watch(['./scss/**/**/*.scss'], ['sass']);
-	gulp.watch(['./js/**/**/*.js'],     ['js']);
-	gulp.watch(['./img/*'],             ['images']);
-});
-
-gulp.task('install', ['git-check'], function() {
-	return bower.commands.install()
-	.on('log', function(data) {
-		gutil.log('bower', gutil.colors.cyan(data.id), data.message);
-	});
-});
-
-gulp.task('git-check', function(done) {
-	if (!sh.which('git')) {
-		console.log(
-			'  ' + gutil.colors.red('Git is not installed.'),
-			'\n  Git, the version control system, is required to download Ionic.',
-			'\n  Download git here:', gutil.colors.cyan('http://git-scm.com/downloads') + '.',
-			'\n  Once git is installed, run \'' + gutil.colors.cyan('gulp install') + '\' again.'
-		);
-		process.exit(1);
-	}
-	done();
+	gulp.watch(['./src/views/**/**/*.jade'],['jade']);
+	gulp.watch(['./src/scss/**/**/*.scss'], ['sass']);
+	gulp.watch(['./src/js/**/**/*.js'],     ['js']);
+	gulp.watch(['./src/img/*'],             ['images']);
 });

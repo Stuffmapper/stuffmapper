@@ -1,0 +1,18 @@
+#map-view-container
+	#map-view.map-view-open
+	img#get-location(src="/img/mylocation1.png")
+	img#center-marker.animate-250(src="img/test-pin1.png")
+#tab-container
+	ul.stuff-tabs
+		li.logo-tab
+			a(ng-click)
+		li.get-stuff-tab
+			a.tk-proxima-nova(ui-sref="stuff.get") Get Stuff
+		li.give-stuff-tab
+			a.tk-proxima-nova(ng-click="toGiveStuff()") Give Stuff
+		li.my-stuff-tab
+			a.tk-proxima-nova(ui-sref="stuff.my.items")
+				| My Stuff
+				.tab-message-badge 0
+#tab-content-container
+	#tab-content.animate-500(ui-view)

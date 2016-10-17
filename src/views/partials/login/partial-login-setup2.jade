@@ -1,0 +1,21 @@
+ion-content#login-setup-two-container(scroll='false' style="top: 0px; height: calc(100% + 40px); position: fixed; width: 100%; display: block;")
+	form
+		#login-setup-two-label-username.login-setup-two-label username
+		.input-container
+			input#login-setup-input-username(type="text" go-button="hideKeyboard(0)" ng-model="uname")
+		#login-setup-two-label-email.login-setup-two-label email
+		.input-container
+			input#login-setup-input-email(type="email" go-button="hideKeyboard(1)" ng-model="email")
+		#login-setup-two-label-password.login-setup-two-label password
+		.input-container
+			input#login-setup-input-password(type="password" go-button="hideKeyboard(2)" ng-model="pword")
+			i#login-setup-show-password.fa.fa-eye(ng-click="togglePassword()")
+		.privacy-and-terms-container
+			p 
+				| By clicking "Sign Up", you agree to the 
+				a(ui-sref="privacy", ng-click="hideModal()") Privacy 
+				| and 
+				a(ui-sref="useragreement", ng-click="hideModal()") Terms
+		.login-setup-two-button-container
+			#login-setup-two-sign-up-button.login-setup-two-button(ng-click="register()") Sign Up
+			#login-setup-two-sign-up-button.login-setup-two-button(ng-click="setup2Back()") Cancel

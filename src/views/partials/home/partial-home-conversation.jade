@@ -1,0 +1,7 @@
+#conversation-container
+	#conversation-messages-container
+		ul#conversation-messages
+			li.conversation-message-container(ng-repeat="message in conversation | reverse" class="conversation-message-container-{{ message.type }}")
+				.conversation-message(class="conversation-{{ message.type }}-message") {{ message.message }}
+	#conversation-input-container
+		sm-textarea-group-button.sm-full-width#conversation-input(rows="1" placeholder="send a message" submit="sendMessage()")
