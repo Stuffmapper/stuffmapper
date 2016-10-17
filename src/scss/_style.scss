@@ -43,6 +43,12 @@ html.ionic.ios {
 	height: calc(100% - 20px);
 	margin-top: 20px;
 }
+.loggedIn {
+	color: $grass;
+}
+.loggedIn #side-menu-logout, .loggedIn #sign-out-option-dropdown {
+	display: block !important;
+}
 
 #chatra {
 	left: 80px;

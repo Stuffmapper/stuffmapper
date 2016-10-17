@@ -37,8 +37,7 @@ function MainController() {
 		$scope.toastCounter = 0;
 		if(data.err) return console.log(data.err);
 		if(data.res && data.res.user) {
-			$('html').addClass('loggedIn');
-			$userData.setUserId(data.res.user.id);
+			$('html').addClass('loggedIn');			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
 		}
@@ -253,8 +252,7 @@ function MainController() {
 			if (data.err || !data.res.user) return console.log(data.err);
 			initUserData(data);
 			location.hash = '';
-			$('html').addClass('loggedIn');
-			$userData.setUserId(data.res.user.id);
+			$('html').addClass('loggedIn');			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
 			$state.go('stuff.get');
