@@ -7,7 +7,7 @@
 		.noselect.loading-text Finding Stuff...
 	.search-stuff-container
 		i#map-toggle-switch.fa.fa-map.stuff-button.toggle-stuff.sm-button.sm-button-default.sm-button-ghost(ng-click="toggleMap()" style="border-width: 1px;")
-		sm-input-group-button#search-stuff(placeholder="search & filter" submit="filterSearch();hideFilter()")
+		sm-input-group-button#search-stuff(placeholder="search & filter" submit="filterSearch();hideFilter();")
 	#get-stuff-back-button-container.sm-hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.sm-hidden.animate-250(ng-click="setGetStuff()")
 		#get-stuff-item-title.sm-text-m.sm-hidden.animate-250

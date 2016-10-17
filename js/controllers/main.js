@@ -186,6 +186,12 @@ function MainController() {
 			$('#confirmation-step-icon').addClass('sm-hidden');
 		}, 550);
 	};
+	$('.sm-sign-in-text-inputs').keydown(function(e) {
+		if(e.keyCode === 13) $('#sign-in-sign-in-button').click();
+	});
+	$('.sm-sign-up-text-inputs').keydown(function(e) {
+		if(e.keyCode === 13) $('#sm-sign-up-button').click();
+	});
 	$scope.googleOAuth = function() {
 		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
 		var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
@@ -487,7 +493,7 @@ function MainController() {
 	};
 	var signingUp = false;
 	var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-	var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-+_!@#$%^&*.,?]).{6,32}/;
+	var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
 	$scope.signUp = function() {
 		if(!signingUp) {
 			$('#sm-sign-up-button').attr('disabled', '');
@@ -503,7 +509,7 @@ function MainController() {
 			$('#sign-up-uname, #sign-up-email, #sign-up-password1, #sign-up-fname, #sign-up-lname').css({border:''});
 			if(!fd.lname) {valid=false;$('#sign-up-lname').css({border:'1px solid red'});message='please insert a last name';}
 			if(!fd.fname) {valid=false;$('#sign-up-fname').css({border:'1px solid red'});message='please insert a first name';}
-			if(!fd.password || !passRe.test(fd.password)) {valid=false;$('#sign-up-password1').css({border:'1px solid red'});message='your password needs to be at least 8 characters long and must contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';}
+			if(!fd.password || !passRe.test(fd.password)) {valid=false;$('#sign-up-password1').css({border:'1px solid red'});message='password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';}
 			if(!fd.email || !emailRe.test(fd.email)) {valid=false;$('#sign-up-email').css({border:'1px solid red'});message='invalid email address';}
 			if(!fd.uname || !/^[a-zA-Z-+_!@#$%^&*.,?\d]{1,32}/i.test(fd.uname)) {valid=false;$('#sign-up-uname').css({border:'1px solid red'});((!fd.uname)?(message='please insert a username'):(message='your username is too long'));}
 
@@ -521,9 +527,7 @@ function MainController() {
 					$scope.signUpConfirmationStep();
 				});
 			}
-
 		}
-
 	};
 	$scope.resetModal = function() {
 		$('#sign-in-step').css({

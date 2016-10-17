@@ -19,9 +19,11 @@ module.exports = (function() {
 		});
 	}
 	function validatePassword(password, hash, cb) {
-		return bcrypt.compare(password, hash, function(err, res) {
-			cb(err, res);
-		});
+		if(verifyPassword(password)) {
+			return bcrypt.compare(password, hash, function(err, res) {
+				cb(err, res);
+			});
+		}
 	}
 	function findOne(login, cb) {
 		if(login && (login.email || login.uname || login.google || login.facebook)) {
@@ -37,9 +39,7 @@ module.exports = (function() {
 					return cb('pg connect error: ' + err, null);
 				}
 				var query = 'SELECT * FROM users WHERE '+loginType+' = $1 AND verified_email = true';
-				var values = [
-					login[loginType]
-				];
+				var values = [login[loginType].toLowerCase()];
 				client.query(query, values, function(err, result) {
 					if(err) {
 						client.end();
@@ -51,9 +51,7 @@ module.exports = (function() {
 				});
 			});
 		}
-		else {
-			cb('Invalid login type', null);
-		}
+		else cb('Invalid login type', null);
 	}
 	function findOrCreateOne(type, profile, cb) {
 		var client = new pg.Client(conString);
@@ -64,36 +62,74 @@ module.exports = (function() {
 					return cb(err, null);
 				}
 				var query = 'SELECT * FROM users WHERE '+type+'_id = $1 OR email = $2';
+				var email = profile.email || profile.emails[0].value;
+				email = email.toLowerCase();
 				var values = [
 					profile.id,
-					profile.email
+					email
 				];
 				client.query(query, values, function(err, result) {
-					if(result && result.rows && result.rows.length !== 0) {
+					//console.log('row results: ', result.rows);
+					if(result && result.rows && result.rows.length) {
 						var rows = result.rows[0];
 						if(!rows[type+'_id']) {
-							query = 'UPDATE users SET '+type+'_id = $1 where email = $2 RETURNING *';
+							query = 'SELECT password, google_id, facebook_id FROM users WHERE email = $1';
 							values = [
-								profile.id,
-								profile.email
+								email
 							];
 							client.query(query, values, function(err, result) {
-								if(err) {
-									client.end();
-									return cb(err, null);
+								if(!result.rows.length) {
+									query = 'UPDATE users SET '+type+'_id = $1 where email = $2 RETURNING *';
+									values = [
+										profile.id,
+										email
+									];
+									client.query(query, values, function(err, result) {
+										if(err) {
+											client.end();
+											return cb(err, null);
+										}
+										cb(null, result.rows[0]);
+										client.end();
+									});
 								}
-								cb(null, result.rows[0]);
+								else if(result.rows[0].password) {
+									cb({
+										message: 'account exists',
+										type: 'standard',
+										otherType: type,
+										email: email
+									}, null);
+									client.end();
+								}
+								else if(result.rows[0].google_id) {
+									cb({
+										message: 'account exists',
+										type: 'google',
+										otherType: type,
+										email: email
+									}, null);
+									client.end();
+								}
+								else if(result.rows[0].facebook_id) {
+									cb({
+										message: 'account exists',
+										type: 'facebook',
+										otherType: type,
+										email: email
+									}, null);
+									client.end();
+								}
 							});
 						}
 						else {
 							client.end();
+							console.log('right here!');
 							return cb(null, rows);
 						}
 					}
 					else {
-
 						gateway.clientToken.generate({}, function (err, response) {
-							console.log(err);
 							var query = [
 								'INSERT INTO users',
 								'(fname, lname, uname, email, '+type+'_id, braintree_token)',
@@ -129,14 +165,11 @@ module.exports = (function() {
 					}
 				});
 			});
-		} else {
-			return cb('invalid user parameters', null);
 		}
+		else return cb('invalid user parameters', null);
 	}
-	// TODO: implement this!
 	function verifyPassword(password) {
-		if(/abcd/.test(password)) return true;
-		else return true;
+		return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/.test(password);
 	}
 	return {
 		generatePassword: generatePassword,

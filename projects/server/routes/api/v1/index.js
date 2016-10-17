@@ -53,11 +53,12 @@ router.get('/stuff', function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended, ',
-			'posts.lat, posts.lng, categories.category, images.image_url ',
-			'FROM posts, images, categories WHERE images.post_id = posts.id AND ',
-			'categories.id = posts.category_id AND posts.dibbed = false AND posts.archived = false'
-		].join('');
+			'SELECT posts.id, posts.title, posts.description, posts.attended,',
+			'posts.lat, posts.lng, categories.category, images.image_url',
+			'FROM posts, images, categories WHERE images.post_id = posts.id AND',
+			'categories.id = posts.category_id AND posts.dibbed = false AND',
+			'posts.archived = false AND ((posts.date_created > now()::date - 7 AND posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
+		].join(' ');
 		var values = [];
 		if(req.session.passport && req.session.passport.user) {
 			query += ' AND NOT posts.user_id = $1';
@@ -116,9 +117,11 @@ router.get('/stuff/id/:id', function(req, res) {
 
 router.get('/stuff/my', isAuthenticated, function(req, res) {
 	var query = [
-		'SELECT * FROM posts, images WHERE (posts.user_id = $1 OR posts.dibber_id = $1) AND ',
+		'SELECT posts.id, posts.title, posts.description, posts.archived,',
+		'posts.expired, images.image_url, posts.category_id FROM posts,',
+		'images WHERE (posts.user_id = $1 OR posts.dibber_id = $1) AND',
 		'posts.archived = false AND images.post_id = posts.id'
-	].join('');
+	].join(' ');
 	var values = [
 		req.session.passport.user.id
 	];
@@ -145,14 +148,15 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 			'posts.id = $2 AND categories.id = posts.category_id'
 		].join(' ');
 		var values = [
-			req.session.passport.user.id,
-			req.params.id
+			parseInt(req.session.passport.user.id),
+			parseInt(req.params.id)
 		];
 		client.query(query, values, function(err, result) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
+			console.log(result);
 			result.rows[0].type = (parseInt(result.rows[0].dibber_id) === parseInt(req.session.passport.user.id))?'dibber':'lister';
 			query = 'SELECT id FROM conversations WHERE post_id = $1 AND archived = false';
 			values = [result.rows[0].id];
@@ -538,9 +542,6 @@ router.get('/account/confirmation/:email_token', function(req, res) {
 			req.params.email_token
 		];
 		queryServer(res, query, values, function(result) {
-			console.log(query);
-			console.log(values);
-			console.log(result.rows[0].uname);
 			if(result.rows.length >= 1) res.send('Thank you for confirming your email address, ' + result.rows[0].uname+'!<br>Click <a href="https://'+config.subdomain+'.stuffmapper.com/get/stuff#signin">here</a> to sign in.');
 			else res.send('There was an issue confirming your email address.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.');
 		});
@@ -597,7 +598,7 @@ router.post('/account/logout', isAuthenticated, function(req, res) {
 /* OAUTH2.0 - START */
 /* GOOGLE OAUTH - START */
 
-router.get('/account/login/google', function(req, res, next) {next();}, passport.authenticate('google', {
+router.get('/account/login/google', passport.authenticate('google', {
 	scope: [
 		'https://www.googleapis.com/auth/plus.login',
 		'https://www.googleapis.com/auth/plus.profile.emails.read'
@@ -783,7 +784,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 								{
 									'FIRSTNAME' : req.session.passport.user.uname,
 									'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/messages/'+result3.rows[0].id,
-									'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items',
+									'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
 									'ITEMTITLE':result1.rows[0].title,
 									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
 								}

@@ -1,8 +1,8 @@
 CREATE USER stuffmapper WITH CREATEDB LOGIN SUPERUSER ENCRYPTED PASSWORD 'SuperSecretPassword1!';
 
-CREATE DATABASE stuffmapper2 WITH OWNER stuffmapper;
+CREATE DATABASE stuffmapper WITH OWNER stuffmapper;
 
-\c stuffmapper2;
+\c stuffmapper;
 
 CREATE TABLE status (
 	id BIGSERIAL PRIMARY KEY,
@@ -65,7 +65,7 @@ CREATE TABLE posts (
 	title char(32) NOT NULL,
 	description text,
 	date_created timestamp DEFAULT current_timestamp,
-	date_edited timestamp,
+	date_edited timestamp DEFAULT current_timestamp,
 	lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
 	attended boolean NOT NULL,

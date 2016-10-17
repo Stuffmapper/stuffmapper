@@ -14,7 +14,7 @@ function GiveController() {
 		} else {
 			$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 			$http.get(config.api.host + '/api/v' + config.api.version + '/categories').success(function(data) {
-				$scope.giveMarker;
+				$scope.giveMarker = '';
 				$scope.data = data.res;
 				$scope.categories = [];
 				$scope.data.forEach(function(e, i) {
@@ -23,7 +23,7 @@ function GiveController() {
 						value: parseInt(e.id)
 					});
 				});
-				$scope.category = 'General';
+				$scope.category = 7;
 				$scope.published = false;
 
 				$scope.currentStep = 1;
@@ -175,7 +175,7 @@ function GiveController() {
 						fd.append('lat', $scope.lat);
 						fd.append('lng', $scope.lng);
 						fd.append('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
-						fd.append('category', $scope.category);
+						fd.append('category', ($scope.category==="General"?7:$scope.category));
 						$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
 							transformRequest: angular.identity,
 							headers: {'Content-Type': undefined}
@@ -185,6 +185,10 @@ function GiveController() {
 							nextStep();
 							lockUpload = false;
 							$('#give-description-submit').removeAttr('disabled');
+							$scope.giveItem.title = '';
+							$scope.giveItem.description = '';
+							$scope.giveItem.outside = false;
+							$scope.category = 7;
 						});
 					}
 				};

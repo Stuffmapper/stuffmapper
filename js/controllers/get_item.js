@@ -63,9 +63,12 @@ function GetItemController() {
 		$scope.containerBackground = $('<div>', {class:'get-item-single-background animate-250 sm-hidden'});
 		$scope.imageContainer.css({'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'});
 		$scope.detailsContainer.html([
-			((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#unattended">unattended</a>.</div>':''),
+			((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 			((data.res.description==='undefined')?(''):('<p class="get-item-single-description sm-text-m sm-full-width">'+data.res.description+'</p>')),
 			'<div class="get-item-single-payment-modal animate-250 sm-hidden">',
+			'	<a href="https://www.braintreegateway.com/merchants/7t82byzdjdbkwp8m/verified" target="_blank" style="width: 100%;display: block;position: relative;">',
+			'		<img src="https://s3.amazonaws.com/braintree-badges/braintree-badge-wide-dark.png" width="280px" height ="44px" border="0" style="transform: translateX(-50%);left: 50%;position: relative;" />',
+			'	</a>',
 			'	<form id="checkout" method="post" action="/checkout" target="_blank">',
 			'		<div id="loading-get-item" class="noselect loading-screen sm-hidden animate-250">',
 			'			<div class="spinner">',

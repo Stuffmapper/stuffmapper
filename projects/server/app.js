@@ -30,7 +30,7 @@ app.use(multer({
 	storage: multerS3({
 		s3: s3,
 		bucket: 'stuffmapper-v2',
-    acl: 'public-read',
+		acl: 'public-read',
 		metadata: function (req, file, cb) {
 			cb(null, {fieldName: file.fieldname});
 		},
@@ -84,8 +84,9 @@ app.post('/checkout/paiddibs', function(req, res) {
 		amount: '1.00',
 		paymentMethodNonce: nonceFromTheClient,
 		options: {
-			submitForSettlement: true
-		}
+	    verifyCard: true
+		},
+	  deviceData: req.body.device_data
 	}, function (err, result) {
 		if(err) return res.send('failure');
 		res.send('success');
@@ -98,16 +99,65 @@ app.get('/changepassword/:passid', function() {
 
 app.get('/redirect',function(req,res){res.render('redirect');});
 
-app.get('/auth/google_oauth2/callback', passport.authenticate('google', {
-	successRedirect: '/redirect',
-	failureRedirect: '/api/v1/account/login/google'
-}));
+app.get('/auth/google_oauth2/callback', function(req,res,next) {
+	passport.authenticate('google', function(err, user, info) {
+		if(err && err.message === 'account exists') {
+			return res.send([
+				'<html><head><title>Sign In</title><link rel="stylesheet" href="/js/lib/normalize-css/normalize.css" /><link rel="stylesheet" href="/js/lib/animate.css/animate.min.css" /><link rel="stylesheet" href="/styleguide/css/main.css" /><link rel="stylesheet" href="/css/main.app.min.css" /><link rel="stylesheet" href="/js/lib/bootstrap/dist/css/bootstrap.min.css" /><link rel="stylesheet" href="/css/font-awesome.min.css" /><script src="https://use.typekit.net/lrm3jdv.js"></script><script>try{Typekit.load({ async: true });}catch(e){}</script></head><body style="background-color: #33AEDC;">',
+				'<div class="modal-window">',
+				'	<div class="modal-header"></div>',
+				'	<div id="modal-close-button" class="modal-close"><i class="fa fa-close" style="line-height: 48px; height: 100%;"></i></div>',
+				'	<div class="sm-modal-content">',
+				'		<div id="sign-in-step" class="modal-step animate-250 active">',
+				'			<h2 class="sm-modal-title animate-250">Uh oh!</h2>',
+				'			<div class="sm-modal-error sm-full-width sm-text-l" style="text-align: center;">It looks like you already signed up with a '+err.type+' account: '+err.email+', not '+err.otherType+'</div><br><br><br><br><div class="sm-full-width sm-text-m" style="text-align: center;">Sign in with your '+err.type+' account below:</div>',
+				((err.type==='google')?
+				'			<a style="bottom: 10px;position: absolute;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/google" class="sign-in-up-input social-button google-plus-sign-in"><img src="/img/google-g-logo.svg" class="social-sign-in-icon social-sign-in-icon-google"><span class="social-sign-in-text sm-text-m">Sign in with Google</span></a>':
+				'			<a style="bottom: 10px;position: absolute; color: #fff !important;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/facebook" class="sign-in-up-input social-button facebook-sign-in"><img src="/img/facebook-f-logo.svg" class="social-sign-in-icon social-sign-in-icon-facebook"><span class="social-sign-in-text sm-text-m">Sign in with Facebook</span></a>'),
+				'		</div>',
+				'	</div>',
+				'</div>',
+				'<script>document.getElementById("modal-close-button").addEventListener("click", function(){window.close();});</script>',
+				'</body></html>'
+			].join('\n'));
+		}
+		if (err) return res.send(err);
+		req.logIn(user, function(err) {
+      if (err) { return next(err); }
+			return res.redirect('/redirect');
+    });
+	})(req,res,next);
+});
 
-app.get('/auth/facebook_oauth2/callback', passport.authenticate('facebook', {
-	//session: false,
-	successRedirect: '/redirect',
-	failureRedirect: '/api/v1/account/login/facebook'
-}));
+app.get('/auth/facebook_oauth2/callback', function(req,res,next){
+	passport.authenticate('facebook', { scope : ['id', 'displayName', 'public_profile', 'email'] }, function(err, user, info) {
+		if(err && err.message === 'account exists') {
+			return res.send([
+				'<html><head><title>Sign In</title><link rel="stylesheet" href="/js/lib/normalize-css/normalize.css" /><link rel="stylesheet" href="/js/lib/animate.css/animate.min.css" /><link rel="stylesheet" href="/styleguide/css/main.css" /><link rel="stylesheet" href="/css/main.app.min.css" /><link rel="stylesheet" href="/js/lib/bootstrap/dist/css/bootstrap.min.css" /><link rel="stylesheet" href="/css/font-awesome.min.css" /><script src="https://use.typekit.net/lrm3jdv.js"></script><script>try{Typekit.load({ async: true });}catch(e){}</script></head><body style="background-color: #33AEDC;">',
+				'<div class="modal-window">',
+				'	<div class="modal-header"></div>',
+				'	<div id="modal-close-button" class="modal-close"><i class="fa fa-close" style="line-height: 48px; height: 100%;"></i></div>',
+				'	<div class="sm-modal-content">',
+				'		<div id="sign-in-step" class="modal-step animate-250 active">',
+				'			<h2 class="sm-modal-title animate-250">Uh oh!</h2>',
+				'			<div class="sm-modal-error sm-full-width sm-text-l" style="text-align: center;">It looks like you already signed up with a '+err.type+' account: '+err.email+', not '+err.otherType+'</div><br><br><br><br><div class="sm-full-width sm-text-m" style="text-align: center;">Sign in with your '+err.type+' account below:</div>',
+				((err.type==='google')?
+				'			<a style="bottom: 10px;position: absolute;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/google" class="sign-in-up-input social-button google-plus-sign-in"><img src="/img/google-g-logo.svg" class="social-sign-in-icon social-sign-in-icon-google"><span class="social-sign-in-text sm-text-m">Sign in with Google</span></a>':
+				'			<a style="bottom: 10px;position: absolute; color: #fff !important;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/facebook" class="sign-in-up-input social-button facebook-sign-in"><img src="/img/facebook-f-logo.svg" class="social-sign-in-icon social-sign-in-icon-facebook"><span class="social-sign-in-text sm-text-m">Sign in with Facebook</span></a>'),
+				'		</div>',
+				'	</div>',
+				'</div>',
+				'<script>document.getElementById("modal-close-button").addEventListener("click", function(){window.close();});</script>',
+				'</body></html>'
+			].join('\n'));
+		}
+		if (err) return res.send(err);
+		req.logIn(user, function(err) {
+      if (err) { return next(err); }
+			return res.redirect('/redirect');
+    });
+	})(req,res,next);
+});
 
 io.on('connection', function(socket){
 	socket.on('message', function(data) {
@@ -120,15 +170,13 @@ io.on('connection', function(socket){
 				}
 			});
 		}
-		// 	socket.emit('test', {data:'pants'});
 	});
 });
 io.on('disconnect', function(socket){
-  console.log('a user disconnected');
+	console.log('a user disconnected');
 });
 app.use('/api/v1', require('./routes/api/v1/index'));
 app.use('*', function(req,res){
-	console.log(config.subdomain);
 	res.render('index', {
 		loggedIn : req.isAuthenticated(),
 		isDev : true,

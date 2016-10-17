@@ -24,9 +24,7 @@ passport.deserializeUser(function(obj, done) {
 
 passport.use(new LocalStrategy(
 	function(username, password, done) {
-		console.log(username, password);
 		User.findOne({email:username}, function (err, user) {
-			console.log(user);
 			if (err) return done(err);
 			if (!user) return done(null, false);
 			if (user && !user.verified_email) return done(null, false);
@@ -55,10 +53,9 @@ passport.use(new FacebookStrategy({
 	clientID:     FACEBOOK_CLIENT_ID,
 	clientSecret: FACEBOOK_CLIENT_SECRET,
 	callbackURL: 'https://'+config.subdomain+'.stuffmapper.com/auth/facebook_oauth2/callback',
-	profileFields: ['id', 'displayName', 'photos', 'email', 'name']
+	profileFields: ['id', 'displayName', 'photos', 'email']
 },
 function(accessToken, refreshToken, profile, done) {
-	console.log(profile);
 	User.findOrCreateOne('facebook', profile, function (err, user) {
 		if (err) return done(err);
 		if (!user) return done(null, false);

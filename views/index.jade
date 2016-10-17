@@ -40,7 +40,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		link(href="js/lib/animate.css/animate.min.css" rel="stylesheet")
 		link(href="/styleguide/css/main.css" rel="stylesheet")
 		link(href="css/main.app.min.css" rel="stylesheet")
-		//- link(href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet")
 		link(href="js/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet")
 		link(href="css/font-awesome.min.css" rel="stylesheet")
 		script(src="https://maps.google.com/maps/api/js?libraries=geometry")
@@ -177,8 +176,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
 									span.social-sign-in-text.sm-text-m Sign in with Facebook
 								span.sign-in-local-text — or use your email —
-								input#sign-in-email.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
-								input#sign-in-password.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
+								input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
+								input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
 								.sm-button-group(style="width: 100%;display:block;")
 									.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
 										input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign In" ng-click="login()" style="margin:20px 10px;width:calc(100% - 10px);")
@@ -187,11 +186,11 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							#sign-up-step.modal-step.animate-250.hidden-modal
 								h2.sm-modal-title Sign Up
 								.modal-back-button(ng-click="signUpBack()")
-								input#sign-up-uname.sm-text-input.sm-text-input-full-width(type="text" placeholder="username *")
-								input#sign-up-email.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address *")
-								input#sign-up-password1.sm-text-input.sm-text-input-full-width(type="password" placeholder="password *")
-								input#sign-up-fname.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name *")
-								input#sign-up-lname.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name *")
+								input#sign-up-uname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="username *")
+								input#sign-up-email.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address *")
+								input#sign-up-password1.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password *")
+								input#sign-up-fname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name *")
+								input#sign-up-lname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name *")
 								#toggle-password-visibility.fa.fa-eye(ng-click="toggleVisibility()")
 								.sm-text-s.sm-full-width(style="margin-bottom: 0px") *required field
 								#sign-up-step-message-container.sm-full-width
@@ -277,7 +276,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				a(ui-sref="stuff.get")
 					img#logo(src="img/logo-txt-only-bold.png" )
 				#landfill-tracker-header
-				#landfill-tracker-description.sm-text-xs Stuff saved from the landfill
+				#landfill-tracker-description.sm-text-xs Stuff saved from landfill
 				#user-portal
 					i#sign-in-button.fa.fa-bars(ng-click="userButton()")
 			#content.animate-500(ui-view)
