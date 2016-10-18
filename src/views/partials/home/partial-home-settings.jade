@@ -12,37 +12,37 @@ div.settings
 	//- 		input(type='text', placeholder='{{users.email}}')
 	form.settings-form(data-ng-submit='save({users: users})')
 		ul.edit-profile(data-ng-cloak)
-			p Display Name
+			p.sm-text-input-full-width Display Name
 			li
-				input(type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}')
-			p First Name
+				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}')
+			p.sm-text-input-full-width First Name
 			li 
-				input(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
-			p Last Name
+				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
+			p.sm-text-input-full-width Last Name
 			li 
-				input(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
-			p Phone
+				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
+			p.sm-text-input-full-width Phone
 			li
-				input(type='tel', data-ng-model='users.phone_number', placeholder='{{ users.phone_number }}')
-			p Email
+				input.sm-text-input.sm-text-input-full-width(type='tel', data-ng-model='users.phone_number', placeholder='{{ users.phone_number }}')
+			p.sm-text-input-full-width Email
 			li 
-				input(type='email', data-ng-model='users.email', placeholder='{{ users.email }}')
-			p Address
+				input.sm-text-input.sm-text-input-full-width(type='email', data-ng-model='users.email', placeholder='{{ users.email }}')
+			p.sm-text-input-full-width Address
 			li 
-				input(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
-			p City
+				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
+			p.sm-text-input-full-width City
 			li 
-				input(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
-			p State
+				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
+			p.sm-text-input-full-width State
 			li
-				input(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
-			p Zipcode
+				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
+			p.sm-text-input-full-width Zipcode
 			li
-				input(type='text', data-ng-model='users.zip_code', placeholder='{{ users.zip_code }}')
-			p Country
+				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.zip_code', placeholder='{{ users.zip_code }}')
+			p.sm-text-input-full-width Country
 			li
-				input(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
-			button(type='submit', data-ng-click='update(users); showSuccess()') Save
+				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
+			input.sm-button.sm-button-default.sm-button-full-width.sm-text-m(type='submit' value="Update Profile" data-ng-click='update(users); showSuccess()')
 		//- ul.connections 
 		//- 	li 
 		//- 		strong Connections 

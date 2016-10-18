@@ -23,7 +23,7 @@ module.exports = (function() {
 			return bcrypt.compare(password, hash, function(err, res) {
 				cb(err, res);
 			});
-		}
+		} else cb('invalid password', null);
 	}
 	function findOne(login, cb) {
 		if(login && (login.email || login.uname || login.google || login.facebook)) {
@@ -38,15 +38,20 @@ module.exports = (function() {
 					client.end();
 					return cb('pg connect error: ' + err, null);
 				}
-				var query = 'SELECT * FROM users WHERE '+loginType+' = $1 AND verified_email = true';
+				var query = 'SELECT * FROM users WHERE '+loginType+' = $1';
 				var values = [login[loginType].toLowerCase()];
 				client.query(query, values, function(err, result) {
+					client.end();
 					if(err) {
 						client.end();
 						return cb('pg query error: ' + err, null);
 					}
 					var row = result.rows[0];
-					client.end();
+					if(!row) return cb('user not found');
+					else if(row.google_id) return cb('Click the Google button to log in!');
+					else if(row.facebook_id) return cb('Click the Facebook button to log in!');
+					else if(!row.verified_email) return cb('please verify your email address');
+					else if(!row.password) return cb('<a href="/api/v1/account/resetpassword">forgot your password?</a>');
 					return cb(null, row);
 				});
 			});
@@ -85,12 +90,9 @@ module.exports = (function() {
 										email
 									];
 									client.query(query, values, function(err, result) {
-										if(err) {
-											client.end();
-											return cb(err, null);
-										}
-										cb(null, result.rows[0]);
 										client.end();
+										if(err) return cb(err, null);
+										cb(null, result.rows[0]);
 									});
 								}
 								else if(result.rows[0].password) {
@@ -124,7 +126,6 @@ module.exports = (function() {
 						}
 						else {
 							client.end();
-							console.log('right here!');
 							return cb(null, rows);
 						}
 					}
@@ -132,8 +133,8 @@ module.exports = (function() {
 						gateway.clientToken.generate({}, function (err, response) {
 							var query = [
 								'INSERT INTO users',
-								'(fname, lname, uname, email, '+type+'_id, braintree_token)',
-								'VALUES ($1, $2, $3, $4, $5, $6)',
+								'(fname, lname, uname, email, '+type+'_id, braintree_token, verified_email)',
+								'VALUES ($1, $2, $3, $4, $5, $6, $7)',
 								'RETURNING *'
 							].join(' ');
 							var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
@@ -150,7 +151,8 @@ module.exports = (function() {
 								capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number,
 								profile.email || profile.emails[0].value,
 								profile.id,
-								response.clientToken
+								response.clientToken,
+								true
 							];
 							client.query(query, values, function(err, result) {
 								if(err) {

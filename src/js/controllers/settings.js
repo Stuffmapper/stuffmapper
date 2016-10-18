@@ -26,7 +26,8 @@ function SettingsController() {
 						return $.param(data);
 					}
 				}).success(function(data) {
-					console.log(data);
+					//console.log(data);
+					SMToast.set('Profile Successfully Updated!');
 				});
 			};
 

@@ -112,53 +112,55 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			script(id="templates/partial-login-page.html" type="text/ng-template")
 				include ./partials/login/partial-login-page
 	body(ng-controller="MainController")
-		//- #lock-screen(style="z-index: 999999;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:rgba(0,0,0,0.4);")
-		//- 	#lock-modal
-		//- 		img#lock-logo(src="/img/sharing-header.png" style="width:100%;")
-		//- 		link(href='//cdn-images.mailchimp.com/embedcode/classic-10_7.css', rel='stylesheet', type='text/css')
-		//- 		style(type='text/css').
-		//- 			#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
-		//- 		#mc_embed_signup
-		//- 			form#mc-embedded-subscribe-form.validate(action='//stuffmapper.us8.list-manage.com/subscribe/post?u=1457dd037ad3832bd31680813&id=784c72162a', method='post', name='mc-embedded-subscribe-form', target='_blank', novalidate='')
-		//- 				#mc_embed_signup_scroll
-		//- 					h2 Want to know when we're ready? We'll let you know!
-		//- 					.indicates-required
-		//- 						span.asterisk *
-		//- 						|  indicates required
-		//- 					.mc-field-group
-		//- 						label(for='mce-EMAIL')
-		//- 								| Email Address  
-		//- 							span.asterisk *
-		//- 						input#mce-EMAIL.required.email(type='email', value='', name='EMAIL')
-		//- 					.mc-field-group
-		//- 						label(for='mce-FNAME') First Name 
-		//- 						input#mce-FNAME(type='text', value='', name='FNAME')
-		//- 					.mc-field-group
-		//- 						label(for='mce-LNAME') Last Name 
-		//- 						input#mce-LNAME(type='text', value='', name='LNAME')
-		//- 					.mc-field-group
-		//- 						label(for='mce-WHERE') How did you hear about us? 
-		//- 						input#mce-WHERE(type='text', value='', name='WHERE')
-		//- 					#mce-responses.clear
-		//- 						#mce-error-response.response(style='display:none')
-		//- 						#mce-success-response.response(style='display:none')
-		//- 					// real people should not fill this in and expect good things - do not remove this or risk form bot signups
-		//- 					div(style='position: absolute; left: -5000px;', aria-hidden='true')
-		//- 						input(type='text', name='b_1457dd037ad3832bd31680813_784c72162a', tabindex='-1', value='')
-		//- 					.clear
-		//- 						input#mc-embedded-subscribe.button(type='submit', value='Subscribe', name='subscribe')
-		//- 		script(type='text/javascript', src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js')
-		//- 		script(type='text/javascript') (function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[4]='WHERE';ftypes[4]='text';}(jQuery));var $mcj = jQuery.noConflict(true);
-		//- 		#lock-sm
-		//- 			a#lock-fb(href="https://www.facebook.com/stuffmapper")
-		//- 				i.fa.fa-facebook-square
-		//- 				| facebook.com/stuffmapper
-		//- 			a#lock-twitter(href="https://www.twitter.com/stuffmapper")
-		//- 				i.fa.fa-twitter-square
-		//- 				| @stuffmapper
-		//- 			a#lock-instagram(href="https://www.instagram.com/stuffmapper")
-		//- 				i.fa.fa-instagram
-		//- 				| @stuffmapper
+		#lock-screen.animate-500(style="z-index: 999999;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:rgba(0,0,0,0.4);opacity:0.0001;pointer-events: none;")
+			#lock-modal-bg(style="z-index:1;position:absolute;top:0px;left:0px;width:100%;height:100%;" ng-click="closeLockScreen()")
+			#lock-modal(style="z-index:2;")
+				img#lock-logo(src="/img/sharing-header.png" style="width:100%;")
+				.fa.fa-times(style="z-index: 2;color: #fff;position: absolute;top: 1px;right: 5px;padding: 5px;width: 24px;height: 24px;cursor: pointer;font-size: 22px;" ng-click="closeLockScreen()")
+				link(href='//cdn-images.mailchimp.com/embedcode/classic-10_7.css', rel='stylesheet', type='text/css')
+				style(type='text/css').
+					#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
+				#mc_embed_signup
+					form#mc-embedded-subscribe-form.validate(action='//stuffmapper.us8.list-manage.com/subscribe/post?u=1457dd037ad3832bd31680813&id=784c72162a', method='post', name='mc-embedded-subscribe-form', target='_blank', novalidate='')
+						#mc_embed_signup_scroll
+							h2 Want to know when we're ready? We'll let you know!
+							.indicates-required
+								span.asterisk *
+								|  indicates required
+							.mc-field-group
+								label(for='mce-EMAIL')
+										| Email Address  
+									span.asterisk *
+								input#mce-EMAIL.required.email(type='email', value='', name='EMAIL')
+							.mc-field-group
+								label(for='mce-FNAME') First Name 
+								input#mce-FNAME(type='text', value='', name='FNAME')
+							.mc-field-group
+								label(for='mce-LNAME') Last Name 
+								input#mce-LNAME(type='text', value='', name='LNAME')
+							.mc-field-group
+								label(for='mce-WHERE') How did you hear about us? 
+								input#mce-WHERE(type='text', value='', name='WHERE')
+							#mce-responses.clear
+								#mce-error-response.response(style='display:none')
+								#mce-success-response.response(style='display:none')
+							// real people should not fill this in and expect good things - do not remove this or risk form bot signups
+							div(style='position: absolute; left: -5000px;', aria-hidden='true')
+								input(type='text', name='b_1457dd037ad3832bd31680813_784c72162a', tabindex='-1', value='')
+							.clear
+								input#mc-embedded-subscribe.button(type='submit', value='Subscribe', name='subscribe')
+				script(type='text/javascript', src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js')
+				script(type='text/javascript') (function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[4]='WHERE';ftypes[4]='text';}(jQuery));var $mcj = jQuery.noConflict(true);
+				#lock-sm
+					a#lock-fb(href="https://www.facebook.com/stuffmapper")
+						i.fa.fa-facebook-square
+						| facebook.com/stuffmapper
+					a#lock-twitter(href="https://www.twitter.com/stuffmapper")
+						i.fa.fa-twitter-square
+						| @stuffmapper
+					a#lock-instagram(href="https://www.instagram.com/stuffmapper")
+						i.fa.fa-instagram
+						| @stuffmapper
 		#modal-windows
 			.modal-windows-bg.animate-250
 			.modal-container.modal-container.animate-500
@@ -177,10 +179,17 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
 									img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
 									span.social-sign-in-text.sm-text-m Sign in with Facebook
+								.sm-full-width.sm-text-s
+									p(style="text-align: center;")
+										| By clicking "Sign In", you agree to the 
+										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
+										| and 
+										a(ui-sref="useragreement", ng-click="hideModal()") Terms
 								span.sign-in-local-text — or use your email —
 								input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
 								input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
-								.sm-button-group(style="width: 100%;display:block;")
+								#sign-in-error-warning-container(style="width:100%;display:block;position:relative;")
+								.sm-button-group(style="width: 100%;display:block;margin-top: -20px;")
 									.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
 										input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign In" ng-click="login()" style="margin:20px 10px;width:calc(100% - 10px);")
 									.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
@@ -188,15 +197,13 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							#sign-up-step.modal-step.animate-250.hidden-modal
 								h2.sm-modal-title Sign Up
 								.modal-back-button(ng-click="signUpBack()")
-								input#sign-up-uname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="username *")
 								input#sign-up-email.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address *")
 								input#sign-up-password1.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password *")
 								input#sign-up-fname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name *")
 								input#sign-up-lname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name *")
 								#toggle-password-visibility.fa.fa-eye(ng-click="toggleVisibility()")
 								.sm-text-s.sm-full-width(style="margin-bottom: 0px") *required field
-								#sign-up-step-message-container.sm-full-width
-									#sign-up-step-message.sm-text-s no error
+								#sign-up-error-warning-container(style="width:100%;display:block;position:relative;")
 								.privacy-and-terms-container
 									p(style="margin: 0 auto;font-size: 14px;text-align: center;width:90%;")
 										| By clicking "Sign Up", you agree to the 

@@ -1,6 +1,5 @@
 var AWS = require('aws-sdk');
 var express = require('express');
-var port = process.env.PORT || 3000;
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -12,6 +11,7 @@ var passport = require('passport');
 var User = require('./routes/api/v1/config/user');
 var stage = process.env.STAGE || 'development';
 var config = require('./config')[stage];
+var port = process.env.PORT || config.port || 3000;
 var multer = require('multer');
 var multerS3 = require('multer-s3');
 var braintree = require('braintree');

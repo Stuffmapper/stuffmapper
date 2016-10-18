@@ -21,6 +21,33 @@ function MainController() {
 	var $ionicPlatform = (typeof arguments[9] !== 'function') ? arguments[9] : undefined;
 	var $cordovaSQLite = (typeof arguments[10] !== 'function') ? arguments[10] : undefined;
 	var $cordovaPush = (typeof arguments[11] !== 'function') ? arguments[11] : undefined;
+
+	var visited = localStorage.getItem('visited');
+	if(!visited) {
+		$('#lock-screen').css({
+			'pointer-events': 'all',
+			opacity: 1
+		});
+		localStorage.setItem('visited', true);
+		$scope.closeLockScreen = function() {
+			$('#lock-screen').css({
+				'pointer-events': 'none',
+				opacity: 0.0001
+			});
+			setTimeout(function() {
+				requestAnimationFrame(function() {
+					$('#lock-screen').css({
+						display:'none'
+					});
+				});
+			}, 550);
+		};
+	}
+	else {
+		$('#lock-screen').css({
+			display:'none'
+		});
+	}
 	if ($ionicPlatform && $cordovaSQLite) {
 		$ionicPlatform.registerBackButtonAction(function(event) {
 			if ($state.current.name !== 'stuff.get') {
@@ -117,6 +144,9 @@ function MainController() {
 			$userData.setUserId(data.res.user.id);
 			$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function(data) {
+				SMAlert.set(data.messages.message, 5000, function() {
+					console.log('clicked!');
+				});
 				var lPath = $location.$$path.split('/');
 				lPath.shift();
 				var out = document.getElementById('conversation-messages');
@@ -141,6 +171,7 @@ function MainController() {
 	$scope.popUpOpen = false;
 	$scope.showModal = function() {
 		if (config.html5) location.hash = 'signin';
+		$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 		$('.modal-window').removeClass('modal-window-open');
 		requestAnimationFrame(function() {
 			$scope.$apply(function() {
@@ -183,6 +214,7 @@ function MainController() {
 			$('#sign-up-step').addClass('hidden-modal').removeClass('active');
 			$('#confirmation-step').addClass('hidden-modal').removeClass('active');
 			$('#confirmation-step-icon').addClass('sm-hidden');
+			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 		}, 550);
 	};
 	$('.sm-sign-in-text-inputs').keydown(function(e) {
@@ -384,14 +416,9 @@ function MainController() {
 			username: $('#sign-in-email').val(),
 			password: $('#sign-in-password').val()
 		}, {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-			},
-			transformRequest: function(data) {
-				return $.param(data);
-			}
+			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
 		}).success(function(data) {
-			if (data.err || !data.res.isValid) return console.log(data.err);
+			if (data.err || !data.res.isValid) return $('#sign-in-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
 			location.hash = '';
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
@@ -401,19 +428,7 @@ function MainController() {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
-			var toastId = 'sm-toast'+$scope.toastCounter++;
-			$('<div id="'+toastId+'" class="sm-toast sm-hidden animate-250">You have successfully logged in!</div>').appendTo('body');
-			requestAnimationFrame(function() {
-				setTimeout(function() {
-					$('#'+toastId).removeClass('sm-hidden');
-					setTimeout(function(){
-						$('#'+toastId).addClass('sm-hidden');
-						setTimeout(function() {
-							$('#'+toastId).remove();
-						}, 550);
-					},3000);
-				}, 100);
-			});
+			SMToast.set('You have successfully logged in!', 5000);
 			if(config.ionic.isIonic) {
 				$ionicPlatform.ready(function () {
 					// $cordovaPush.register({
@@ -445,6 +460,7 @@ function MainController() {
 			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
 				$state.go('stuff.get');
 				$state.reload();
+				SMToast.set('You have succsessfully logged out');
 			}
 		});
 	};
@@ -479,6 +495,7 @@ function MainController() {
 		}, 500);
 	};
 	$scope.signUpBack = function() {
+		$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 		$('#sign-in-step').css({'transform':''});
 		$('#sign-in-step .sm-modal-title').css({'transform':''});
 		$('#sign-in-step .sm-modal-title').removeClass('visible');
@@ -494,32 +511,33 @@ function MainController() {
 	var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
 	$scope.signUp = function() {
 		if(!signingUp) {
+			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 			$('#sm-sign-up-button').attr('disabled', '');
 			var valid = true;
 			var message = '';
 			var fd = {
-				uname: $('#sign-up-uname').val(),
 				email: $('#sign-up-email').val(),
 				password: $('#sign-up-password1').val(),
 				fname: $('#sign-up-fname').val(),
 				lname: $('#sign-up-lname').val()
 			};
-			$('#sign-up-uname, #sign-up-email, #sign-up-password1, #sign-up-fname, #sign-up-lname').css({border:''});
+			$('#sign-up-email, #sign-up-password1, #sign-up-fname, #sign-up-lname').css({border:''});
 			if(!fd.lname) {valid=false;$('#sign-up-lname').css({border:'1px solid red'});message='please insert a last name';}
 			if(!fd.fname) {valid=false;$('#sign-up-fname').css({border:'1px solid red'});message='please insert a first name';}
 			if(!fd.password || !passRe.test(fd.password)) {valid=false;$('#sign-up-password1').css({border:'1px solid red'});message='password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';}
 			if(!fd.email || !emailRe.test(fd.email)) {valid=false;$('#sign-up-email').css({border:'1px solid red'});message='invalid email address';}
-			if(!fd.uname || !/^[a-zA-Z-+_!@#$%^&*.,?\d]{1,32}/i.test(fd.uname)) {valid=false;$('#sign-up-uname').css({border:'1px solid red'});((!fd.uname)?(message='please insert a username'):(message='your username is too long'));}
 
 			if(!valid) {
 				signingUp = false;
 				$('#sm-sign-up-button').removeAttr('disabled');
-				$('#sign-up-step-message').text(message).css({'opacity':1});
+				//$('#sign-up-step-message').text(message).css({'opacity':1});
+				$('#sign-up-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
 			}
 			else {
 				$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', fd,
 				{headers:{'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest:function(data){return $.param(data);}})
 				.success(function(data) {
+					if (data.err || !data.res.isValid) return $('#sign-up-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
 					$('#sm-sign-up-button').removeAttr('disabled');
 					if (data.err) return console.log(data.err);
 					$scope.signUpConfirmationStep();
@@ -528,6 +546,7 @@ function MainController() {
 		}
 	};
 	$scope.resetModal = function() {
+		$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 		$('#sign-in-step').css({
 			'transform': ''
 		});
@@ -563,6 +582,7 @@ var working = false;
 
 function openModalWindow(windowName) {
 	if (!working) {
+		$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 		working = true;
 		requestAnimationFrame(function() {
 			$('#modal-windows').addClass('reveal-modals');
@@ -587,6 +607,7 @@ function closeModalWindow(windowName) {
 				requestAnimationFrame(function() {
 					$('#modal-windows').removeClass('reveal-modals');
 					requestAnimationFrame(function() {
+						$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 						working = false;
 					});
 				});
@@ -594,3 +615,84 @@ function closeModalWindow(windowName) {
 		});
 	}
 }
+
+var SMToast = (function() {
+	var toastQueue = [];
+	var toastTimeout;
+	var defaultToastTimeout = 5000;
+	var toasting = false;
+	function displayToast(toast) {
+		var toastElement = document.createElement('div');
+		toastElement.className = 'animate-250 sm-toast sm-hidden';
+		toastElement.innerHTML = toast.msg;
+		$('body').append(toastElement);
+		setTimeout(function() {
+			requestAnimationFrame(function() {
+				toastElement.className = 'animate-250 sm-toast';
+				setTimeout(function() {
+					toastElement.className = 'animate-250 sm-toast sm-hidden';
+					setTimeout(function() {
+						$(toastElement).remove();
+					}, 300);
+					if(toastQueue.length) displayToast(toastQueue.shift());
+					else toasting = false;
+				}, toast.to || defaultToastTimeout);
+			});
+		}, 50);
+	}
+	return {
+		set: function(msg, to) {
+			toastQueue.push({
+				msg: msg,
+				to: to || defaultToastTimeout
+			});
+			if(!toasting) {
+				toasting = true;
+				displayToast(toastQueue.shift());
+			}
+		}
+	};
+}());
+
+var SMAlert = (function() {
+	var alertQueue = [];
+	var alertTimeout;
+	var defaultAlertTimeout = 5000;
+	var alerting = false;
+	function displayAlert(alert) {
+		var alertElement = document.createElement('div');
+		alertElement.className = 'animate-250 sm-alert sm-hidden';
+		alertElement.innerHTML = alert.msg;
+		if(alert.cb) {
+			alertElement.style.cursor = 'pointer';
+			$(alertElement).one('click', alert.cb);
+		}
+		$('body').append(alertElement);
+		setTimeout(function() {
+			requestAnimationFrame(function() {
+				alertElement.className = 'animate-250 sm-alert';
+				setTimeout(function() {
+					alertElement.className = 'animate-250 sm-alert sm-hidden';
+					setTimeout(function() {
+						$(alertElement).remove();
+					}, 300);
+					if(alertQueue.length) displayAlert(alertQueue.shift());
+					else alerting = false;
+				}, alert.to || defaultAlertTimeout);
+			});
+		}, 50);
+	}
+	return {
+		set: function(msg, to, cb) {
+			alertQueue.push({
+				msg: msg,
+				to: to || defaultAlertTimeout,
+				cb: cb
+			});
+			if(!alerting) {
+				alerting = true;
+				displayAlert(alertQueue.shift());
+			}
+		}
+	};
+}());

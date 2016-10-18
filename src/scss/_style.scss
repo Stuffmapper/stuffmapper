@@ -464,6 +464,21 @@ html.ionic.ios {
 	cursor: pointer;
 }
 
+.sm-negative-warning {
+	background-color: rgba(237, 85, 101, 0.3);
+	border: 1px solid $grapefruit-dark;
+	padding: 5px 7px;
+	color: $charcoal-dark;
+}
+.sm-neutral-warning {
+	background-color: rgba(72, 192, 235, 0.3);
+	border: 1px solid $aqua;
+	padding: 5px 7px;
+	color: $charcoal-dark;
+}
+
+
+
 /* Header -  END  */
 
 .info-windows {
@@ -2287,18 +2302,49 @@ html.ionic.ios {
 	display: block;
 	color: $charcoal-dark;
 	background-color: #fff;
-	z-index: 20;
+	z-index: 999999;
+	padding: 5px 15px;
 	position: fixed;
-	bottom: 0px;
-	-webkit-transform: translate3d(-50%, 150%, 0);
-	-moz-transform: translate3d(-50%, 150%, 0);
-	-o-transform: translate3d(-50%, 150%, 0);
-	transform: translate3d(-50%, 150%, 0);
+	top: 45px;
+	left: 50%;
+	cursor: default;
+	opacity: 1;
+	-webkit-transform: translate3d(-50%, 0%, 0);
+	-moz-transform: translate3d(-50%, 0%, 0);
+	-o-transform: translate3d(-50%, 0%, 0);
+	transform: translate3d(-50%, 0%, 0);
 	&.sm-hidden {
+		opacity: 0.0001;
 		-webkit-transform: translate3d(-50%, -150%, 0);
 		-moz-transform: translate3d(-50%, -150%, 0);
 		-o-transform: translate3d(-50%, -150%, 0);
 		transform: translate3d(-50%, -150%, 0);
+	}
+}
+
+.sm-alert {
+	border: 1px solid $grass-light;
+	position: relative;
+	display: block;
+	color: $charcoal-dark;
+	background-color: #fff;
+	z-index: 999999;
+	padding: 15px;
+	position: fixed;
+	cursor: default;
+	top: 145px;
+	right: 20px;
+	opacity: 1;
+	-webkit-transform: translate3d(0%, 0%, 0);
+	-moz-transform: translate3d(0%, 0%, 0);
+	-o-transform: translate3d(0%, 0%, 0);
+	transform: translate3d(0%, 0%, 0);
+	&.sm-hidden {
+		opacity: 0.0001;
+		-webkit-transform: translate3d(150%, 0%, 0);
+		-moz-transform: translate3d(150%, 0%, 0);
+		-o-transform: translate3d(150%, 0%, 0);
+		transform: translate3d(150%, 0%, 0);
 	}
 }
 
@@ -2542,10 +2588,6 @@ html.ionic.ios {
 .settings-header-button:hover {
 	background-color: $primary-color;
 }
-.settings-form {
-	padding: 13px;
-	font-size: .9em;
-}
 
 .settings-form ul {
 	width:100%;
@@ -2555,25 +2597,19 @@ html.ionic.ios {
 }
 .settings-form ul p {
 	padding-left: 7px;
-	margin-top: 10px;
-	margin-bottom: 0;
+	margin-top: 20px;
+	margin-bottom: -5px;
 }
 .settings-form li {
-	padding:.45em;
 	position:relative;
 }
 .settings-form li p {
 	margin-bottom: 0;
-	margin-top: 20px;
 }
 .settings-form label {
 	padding: 7px;
 }
-.settings-form input {
-	height:20px;
-	width:97%;
-	padding-left: 5px;
-}
+
 .settings-profile li {
 	border-bottom: 1px solid #F5F7FA;
 }

@@ -15,9 +15,9 @@ function MyStuffController() {
 			['dibs','gives'].forEach(function(e) {
 
 			});
-			console.log(data.res.user);
+			// console.log(data.res.user);
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my').success(function(data) {
-				console.log(data);
+				// console.log(data);
 				$scope.listItems = data.res.rows;
 				// $('#mystuff a').addClass('selected');
 				// $scope.$on("$destroy", function() {

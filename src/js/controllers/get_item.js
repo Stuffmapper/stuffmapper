@@ -9,7 +9,6 @@ function GetItemController() {
 
 	var singleItemTemplateMap;
 	var newWindow = !!($('#post-item-' + $stateParams.id + ' img').length === 0);
-	console.log(newWindow);
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
 		$scope.listItem.date_created = new Date(data.res.date_created).getTime();

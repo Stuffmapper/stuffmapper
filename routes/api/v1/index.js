@@ -424,112 +424,69 @@ router.post('/account/status', function(req, res) {
 router.post('/account/register', function(req, res) {
 	var client = new pg.Client(conString);
 	var b = req.body;
-	if(b.type === 'google') {
-		request({
-			method: 'GET',
-			url:'https://www.googleapis.com/oauth2/v2/userinfo?key='+b.oauth.id_token,
-			headers: {
-				'Authorization':'Bearer '+b.oauth.access_token
+	client.connect(function(){
+		var query = [
+			'SELECT id FROM users WHERE email = $1'
+		].join(' ');
+		var values = [
+			b.email
+		];
+		client.query(query, values, function(err, result1) {
+			if(!result1.rows[0]) {
+				gateway.clientToken.generate({}, function (err, response) {
+					bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
+						var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
+						var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
+						var number = Math.floor(Math.random() * 9999) + 1;
+						function capitalizeFirstLetter(string) {
+							return string.charAt(0).toUpperCase() + string.slice(1);
+						}
+						var query = [
+							'INSERT INTO users ',
+							'(fname, lname, uname, email, password, phone_number, braintree_token)',
+							'VALUES ($1, $2, $3, $4, $5, $6, $7)',
+							'RETURNING *'
+						].join(' ');
+						var values = [
+							b.fname,
+							b.lname,
+							capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number,
+							b.email,
+							hashedPassword,
+							b.phone_number,
+							response.clientToken
+						];
+						client.query(query, values, function(err, result) {
+							client.end();
+							res.send({
+								err : null,
+								res : {
+									redirect: true,
+									user: result.rows[0]
+								}
+							});
+							var emailTo = {};
+							emailTo[b.uname] = b.email;
+							sendTemplate(
+								'email-verification',
+								'Stuffmapper needs your confirmation!',
+								emailTo,
+								{
+									'FIRSTNAME' : b.uname,
+									'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
+								}
+							);
+						});
+					});
+				});
+			} else {
+				client.end();
+				return res.send({
+					err: 'Hey! It looks like you already signed up with this email address. Need to <a href="/api/v1/accout/resetpassword">reset your password</a>?'
+				});
 			}
-		}, function(err, result, body) {
-			gateway.clientToken.generate({}, function (err, response) {
-				//res.send(response.clientToken);
-				body = JSON.parse(body);
-				var query = [
-					'INSERT INTO users',
-					'(fname, lname, uname, email, google_id, braintree_token)',
-					'VALUES ($1, $2, $3, $4, $5, $6)',
-					'RETURNING *'
-				].join(' ');
-				var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
-				var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
-				var number = Math.floor(Math.random() * 9999) + 1;
-
-				function capitalizeFirstLetter(string) {
-					return string.charAt(0).toUpperCase() + string.slice(1);
-				}
-
-				var values = [
-					body.given_name,
-					body.family_name,
-					capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number,
-					body.email,
-					body.id,
-					response.clientToken
-				];
-				queryServer(res, query, values, function(result) {
-					req.session.passport = {};
-					req.session.passport.user = {};
-					req.session.passport.user.id = result.rows[0].id;
-					req.session.passport.user.fname = result.rows[0].fname;
-					req.session.passport.user.lname = result.rows[0].lname;
-					req.session.passport.user.email = result.rows[0].email;
-					req.session.passport.user.braintree_token = result.rows[0].braintree_token;
-					console.log('REGISTER GOOGLE START');
-					console.log(req.session);
-					console.log('REGISTER GOOGLE  END');
-					res.send({
-						err : null,
-						res : result.rows[0]
-					});
-				});
-			});
 		});
-	}
-	else if(b.type === 'facebook') {
-
-	}
-	else {
-		gateway.clientToken.generate({}, function (err, response) {
-			bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
-				var query = [
-					'INSERT INTO users ',
-					'(fname, lname, uname, email, password, phone_number, braintree_token)',
-					'VALUES ($1, $2, $3, $4, $5, $6, $7)',
-					'RETURNING *'
-				].join(' ');
-				var values = [
-					b.fname,
-					b.lname,
-					b.uname,
-					b.email,
-					hashedPassword,
-					b.phone_number,
-					response.clientToken
-				];
-				queryServer(res, query, values, function(result) {
-					res.send({
-						err : null,
-						res : {
-							redirect: true,
-							user: result.rows[0]
-						}
-					});
-					// req.session.passport = {};
-					// req.session.passport.user = {};
-					// req.session.passport.user.id = result.rows[0].id;
-					// req.session.passport.user.fname = result.rows[0].fname;
-					// req.session.passport.user.lname = result.rows[0].lname;
-					// req.session.passport.user.email = result.rows[0].email;
-					// req.session.passport.user.braintree_token = result.rows[0].braintree_token;
-					// console.log('REGISTER LOCAL START');
-					// console.log(req.session);
-					// console.log('REGISTER LOCAL  END');
-					var emailTo = {};
-					emailTo[b.uname] = b.email;
-					sendTemplate(
-						'email-verification',
-						'Stuffmapper needs your confirmation!',
-						emailTo,
-						{
-							'FIRSTNAME' : b.uname,
-							'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
-						}
-					);
-				});
-			});
-		});
-	}
+	});
 });
 
 router.get('/account/confirmation/:email_token', function(req, res) {
@@ -554,7 +511,7 @@ router.post('/account/login', function(req, res, next) {
 	passport.authenticate('local', function(err, user, info) {
 		if (err) {
 			return res.send({
-				err: 'local login error: ' + err,
+				err: err,
 				res: {
 					isValid: false
 				}
@@ -562,7 +519,7 @@ router.post('/account/login', function(req, res, next) {
 		}
 		if (!user) {
 			return res.send({
-				err: 'user does not exist',
+				err: err || info.message,
 				res: {
 					isValid: false
 				}
