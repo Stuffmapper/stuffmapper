@@ -37,13 +37,11 @@
 				//- 	img#give-static-map1
 			button#give-description-submit.sm-button.sm-button-default.sm-button-full-width.sm-text-l(ng-click="uploadItem()") Submit 
 		li#give-step4.give-steps.animate-250
-			.sm-alert-dialog
-				.sm-alert-dialog-message Your stuff has been mapped!
-				.sm-button-group(style="width: 100%;display:block;height: 94px;")
-					.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
-						input#sign-in-sign-in-button.sm-button.sm-button-ghost.sm-button-default.sm-text-l(type="button" value="OK!" ng-click="goToMyStuffItem()" style="margin:20px 10px;width:calc(100% - 10px);")
-					.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
-						input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-l(type="button" value="Give more!" ng-click="resetGiveStuff()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
+			.sm-button-group(style="width: 100%;display:block;height: 94px;")
+				.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+					input#sign-in-sign-in-button.sm-button.sm-button-ghost.sm-button-default.sm-text-l(type="button" value="View item" ng-click="goToMyStuffItem()" style="margin:20px 10px;width:calc(100% - 10px);")
+				.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+					input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-l(type="button" value="Give more!" ng-click="resetGiveStuff()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
 			#give-finished-title.sm-text-m.sm-full-width {{ giveItem.title }}
 			#give-finished-image
 				#give-finished-category.stuff-item-category-distance-owner(style="left:10px;") {{ categories[category-1].name }}

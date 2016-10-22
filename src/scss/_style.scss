@@ -886,7 +886,11 @@ html.ionic.ios {
 		cursor: pointer;
 	}
 }
-
+#sign-in-forgot-password {
+	color: $aqua;
+	text-decoration: underline;
+	cursor: pointer;
+}
 
 // #filter-pane {
 // 	width: 100%;
@@ -1810,7 +1814,7 @@ html.ionic.ios {
 }
 #toggle-password-visibility{
 	position: absolute;
-	top: 101px;
+	top: 58px;
 	right: 21px;
 	padding: 7px;
 	cursor: pointer;

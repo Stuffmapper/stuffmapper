@@ -205,6 +205,7 @@ function GiveController() {
 					}, 250);
 					$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
 					$('#give-finished-image').css('background-image', $('#give-image-verify').css('background-image'));
+					SMToast.set('Your stuff has been mapped!', 5000);
 				};
 
 				$scope.editPost = function() {

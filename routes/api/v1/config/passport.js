@@ -36,10 +36,12 @@ passport.use(new LocalStrategy(
 passport.use(new GoogleStrategy({
 	clientID:     GOOGLE_CLIENT_ID,
 	clientSecret: GOOGLE_CLIENT_SECRET,
-	callbackURL: 'https://'+config.subdomain+'.stuffmapper.com/auth/google_oauth2/callback'
+	callbackURL: 'https://'+config.subdomain+'.stuffmapper.com/auth/google_oauth2/callback',
+	passReqToCallback: true
 },
-function(accessToken, refreshToken, profile, done) {
-	User.findOrCreateOne('google', profile, function (err, user) {
+function(req, accessToken, refreshToken, profile, done) {
+	console.log(req.session);
+	User.findOrCreateOne('google', profile, req, function (err, user) {
 		if (err) return done(err);
 		if (!user) return done(null, false);
 		return done(null, user);
@@ -50,10 +52,12 @@ passport.use(new FacebookStrategy({
 	clientID:     FACEBOOK_CLIENT_ID,
 	clientSecret: FACEBOOK_CLIENT_SECRET,
 	callbackURL: 'https://'+config.subdomain+'.stuffmapper.com/auth/facebook_oauth2/callback',
-	profileFields: ['id', 'displayName', 'photos', 'email']
+	profileFields: ['id', 'displayName', 'photos', 'email'],
+	passReqToCallback: true
 },
-function(accessToken, refreshToken, profile, done) {
-	User.findOrCreateOne('facebook', profile, function (err, user) {
+function(req, accessToken, refreshToken, profile, done) {
+	console.log(req.session);
+	User.findOrCreateOne('facebook', profile, req, function (err, user) {
 		if (err) return done(err);
 		if (!user) return done(null, false);
 		return done(null, user);

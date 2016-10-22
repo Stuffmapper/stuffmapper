@@ -25,7 +25,7 @@ var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-app.use('/styleguide', proxy('http://localhost:3002/'));
+//app.use('/styleguide', proxy('http://localhost:3002/'));
 app.use(multer({
 	storage: multerS3({
 		s3: s3,

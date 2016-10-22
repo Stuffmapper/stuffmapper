@@ -441,6 +441,7 @@ router.post('/account/register', function(req, res) {
 						function capitalizeFirstLetter(string) {
 							return string.charAt(0).toUpperCase() + string.slice(1);
 						}
+						var uname = capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number;
 						var query = [
 							'INSERT INTO users ',
 							'(fname, lname, uname, email, password, phone_number, braintree_token)',
@@ -450,7 +451,7 @@ router.post('/account/register', function(req, res) {
 						var values = [
 							b.fname,
 							b.lname,
-							capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number,
+							uname,
 							b.email,
 							hashedPassword,
 							b.phone_number,
@@ -466,13 +467,13 @@ router.post('/account/register', function(req, res) {
 								}
 							});
 							var emailTo = {};
-							emailTo[b.uname] = b.email;
+							emailTo[uname] = b.email;
 							sendTemplate(
 								'email-verification',
 								'Stuffmapper needs your confirmation!',
 								emailTo,
 								{
-									'FIRSTNAME' : b.uname,
+									'FIRSTNAME' : uname,
 									'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
 								}
 							);

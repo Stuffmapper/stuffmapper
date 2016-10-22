@@ -13,6 +13,14 @@ function SettingsController() {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/account/info').success(function(data){
 				if(data.err) return console.log(data.err);
 				$scope.users = data.res;
+				if($scope.users.google_id) {
+					$('#sm-settings-google').css({'pointer-events':'none','opacity':'0.7'});
+					$('#sm-settings-google span').text('Connected to Google');
+				}
+				if($scope.users.facebook_id) {
+					$('#sm-settings-facebook').css({'pointer-events':'none','opacity':'0.7'});
+					$('#sm-settings-facebook span').text('Connected to Facebook');
+				}
 			});
 			// Editing user data
 
@@ -27,7 +35,7 @@ function SettingsController() {
 					}
 				}).success(function(data) {
 					//console.log(data);
-					SMToast.set('Profile Successfully Updated!');
+					SMToast.set('Changes saved');
 				});
 			};
 

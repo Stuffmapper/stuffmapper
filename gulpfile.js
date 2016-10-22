@@ -107,7 +107,7 @@ gulp.task('js', function(done) {
 			'./src/js/lib/angular-animate/angular-animate.min.js',
 			'./src/js/lib/select2/dist/js/select2.full.min.js',
 			'./src/js/app.js',
-			'./../stuffmapper-styleguide/js/directives.js',
+			'./../stuffmapper-styleguide/src/js/directives.js',
 			'./src/js/settings.js',
 			'./src/js/controllers/*.js',
 			'./src/js/config.js'

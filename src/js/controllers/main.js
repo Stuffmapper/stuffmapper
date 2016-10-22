@@ -144,9 +144,9 @@ function MainController() {
 			$userData.setUserId(data.res.user.id);
 			$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function(data) {
-				SMAlert.set(data.messages.message, 5000, function() {
-					console.log('clicked!');
-				});
+				// SMAlert.set(data.messages.message, 5000, function() {
+				// 	console.log('clicked!');
+				// });
 				var lPath = $location.$$path.split('/');
 				lPath.shift();
 				var out = document.getElementById('conversation-messages');
@@ -289,6 +289,7 @@ function MainController() {
 			$userData.setLoggedIn(true);
 			$state.go('stuff.get');
 			$state.reload();
+			SMToast.set('Welcome!', 5000);
 			if(config.ionic.isIonic) {
 				$ionicPlatform.ready(function () {
 					var push = $cordovaPush.init({
@@ -420,6 +421,7 @@ function MainController() {
 		}).success(function(data) {
 			if (data.err || !data.res.isValid) return $('#sign-in-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
 			location.hash = '';
+			resetAllInputs();
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
@@ -428,7 +430,8 @@ function MainController() {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
-			SMToast.set('You have successfully logged in!', 5000);
+			SMToast.set('Welcome!', 5000);
+			location.hash = '';
 			if(config.ionic.isIonic) {
 				$ionicPlatform.ready(function () {
 					// $cordovaPush.register({
@@ -460,7 +463,7 @@ function MainController() {
 			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
 				$state.go('stuff.get');
 				$state.reload();
-				SMToast.set('You have succsessfully logged out');
+				SMToast.set('See you next time!');
 			}
 		});
 	};
@@ -470,6 +473,9 @@ function MainController() {
 			$scope.redirectState = 'stuff.give';
 			location.hash = 'signin';
 		}
+	};
+	$scope.forgotPassword = function() {
+
 	};
 	$scope.signUpStep = function() {
 		$('#sign-in-step').css({
@@ -537,9 +543,9 @@ function MainController() {
 				$http.post(config.api.host + '/api/v' + config.api.version + '/account/register', fd,
 				{headers:{'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest:function(data){return $.param(data);}})
 				.success(function(data) {
-					if (data.err || !data.res.isValid) return $('#sign-up-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
 					$('#sm-sign-up-button').removeAttr('disabled');
-					if (data.err) return console.log(data.err);
+					if (data.err) return $('#sign-up-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
+					resetAllInputs();
 					$scope.signUpConfirmationStep();
 				});
 			}
@@ -696,3 +702,13 @@ var SMAlert = (function() {
 		}
 	};
 }());
+
+
+function resetAllInputs() {
+	$('#sign-in-email').val('');
+	$('#sign-in-password').val('');
+	$('#sign-up-email').val('');
+	$('#sign-up-password1').val('');
+	$('#sign-up-fname').val('');
+	$('#sign-up-lname').val('');
+}

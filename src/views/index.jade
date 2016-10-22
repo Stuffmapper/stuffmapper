@@ -189,6 +189,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
 								input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
 								#sign-in-error-warning-container(style="width:100%;display:block;position:relative;")
+								.sm-full-width(style="height: 20px;")
+									#sign-in-forgot-password.sm-text-s(style="float: right;" ng-click="forgotPassword()") Forgot your password?
 								.sm-button-group(style="width: 100%;display:block;margin-top: -20px;")
 									.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
 										input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign In" ng-click="login()" style="margin:20px 10px;width:calc(100% - 10px);")
@@ -219,6 +221,15 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									#confirmation-step-icon.fa.fa-check-circle.sm-hidden
 									.sm-text-l.sm-full-width.confirmation-text-bottom to verify your account
 								input#sm-sign-up-ok-fine-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Ok" ng-click="hideModal()")
+							#sign-up-forgot-password-step.modal-step.animate-250.hidden-modal
+								h2.sm-modal-title Whoops!
+								.modal-back-button(ng-click="signUpBack()")
+								.confirmation-container
+									.sm-text-m.sm-full-width.confirmation-text-top Enter your email
+									input#sign-up-password-reset-input.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
+									.sm-text-m.sm-full-width.confirmation-text-bottom to reset your password
+								input#sm-sign-up-reset-password-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Submit" ng-click="hideModal()")
+							#sign-up-forgot-password-success-step.modal-step.animate-250.hidden-modal
 		#popups
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
 				//- li

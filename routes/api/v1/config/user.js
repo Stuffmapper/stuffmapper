@@ -58,7 +58,7 @@ module.exports = (function() {
 		}
 		else cb('Invalid login type', null);
 	}
-	function findOrCreateOne(type, profile, cb) {
+	function findOrCreateOne(type, profile, req, cb) {
 		var client = new pg.Client(conString);
 		if(profile) {
 			client.connect(function(err) {
@@ -74,7 +74,6 @@ module.exports = (function() {
 					email
 				];
 				client.query(query, values, function(err, result) {
-					//console.log('row results: ', result.rows);
 					if(result && result.rows && result.rows.length) {
 						var rows = result.rows[0];
 						if(!rows[type+'_id']) {
@@ -83,7 +82,7 @@ module.exports = (function() {
 								email
 							];
 							client.query(query, values, function(err, result) {
-								if(!result.rows.length) {
+								if(!result.rows.length || (req.session && req.session.passport && req.session.passport.user)) {
 									query = 'UPDATE users SET '+type+'_id = $1 where email = $2 RETURNING *';
 									values = [
 										profile.id,

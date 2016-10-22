@@ -2,14 +2,6 @@ div.settings
 	.success All changes have been saved!
 	.settings-header
 		h1 Your profile &amp; settings
-		//- p Profile
-	//- 	img(src="http://3.bp.blogspot.com/_LQxMQhdo6MQ/SdokfXbd7VI/AAAAAAAAAE8/GOndOJ7Z1A0/s320/twitChair3a.jpg")
-	//- 	button.settings-header-button(ng-click='showEdit=true') Edit Profile
-	//- .user-info
-	//- 	label Display name
-	//- 		input(type='text', placeholder='{{users.uname}}')
-	//- 	label Email
-	//- 		input(type='text', placeholder='{{users.email}}')
 	form.settings-form(data-ng-submit='save({users: users})')
 		ul.edit-profile(data-ng-cloak)
 			p.sm-text-input-full-width Display Name
@@ -42,6 +34,14 @@ div.settings
 			p.sm-text-input-full-width Country
 			li
 				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
+			li
+				#sm-settings-google.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
+					img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
+					span.social-sign-in-text.sm-text-s Connect to Google
+			li
+				#sm-settings-facebook.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
+					img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
+					span.social-sign-in-text.sm-text-s Connect to Facebook
 			input.sm-button.sm-button-default.sm-button-full-width.sm-text-m(type='submit' value="Update Profile" data-ng-click='update(users); showSuccess()')
 		//- ul.connections 
 		//- 	li 
