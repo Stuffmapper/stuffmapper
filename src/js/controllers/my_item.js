@@ -1,4 +1,4 @@
-stuffMapp.controller('myItemsController', ['$scope', '$http', 'authenticator', '$stateParams', '$userData', '$state', MyItemsController]);
+stuffMapp.controller('myItemsController', ['$scope', '$http', 'authenticator', '$stateParams', '$userData', '$state', '$timeout', MyItemsController]);
 function MyItemsController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
@@ -6,23 +6,17 @@ function MyItemsController() {
 	var $stateParams = arguments[3];
 	var $userData = arguments[4];
 	var $state = arguments[5];
+	var $timeout = arguments[6];
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
-			$scope.showModal();
+			$scope.openModal('modal');
 		} else {
+			var user = data.res.user;
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my/id/' + $stateParams.id).success(function(data) {
 				if(!data.err) {
+					var imageSet = false;
 					$scope.listItem = data.res;
-					/* jshint ignore:start */
-					function getWordsBetweenCurlies(str) {
-						var results = [], re = /{{([^}]+)}}/g, text;
-						while(text = re.exec(str)) {
-							results.push(text[1]);
-						}
-						return results;
-					}
-					/* jshint ignore:end */
 					$scope.googleMapStaticUrl = [
 						'https://maps.googleapis.com/maps/api/staticmap?',
 						'zoom=13&size=600x300&maptype=roadmap&',
@@ -32,21 +26,99 @@ function MyItemsController() {
 					$scope.imgScale = 1;
 					var aspectRatio = (($('#my-item-single-container-'+$stateParams.id).width()/$('#my-item-single-container-'+$stateParams.id).height())>(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container').height())));
 					$scope.imgScale = ($('#post-item-' + $stateParams.id + ' img').height())/($('#masonry-container').height()*0.4);
-					$scope.container = $('<div>', {id:'get-item-single-'+$stateParams.id, class:'my-item-single-container animate-250'});
-					$scope.imageContainer = $('<div>', {class:'get-item-single-image-container animate-250'});
-					$scope.detailsContainer = $('<div>', {class:'get-item-single-details-container sm-hidden animate-250'});
-					$scope.containerBackground = $('<div>', {class:'get-item-single-background animate-250 sm-hidden'});
+					$scope.container = $('<div id="get-item-single-'+$stateParams.id+'" class="my-item-single-container animate-250"></div>');
+					$scope.imageContainer = $('<div class="get-item-single-image-container animate-250"></div>');
+					$scope.detailsContainer = $('<div class="get-item-single-details-container sm-hidden animate-250"></div>');
+					$scope.editContainerHeader = $([
+						'<div class="animate-250" style="width: 100%;height: auto;background-color: #fff;display: inline-block;position: absolute;top: 0px;z-index: 2;opacity: 0.0001;">',
+						'	<i id="back-to-my-item" class="get-stuff-back-button fa fa-arrow-left animate-250"></i>',
+						'	<div class="sm-text-m" style="display:inline-block;position:relative;margin-left:15px;">Edit '+$scope.listItem.title+'</div>',
+						'</div>'
+					].join('\n'));
+					$scope.editContainerHeader.css({'pointer-events':'none'});
+					$scope.editContainer = $([
+						'<div class="edit-item-single-details-container sm-hidden animate-250" style="top:40px;position:absolute;">',
+						'	<div class="edit-item-single-image-container">',
+						'		<div style="width: 100%; display: block; height: 120px; position: relative;">',
+						'			<div id="edit-item-image" style="background-position: 50% 50%;background-size:cover;height:100%;width:50%;position:relative;display:inline-block;background-image:url(https://cdn.stuffmapper.com'+$scope.listItem.image_url+');"></div>',
+						'			<input id="edit-image-button" type="button" value="change image" class="sm-button sm-button-default" style="width:calc(50% - 44px);display: inline-block;vertical-align: top;top: 50%;transform: translateY(calc(-50% - 15px));" />',
+						'		</div>',
+						'		<div style="width: 100%; display: block; height: 120px; position: relative;">',
+						'			<div id="edit-item-location-image" style="background-position: 50% 50%;background-size:cover;height:100%;width:50%;position:relative;display:inline-block;background-image:url('+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+');"></div>',
+						'			<input id="edit-location-button" type="button" value="edit location" class="sm-button sm-button-default" style="width:calc(50% - 44px);display: inline-block;vertical-align: top;top: 50%;transform: translateY(calc(-50% - 15px));" />',
+						'		</div>',
+						'</div>',
+						'	<div class="sm-text-m sm-full-width">Title</div>',
+						'	<input id="edit-item-title" value="'+$scope.listItem.title.trim()+'" class="sm-text-input-full-width sm-text-input" type="text">',
+						'	<div class="sm-text-m sm-full-width">Description</div>',
+						'	<textarea id="edit-item-description" class="sm-text-input-full-width sm-text-input">'+$scope.listItem.description+'</textarea>',
+						'	<div class="sm-text-m sm-full-width" style="margin-bottom: 0px;">Category</div>',
+						'		<div class="sm-select fa fa-chevron-down sm-select-full-width ng-not-empty" id="give-category-selector" placeholder="Choose a category..." full-width="true" ng-model="category" options="categories">',
+						'			<select id="edit-item-category" class="ng-pristine ng-valid ng-not-empty ng-touched">',
+						'				<option value="" selected="selected" class="ng-binding">'+$scope.listItem.category.trim()+'</option>',
+						'				<option label="Arts &amp; Crafts" value="1">Arts &amp; Crafts</option>',
+						'				<option label="Books, Games, Media" value="2">Books, Games, Media</option>',
+						'				<option label="Building &amp; Garden Materials" value="3">Building &amp; Garden Materials</option>',
+						'				<option label="Clothing &amp; Accessories" value="4">Clothing &amp; Accessories</option>',
+						'				<option label="Electronics" value="5">Electronics</option>',
+						'				<option label="Furniture &amp; Household" value="6">Furniture &amp; Household</option>',
+						'				<option label="General" value="7">General</option>',
+						'				<option label="Kids &amp; Babies" value="8">Kids &amp; Babies</option>',
+						'				<option label="Recreation" value="9">Recreation</option>',
+						'			</select>',
+						'		</div>',
+						'	<div class="sm-button-group" style="width: 100%;display:block;position:relative;">',
+						'		<div class="sm-button-group-2 sm-button-group-left" style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;">',
+						// CANCEL BUTTON SHOULD BE GHOST NEGATIVE
+						'			<input id="my-item-edit-cancel" class="sm-button sm-button-negative sm-text-m" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);color:white;" />',
+						'		</div>',
+						'		<div class="sm-button-group-2 sm-button-group-right" style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;">',
+						'			<input id="my-item-edit-save" class="sm-button sm-button-default sm-text-m" type="button" value="Save" style="margin:20px 10px;width:calc(100% - 10px);float:left;" />',
+						'		</div>',
+						'	</div>',
+						'</div>',
+						'<div id="edit-item-image-container" class="edit-item-image-container animate-250" style="position: absolute;top: 0px;z-index: 5;width: 100%;height: 100%;pointer-events:none;">',
+						'	<div id="give-image-verify-container" class="animate-250">',
+						'	  <div id="give-image-verify" class="animate-250">',
+						'	    <canvas id="give-image-canvas-uploader" style="opacity:0.0001;pointer-events:none;position:absolute;z-index:2;width:100%;height:100%;"></canvas>',
+						'	    <canvas id="give-image-canvas" style="position:absolute;z-index:2;width:100%;height:100%;"></canvas>',
+						'	    <div style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;" class="sm-button-group">',
+						'	      <div style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;" class="sm-button-group-2 sm-button-group-left">',
+						'	        <button id="edit-reject-photo" style="margin:20px 10px;width:calc(100% - 10px);font-size:32px;line-height:25px;" class="give-reject-parent sm-button sm-text-m sm-button-ghost sm-button-ghost-solid sm-button-negative fa fa-times-circle give-reject1 animate-250"></button>',
+						'	      </div>',
+						'	      <div style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;" class="sm-button-group-2 sm-button-group-right">',
+						'	        <button id="edit-accept-photo" style="margin:20px 10px;width:calc(100% - 10px);float: left;font-size:32px;line-height:25px;" class="fa fa-check-circle sm-button sm-button-positive sm-text-m give-accept1 animate-250"></button>',
+						'	      </div>',
+						'	    </div>',
+						'	  </div>',
+						'	</div>',
+						'	<input id="give-image-select" type="file" accept=".jpg,.jpeg,.png" name="file" class="give-image-select" style="height: 0px;width: 0px;position: absolute;" />',
+						'</div>',
+						'<div id="give-location-container" class="animate-250" style="top:0px;z-index:9;width:100%;height:100%;position:absolute;opacity: 0.0001;transform: translate3d(0px, 10%, 0);pointer-events: none;">',
+						'	<div id="give-location-text1" class="give-location-text">move the map around</div>',
+						'	<i class="fa fa-location-arrow give-location-icon" style="font-size: 100px;"></i>',
+						'	<div id="give-location-text2" class="give-location-text">to set the pick-up location</div>',
+						'	<div style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;" class="sm-button-group">',
+						'		<div style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;" class="sm-button-group-2 sm-button-group-left">',
+						'			<button id="edit-reject-location" style="margin:20px 10px;width:calc(100% - 10px);font-size:32px;line-height:25px;" class="give-reject-parent sm-button sm-text-m sm-button-ghost sm-button-ghost-solid sm-button-negative fa fa-times-circle give-reject1 animate-250"></button>',
+						'		</div>',
+						'		<div style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;" class="sm-button-group-2 sm-button-group-right">',
+						'			<button id="edit-accept-location" style="margin:20px 10px;width:calc(100% - 10px);float: left;font-size:32px;line-height:25px;" class="fa fa-check-circle sm-button sm-button-positive sm-text-m give-accept1 animate-250"></button>',
+						'		</div>',
+						'	</div>',
+						'</div>'
+					].join('\n'));
+					$scope.containerBackground = $('<div class="get-item-single-background animate-250 sm-hidden"></div>');
 					$scope.imageContainer.css({
-						'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'
+						'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top-32) + 'px, ' + '0)'
 					});
 					$scope.detailsContainer.html([
-						'<div class="sm-text-m sm-full-width">'+data.res.title+'</div>',
-						// '<button id="get-single-item-edit-dibs-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Edit</button>',
+						//'<button id="get-single-item-edit-dibs-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Edit</button>',
+						//($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'<button id="get-single-item-archive-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">Archive</button>':(($scope.listItem.type==='dibber')?'<button id="get-single-item-undibs-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">unDibs</button>':'<button id="get-single-item-reject-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">Reject dibs</button>'),
+						//(!$scope.listItem.dibbed?'<button id="get-single-item-edit-button'+$stateParams.id+'" class="sm-button sm-button-default sm-text-l sm-button-full-width animate-250">Edit Listing</button>':''),
+						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
-						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'<button id="get-single-item-archive-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">Archive</button>':(($scope.listItem.type==='dibber')?'<button id="get-single-item-undibs-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">unDibs</button>':'<button id="get-single-item-reject-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">Reject the Dibs</button>'),
-						// (!$scope.listItem.dibbed?'<button id="get-single-item-edit-button'+$stateParams.id+'" class="sm-button sm-button-default sm-text-l sm-button-full-width animate-250">Edit Listing</button>':''),
-						// ($scope.listItem.dibbed?'<button id="get-single-item-complete-button'+$stateParams.id+'" class="sm-button sm-button-positive sm-text-l sm-button-full-width animate-250">Complete Dibs!</button>':''),
-						'<p style="white-space: pre;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
+						$scope.listItem.dibbed?'<button id="get-single-item-complete-button'+$stateParams.id+'" class="sm-button sm-button-positive sm-text-l sm-button-full-width animate-250" style="color:#fff;">Complete Dibs!</button>':'',
 						((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
 						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />')
 					].join('\n'));
@@ -64,13 +136,36 @@ function MyItemsController() {
 						'width': (($(this).width()/$(this).height())>(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').height()))?'100%':'auto'),
 						'height': (($(this).width()/$(this).height())<=(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').height()))?'auto':'100%')
 					});
+					$scope.titleHeader = $([
+						'<div class="animate-250" style="transform:translate3d(0px,-100%,0);width:100%;height:auto;background-color:#fff;display:inline-block;position:relative;">',
+						'	<i id="back-to-my-stuff" class="get-stuff-back-button fa fa-arrow-left animate-250"></i>',
+						'	<div id="my-item-header-text" class="sm-text-m" style="display:inline-block;position:relative;margin-left:15px;">'+data.res.title+'</div>',
+						'	<i id="my-item-menu" class="fa fa-cog">',
+						'</div>'
+					].join('\n'));
+					$scope.titleHeader.appendTo($scope.container);
+					$scope.dropdownMenu = $([
+						'<div id="dropdown-menu" class="popups popups-top-right animate-250 hidden-popup">',
+						($scope.listItem.attended && $scope.listItem.dibbed)?'<li id="get-single-item-conversation-popup'+$stateParams.id+'">Go to conversation</li>':'',
+						($scope.listItem.dibbed || !$scope.listItem.attended)?'<li id="get-single-item-complete-popup'+$stateParams.id+'">Mark as picked up!</li>':'',
+						($scope.listItem.type==='lister' && $scope.listItem.dibbed)?'	<li id="get-single-item-reject-button'+$scope.listItem.id+'">Reject dibs</li>':'',
+						($scope.listItem.type==='dibber' && $scope.listItem.dibbed)?'	<li id="get-single-item-undibs-button'+$scope.listItem.id+'">unDibs</li>':'',
+						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'	<li id="get-single-item-edit-dibs-button'+$stateParams.id+'">Edit item</li>':'',
+						// ($scope.listItem.type==='lister')?'	<li id="get-single-item-archive-button'+$stateParams.id+'">Delete item</li>':'',
+						// ($scope.listItem.type==='list' && !$scope.listItem.dibbed)?'	<li>re-list</li>':'',
+						'</div>'
+					].join('\n'));
+					$scope.dropdownMenu.appendTo($scope.container);
 					$scope.containerBackground.appendTo($scope.container);
 					$scope.singleItem.appendTo($scope.imageContainer);
 					$scope.imageContainer.appendTo($scope.container);
 					$scope.detailsContainer.appendTo($scope.container);
+					$scope.editContainer.appendTo($scope.container);
+					$scope.editContainerHeader.appendTo($scope.container);
 					$scope.container.appendTo('#my-stuff-container');
 					requestAnimationFrame(function() {
 						requestAnimationFrame(function() {
+							$scope.titleHeader.css({transform:'translate3d(0px, 0%, 0)'});
 							$('#post-item-'+$stateParams.id+' img').css({'opacity':0.0001});
 							$scope.containerBackground.removeClass('sm-hidden');
 							$scope.detailsContainer.removeClass('sm-hidden');
@@ -90,7 +185,7 @@ function MyItemsController() {
 							requestAnimationFrame(function() {
 								$('.get-single-item-description, .get-single-item-dibs-button').removeClass('sm-hidden');
 								$('#get-stuff-back-button-container').removeClass('sm-hidden');
-								$('#get-stuff-item-title').text($scope.listItem.title);
+								$('#get-stuff-item-title').text($scope.listItem.title.trim());
 								setTimeout(function() {
 									$('.get-stuff-back-button').removeClass('sm-hidden');
 								},100);
@@ -101,10 +196,219 @@ function MyItemsController() {
 							});
 						});
 					});
+					var initStep2 = function() {
+						if($scope.giveMarker) $scope.giveMarker.setMap(null);
+						requestAnimationFrame(function() {
+							$('#center-marker').css({'display':'block'});
+							requestAnimationFrame(function() {
+								$('#center-marker').addClass('dropped');
+							});
+						});
+						$(window).on('resize', watchSize);
+						watchSize();
+					};
+
+					var setMarker = function() {
+						$('#center-marker').addClass('dropped');
+						var mapCenter = $scope.map.getCenter();
+						$scope.lat = mapCenter.lat();
+						$scope.lng = mapCenter.lng();
+						$('#edit-item-location-image').css({
+							'background-image':'url('+$scope.googleMapStaticUrl.replace('{lat}', $scope.lat).replace('{lng}', $scope.lng)+')'
+						});
+
+						// var mapZoom = $scope.map.getZoom();
+						// var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
+						// var mapAnchor = mapSize/2;
+						// $scope.giveMarker = new google.maps.Marker({
+						// 	position: {
+						// 		lat: $scope.lat,
+						// 		lng : $scope.lng
+						// 	},
+						// 	icon: {
+						// 		url: 'img/Marker-all.png',
+						// 		scaledSize: new google.maps.Size(mapSize, mapSize),
+						// 		anchor: new google.maps.Point(mapAnchor, mapAnchor)
+						// 	},
+						// 	map: $scope.map
+						// });
+						$('#center-marker').removeClass('dropped');
+						$timeout(function() {
+							requestAnimationFrame(function() {
+								$('#center-marker').css({'display':'none'});
+							});
+						}, 250);
+					};
+					var updateItem = function() {
+						var values = {
+							title:$('#edit-item-title').val(),
+							description:$('#edit-item-description').val() || ' ',
+							lat:$scope.lat || $scope.listItem.lat,
+							lng:$scope.lng || $scope.listItem.lng,
+							category:($('#edit-item-category').val()==="General"?7:$('#edit-item-category').val())
+						};
+						var fd = new FormData();
+						fd.append('title', values.title);
+						fd.append('description', values.description);
+						fd.append('lat', values.lat);
+						fd.append('lng', values.lng);
+						if(imageSet) fd.append('test', $('#give-image-canvas-uploader')[0].toDataURL());
+						fd.append('category', values.category);
+						$http.post(config.api.host + '/api/v' + config.api.version + '/stuff/' + $scope.listItem.id, fd, {
+							transformRequest: angular.identity,
+							headers: {'Content-Type': undefined}
+						}).success(function(data) {
+							if(!data.err) {
+								$scope.listItem.title = values.title;
+								$scope.listItem.description = values.description;
+								$scope.listItem.lat = values.lat;
+								$scope.listItem.lng = values.lng;
+								$scope.listItem.category = values.category;
+							}
+							SMToast.set('Item Successfully Updated!',10000);
+							$('#my-item-header-text').text(values.title);
+							$('#my-item-header-text').text(values.title);
+							$('#post-item-'+$stateParams.id+' .get-stuff-item-info div').text(values.title);
+							if(imageSet) {
+								$('#my-item-single-container-'+$stateParams.id).attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+								$('#post-item-'+$stateParams.id+' img').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+							}
+							exitEdit();
+						});
+					};
+					var cancelUpdate = function() {
+						exitEdit();
+					};
+					$scope.resetCompleteDibs = function() {
+						setTimeout(function(){
+							$('#dibs-complete-step i')
+							.addClass('sm-hidden');
+						}, 250);
+					};
+					var completeDibs = function() {
+						$u.modal.open('dibs-complete-modal');
+						setTimeout(function(){
+							$('#dibs-complete-step i').removeClass('sm-hidden');
+						}, 250);
+					};
+					var getLocation = function() {
+						$('#give-location-container').css({
+							'opacity':1,
+							'transform':'translate3d(0px,0%,0)',
+							'pointer-events':'all'
+						});
+						initStep2();
+					};
+					var acceptLocation = function() {
+						$('#tab-content-container').css({'pointer-events':''});
+						$('#give-location-container').css({
+							'opacity':0.0001,
+							'transform':'translate3d(0px,10%,0)',
+							'pointer-events':'none'
+						});
+						setMarker();
+					};
+					var rejectLocation = function() {
+						$('#tab-content-container').css({'pointer-events':''});
+						$('#give-location-container').css({
+							'opacity':0.0001,
+							'transform':'translate3d(0px,10%,0)',
+							'pointer-events':'none'
+						});
+						$('#center-marker').removeClass('dropped');
+						$timeout(function() {
+							requestAnimationFrame(function() {
+								$('#center-marker').css({'display':'none'});
+							});
+						}, 250);
+					};
+					$scope.getPhoto = function(){
+						$('#give-image-select').click();
+					};
+					$scope.acceptPhoto = function() {
+						imageSet = true;
+						$('#edit-item-image').css('background-image', 'url('+$('#give-image-canvas-uploader')[0].toDataURL()+')');
+						$('#edit-item-image-container').css({
+							'pointer-events':'none'
+						});
+						$('#give-photo-button').removeClass('sm-hidden');
+						$('#give-image-verify-container').removeClass('visible');
+						$timeout(function() {
+							requestAnimationFrame(function() {
+								$('#give-image-verify').css({'background-image': ''});
+								$('#give-image-verify-container').css({'display':'none'});
+							});
+						},260);
+					};
 					$('#get-single-item-undibs-button'+$scope.listItem.id).on('click', undibs);
 					$('#get-single-item-archive-button'+$stateParams.id).on('click', archive);
 					$('#get-single-item-reject-button'+$stateParams.id).on('click', reject);
-					$('#get-single-item-conversation-button'+$scope.listItem.id).on('click', goToConversation);
+					$('#get-single-item-edit-dibs-button'+$stateParams.id).on('click', edit);
+					$('#get-single-item-conversation-button'+$scope.listItem.id + ', #get-single-item-conversation-popup'+$scope.listItem.id).on('click', goToConversation);
+					$('#back-to-my-stuff').on('click', backToMyStuff);
+					$('#my-item-menu').on('click', openMenu);
+					$('#edit-image-button').on('click', $scope.getPhoto);
+					$('#edit-location-button').on('click', getLocation);
+					$('#back-to-my-item').on('click', exitEdit);
+					$('#my-item-edit-save').on('click', updateItem);
+					$('#my-item-edit-cancel').on('click', cancelUpdate);
+					$('#get-single-item-complete-button'+$stateParams.id+', #get-single-item-complete-popup'+$stateParams.id).on('click', completeDibs);
+					//$('#get-single-item-conversation-button'+$stateParams.id)
+					$('#give-image-select').change(function(event) {
+						if (this.files && this.files[0]) {
+							$('#edit-item-image-container').css({
+								'pointer-events':'all'
+							});
+							var loadingImage = loadImage(this.files[0], function(img) {
+								requestAnimationFrame(function() {
+									$('#give-image-verify-container').css({'display':'block'});
+									requestAnimationFrame(function() {
+										var canvas1 = $('#give-image-canvas')[0];
+										var canvas2 = $('#give-image-canvas-uploader')[0];
+										canvas1.width = $('#give-image-canvas').width();
+										canvas1.height = $('#give-image-canvas').height();
+										canvas2.width = img.width;
+										canvas2.height = img.height;
+										var ctx1 = canvas1.getContext('2d');
+										var ctx2 = canvas2.getContext('2d');
+										var w = canvas1.width/img.width;
+										ctx1.drawImage(img, (canvas1.width/2)-(img.width*w)/2, (canvas1.height/2)-(img.height*w)/2, img.width*w, img.height*w);
+										ctx2.drawImage(img,0,0,img.width,img.height);
+										$('#give-image-verify-container').addClass('visible');
+										$('#give-photo-button').addClass('sm-hidden');
+									});
+								});
+							},
+							{maxWidth: 450,orientation:true});
+						}
+					});
+					$scope.rejectPhoto = function() {
+						$('#edit-item-image-container').css({
+							'pointer-events':'none'
+						});
+						$('#give-photo-button').removeClass('sm-hidden');
+						$('#give-image-verify-container').removeClass('visible');
+						$timeout(function() {
+							requestAnimationFrame(function() {
+								$('#give-image-verify').css({'background-image': ''});
+								$('#give-image-verify-container').css({'display':'none'});
+							});
+							var input = $('#give-image-select')[0];
+							try{
+								input.value = '';
+								if(input.value) {
+									input.type = 'text';
+									input.type = 'file';
+								}
+							}catch(e){}
+						},260);
+					};
+					$('#give-photo-button').on('click', $scope.getPhoto);
+					$('#edit-accept-photo').on('click', $scope.acceptPhoto);
+					$('#edit-reject-photo').on('click', $scope.rejectPhoto);
+					$('#edit-accept-location').on('click', acceptLocation);
+					$('#edit-reject-location').on('click', rejectLocation);
+					$('#back-to-my-stuff').on('click', exitEdit);
 				}
 			});
 			var checkScroll = function() {
@@ -112,16 +416,11 @@ function MyItemsController() {
 				var hasVerticalScrollbar = div.scrollHeight > div.clientHeight;
 			};
 			var goToConversation = function() {
-				$state.go('stuff.my.conversation', {conversation:$scope.listItem.conversation_id});
+				$state.go('stuff.my.items.item.conversation');
 			};
 			var archive = function() {
 				$http.delete(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $scope.listItem.id, {}, {
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-					},
-					transformRequest: function(data) {
-						return $.param(data);
-					}
+					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
 				}).success(function(data) {
 					if(!data.err) {
 						$('#post-item-'+$scope.listItem.id).parent().parent().remove();
@@ -144,12 +443,7 @@ function MyItemsController() {
 			};
 			var reject = function() {
 				$http.delete(config.api.host + '/api/v' + config.api.version + '/dibs/reject/' + $scope.listItem.id, {}, {
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-					},
-					transformRequest: function(data) {
-						return $.param(data);
-					}
+					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
 				}).success(function(data) {
 					if(!data.err) {
 						$('#post-item-'+$scope.listItem.id).parent().parent().remove();
@@ -168,6 +462,35 @@ function MyItemsController() {
 							}, 250);
 						});
 					}
+				});
+			};
+			var backToMyStuff = function() {
+				$state.go('stuff.my.items');
+			};
+			var edit = function() {
+				$('option:first-child').text($scope.listItem.category);
+				$('option').attr('selected', 'selected');
+				$('option:first-child').attr('selected', 'selected');
+				$('.edit-item-single-details-container').removeClass('sm-hidden');
+				$scope.editContainerHeader.css({
+					'opacity':1,
+					'pointer-events':'all'
+				});
+			};
+			var exitEdit = function() {
+				$('#tab-content-container').css({'pointer-events':'all'});
+				$('.edit-item-single-details-container').addClass('sm-hidden');
+				$scope.editContainerHeader.css({
+					'opacity':0.0001,
+					'pointer-events':'none'
+				});
+			};
+			var openMenu = function() {
+				$('#dropdown-menu').removeClass('hidden-popup');
+				requestAnimationFrame(function() {
+					$('body').one('click', function() {
+						$('#dropdown-menu').addClass('hidden-popup');
+					});
 				});
 			};
 			var undibs = function() {
@@ -199,6 +522,7 @@ function MyItemsController() {
 				});
 			};
 			$scope.$on('$destroy', function() {
+				$('#tab-content-container').css({'pointer-events':'all'});
 				$('#get-single-item-undibs-button'+$scope.listItem.id).off('click', undibs);
 				$('#get-single-item-conversation-button'+$scope.listItem.id).off('click', goToConversation);
 				$('#get-stuff-back-button-container').addClass('sm-hidden');
@@ -207,13 +531,14 @@ function MyItemsController() {
 				//$('#get-single-item-dibs-button'+$stateParams.id).off('click', dibs);
 				if($('#post-item-' + $stateParams.id).length) {
 					$scope.imageContainer.css({
-						'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'
+						'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top-36) + 'px, ' + '0)'
 					});
 				} else {
 					$scope.imageContainer.css({
 						'transform' : 'translate3d(0px, -100%, 0)'
 					});
 				}
+				$scope.titleHeader.css({transform:'translate3d(0px, -100%, 0)'});
 				$scope.containerBackground.addClass('sm-hidden');
 				$scope.detailsContainer.addClass('sm-hidden');
 				$scope.singleItem.css({
@@ -221,6 +546,7 @@ function MyItemsController() {
 					'z-index': '2'
 				});
 				$('.get-single-item-description, .get-single-item-dibs-button').addClass('sm-hidden');
+				$scope.editContainer.css({opacity:0.0001});
 				setTimeout(function() {
 					$('#post-item-'+$stateParams.id + ' img').css({'opacity': ''});
 					requestAnimationFrame(function() {
@@ -232,4 +558,17 @@ function MyItemsController() {
 			});
 		}
 	});
+}
+/* jshint ignore:start */
+function getWordsBetweenCurlies(str) {
+	var results = [], re = /{{([^}]+)}}/g, text;
+	while(text = re.exec(str)) {
+		results.push(text[1]);
+	}
+	return results;
+}
+/* jshint ignore:end */
+function watchSize() {
+	if(window.width > 436) $('#tab-content-container').css({'pointer-events':''});
+	else $('#tab-content-container').css({'pointer-events':'none'});
 }

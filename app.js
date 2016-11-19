@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var session = require('express-session');
+var sharedsession = require('express-socket.io-session');
 var passport = require('passport');
 var User = require('./routes/api/v1/config/user');
 var stage = process.env.STAGE || 'development';
@@ -25,7 +26,6 @@ var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-//app.use('/styleguide', proxy('http://localhost:3002/'));
 app.use(multer({
 	storage: multerS3({
 		s3: s3,
@@ -46,29 +46,31 @@ app.use(function(req, res, next) {
 	next();
 });
 app.use(cookieParser('SuperSecretPassword1!'));
-app.use(session({
+var newSession = session({
 	cookie: {
 		maxAge: 36000000
 	},
 	secret: 'SuperSecretPassword1!',
 	saveUninitialized: true,
 	resave: true
-}));
+});
+app.use(newSession);
+io.use(sharedsession(newSession, cookieParser('SuperSecretPassword1!')));
 app.set('views', path.join(__dirname, '/src/views'));
 app.set('view engine', 'jade');
 
-app.use(favicon(path.join(__dirname, 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 app.use(methodOverride());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/', express.static(path.join(__dirname, 'favicons')));
 app.use('/', express.static(path.join(__dirname, 'web')));
 
 require(path.join(__dirname, '/routes/api/v1/config/passport'));
 
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 var gateway = braintree.connect({
 	environment: braintree.Environment.Production,
@@ -91,10 +93,6 @@ app.post('/checkout/paiddibs', function(req, res) {
 		if(err) return res.send('failure');
 		res.send('success');
 	});
-});
-
-app.get('/changepassword/:passid', function() {
-
 });
 
 app.get('/redirect',function(req,res){res.render('redirect');});
@@ -161,6 +159,7 @@ app.get('/auth/facebook_oauth2/callback', function(req,res,next){
 
 io.on('connection', function(socket){
 	socket.on('message', function(data) {
+		console.log(socket.handshake.session);
 		if(data.to) {
 			io.sockets.emit((''+data.to), {
 				messages: {

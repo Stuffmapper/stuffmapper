@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var bcrypt = require('bcrypt');
+var fs = require('fs');
+var imagemin = require('imagemin');
+var imageminPngquant = require('imagemin-pngquant');
 var saltRounds = 10;
 var passport = require('passport');
 var path = require('path');
@@ -10,6 +13,13 @@ var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stu
 var braintree = require('braintree');
 var stage = process.env.STAGE || 'development';
 var config = require(path.join(__dirname, '/../../../config'))[stage];
+var AWS = require('aws-sdk');
+AWS.config = new AWS.Config();
+AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
+AWS.config.secretAccessKey = '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';
+AWS.config.region = 'us-west-2';
+var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
+
 
 if(stage==='production') {
 	var gateway = braintree.connect({
@@ -28,6 +38,41 @@ else if(stage==='development') {
 	});
 }
 
+
+
+setInterval(function() {
+	// var client = new pg.Client(conString);
+	// client.connect(function(err) {
+	// 	if(err) return client.end();
+	// 	var conversations = 0;
+	// 	var viewedConversations = 0;
+	// 	var query = [
+	// 		'select conversations.id from conversations, pick_up_success, posts',
+	// 		'WHERE pick_up_success.post_id = conversations.post_id AND',
+	// 		'pick_up_success.pick_up_success = false AND',
+	// 		'pick_up_success.rejected = false AND pick_up_success.undibbed = false'
+	// 	].join(' ');
+	// 	client.query(query, function(err, result) {
+	// 		if(err) return console.log('mail message error: ', err);
+	// 		result.rows.forEach(function() {
+	// 			query = [
+	// 				'SELECT read FROM messages WHERE conversation_id = $1 AND emailed = false ORDER BY date_created DESC LIMIT(1)'
+	// 			].join(' ');
+	// 			var values = [i];
+	//
+	// 			client.query(query, values, function(err, result1) {
+	// 				if(result1.rows[0]) {
+	//
+	// 					// query = [].join('');
+	// 					// client.query(query, values, function(err, result2) {
+	// 					//
+	// 					// });
+	// 				}
+	// 			});
+	// 		});
+	// 	});
+	// });
+}, 1000 );
 
 
 function isAuthenticated(req, res, next) {
@@ -57,8 +102,9 @@ router.get('/stuff', function(req, res) {
 			'SELECT posts.id, posts.title, posts.description, posts.attended,',
 			'posts.lat, posts.lng, categories.category, images.image_url',
 			'FROM posts, images, categories WHERE images.post_id = posts.id AND',
-			'categories.id = posts.category_id AND posts.dibbed = false AND',
-			'posts.archived = false AND ((posts.date_created > now()::date - 7 AND posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
+			'categories.id = posts.category_id AND posts.dibbed = false AND images.main = true AND',
+			// 'posts.archived = false AND ((posts.date_created > now()::date - 7 AND posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
+			'posts.archived = false AND ((posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
 		].join(' ');
 		var values = [];
 		if(req.session.passport && req.session.passport.user) {
@@ -97,7 +143,7 @@ router.get('/stuff/id/:id', function(req, res) {
 			'posts.date_created',
 			'FROM posts, images, categories',
 			'WHERE images.post_id = posts.id AND posts.id = $1 AND',
-			'categories.id = posts.category_id'
+			'categories.id = posts.category_id AND images.main = true'
 		].join(' ');
 		var values = [
 			req.params.id
@@ -119,9 +165,10 @@ router.get('/stuff/id/:id', function(req, res) {
 router.get('/stuff/my', isAuthenticated, function(req, res) {
 	var query = [
 		'SELECT posts.id, posts.title, posts.description, posts.archived,',
-		'posts.expired, images.image_url, posts.category_id FROM posts,',
-		'images WHERE (posts.user_id = $1 OR posts.dibber_id = $1) AND',
-		'posts.archived = false AND images.post_id = posts.id'
+		'posts.expired, images.image_url, categories.category FROM posts,',
+		'images, categories WHERE (posts.user_id = $1 OR posts.dibber_id = $1) AND',
+		'posts.archived = false AND images.post_id = posts.id AND',
+		'images.main = true AND categories.id = posts.category_id'
 	].join(' ');
 	var values = [
 		req.session.passport.user.id
@@ -146,7 +193,7 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 			'posts.lat, posts.lng, categories.category, images.image_url',
 			'FROM posts, images, categories',
 			'WHERE images.post_id = posts.id AND (posts.user_id = $1 OR posts.dibber_id = $1) AND',
-			'posts.id = $2 AND categories.id = posts.category_id'
+			'posts.id = $2 AND categories.id = posts.category_id AND images.main = true'
 		].join(' ');
 		var values = [
 			parseInt(req.session.passport.user.id),
@@ -210,11 +257,11 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 			return client.end();
 		}
 		var query = [
-			'INSERT INTO posts ',
-			'(user_id, title, description, lat, lng, attended, category_id) ',
-			'VALUES ($1, $2, $3, $4, $5, $6, $7) ',
+			'INSERT INTO posts',
+			'(user_id, title, description, lat, lng, attended, category_id)',
+			'VALUES ($1, $2, $3, $4, $5, $6, $7)',
 			'RETURNING id'
-		].join('');
+		].join(' ');
 		var values = [
 			req.session.passport.user.id,
 			req.body.title,
@@ -229,21 +276,57 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 				apiError(res, err);
 				return client.end();
 			}
-			var query = [
-				'INSERT INTO images ',
-				'(post_id, image_url, main) ',
-				'VALUES ($1, $2, $3)'
-			].join('');
-			var values = [
-				result.rows[0].id,
-				'/'+req.file.key,
-				true
-			];
-			client.query(query, values, function(err, result) {
-				if(err) {
-					apiError(res, err);
-					return client.end();
-				}
+			if(req.body.test) {
+				var query = [
+					'INSERT INTO images',
+					'(post_id, image_url, main)',
+					'VALUES ($1, $2, true)'
+				].join(' ');
+				var time = Date.now().toString();
+				var buff = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+				fs.writeFile(__dirname + '/../../../uploads/original/'+time+'.png', buff, function(err) {
+					// imagemin([__dirname+'/../../../uploads/original/'+time+'.png'], __dirname+'/../../../uploads/build/', {use: [imageminPngquant({speed:10,quality:60})]}).then(function(err, err2) {
+					// console.log(err, err2);
+					fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
+						// var buf = new Buffer(req.body.test.replace(/^data:image\/\w+;base64,/, ""),'base64');
+						var key = 'posts/' + time;
+						s3.upload({
+							Bucket: 'stuffmapper-v2',
+							Key: key,
+							Body: data,
+							ContentEncoding: 'base64',
+							ContentType:'image/png',
+							ACL: 'public-read'
+						}, function(err, data) {
+							if (err) {
+								client.end();
+								res.send('Error uploading data: ', err);
+								return console.log('Error uploading data: ', err);
+							}
+							console.log('Successfully uploaded data to myBucket/myKey');
+							var values = [
+								result.rows[0].id,
+								'/'+key
+							];
+							client.query(query, values, function(err, result) {
+								if(err) {
+									apiError(res, err);
+									return client.end();
+								}
+								res.send({
+									err : null,
+									res : {
+										success: true
+									}
+								});
+								client.end();
+							});
+						});
+					});
+					// });
+				});
+			}
+			else {
 				res.send({
 					err : null,
 					res : {
@@ -251,25 +334,106 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 					}
 				});
 				client.end();
-			});
+			}
 		});
 	});
 });
 
-router.put('/stuff/id/:id', isAuthenticated, function(req, res) {
-	var stuff = [];
-	if(req.params.id <= db.users.length) {
-		var uname = db.users[req.params.id-1].uname;
-		res.json(db.stuff[uname]);
-	}
-	else {
-		res.json({
-			err : {
-				message : 'Could not update stuff.',
-				redirect : false
+router.post('/stuff/:id', isAuthenticated, function(req, res) {
+	console.log(req.body);
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		var query = [
+			'UPDATE posts SET title = $2, description = $3, lat = $4, lng = $5,',
+			'category_id = $6 WHERE id = $7 AND user_id = $1',
+			'RETURNING id'
+		].join(' ');
+		var values = [
+			req.session.passport.user.id,
+			req.body.title,
+			req.body.description,
+			req.body.lat,
+			req.body.lng,
+			req.body.category,
+			req.params.id
+		];
+		client.query(query, values, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			if(req.body.test) {
+				client.query('UPDATE images SET main = false WHERE post_id = $1', [req.params.id], function(err) {
+					if(err) {
+						apiError(res, err);
+						return client.end();
+					}
+					var query = [
+						'INSERT INTO images',
+						'(post_id, image_url, main)',
+						'VALUES ($1, $2, true)'
+					].join(' ');
+					var time = Date.now().toString();
+					var buff = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+					fs.writeFile(__dirname + '/../../../uploads/original/'+time+'.png', buff, function(err) {
+						console.log(err);
+						// imagemin([__dirname+'/../../../uploads/original/'+time+'.png'], __dirname+'/../../../uploads/build/', {use: [imageminPngquant({speed:10,quality:60})]}).then(function(err, err2) {
+						// console.log(err, err2);
+						fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
+							console.log(err);
+							// var buf = new Buffer(req.body.test.replace(/^data:image\/\w+;base64,/, ""),'base64');
+							var key = 'posts/' + time;
+							s3.upload({
+								Bucket: 'stuffmapper-v2',
+								Key: key,
+								Body: data,
+								ContentEncoding: 'base64',
+								ContentType:'image/png',
+								ACL: 'public-read'
+							}, function(err, data) {
+								if (err) {
+									client.end();
+									res.send('Error uploading data: ', err);
+									return console.log('Error uploading data: ', err);
+								}
+								console.log('Successfully uploaded data to myBucket/myKey');
+								var values = [
+									result.rows[0].id,
+									'/'+key
+								];
+								client.query(query, values, function(err, result) {
+									if(err) {
+										apiError(res, err);
+										return client.end();
+									}
+									res.send({
+										err : null,
+										res : {
+											success: true
+										}
+									});
+									client.end();
+								});
+							});
+						});
+					});
+				});
+			}
+			else {
+				res.send({
+					err : null,
+					res : {
+						success: true
+					}
+				});
+				client.end();
 			}
 		});
-	}
+	});
 });
 
 router.delete('/stuff/id/:id', isAuthenticated, function(req, res) {
@@ -474,7 +638,8 @@ router.post('/account/register', function(req, res) {
 								emailTo,
 								{
 									'FIRSTNAME' : uname,
-									'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/api/v1/account/confirmation/' + result.rows[0].verify_email_token
+									'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
+									'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png'
 								}
 							);
 						});
@@ -490,19 +655,102 @@ router.post('/account/register', function(req, res) {
 	});
 });
 
-router.get('/account/confirmation/:email_token', function(req, res) {
-	if(req.params.email_token) {
+router.post('/account/verify', function(req,res) {
+	console.log(req.body.emailVerificationToken);
+	if(req.body.emailVerificationToken === 'testtoken') {
+		res.send({
+			res:'test@stuffmapper.com',
+			err:null
+		});
+	}
+	else if(req.body.emailVerificationToken) {
 		var query = [
-			'UPDATE users SET verified_email = true',
-			'WHERE verified_email = false AND verify_email_token = $1',
-			'RETURNING *'
+			'UPDATE users SET verify_email_token = null, verified_email = true',
+			'WHERE verify_email_token = $1',
+			'RETURNING email'
 		].join(' ');
 		var values = [
-			req.params.email_token
+			req.body.emailVerificationToken,
 		];
 		queryServer(res, query, values, function(result) {
-			if(result.rows.length >= 1) res.send('Thank you for confirming your email address, ' + result.rows[0].uname+'!<br>Click <a href="https://'+config.subdomain+'.stuffmapper.com/get/stuff#signin">here</a> to sign in.');
-			else res.send('There was an issue confirming your email address.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.');
+			if(result.rows.length >= 1) res.send({err:null,res:result.rows[0].email});
+			else res.send({err:'invalid token',res:null});
+		});
+	}
+});
+router.post('/account/password/token', function(req,res) {
+	if(req.body.email) {
+		var query = [
+			'UPDATE users SET password_reset_token = md5(random()::text) WHERE email = $1 RETURNING password_reset_token, uname, email'
+		].join(' ');
+		var values = [
+			req.body.email
+		];
+		queryServer(res, query, values, function(result) {
+			var row = result.rows[0];
+			var to = {};
+			to[row.uname] = row.email;
+			sendTemplate(
+				'password-reset',
+				'Reset your Stuffmapper password',
+				to,
+				{
+					'FIRSTNAME' : row.uname,
+					'CHANGEPASSWORD' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/get?password_reset_token='+row.password_reset_token
+				}
+			);
+			if(result.rows.length >= 1) res.send({err:null});
+			else res.send({err:'error'});
+		});
+	}
+});
+router.post('/account/password/verify', function(req,res) {
+	if(req.body.passwordResetToken) {
+		var query = [
+			'SELECT email FROM users WHERE password_reset_token = $1'
+		].join(' ');
+		var values = [
+			req.body.passwordResetToken
+		];
+		queryServer(res, query, values, function(result) {
+			if(result.rows.length >= 1) res.send({err:null,res:{email:result.rows[0].email}});
+			else res.send({err:'error'});
+		});
+	}
+});
+
+router.post('/account/password/reset', function(req,res) {
+	if(req.body.passwordResetToken && req.body.password) {
+		var query = [
+			'UPDATE users SET password = $1, password_reset_token = null',
+			'WHERE password_reset_token = $2 RETURNING *'
+		].join(' ');
+		bcrypt.hash(req.body.password, saltRounds, function(err, hashedPassword) {
+			var values = [
+				hashedPassword,
+				req.body.passwordResetToken
+			];
+			queryServer(res, query, values, function(result) {
+				if(result.rows.length >= 1) res.send({err:null});
+				else res.send({err:'error'});
+			});
+		});
+	}
+});
+
+router.post('/account/confirmation', function(req, res) {
+	if(req.body.email_token) {
+		var query = [
+			'UPDATE users SET verified_email = true, verify_email_token = null',
+			'WHERE verified_email = false AND verify_email_token = $1',
+			'RETURNING email'
+		].join(' ');
+		var values = [
+			req.body.email_token
+		];
+		queryServer(res, query, values, function(result) {
+			if(result.rows.length >= 1) res.send({res:result.rows[0].email});
+			else res.send({err:'There was an issue confirming your email address.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.'});
 		});
 	}
 });
@@ -566,13 +814,6 @@ router.get('/account/login/google', passport.authenticate('google', {
 
 router.get('/account/login/facebook', function(req, res, next) {next();}, passport.authenticate('facebook', {
 	//session: false,
-	scope: 'email'
-}));
-
-router.post('/account/add/google', function(req, res, next) {next();}, passport.authenticate('google', {
-	scope: 'email'
-}));
-router.post('/account/add/facebook', function(req, res, next) {next();}, passport.authenticate('facebook', {
 	scope: 'email'
 }));
 
@@ -1005,15 +1246,19 @@ router.delete('/messages/:id', isAuthenticated, function(req, res) {
 
 });
 
-router.get('/conversation/:id', isAuthenticated, function(req, res) {
+router.get('/conversation/:post_id', isAuthenticated, function(req, res) {
 	var query = [
-		'SELECT * FROM messages WHERE conversation_id = $1',
-		'ORDER BY date_created DESC'
+		'SELECT conversations.post_id, conversations.lister_id,',
+		'messages.user_id, messages.message, messages.date_created, messages.read FROM conversations,',
+		'messages, posts WHERE messages.conversation_id = conversations.id',
+		'AND conversations.archived = false AND conversations.post_id = $1 AND',
+		'messages.archived = false AND posts.id = $1 ORDER BY messages.date_created DESC'
 	].join(' ');
 	var values = [
-		req.params.id
+		req.params.post_id
 	];
 	queryServer(res, query, values, function(result) {
+		console.log(result);
 		var inboundMessenger = null;
 		result.rows.forEach(function(e, i) {
 			if(!inboundMessenger && result.rows[i].user_id !== parseInt(req.session.passport.user.id)) {
@@ -1143,7 +1388,7 @@ router.post('/watchlist', function(req, res) {
 	client.connect(function(err) {
 		req.body.keys.forEach(function(e) {
 			console.log(e);
-			client.query("SELECT id FROM categories WHERE category = $1", [e], function(err, result1) {
+			client.query('SELECT id FROM categories WHERE category = $1', [e], function(err, result1) {
 				if(err) {
 					apiError(res, err);
 					return client.end();

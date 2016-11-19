@@ -10,7 +10,7 @@ function GiveController() {
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
-			$scope.showModal();
+			$scope.openModal('modal');
 		} else {
 			$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 			$http.get(config.api.host + '/api/v' + config.api.version + '/categories').success(function(data) {
@@ -46,212 +46,230 @@ function GiveController() {
 				$scope.getPhoto = function(){
 					$('#give-image-select').click();
 				};
-				function readURL(input) {
-					if (input.files && input.files[0]) {
-						var reader = new FileReader();
-						reader.onload = function (e) {
-							requestAnimationFrame(function() {
-								$('#give-image-verify-container').css({'display':'block'});
+				$('#give-image-select').change(function(event) {
+					if (this.files && this.files[0]) {
+						var loadingImage = loadImage(this.files[0],
+							function(img) {
 								requestAnimationFrame(function() {
-									$('#give-image-verify').css({'background-image': 'url('+e.target.result+')'});
-									$('#give-image-verify-container').addClass('visible');
-									$('#give-photo-button').addClass('sm-hidden');
+									$('#give-image-verify-container').css({'display':'block'});
+									requestAnimationFrame(function() {
+										var canvas1 = $('#give-image-canvas')[0];
+										var canvas2 = $('#give-image-canvas-uploader')[0];
+										canvas1.width = $('#give-image-canvas').width();
+										canvas1.height = $('#give-image-canvas').height();
+										canvas2.width = img.width;
+										canvas2.height = img.height;
+										var ctx1 = canvas1.getContext('2d');
+										var ctx2 = canvas2.getContext('2d');
+										var w = canvas1.width/img.width;
+										ctx1.drawImage(img, (canvas1.width/2)-(img.width*w)/2, (canvas1.height/2)-(img.height*w)/2, img.width*w, img.height*w);
+										ctx2.drawImage(img,0,0,img.width,img.height);
+										$('#give-image-verify-container').addClass('visible');
+										$('#give-photo-button').addClass('sm-hidden');
+									});
+								});
+							},
+							{maxWidth: 450,orientation:true});
+						}
+					});
+					$scope.rejectPhoto = function() {
+						$('#give-photo-button').removeClass('sm-hidden');
+						$('#give-image-verify-container').removeClass('visible');
+						$timeout(function() {
+							requestAnimationFrame(function() {
+								$('#give-image-verify').css({'background-image': ''});
+								$('#give-image-verify-container').css({'display':'none'});
+							});
+							var input = $('#give-image-select')[0];
+							// super hacky, but totally works.  removes files from input.
+							try{
+								input.value = '';
+								if(input.value){
+									input.type = 'text';
+									input.type = 'file';
+								}
+							}catch(e){}
+						},260);
+					};
+					$scope.acceptPhoto = function() {
+						nextStep();
+						// $('#give-photo-button').removeClass('sm-hidden');
+					};
+					/* STEP 1 - Get photo -  END  */
+					/* STEP 2 - Get location - START */
+					function watchSize() {
+						if(window.width > 436) $('#tab-content-container').css({'pointer-events':''});
+						else $('#tab-content-container').css({'pointer-events':'none'});
+						// var canvas = $('#give-image-canvas')[0];
+						// canvas.width = $('#give-image-canvas').width();
+						// canvas.height = $('#give-image-canvas').height();
+					}
+					$scope.initStep1 = function() {
+
+					};
+					$scope.initStep2 = function() {
+						if($scope.giveMarker) $scope.giveMarker.setMap(null);
+						requestAnimationFrame(function() {
+							$('#center-marker').css({'display':'block'});
+							requestAnimationFrame(function() {
+								$('#center-marker').addClass('dropped');
+							});
+						});
+						$(window).on('resize', watchSize);
+						watchSize();
+					};
+
+					$scope.setMarker = function() {
+						$('#center-marker').addClass('dropped');
+						var mapCenter = $scope.map.getCenter();
+						$scope.lat = mapCenter.lat();
+						$scope.lng = mapCenter.lng();
+						var mapZoom = $scope.map.getZoom();
+						var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
+						var mapAnchor = mapSize/2;
+						$scope.giveMarker = new google.maps.Marker({
+							position: {
+								lat: $scope.lat,
+								lng : $scope.lng
+							},
+							icon: {
+								url: 'img/Marker-all.png',
+								scaledSize: new google.maps.Size(mapSize, mapSize),
+								anchor: new google.maps.Point(mapAnchor, mapAnchor)
+							},
+							map: $scope.map
+						});
+						$('#center-marker').removeClass('dropped');
+						$timeout(function() {
+							requestAnimationFrame(function() {
+								$('#center-marker').css({'display':'none'});
+							});
+						}, 250);
+						nextStep();
+					};
+
+					/* STEP 2 - Get location -  END  */
+					/* STEP 3 - Set description - START */
+
+					$scope.initStep3 = function() {
+						$(window).off('resize', watchSize);
+						$('#tab-content-container').css({'pointer-events':''});
+						$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
+						$('#give-image-details').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+					};
+
+					var lockUpload = false;
+					$scope.uploadItem = function() {
+						$('#give-description-submit').attr('disabled', '');
+						$('#give-description-title').css({border: ''});
+						$('#give-description').css({border: ''});
+						if(!lockUpload){
+							lockUpload = true;
+							if(!$scope.giveItem || !$scope.giveItem.title) {
+								$('#give-description-title').css({border: '1px solid red'});
+								lockUpload = false;
+								$('#give-description-submit').removeAttr('disabled');
+								return;
+							}
+							requestAnimationFrame(function() {
+								$('#give-item-uploading-screen-container').css({'display':'block'});
+								requestAnimationFrame(function() {
+									$('#give-item-uploading-screen-container').addClass('visible');
 								});
 							});
-						};
-						reader.readAsDataURL(input.files[0]);
-					}
-				}
-				$('#give-image-select').change(function(event){
-					readURL(this);
-				});
-				$scope.rejectPhoto = function() {
-					$('#give-photo-button').removeClass('sm-hidden');
-					$('#give-image-verify-container').removeClass('visible');
-					$timeout(function() {
-						requestAnimationFrame(function() {
-							$('#give-image-verify').css({'background-image': ''});
-							$('#give-image-verify-container').css({'display':'none'});
-						});
-						var input = $('#give-image-select')[0];
-						// super hacky, but totally works.  removes files from input.
-						try{
-							input.value = '';
-							if(input.value){
-								input.type = 'text';
-								input.type = 'file';
-							}
-						}catch(e){}
-					},260);
-				};
-				$scope.acceptPhoto = function() {
-					nextStep();
-					$('#give-photo-button').removeClass('sm-hidden');
-				};
-				/* STEP 1 - Get photo -  END  */
-				/* STEP 2 - Get location - START */
-				function watchSize() {
-					if(window.width > 436) {
-						$('#tab-content-container').css({'pointer-events':''});
-					}
-					else {
-						$('#tab-content-container').css({'pointer-events':'none'});
-					}
-				}
-				$scope.initStep2 = function() {
-					if($scope.giveMarker) $scope.giveMarker.setMap(null);
-					requestAnimationFrame(function() {
-						$('#center-marker').css({'display':'block'});
-						requestAnimationFrame(function() {
-							$('#center-marker').addClass('dropped');
-						});
-					});
-					$(window).on('resize', watchSize);
-					watchSize();
-				};
-
-				$scope.setMarker = function() {
-					$('#center-marker').addClass('dropped');
-					var mapCenter = $scope.map.getCenter();
-					$scope.lat = mapCenter.lat();
-					$scope.lng = mapCenter.lng();
-					var mapZoom = $scope.map.getZoom();
-					var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
-					var mapAnchor = mapSize/2;
-					$scope.giveMarker = new google.maps.Marker({
-						position: {
-							lat: $scope.lat,
-							lng : $scope.lng
-						},
-						icon: {
-							url: 'img/Marker-all.png',
-							scaledSize: new google.maps.Size(mapSize, mapSize),
-							anchor: new google.maps.Point(mapAnchor, mapAnchor)
-						},
-						map: $scope.map
-					});
-					$('#center-marker').removeClass('dropped');
-					$timeout(function() {
-						requestAnimationFrame(function() {
-							$('#center-marker').css({'display':'none'});
-						});
-					}, 250);
-					nextStep();
-				};
-
-				/* STEP 2 - Get location -  END  */
-				/* STEP 3 - Set description - START */
-
-				$scope.initStep3 = function() {
-					$(window).off('resize', watchSize);
-					$('#tab-content-container').css({'pointer-events':''});
-					$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
-					$('#give-image-details').css('background-image', $('#give-image-verify').css('background-image'));
-				};
-
-				var lockUpload = false;
-				$scope.uploadItem = function() {
-					$('#give-description-submit').attr('disabled', '');
-					$('#give-description-title').css({border: ''});
-					$('#give-description').css({border: ''});
-					if(!lockUpload){
-						lockUpload = true;
-						if(!$scope.giveItem || !$scope.giveItem.title) {
-							$('#give-description-title').css({border: '1px solid red'});
-							lockUpload = false;
-							$('#give-description-submit').removeAttr('disabled');
-							return;
-						}
-						requestAnimationFrame(function() {
-							$('#give-item-uploading-screen-container').css({'display':'block'});
-							requestAnimationFrame(function() {
-								$('#give-item-uploading-screen-container').addClass('visible');
+							var fd = new FormData();
+							fd.append('title', $scope.giveItem.title);
+							fd.append('description', $scope.giveItem.description || ' ');
+							fd.append('attended', !$scope.giveItem.outside);
+							fd.append('lat', $scope.lat);
+							fd.append('lng', $scope.lng);
+							fd.append('test', $('#give-image-canvas-uploader')[0].toDataURL());
+							fd.append('category', ($scope.category==="General"?7:$scope.category));
+							$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
+								transformRequest: angular.identity,
+								headers: {'Content-Type': undefined}
+							}).success(function(data){
+								$scope.published = true;
+								fd = null;
+								nextStep();
+								lockUpload = false;
+								$('#give-description-submit').removeAttr('disabled');
 							});
-						});
-						var fd = new FormData();
-						fd.append('title', $scope.giveItem.title);
-						fd.append('description', $scope.giveItem.description || ' ');
-						fd.append('attended', !$scope.giveItem.outside);
-						fd.append('lat', $scope.lat);
-						fd.append('lng', $scope.lng);
-						fd.append('file', $('#give-image-select')[0].files[0], $scope.giveItem.title + '_' + $('#give-image-select')[0].files[0].name);
-						fd.append('category', ($scope.category==="General"?7:$scope.category));
-						$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
-							transformRequest: angular.identity,
-							headers: {'Content-Type': undefined}
-						}).success(function(data){
-							$scope.published = true;
-							fd = null;
-							nextStep();
-							lockUpload = false;
-							$('#give-description-submit').removeAttr('disabled');
-							$scope.giveItem.title = '';
-							$scope.giveItem.description = '';
-							$scope.giveItem.outside = false;
-							$scope.category = 7;
-						});
+						}
+					};
+
+					/* STEP 3 - Set description -  END  */
+					/* STEP 4 - Done! - START */
+
+					$scope.initStep4 = function() {
+						setTimeout(function() {
+							requestAnimationFrame(function() {
+								$('#give-item-uploading-screen-container').css({'display':'sm-hidden'});
+								$('#give-item-uploading-screen-container').removeClass('visible');
+							});
+						}, 250);
+						$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
+						$('#give-finished-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+						SMToast.set('Your stuff has been mapped!', 5000);
+					};
+
+					$scope.editPost = function() {
+						$scope.prevStep();
+					};
+
+					/* STEP 4 - Done! -  END  */
+
+					/* Misc Functions - START */
+
+					function nextStep() {
+						$('#give-stuff-progress').addClass('step'+(++$scope.currentStep)+'-done');
+						$('#give-step' + ($scope.currentStep - 1)).addClass('completed').removeClass('active');
+						$('#give-step' + $scope.currentStep).addClass('active');
+						$scope['initStep' + $scope.currentStep]();
 					}
-				};
 
-				/* STEP 3 - Set description -  END  */
-				/* STEP 4 - Done! - START */
+					$scope.prevStep = function() {
+						$('#tab-content-container').css({'pointer-events':''});
+						$(window).off('resize', watchSize);
+						// $('#center-marker').removeClass('dropped');
+						// $timeout(function() {
+						// 	requestAnimationFrame(function() {
+						// 		$('#center-marker').css({'display':'none'});
+						// 	});
+						// }, 250);
+						$('#give-step' + $scope.currentStep).removeClass('active');
+						$('#give-stuff-progress').removeClass('step'+$scope.currentStep+'-done');
+						$('#give-step' + (--$scope.currentStep)).removeClass('completed').addClass('active');
+						$scope['initStep' + $scope.currentStep]();
+					};
 
-				$scope.initStep4 = function() {
-					setTimeout(function() {
-						requestAnimationFrame(function() {
-							$('#give-item-uploading-screen-container').css({'display':'sm-hidden'});
-							$('#give-item-uploading-screen-container').removeClass('visible');
-						});
-					}, 250);
-					$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
-					$('#give-finished-image').css('background-image', $('#give-image-verify').css('background-image'));
-					SMToast.set('Your stuff has been mapped!', 5000);
-				};
+					$scope.goToMyStuffItem = function() {
+						$state.go('stuff.my');
+					};
 
-				$scope.editPost = function() {
-					$scope.prevStep();
-				};
+					$scope.resetGiveStuff = function() {
+						$('#give-description-title').val('');
+						$('#give-description').val('');
+						$("#give-category-selector select option:eq(0)").prop("selected", true);
+						$('#give-item-uploading-screen-container').css({'display':''});
+						$scope.giveItem.title = '';
+						$scope.giveItem.description = '';
+						$scope.giveItem.outside = false;
+						$scope.category = 7;
+						$scope.rejectPhoto();
+						$scope.prevStep();
+						$scope.prevStep();
+						$scope.prevStep();
+					};
 
-				/* STEP 4 - Done! -  END  */
-
-				/* Misc Functions - START */
-
-				function nextStep() {
-					$('#give-stuff-progress').addClass('step'+(++$scope.currentStep)+'-done');
-					$('#give-step' + ($scope.currentStep - 1)).addClass('completed').removeClass('active');
-					$('#give-step' + $scope.currentStep).addClass('active');
-					$scope['initStep' + $scope.currentStep]();
-				}
-
-				$scope.prevStep = function() {
-					$('#give-step' + $scope.currentStep).removeClass('active');
-					$('#give-stuff-progress').removeClass('step'+$scope.currentStep+'-done');
-					$('#give-step' + (--$scope.currentStep)).removeClass('completed').addClass('active');
-				};
-
-				$scope.goToMyStuffItem = function() {
-					$state.go('stuff.my');
-				};
-
-				$scope.resetGiveStuff = function() {
-					$('#give-description-title').val('');
-					$('#give-description').val('');
-					$("#give-category-selector select option:eq(0)").prop("selected", true);
-					$('#give-item-uploading-screen-container').css({'display':''});
-					$scope.rejectPhoto();
-					$scope.prevStep();
-					$scope.prevStep();
-					$scope.prevStep();
-				};
-
-				/* Misc Functions -  END  */
-				$scope.$on('$destroy', function() {
-					if($scope.giveMarker) $scope.giveMarker.setMap(null);
-					$('#center-marker').css({'display':''});
-					$('#center-marker').removeClass('dropped');
-					$(window).off('resize', watchSize);
+					/* Misc Functions -  END  */
+					$scope.$on('$destroy', function() {
+						if($scope.giveMarker) $scope.giveMarker.setMap(null);
+						$('#center-marker').css({'display':''});
+						$('#center-marker').removeClass('dropped');
+						$(window).off('resize', watchSize);
+					});
 				});
-			});
-		}
-	});
-}
+			}
+		});
+	}

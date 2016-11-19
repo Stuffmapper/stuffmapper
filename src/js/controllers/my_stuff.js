@@ -10,7 +10,7 @@ function MyStuffController() {
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
-			$scope.showModal();
+			$scope.openModal('modal');
 		} else {
 			['dibs','gives'].forEach(function(e) {
 
@@ -19,6 +19,7 @@ function MyStuffController() {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my').success(function(data) {
 				// console.log(data);
 				$scope.listItems = data.res.rows;
+				console.log($scope.listItems);
 				// $('#mystuff a').addClass('selected');
 				// $scope.$on("$destroy", function() {
 				//     $('#mystuff a').removeClass('selected');

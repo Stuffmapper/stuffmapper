@@ -1,4 +1,4 @@
-var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window'];
+var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window','$stuffTabs'];
 if (config.ionic.isIonic) {
 	mainControllerArgs.push('$cordovaOauth');
 	mainControllerArgs.push('$ionicPlatform');
@@ -17,13 +17,122 @@ function MainController() {
 	var $location = arguments[5];
 	var $rootScope = arguments[6];
 	var $window = arguments[7];
-	var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[8] : undefined;
-	var $ionicPlatform = (typeof arguments[9] !== 'function') ? arguments[9] : undefined;
-	var $cordovaSQLite = (typeof arguments[10] !== 'function') ? arguments[10] : undefined;
-	var $cordovaPush = (typeof arguments[11] !== 'function') ? arguments[11] : undefined;
-
+	var $stuffTabs = arguments[8];
+	var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
+	var $ionicPlatform = (typeof arguments[9] !== 'function') ? arguments[10] : undefined;
+	var $cordovaSQLite = (typeof arguments[10] !== 'function') ? arguments[11] : undefined;
+	var $cordovaPush = (typeof arguments[11] !== 'function') ? arguments[12] : undefined;
+	$scope.delaySignIn = function() {
+		$timeout(function(){
+			location.hash='signin';
+		},550);
+	};
+	$scope.openModal = function(modal) {
+		if(modal === 'modal') {
+			if (config.html5) location.hash = 'signin';
+			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
+		}
+		else if(modal==='email-verification-modal') {
+			requestAnimationFrame(function() {
+				requestAnimationFrame(function() {
+					setTimeout(function() {
+						$('#email-verification-step i').removeClass('sm-hidden');
+					}, 500);
+				});
+			});
+		}
+		$('#'+modal+'-window').removeClass('modal-window-open');
+		requestAnimationFrame(function() {
+			$scope.$apply(function() {
+				if ($scope.popUpOpen === false) {
+					$scope.popUpOpen = true;
+					$('#modal-windows').addClass('modal-windows-open');
+					$('#'+modal+'-window').parent('.modal-container').css({
+						'z-index': ''
+					});
+					requestAnimationFrame(function() {
+						$('.modal-windows-bg').addClass('modal-windows-bg-open');
+						$('#'+modal+'-window').parent('.modal-container').addClass('modal-window-open');
+						$('#'+modal+'-window').parent('.modal-container').parent().css({
+							'z-index': '3'
+						});
+					});
+				} else {
+					requestAnimationFrame(function() {
+						$('.modal-windows-bg').addClass('modal-windows-bg-open');
+						$('#sign').addClass('modal-window-open');
+					});
+				}
+			});
+		});
+	};
+	$scope.openPasswordResetModal = function(token) {
+		$http.post(config.api.host + '/api/v' + config.api.version + '/account/password/verify', {
+			passwordResetToken: token,
+		}, {
+			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
+		}).success(function(data) {
+			if (data.err) {
+				$scope.openModal('password-reset-modal-failure');
+				setTimeout(function() {
+					$('#password-reset-confirmation-failure-step i').removeClass('sm-hidden');
+				},550);
+				return;
+			}
+			$scope.openModal('password-reset-modal');
+		});
+	};
+	$scope.resetPassword = function() {
+		var token = $scope.queries.password_reset_token;
+		var password1 = $('#sm-reset-password1').val();
+		var password2 = $('#sm-reset-password2').val();
+		var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
+		if(password1 && password2 && password1 === password2 && passRe.test(password1)) {
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/password/reset', {
+				passwordResetToken: token,
+				password: password1
+			}, {
+				headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
+			}).success(function(data) {
+				$scope.hideModal('password-reset-modal');
+				$scope.delaySignIn();
+			});
+		}
+		else {
+			$('#sm-reset-password1').css({border:'1px solid red'});
+			$('#sm-reset-password2').css({border:'1px solid red'});
+			var message = '';
+			if(!password1 || !password2) message = 'please enter a new password';
+			else if(password1!==password2) message = 'passwords do not match';
+			else if(passRe.test(password1)) message='password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';
+		}
+	};
+	$scope.openEmailVerificationModal = function(token) {
+		$http.post(config.api.host + '/api/v' + config.api.version + '/account/verify', {
+			emailVerificationToken: token,
+		}, {
+			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
+		}).success(function(data) {
+			if (data.err) {
+				$scope.openModal('email-verification-modal');
+				$('#email-verification-step i').addClass('sm-negative-color');
+				$('#email-verification-step i').addClass('fa-times-circle');
+				$('#email-verification-step h2').text('Account Already Verified!');
+				$('#email-verification-message').text('');
+				$('#email-verification-button1').css({display:'none'});
+			} else {
+				$scope.openModal('email-verification-modal');
+				$('#email-verification-step i').addClass('sm-positive-color');
+				$('#email-verification-step i').addClass('fa-check-circle');
+				$('#email-verification-step h2').text('Email Verified!');
+				$('#email-verification-message').text('Email address successfully verified for '+data.res);
+				$('#email-verification-button2').css({display:'none'});
+			}
+		});
+	};
+	$scope.queries = getSearchQueries();
 	var visited = localStorage.getItem('visited');
-	if(!visited) {
+	if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
 		$('#lock-screen').css({
 			'pointer-events': 'all',
 			opacity: 1
@@ -43,11 +152,9 @@ function MainController() {
 			}, 550);
 		};
 	}
-	else {
-		$('#lock-screen').css({
-			display:'none'
-		});
-	}
+	else $('#lock-screen').css({display:'none'});
+	if($scope.queries.email_verification_token) $scope.openEmailVerificationModal($scope.queries.email_verification_token);
+	else if($scope.queries.password_reset_token) $scope.openPasswordResetModal($scope.queries.password_reset_token);
 	if ($ionicPlatform && $cordovaSQLite) {
 		$ionicPlatform.registerBackButtonAction(function(event) {
 			if ($state.current.name !== 'stuff.get') {
@@ -59,7 +166,7 @@ function MainController() {
 	}
 	$scope.counterFlipperHeader = new CounterFlipper('landfill-tracker-header', 0, 7);
 	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
-	if(subdomain==='www') initChatra();
+	if(subdomain === 'www') initChatra();
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data) {
 		$scope.toastCounter = 0;
 		if(data.err) return console.log(data.err);
@@ -100,28 +207,17 @@ function MainController() {
 			};
 			$scope.getUserData = function() {
 				$cordovaSQLite.execute(db, 'SELECT * FROM user').then(function(result) {
-					if(result.rows.length > 0) {
-						return result.rows.item(0);
-					}
-					else {
-						console.log('no user data');
-					}
+					if(result.rows.length > 0) return result.rows.item(0);
+					else console.log('no user data');
 				}, function(error) {
-					console.log('err: ');
-					console.log(error);
+					console.log('err: ', error);
 				});
 			};
 			$ionicPlatform.ready(function() {
 				$scope.initDB();
 				$scope.addTestUser();
 				var userData = $scope.getUserData();
-				if(!data.res) {
-
-				} else {
-					//$state.go('stuff.get');
-				}
-				// console.log(data);
-				// console.log(userData);
+				if(!data.res) {}
 			});
 		}
 		else initUserData(data);
@@ -168,54 +264,42 @@ function MainController() {
 			//if(config.ionic.isIonic) location.hash = 'signin';
 		}
 	}
-	$scope.popUpOpen = false;
-	$scope.showModal = function() {
-		if (config.html5) location.hash = 'signin';
-		$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
-		$('.modal-window').removeClass('modal-window-open');
-		requestAnimationFrame(function() {
-			$scope.$apply(function() {
-				if ($scope.popUpOpen === false) {
-					$scope.popUpOpen = true;
-					$('#modal-windows').addClass('modal-windows-open');
-					$('.modal-container').css({
-						'z-index': ''
-					});
-					requestAnimationFrame(function() {
-						$('#modal-windows .modal-windows-bg').addClass('modal-windows-bg-open');
-						$('#modal-windows .modal-container').addClass('modal-window-open');
-						$('#modal-windows .modal-container').parent().css({
-							'z-index': '3'
-						});
-					});
-				} else {
-					requestAnimationFrame(function() {
-						$('#modal-windows-bg').addClass('modal-windows-bg-open');
-						$('#sign').addClass('modal-window-open');
-					});
-				}
-			});
-		});
+	$scope.toggleSignInPassword = function() {
+		if(!isPasswordVisible) {
+			$('#login-setup-show-password').removeClass('fa-eye').addClass('fa-eye-slash');
+			$('#login-setup-input-password').attr('type', 'text');
+		} else {
+			$('#login-setup-show-password').addClass('fa-eye').removeClass('fa-eye-slash');
+			$('#login-setup-input-password').attr('type', 'password');
+		}
+		isPasswordVisible = !isPasswordVisible;
 	};
-	$scope.hideModal = function() {
+	$scope.popUpOpen = false;
+	$scope.hideModal = function(modalToClose) {
 		if (config.html5) location.hash = '';
 		else console.log('this should close popups... not sure what to do without html5 :<');
 		if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
+		$('#tab-container .stuff-tabs li a').removeClass('selected');
+		$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
 		$scope.popUpOpen = false;
-		$('#modal-windows .modal-windows-bg').removeClass('modal-windows-bg-open');
-		$('#modal-windows .modal-container').removeClass('modal-window-open');
-		$scope.popUpTimeout = $timeout(function() {
-			$('#modal-windows').removeClass('modal-windows-open');
+		$u.modal.close(modalToClose);
+		$scope.popUpTimeout = setTimeout(function() {
 			$('#sign-in-step').css({'transform':''});
-			$('#sign-in-step .sm-modal-title').css({'transform':''});
-			$('#sign-up-step').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').removeClass('visible');
 			$('#sign-up-step').addClass('hidden-modal').removeClass('active');
 			$('#confirmation-step').addClass('hidden-modal').removeClass('active');
 			$('#confirmation-step-icon').addClass('sm-hidden');
 			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
+			$('#sign-up-forgot-password-step').addClass('hidden-modal').removeClass('active');
+			$('#sign-up-forgot-password-step').css({
+				'transform': ''
+			});
+			$('#sign-up-forgot-password-step .sm-modal-title').css({
+				'transform': ''
+			});
 		}, 550);
+		resetAllInputsIn('#modal-windows');
 	};
 	$('.sm-sign-in-text-inputs').keydown(function(e) {
 		if(e.keyCode === 13) $('#sign-in-sign-in-button').click();
@@ -223,6 +307,14 @@ function MainController() {
 	$('.sm-sign-up-text-inputs').keydown(function(e) {
 		if(e.keyCode === 13) $('#sm-sign-up-button').click();
 	});
+
+	$('#sign-up-password-reset-email-input').keydown(function(e) {
+		if(e.keyCode === 13) $('#sm-sign-up-reset-password-button1').click();
+	});
+	$('#sm-reset-password1, #sm-reset-password2').keydown(function(e) {
+		if(e.keyCode === 13) $('#password-reset-button').click();
+	});
+
 	$scope.googleOAuth = function() {
 		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
 		var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
@@ -281,14 +373,23 @@ function MainController() {
 	};
 	function getAccountStatus() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
-			if (data.err || !data.res.user) return console.log(data.err);
+			if (data.err || !data.res.user) {
+				$('#tab-container .stuff-tabs li a').removeClass('selected');
+				$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
+				return console.log(data.err);
+			}
 			initUserData(data);
 			location.hash = '';
-			$('html').addClass('loggedIn');			$userData.setUserId(data.res.user.id);
+			$scope.hideModal('sign-in-up-modal');
+			$('html').addClass('loggedIn');
+			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
-			$state.go('stuff.get');
-			$state.reload();
+			if(!$scope.redirectState) $state.reload();
+			else {
+				$state.go($scope.redirectState);
+				$scope.redirectState = '';
+			}
 			SMToast.set('Welcome!', 5000);
 			if(config.ionic.isIonic) {
 				$ionicPlatform.ready(function () {
@@ -352,15 +453,18 @@ function MainController() {
 		if (value) {
 			if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 			var hash = value.split('#').pop();
-			if (hash === 'signin') $scope.showModal();
+			if (hash === 'signin') $u.modal.open('sign-in-up-modal', function() {location.hash='';$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');});//$scope.openModal('modal');
 		} else removeHash();
 		$(window).on('hashchange', function(event) {
 			var value = location.hash;
 			if (value) {
 				if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 				var hash = value.split('#').pop();
-				if (hash === 'signin') $scope.showModal();
-			} else if ($scope.popUpOpen) $scope.hideModal();
+				if (hash === 'signin') $u.modal.open('sign-in-up-modal', function() {location.hash='';$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');});//$scope.openModal('modal');
+			} else if ($scope.popUpOpen) {
+				$u.modal.close('sign-in-up-modal');
+				// $scope.hideModal();
+			}
 			if (!value) removeHash();
 		});
 	}
@@ -390,9 +494,7 @@ function MainController() {
 			});
 		}
 	};
-	$scope.userButton = function() {
-		$scope.showPopup();
-	};
+	$scope.userButton = $scope.showPopup;
 	$scope.aboutUs = function() {
 		$state.go('about');
 	};
@@ -408,11 +510,7 @@ function MainController() {
 		}
 		passwordVisible = !passwordVisible;
 	};
-	$scope.resetVisibility = function() {
-
-	};
 	$scope.login = function() {
-		// set step to loading
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/login', {
 			username: $('#sign-in-email').val(),
 			password: $('#sign-in-password').val()
@@ -421,7 +519,7 @@ function MainController() {
 		}).success(function(data) {
 			if (data.err || !data.res.isValid) return $('#sign-in-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
 			location.hash = '';
-			resetAllInputs();
+			resetAllInputsIn('#modal-windows');
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
@@ -467,15 +565,71 @@ function MainController() {
 			}
 		});
 	};
-	$scope.toGiveStuff = function() {
-		if ($userData.isLoggedIn()) $state.go('stuff.give');
+	$scope.secureState = function(state) {
+		if ($userData.isLoggedIn()) $state.go(state);
 		else {
-			$scope.redirectState = 'stuff.give';
+			if(/my/.test(state)) {
+				$('#tab-container .stuff-tabs li a').removeClass('selected');
+				$('#tab-container .stuff-tabs .my-stuff-tab a').addClass('selected');
+			}
+			else if(/give/.test(state)) {
+				$('#tab-container .stuff-tabs li a').removeClass('selected');
+				$('#tab-container .stuff-tabs .give-stuff-tab a').addClass('selected');
+			}
+			$scope.redirectState = state;
 			location.hash = 'signin';
 		}
 	};
 	$scope.forgotPassword = function() {
+		$('#sign-in-step').css({
+			'transform': 'translate3d(-100%, 0%, 0)'
+		});
+		$('#sign-in-step .sm-modal-title').css({
+			'transform': 'translate3d(65%, 0%, 0) scale3d(0.75, 0.75, 1)'
+		});
+		$('#sign-in-step .sm-modal-title').addClass('visible');
+		$('#sign-up-forgot-password-step').removeClass('hidden-modal').addClass('active');
+	};
+	$scope.passwordConfirmationStep = function() {
+		var emailInput = $('#sign-up-password-reset-email-input').val();
+		var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+		var valid = true;
+		var message = '';
+		if(!emailInput || !emailRe.test(emailInput)) {
+			valid = false;
+			$('#sign-up-password-reset-email-input').css({border:'1px solid red'});
+			message = 'invalid email address';
+			if (data.err || !data.res.isValid) return $('#sm-password-confirmation-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
 
+		}
+		if(!valid) {
+			// message stuff
+			return;
+		}
+		else {
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/password/token', {
+				email: emailInput
+			},
+			{headers:{'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest:function(data){return $.param(data);}})
+			.success(function(data) {
+				if(data.err) {
+					return console.log(err);
+				}
+				$('#sign-up-forgot-password-step').css({
+					'transform': 'translate3d(-100%, 0%, 0)'
+				});
+				$('#sign-up-forgot-password-step .sm-modal-title').css({
+					'transform': 'translate3d(-100%, 0%, 0)',
+				});
+				$('#sign-up-forgot-password-step .sm-modal-title').addClass('visible');
+				$('#confirmation-step').removeClass('hidden-modal');
+				$('#sign-up-forgot-password-step').addClass('hidden-modal').removeClass('active');
+				setTimeout(function() {
+					$('#password-confirmation-step-icon').removeClass('sm-hidden');
+					$('#confirmation-step-icon').removeClass('sm-hidden');
+				}, 500);
+			});
+		}
 	};
 	$scope.signUpStep = function() {
 		$('#sign-in-step').css({
@@ -509,7 +663,13 @@ function MainController() {
 		$('#sign-up-step').css({'transform':''});
 		$('#confirmation-step').addClass('hidden-modal').removeClass('active');
 		$('#confirmation-step-icon').addClass('sm-hidden');
-
+		$('#sign-up-forgot-password-step').addClass('hidden-modal').removeClass('active');
+		$('#sign-up-forgot-password-step').css({
+			'transform': ''
+		});
+		$('#sign-up-forgot-password-step .sm-modal-title').css({
+			'transform': ''
+		});
 		signingUp = false;
 	};
 	var signingUp = false;
@@ -545,7 +705,7 @@ function MainController() {
 				.success(function(data) {
 					$('#sm-sign-up-button').removeAttr('disabled');
 					if (data.err) return $('#sign-up-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
-					resetAllInputs();
+					resetAllInputsIn('#modal-windows');
 					$scope.signUpConfirmationStep();
 				});
 			}
@@ -563,10 +723,27 @@ function MainController() {
 		$('#sign-up-step').addClass('hidden-modal').removeClass('active');
 		$('#confirmation-step').addClass('hidden-modal').removeClass('active');
 		$('#confirmation-step-icon').addClass('sm-hidden');
+		$('#sign-up-forgot-password-step').css({
+			'transform':''
+		}).addClass('hidden-modal');
+		$('#confirmation-step').css({
+			'transform':''
+		}).addClass('hidden-modal');
+		$('#sign-up-step .sm-modal-title').css({
+			'transform': ''
+		});
+		$('#sign-up-forgot-password-step .sm-modal-title').css({
+			'transform': ''
+		});
+		$('#sign-up-forgot-password-step .sm-modal-title').removeClass('visible');
+		$('#confirmation-step').addClass('hidden-modal');
+		$('#sign-up-forgot-password-step').addClass('hidden-modal').removeClass('active');
+		$('#password-confirmation-step-icon').removeClass('visible').addClass('sm-hidden');
 	};
 	$scope.toggleSideMenu = function() {
 		$('#side-menu, #side-menu-background').toggleClass('sm-hidden');
 	};
+
 }
 
 function onResize() {
@@ -574,53 +751,12 @@ function onResize() {
 	$('.side-menu-item').each(function(i,e){
 		sideMenuHeight += $(e).outerHeight();
 	});
-	if(sideMenuHeight > ($(document).height() - $('.side-menu-footer').height() - $('.side-menu-header').height())) {
-		$('.side-menu-footer').css({'position':'relative'});
-	} else {
-		$('.side-menu-footer').css({'position':'absolute'});
-	}
+	if(sideMenuHeight > ($(document).height() - $('.side-menu-footer').height() - $('.side-menu-header').height())) $('.side-menu-footer').css({'position':'relative'});
+	else $('.side-menu-footer').css({'position':'absolute'});
 }
 
 $(document).ready(onResize);
 $(window).on('resize', onResize);
-
-var working = false;
-
-function openModalWindow(windowName) {
-	if (!working) {
-		$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
-		working = true;
-		requestAnimationFrame(function() {
-			$('#modal-windows').addClass('reveal-modals');
-			requestAnimationFrame(function() {
-				$('#modal-window-bg').addClass('reveal-modal-window-bg');
-				$('#' + windowName + '.modal-window').addClass('reveal-modal-window');
-				requestAnimationFrame(function() {
-					working = false;
-				});
-			});
-		});
-	}
-}
-
-function closeModalWindow(windowName) {
-	if (!working) {
-		working = true;
-		requestAnimationFrame(function() {
-			$('#modal-window-bg').removeClass('reveal-modal-window-bg');
-			$('#' + windowName + '.modal-window').removeClass('reveal-modal-window');
-			$timeout(function() {
-				requestAnimationFrame(function() {
-					$('#modal-windows').removeClass('reveal-modals');
-					requestAnimationFrame(function() {
-						$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
-						working = false;
-					});
-				});
-			}, 250);
-		});
-	}
-}
 
 var SMToast = (function() {
 	var toastQueue = [];
@@ -637,9 +773,7 @@ var SMToast = (function() {
 				toastElement.className = 'animate-250 sm-toast';
 				setTimeout(function() {
 					toastElement.className = 'animate-250 sm-toast sm-hidden';
-					setTimeout(function() {
-						$(toastElement).remove();
-					}, 300);
+					setTimeout($(toastElement).remove, 300);
 					if(toastQueue.length) displayToast(toastQueue.shift());
 					else toasting = false;
 				}, toast.to || defaultToastTimeout);
@@ -660,55 +794,24 @@ var SMToast = (function() {
 	};
 }());
 
-var SMAlert = (function() {
-	var alertQueue = [];
-	var alertTimeout;
-	var defaultAlertTimeout = 5000;
-	var alerting = false;
-	function displayAlert(alert) {
-		var alertElement = document.createElement('div');
-		alertElement.className = 'animate-250 sm-alert sm-hidden';
-		alertElement.innerHTML = alert.msg;
-		if(alert.cb) {
-			alertElement.style.cursor = 'pointer';
-			$(alertElement).one('click', alert.cb);
-		}
-		$('body').append(alertElement);
-		setTimeout(function() {
-			requestAnimationFrame(function() {
-				alertElement.className = 'animate-250 sm-alert';
-				setTimeout(function() {
-					alertElement.className = 'animate-250 sm-alert sm-hidden';
-					setTimeout(function() {
-						$(alertElement).remove();
-					}, 300);
-					if(alertQueue.length) displayAlert(alertQueue.shift());
-					else alerting = false;
-				}, alert.to || defaultAlertTimeout);
-			});
-		}, 50);
-	}
-	return {
-		set: function(msg, to, cb) {
-			alertQueue.push({
-				msg: msg,
-				to: to || defaultAlertTimeout,
-				cb: cb
-			});
-			if(!alerting) {
-				alerting = true;
-				displayAlert(alertQueue.shift());
-			}
-		}
-	};
-}());
+function resetAllInputsIn(parent) {
+	$(parent+' input[type=text], ' + parent + ' input[type=password],' + parent + ' textarea').each(function(i,e){
+		$(e).val('');
+	});
+}
 
+function getSearchQueries() {
+	var searchQuery = {};
+	var urlSearch = window.location.search;
+	urlSearch.substring(1, urlSearch.length).split('&').forEach(function(e, i) {
+		var query = e.split('=');
+		searchQuery[query[0]]=query[1];
+	});
+	return searchQuery;
+}
 
-function resetAllInputs() {
-	$('#sign-in-email').val('');
-	$('#sign-in-password').val('');
-	$('#sign-up-email').val('');
-	$('#sign-up-password1').val('');
-	$('#sign-up-fname').val('');
-	$('#sign-up-lname').val('');
+function openPasswordRestModal() {
+}
+
+function closePasswordRestModal(windowName) {
 }

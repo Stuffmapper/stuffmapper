@@ -7,11 +7,11 @@
 		li.logo-tab
 			a(ng-click)
 		li.get-stuff-tab
-			a.tk-proxima-nova(ui-sref="stuff.get") Get Stuff
+			a.tk-proxima-nova.sm-text-m(ui-sref="stuff.get") Get Stuff
 		li.give-stuff-tab
-			a.tk-proxima-nova(ng-click="toGiveStuff()") Give Stuff
+			a.tk-proxima-nova.sm-text-m(ng-click="secureState('stuff.give')") Give Stuff
 		li.my-stuff-tab
-			a.tk-proxima-nova(ui-sref="stuff.my.items")
+			a.tk-proxima-nova.sm-text-m(ng-click="secureState('stuff.my.items')")
 				| My Stuff
 				.tab-message-badge 0
 #tab-content-container

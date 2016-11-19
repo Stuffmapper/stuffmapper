@@ -1,15 +1,33 @@
-doctype html
 -
 	var htmlClassList = [];
 	if(loggedIn) htmlClassList.push('loggedIn');
 	if(ionic) htmlClassList.push('ionic');
 	else if(electron) htmlClassList.push('electron');
 	htmlClassList = htmlClassList.join(' ');
+doctype html
 html(lang="en" class= htmlClassList ng-app="stuffMapp")
 	head
 		meta(charset="utf-8")
 		meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, height=device-height")
 		meta(name="theme-color" content="#9FD661")
+		link(rel='apple-touch-icon', sizes='57x57', href='/apple-icon-57x57.png')
+		link(rel='apple-touch-icon', sizes='60x60', href='/apple-icon-60x60.png')
+		link(rel='apple-touch-icon', sizes='72x72', href='/apple-icon-72x72.png')
+		link(rel='apple-touch-icon', sizes='76x76', href='/apple-icon-76x76.png')
+		link(rel='apple-touch-icon', sizes='114x114', href='/apple-icon-114x114.png')
+		link(rel='apple-touch-icon', sizes='120x120', href='/apple-icon-120x120.png')
+		link(rel='apple-touch-icon', sizes='144x144', href='/apple-icon-144x144.png')
+		link(rel='apple-touch-icon', sizes='152x152', href='/apple-icon-152x152.png')
+		link(rel='apple-touch-icon', sizes='180x180', href='/apple-icon-180x180.png')
+		link(rel='icon', type='image/png', sizes='192x192', href='/android-icon-192x192.png')
+		link(rel='icon', type='image/png', sizes='32x32', href='/favicon-32x32.png')
+		link(rel='icon', type='image/png', sizes='96x96', href='/favicon-96x96.png')
+		link(rel='icon', type='image/png', sizes='16x16', href='/favicon-16x16.png')
+		link(rel='manifest', href='/manifest.json')
+		meta(name='msapplication-TileColor', content='#ffffff')
+		meta(name='msapplication-TileImage', content='/ms-icon-144x144.png')
+		meta(name='theme-color', content='#ffffff')
+
 		//- link(rel="icon" sizes="192x192" href="nice-highres.png")
 		script var subdomain = "#{config.subdomain}";
 		title Stuffmapper
@@ -43,6 +61,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		link(href="js/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet")
 		link(href="css/font-awesome.min.css" rel="stylesheet")
 		script(src="https://maps.google.com/maps/api/js?libraries=geometry")
+		//- ?key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U")
 		script.
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -50,7 +69,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 			ga('create', 'UA-51018551-1', 'auto');
 			ga('send', 'pageview');
-		//- ?key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U")
 		//- script(src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.js")
 		//- link(href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.css" rel="stylesheet")
 		//- script(src="https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js")
@@ -92,6 +110,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			include ./partials/home/partial-home-givestuff
 		script(id="templates/partial-home-mystuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-mystuff
+		script(id="templates/partial-home-myitem.html" type="text/ng-template")
+			include ./partials/home/partial-home-myitem
 		script(id="templates/partial-home.html" type="text/ng-template")
 			include ./partials/home/partial-home
 		script(id="templates/partial-about.html" type="text/ng-template")
@@ -112,135 +132,208 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			script(id="templates/partial-login-page.html" type="text/ng-template")
 				include ./partials/login/partial-login-page
 	body(ng-controller="MainController")
-		#lock-screen.animate-500(style="z-index: 999999;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:rgba(0,0,0,0.4);opacity:0.0001;pointer-events: none;")
-			#lock-modal-bg(style="z-index:1;position:absolute;top:0px;left:0px;width:100%;height:100%;" ng-click="closeLockScreen()")
-			#lock-modal(style="z-index:2;")
-				img#lock-logo(src="/img/sharing-header.png" style="width:100%;")
-				.fa.fa-times(style="z-index: 2;color: #fff;position: absolute;top: 1px;right: 5px;padding: 5px;width: 24px;height: 24px;cursor: pointer;font-size: 22px;" ng-click="closeLockScreen()")
-				link(href='//cdn-images.mailchimp.com/embedcode/classic-10_7.css', rel='stylesheet', type='text/css')
-				style(type='text/css').
-					#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
-				#mc_embed_signup
-					form#mc-embedded-subscribe-form.validate(action='//stuffmapper.us8.list-manage.com/subscribe/post?u=1457dd037ad3832bd31680813&id=784c72162a', method='post', name='mc-embedded-subscribe-form', target='_blank', novalidate='')
-						#mc_embed_signup_scroll
-							h2 Want to know when we're ready? We'll let you know!
-							.indicates-required
-								span.asterisk *
-								|  indicates required
-							.mc-field-group
-								label(for='mce-EMAIL')
-										| Email Address  
-									span.asterisk *
-								input#mce-EMAIL.required.email(type='email', value='', name='EMAIL')
-							.mc-field-group
-								label(for='mce-FNAME') First Name 
-								input#mce-FNAME(type='text', value='', name='FNAME')
-							.mc-field-group
-								label(for='mce-LNAME') Last Name 
-								input#mce-LNAME(type='text', value='', name='LNAME')
-							.mc-field-group
-								label(for='mce-WHERE') How did you hear about us? 
-								input#mce-WHERE(type='text', value='', name='WHERE')
-							#mce-responses.clear
-								#mce-error-response.response(style='display:none')
-								#mce-success-response.response(style='display:none')
-							// real people should not fill this in and expect good things - do not remove this or risk form bot signups
-							div(style='position: absolute; left: -5000px;', aria-hidden='true')
-								input(type='text', name='b_1457dd037ad3832bd31680813_784c72162a', tabindex='-1', value='')
-							.clear
-								input#mc-embedded-subscribe.button(type='submit', value='Subscribe', name='subscribe')
-				script(type='text/javascript', src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js')
-				script(type='text/javascript') (function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[4]='WHERE';ftypes[4]='text';}(jQuery));var $mcj = jQuery.noConflict(true);
-				#lock-sm
-					a#lock-fb(href="https://www.facebook.com/stuffmapper")
-						i.fa.fa-facebook-square
-						| facebook.com/stuffmapper
-					a#lock-twitter(href="https://www.twitter.com/stuffmapper")
-						i.fa.fa-twitter-square
-						| @stuffmapper
-					a#lock-instagram(href="https://www.instagram.com/stuffmapper")
-						i.fa.fa-instagram
-						| @stuffmapper
+		//- #lock-screen.animate-500(style="z-index: 999999;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:rgba(0,0,0,0.4);opacity:0.0001;pointer-events: none;")
+		//- 	#lock-modal-bg(style="z-index:1;position:absolute;top:0px;left:0px;width:100%;height:100%;" ng-click="closeLockScreen()")
+		//- 	#lock-modal(style="z-index:2;")
+		//- 		img#lock-logo(src="/img/sharing-header.png" style="width:100%;")
+		//- 		.fa.fa-times(style="z-index: 2;color: #fff;position: absolute;top: 1px;right: 5px;padding: 5px;width: 24px;height: 24px;cursor: pointer;font-size: 22px;" ng-click="closeLockScreen()")
+		//- 		link(href='//cdn-images.mailchimp.com/embedcode/classic-10_7.css', rel='stylesheet', type='text/css')
+		//- 		style(type='text/css').
+		//- 			#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
+		//- 		#mc_embed_signup
+		//- 			form#mc-embedded-subscribe-form.validate(action='//stuffmapper.us8.list-manage.com/subscribe/post?u=1457dd037ad3832bd31680813&id=784c72162a', method='post', name='mc-embedded-subscribe-form', target='_blank', novalidate='')
+		//- 				#mc_embed_signup_scroll
+		//- 					h2 Want to know when we're ready? We'll let you know!
+		//- 					.indicates-required
+		//- 						span.asterisk *
+		//- 						|  indicates required
+		//- 					.mc-field-group
+		//- 						label(for='mce-EMAIL')
+		//- 								| Email Address
+		//- 							span.asterisk *
+		//- 						input#mce-EMAIL.required.email(type='email', value='', name='EMAIL')
+		//- 					.mc-field-group
+		//- 						label(for='mce-FNAME') First Name
+		//- 						input#mce-FNAME(type='text', value='', name='FNAME')
+		//- 					.mc-field-group
+		//- 						label(for='mce-LNAME') Last Name
+		//- 						input#mce-LNAME(type='text', value='', name='LNAME')
+		//- 					.mc-field-group
+		//- 						label(for='mce-WHERE') How did you hear about us?
+		//- 						input#mce-WHERE(type='text', value='', name='WHERE')
+		//- 					#mce-responses.clear
+		//- 						#mce-error-response.response(style='display:none')
+		//- 						#mce-success-response.response(style='display:none')
+		//- 					// real people should not fill this in and expect good things - do not remove this or risk form bot signups
+		//- 					div(style='position: absolute; left: -5000px;', aria-hidden='true')
+		//- 						input(type='text', name='b_1457dd037ad3832bd31680813_784c72162a', tabindex='-1', value='')
+		//- 					.clear
+		//- 						input#mc-embedded-subscribe.button(type='submit', value='Subscribe', name='subscribe')
+		//- 		script(type='text/javascript', src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js')
+		//- 		script(type='text/javascript') (function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[4]='WHERE';ftypes[4]='text';}(jQuery));var $mcj = jQuery.noConflict(true);
+		//- 		#lock-sm
+		//- 			a#lock-fb(href="https://www.facebook.com/stuffmapper")
+		//- 				i.fa.fa-facebook-square
+		//- 				| facebook.com/stuffmapper
+		//- 			a#lock-twitter(href="https://www.twitter.com/stuffmapper")
+		//- 				i.fa.fa-twitter-square
+		//- 				| @stuffmapper
+		//- 			a#lock-instagram(href="https://www.instagram.com/stuffmapper")
+		//- 				i.fa.fa-instagram
+		//- 				| @stuffmapper
 		#modal-windows
-			.modal-windows-bg.animate-250
-			.modal-container.modal-container.animate-500
-				.close-modal-bg(ng-click="hideModal()")
-				.modal-window
-					.modal-header
-					.modal-close(ng-click="hideModal()")
-						i.fa.fa-close
-					.sm-modal-content
-						.modal-steps
-							#sign-in-step.modal-step.animate-250.active
-								h2.sm-modal-title.animate-250 Sign In
-								.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
-									img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
-									span.social-sign-in-text.sm-text-m Sign in with Google
-								.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
-									img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
-									span.social-sign-in-text.sm-text-m Sign in with Facebook
-								.sm-full-width.sm-text-s
-									p(style="text-align: center;")
-										| By clicking "Sign In", you agree to the 
-										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
-										| and 
-										a(ui-sref="useragreement", ng-click="hideModal()") Terms
-								span.sign-in-local-text — or use your email —
-								input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
-								input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
-								#sign-in-error-warning-container(style="width:100%;display:block;position:relative;")
-								.sm-full-width(style="height: 20px;")
-									#sign-in-forgot-password.sm-text-s(style="float: right;" ng-click="forgotPassword()") Forgot your password?
-								.sm-button-group(style="width: 100%;display:block;margin-top: -20px;")
-									.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
-										input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign In" ng-click="login()" style="margin:20px 10px;width:calc(100% - 10px);")
-									.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
-										input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign Up" ng-click="signUpStep()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
-							#sign-up-step.modal-step.animate-250.hidden-modal
-								h2.sm-modal-title Sign Up
-								.modal-back-button(ng-click="signUpBack()")
-								input#sign-up-email.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address *")
-								input#sign-up-password1.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password *")
-								input#sign-up-fname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name *")
-								input#sign-up-lname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name *")
-								#toggle-password-visibility.fa.fa-eye(ng-click="toggleVisibility()")
-								.sm-text-s.sm-full-width(style="margin-bottom: 0px") *required field
-								#sign-up-error-warning-container(style="width:100%;display:block;position:relative;")
-								.privacy-and-terms-container
-									p(style="margin: 0 auto;font-size: 14px;text-align: center;width:90%;")
-										| By clicking "Sign Up", you agree to the 
-										a(ui-sref="privacy", ng-click="hideModal()") Privacy 
-										| and 
-										a(ui-sref="useragreement", ng-click="hideModal()") Terms
-								input#sm-sign-up-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(type="button" value="Sign Up" ng-click="signUp()")
-							#confirmation-step.modal-step.animate-250.hidden-modal
-								h2.sm-modal-title Almost Done!
-								.modal-back-button(ng-click="signUpBack()")
-								.confirmation-container
-									.sm-text-l.sm-full-width.confirmation-text-top Please check your email
-									#confirmation-step-icon.fa.fa-check-circle.sm-hidden
-									.sm-text-l.sm-full-width.confirmation-text-bottom to verify your account
-								input#sm-sign-up-ok-fine-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Ok" ng-click="hideModal()")
-							#sign-up-forgot-password-step.modal-step.animate-250.hidden-modal
-								h2.sm-modal-title Whoops!
-								.modal-back-button(ng-click="signUpBack()")
-								.confirmation-container
-									.sm-text-m.sm-full-width.confirmation-text-top Enter your email
-									input#sign-up-password-reset-input.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
-									.sm-text-m.sm-full-width.confirmation-text-bottom to reset your password
-								input#sm-sign-up-reset-password-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Submit" ng-click="hideModal()")
-							#sign-up-forgot-password-success-step.modal-step.animate-250.hidden-modal
+			#modal-bg.modal-windows-bg.modal-bg-hidden.animate-250
+			#sign-in-up-modal.modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('sign-in-up-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#sign-in-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Sign In
+							.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
+								img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
+								span.social-sign-in-text.sm-text-m Sign in with Google
+							.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
+								img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
+								span.social-sign-in-text.sm-text-m Sign in with Facebook
+							.sm-full-width.sm-text-s
+								p(style="text-align: center;")
+									| By clicking "Sign In", you agree to the
+									a(href="/privacy" target="_blank") Privacy
+									| and
+									a(href="/useragreement" target="_blank") Terms
+							span.sign-in-local-text — or use your email —
+							input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
+							input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
+							#sign-in-password-eye.fa.fa.eye(style="position:absolute;")
+							#sign-in-error-warning-container(style="width:100%;display:block;position:relative;")
+							.sm-full-width(style="height: 20px;")
+								#sign-in-forgot-password.sm-text-s(style="float: right;" ng-click="forgotPassword()") Forgot your password?
+							.sm-button-group(style="width: 100%;display:block;margin-top: -20px;")
+								.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+									input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign In" ng-click="login()" style="margin:20px 10px;width:calc(100% - 10px);")
+								.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+									input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign Up" ng-click="signUpStep()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
+						#sign-up-step.modal-step.animate-250.hidden-modal
+							h2.sm-modal-title Sign Up
+							.modal-back-button(ng-click="signUpBack()")
+							input#sign-up-email.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address *")
+							input#sign-up-password1.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password *")
+							input#sign-up-fname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name *")
+							input#sign-up-lname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name *")
+							#toggle-password-visibility.fa.fa-eye(ng-click="toggleVisibility()")
+							.sm-text-s.sm-full-width(style="margin-bottom: 0px") *required field
+							#sign-up-error-warning-container(style="width:100%;display:block;position:relative;")
+							.privacy-and-terms-container
+								p(style="margin: 0 auto;font-size: 14px;text-align: center;width:90%;")
+									| By clicking "Sign Up", you agree to the
+									a(href="/privacy" target="_blank") Privacy
+									| and
+									a(href="useragreement" target="_blank") Terms
+							input#sm-sign-up-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(type="button" value="Sign Up" ng-click="signUp()")
+						#confirmation-step.modal-step.animate-250.hidden-modal
+							h2.sm-modal-title Almost Done!
+							.modal-back-button(ng-click="signUpBack()")
+							.confirmation-container
+								.sm-text-l.sm-full-width.confirmation-text-top(style="text-align: center;") Please check your email
+								#confirmation-step-icon.fa.fa-envelope.sm-hidden
+								.sm-text-l.sm-full-width.confirmation-text-bottom(style="bottom: 0px;text-align: center;position: absolute;") to verify your account
+							input#sm-sign-up-ok-fine-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Ok" ng-click="hideModal()")
+						#sign-up-forgot-password-step.modal-step.animate-250.hidden-modal
+							h2.sm-modal-title Whoops!
+							.modal-back-button(ng-click="signUpBack()")
+							.confirmation-container
+								.sm-text-m.sm-full-width.confirmation-text Enter your email to reset your password
+								input#sign-up-password-reset-email-input.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
+							input#sm-sign-up-reset-password-button1.sm-button.sm-button-default.sm-button-full-width(type="button" value="Submit" ng-click="passwordConfirmationStep()" style="position: absolute; bottom:0px;")
+						#sign-up-forgot-password-success-step.modal-step.animate-250.hidden-modal
+							h2.sm-modal-title Password Reset
+							.modal-back-button(ng-click="signUpBack()")
+							.confirmation-container
+								.sm-text-l.sm-full-width.confirmation-text-top(style="text-align: center;") Please check your email for instructions
+								#password-confirmation-step-icon.fa.fa-envelope.sm-hidden
+								.sm-text-l.sm-full-width.confirmation-text-bottom(style="bottom: 0px;text-align: center;position: absolute;") on resetting your password
+							input#sm-sign-up-reset-password-button2-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Ok" ng-click="hideModal('sign-in-up-modal')")
+			#email-verification-modal.modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('email-verification-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#email-verification-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Email Verified!
+							i.fa.fa-times-circle.sm-email-verification-icon.sm-hidden.animate-250
+							#email-verification-message.sm-text-m.sm-full-width(style="text-align: center;position: absolute;bottom: calc(48px + 10%);") You have successfully verified your email address?
+							input#email-verification-button1.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Sign In" ng-click="hideModal('email-verification-modal');delaySignIn();")
+							input#email-verification-button2.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="hideModal('email-verification-modal');")
+			#password-reset-modal.modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('password-reset-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#password-reset-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Password Reset
+							input#sm-reset-password1.sm-text-input.sm-text-input-full-width(type="password" placeholder="password *")
+							input#sm-reset-password2.sm-text-input.sm-text-input-full-width(type="password" placeholder="confirm password *")
+							#sm-reset-password-error-warning-container(style="width:100%;display:block;position:relative;")
+							input#password-reset-button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Reset Password" ng-click="resetPassword();")
+						//- #password-reset-confirmation-step.modal-step.animate-250.active
+						//- 	h2.sm-modal-title.animate-250 Email Verified!
+						//- 	i.fa.fa-times-circle.sm-email-verification-icon.sm-hidden.animate-250
+						//- 	#email-verification-message.sm-text-m.sm-full-width(style="text-align: center;position: absolute;bottom: calc(48px + 10%);") You have successfully verified your email address?
+						//- 	input#email-verification-button1.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Sign In" ng-click="hideModal();delaySignIn();")
+						//- 	input#email-verification-button2.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Whoops!" ng-click="hideModal();")
+			#password-reset-failure-modal.modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('password-reset-failure-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#password-reset-confirmation-failure-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Invalid Token
+							i.fa.fa-times-circle.sm-email-verification-icon.sm-hidden.animate-250
+							#email-verification-message.sm-text-m.sm-full-width(style="text-align: center;position: absolute;bottom: calc(48px + 10%);") Invalid password reset token!
+							input#password-reset-confirmation-failure-button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="hideModal('password-reset-failure-modal');")
+			#delete-item-modal.modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('delete-item-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#delete-item-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Confirm Delete
+							.give-location-text(style="top: 15px;") are you sure you want
+							i.fa.fa-trash.sm-email-verification-icon.animate-250(style="top:calc(50% - 40px);")
+							.give-location-text(style="bottom: 90px;") to delete this item?
+							.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
+								.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+									button#sign-in-sign-in-button.give-reject-parent.sm-button.sm-text-m.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.fa.fa-times-circle.give-reject1.animate-250(style="margin:20px 10px;width:calc(100% - 10px);font-size:32px;line-height:25px;")
+								.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+									button#sign-in-sign-up-button.fa.fa-check-circle.sm-button.sm-button-positive.sm-text-m.give-accept1.animate-250(style="margin:20px 10px;width:calc(100% - 10px);float: left;font-size:32px;line-height:25px;")
+			#dibs-complete-modal.modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('dibs-complete-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#dibs-complete-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Awesome!
+							i.fa.fa-times-check.sm-positive-color.sm-email-verification-icon.sm-hidden.animate-250
+							#dibs-complete-message.sm-text-m.sm-full-width(style="text-align: center;position: absolute;bottom: calc(48px + 10%);") Woo!
+							input#dibs-complete-button1.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Back to My Stuff" ng-click="hideModal('dibs-complete-modal');secureState('stuff.my.items');resetCompleteDibs();")
 		#popups
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
 				//- li
 				//- 	i.fa.fa-clock-o
-				//- 	span(ui-sref="stuff.my.watchlist") Watchlist
+				//- 	span(ng-click="secureState('stuff.my.watchlist')") Watchlist
 				li
 					i.fa.fa-rocket
 					span(ui-sref="about") About Us
 				li
 					i.fa.fa-cog
-					span(ui-sref="stuff.my.settings") Settings
+					span(ng-click="secureState('stuff.my.settings')") Settings
 				li
 					i.fa.fa-question
 					span(ui-sref="faq") FAQ
@@ -265,7 +358,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			//- 		.side-menu-icon.fa.fa-bookmark
 			//- 		span Watchlist
 			li.side-menu-item
-				a.side-menu-link(ui-sref="stuff.my.settings", ng-click="toggleSideMenu()")
+				a.side-menu-link(ng-click="secureState('stuff.my.settings');toggleSideMenu();")
 					.side-menu-icon.fa.fa-wrench
 					span Profile & Settings
 			li.side-menu-item
@@ -278,7 +371,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					span Sign Out
 			.side-menu-footer
 				a(ui-sref="/faq#landfill-tracker")
-					.new-thing Stuff saved from landfill  
+					.new-thing Stuff saved from landfill
 					#landfill-tracker-menu
 				#stuffmapper-logo-container-menu
 					img#logo-menu(src="img/logo-txt-only-bold.png" ng-click="aboutUs(); toggleSideMenu()")

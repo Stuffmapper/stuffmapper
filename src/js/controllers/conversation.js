@@ -1,18 +1,26 @@
-stuffMapp.controller('conversationController', ['$scope', '$http', '$stateParams', '$state', 'authenticator', ConversationController]);
+stuffMapp.controller('conversationController', ['$scope', '$http', '$stateParams', '$state', 'authenticator', '$stuffTabs', ConversationController]);
 function ConversationController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $stateParams = arguments[2];
 	var $state = arguments[3];
 	var authenticator = arguments[4];
+	var $stuffTabs = arguments[5];
+	function backToEditItem(id) {
+		$state.go('stuff.my.items.item', {id: id});
+	}
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
-			$scope.showModal();
+			$scope.openModal('modal');
 		} else {
-			$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+$stateParams.conversation).success(function(data) {
+			var conversationPostId = window.location.pathname.split('items/')[1].split('/messages')[0];
+			$('#conversation-animation-container').css({'pointer-events': 'all'});
+			$stuffTabs.init($scope, '#tab-container .stuff-tabs .my-stuff-tab a');
+			$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+conversationPostId).success(function(data) {
 				$scope.conversation = data.res.conversation;
-
+				$scope.conversationInfo = data.res.info;
+				console.log(data);
 				$scope.info = data.res.info;
 				requestAnimationFrame(function() {
 					out.scrollTop = out.scrollHeight - out.clientHeight;
@@ -21,24 +29,27 @@ function ConversationController() {
 						$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
 					}
 				});
+				$('#back-to-edit-my-item').on('click', function() {
+					backToEditItem(conversationPostId);
+				});
 				$scope.sendMessage = function() {
 					if(!$('#conversation-input').val()) return;
 					$http.post(config.api.host + '/api/v'+config.api.version+'/messages', {
-						conversation_id:(parseInt($stateParams.conversation)),
+						conversation_id:(parseInt($scope.conversation.id)),
 						message:$('#conversation-input').val()
-					}, {
-						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-						},
-						transformRequest: function(data){
-							return $.param(data);
-						}
+					}, {headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data){return $.param(data);}
 					}).success(function(data) {
 						// console.log($scope.socket);
+						console.log({
+							to: $scope.info.inboundMessenger,
+							from: $scope.info.outboundMessenger,
+							conversation: $scope.conversationInfo.id,
+							message: $('#conversation-input').val()
+						});
 						$scope.socket.emit('message', {
 							to: $scope.info.inboundMessenger,
 							from: $scope.info.outboundMessenger,
-							conversation: $stateParams.conversation,
+							conversation: conversationPostId,
 							message: $('#conversation-input').val()
 						});
 						$scope.insertMessage('out', $('#conversation-input').val());
@@ -80,7 +91,8 @@ function ConversationController() {
 				}
 			});
 			$scope.$on('$destroy', function() {
-
+				$('#conversation-animation-container').css({'pointer-events': 'none'});
+				$('#back-to-edit-my-item').off('click', backToEditItem);
 			});
 		}
 	});

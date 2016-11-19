@@ -273,6 +273,7 @@ html.ionic.ios {
 	line-height: 40px !important;
 	font-size: 18px !important;
 	text-indent: 8px;
+	cursor: pointer;
 	&.sm-hidden {
 		opacity: 0.0001;
 		@include transform(translate3d(20px, 0px, 0));
@@ -515,7 +516,6 @@ html.ionic.ios {
 	right: 0px;
 	padding: 5px;
 }
-
 #get-stuff-container, #my-stuff-container {
 	height: 100%;
 	width: 100%;
@@ -589,13 +589,30 @@ html.ionic.ios {
 	}
 }
 
+#my-item-menu {
+	padding: 0px 14px;
+	right: 0px;
+	position: absolute;
+	height: 40px;
+	line-height: 40px;
+	cursor: pointer;
+}
+
+#dropdown-menu {
+	z-index: 99;
+	right: 3px;
+	width: 150px;
+}
+
 .my-item-single-container {
 	width: 100%;
 	height: 100%;
 	position: absolute;
 	top: 0px;
-	left: 0;
+	left: 0px;
 	display: block;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 .get-item-single-background {
@@ -636,7 +653,7 @@ html.ionic.ios {
 	z-index: 2;
 }
 
-.get-item-single-details-container {
+.get-item-single-details-container, .edit-item-single-details-container {
 	display: block;
 	width: 100%;
 	position: relative;
@@ -645,11 +662,20 @@ html.ionic.ios {
 	transform: translate3d(0,0,0);
 	background-color: #fff;
 	overflow: hidden;
-	&.sm-hidden {
-		transform: translate3d(0px, 100%, 0);
-	}
+	opacity:1;
+}
+.edit-item-single-details-container {
+	z-index: 3;
 }
 
+.get-item-single-details-container.sm-hidden {
+	transform: translate3d(0px, 100%, 0);
+}
+
+.edit-item-single-details-container.sm-hidden {
+	transform: translate3d(100%, 0px, 0);
+	opacity: 0.0001;
+}
 .get-item-single-title {
 	display: inline-block;
 	margin-left: 8px;
@@ -731,6 +757,7 @@ html.ionic.ios {
 			text-align: center;
 			height: calc(100% - 5px);
 			width: 100%;
+			line-height: 45px;
 			text-align: center;
 			display: block;
 			background-color: transparent;
@@ -1550,37 +1577,35 @@ html.ionic.ios {
 
 #give-step2 {
 	color: $charcoal-dark;
-	#give-location-container{
-		background-color: $fog-dark;
-		height: 100%;
-		position: relative;
-		display: block;
-		#give-location-text1 {
-			top: calc(50% - 100px);
-		}
-		#give-location-text2 {
-			top: calc(50% + 100px);
-		}
-		.give-location-text {
-			position: absolute;
-			width: 100%;
-			text-align: center;
-			font-size: 24px;
-		}
-		.give-location-icon {
-			top: 50%;
-			position: absolute;
-			font-size: 160px;
-			@include transform(translate3d(0%, -50%, 0));
-			width: 100%;
-			text-align: center;
-		}
-	}
-	#give-location-next-step {
-		position: absolute;
-		bottom: 0;
-		pointer-events: all;
-	}
+}
+#give-location-container{
+	background-color: $fog-dark;
+	height: 100%;
+	position: relative;
+	display: block;
+}
+#give-location-text1 {
+	top: calc(50% - 100px);
+}
+#give-location-text2 {
+	top: calc(50% + 100px);
+}
+.give-location-text {
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	font-size: 24px;
+}
+.give-location-icon {
+	top: 50%;
+	position: absolute;
+	font-size: 160px;
+	@include transform(translate3d(0%, -50%, 0));
+	width: 100%;
+	text-align: center;
+}
+#give-location-next-step, #give-location-prev-step {
+	pointer-events: all;
 }
 
 #give-step3 {
@@ -1634,11 +1659,12 @@ html.ionic.ios {
 		height: 195px;
 		margin-top: 5px;
 		#give-image-details {
-			width: 100%;
-			height:100%;
-			background-size: contain;
-			background-position: 50% 50%;
-			background-repeat: no-repeat;
+			width: auto;
+			height: 100%;
+			transform: translate3d(-50%, -50%, 0px);
+			left: 50%;
+			top: 50%;
+			position: relative;
 			display: inline-block;
 		}
 	}
@@ -1688,8 +1714,7 @@ html.ionic.ios {
 	// 	font-size: 16px;
 	// }
 	#give-description-submit {
-		position: absolute;
-		bottom: 0;
+
 	}
 }
 #give-step4 {
@@ -1708,10 +1733,9 @@ html.ionic.ios {
 	@include transform(translate3d(-50%, 0%, 0));
 }
 #give-finished-image {
-	height: 150px;
-	background-size: contain;
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
+	height: 270px;
+	transform: translateX(-50%);
+	left: 50%;
 	position: relative;
 }
 
@@ -1724,7 +1748,8 @@ html.ionic.ios {
 	width: 100%;
 	position: fixed;
 	z-index: 999999;
-	display: none;
+	display: block;
+	pointer-events: none;
 	perspective: 500px;
 }
 
@@ -1732,9 +1757,13 @@ html.ionic.ios {
 	background-color: rgba(0,0,0,0.45);
 	height: 100%;
 	width: 100%;
-	opacity: 0.0001;
+	opacity: 1;
+	pointer-events: all;
 }
-
+.modal-windows-bg.modal-bg-hidden {
+	opacity: 0.0001;
+	pointer-events: none;
+}
 .modal-container {
 	width: 100%;
 	height: 100%;
@@ -1742,6 +1771,11 @@ html.ionic.ios {
 	top: 0;
 	left: 0;
 	z-index: 2;
+	pointer-events: all;
+	@include transform(translate3d(0px, 0%, 0px));
+}
+.modal-container.modal-window-hidden {
+	pointer-events: none;
 	@include transform(translate3d(0px, 100%, 0px));
 }
 .close-modal-bg {
@@ -1757,15 +1791,19 @@ html.ionic.ios {
 	background-color: #efefef;
 	width: 400px;
 	height: 480px;
-	position: relative;
+	position: absolute;
 	left: 50%;
 	top: 50%;
+	pointer-events: all;
 	@include transform(translate3d(-50%, -50%, 0px));
 	z-index: 2;
 	display: inline-block;
 	overflow: hidden;
 }
-
+.modal-window.modal-window-hidden {
+	pointer-events: none;
+	@include transform(translate3d(-50%, 100%, 0px));
+}
 .modal-header {
 	background-color: $fog-dark;
 	color: $charcoal-dark;
@@ -1952,17 +1990,17 @@ html.ionic.ios {
 	position: relative;
 }
 
-#confirmation-step-icon {
-	color: $grass;
+#confirmation-step-icon, #password-confirmation-step-icon {
+	color: $charcoal-dark;
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	font-size: 140px;
 	opacity: 1;
-	-webkit-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
-	-moz-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
-	-o-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
-	transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	-webkit-transform: translate3d(-50%, -50%, 0);
+	-moz-transform: translate3d(-50%, -50%, 0);
+	-o-transform: translate3d(-50%, -50%, 0);
+	transform: translate3d(-50%, -50%, 0);
 	-webkit-transition: all 500ms cubic-bezier(0.365, 1, 0.465, 1);
 	-webkit-transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
 	-moz-transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
@@ -1970,23 +2008,31 @@ html.ionic.ios {
 	transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
 	&.sm-hidden {
 		opacity: 0.0001;
-		-webkit-transform: translate3d(0%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
-		-moz-transform: translate3d(0%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
-		-o-transform: translate3d(0%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
-		transform: translate3d(0%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+		-webkit-transform: translate3d(25%, -50%, 0);
+		-moz-transform: translate3d(25%, -50%, 0);
+		-o-transform: translate3d(25%, -50%, 0);
+		transform: translate3d(25%, -50%, 0);
 	}
 }
 
-.confirmation-text-top {
+.confirmation-text {
 	position: absolute;
-	top: 15%;
+	top: calc(50% - 30px);
 	text-align: center;
+	-webkit-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	transform: translateY(-50%);
 }
-
-.confirmation-text-bottom {
+#sign-up-password-reset-email-input {
 	position: absolute;
-	bottom: 15%;
-	text-align: center;
+	top: calc(50% + 30px);
+	-webkit-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	-o-transform: translateY(-50%);
+	transform: translateY(-50%);
 }
 
 #sm-sign-up-ok-fine-button {
@@ -2298,16 +2344,45 @@ html.ionic.ios {
 
 /* Messages -  END  */
 
+#password-reset-confirmation-failure-step i {
+	color: $grapefruit-dark;
+}
 
+.sm-email-verification-icon {
+	position: absolute;
+	top: 35%;
+	font-size: 256px !important;
+	&.sm-negative-color{color: $grapefruit-dark;}
+	&.sm-positive-color{color: $grass;}
+	left: 50%;
+	opacity: 1;
+	-webkit-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	-moz-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	-o-transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	transform: translate3d(-50%, -50%, 0) scale3d(1, 1, 1) rotate3d(0, 0, 0, 130deg);
+	-webkit-transition: all 500ms cubic-bezier(0.365, 1, 0.465, 1);
+	-webkit-transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
+	-moz-transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
+	-o-transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
+	transition: all 500ms cubic-bezier(0.365, 1.420, 0.465, 1.045);
+	&.sm-hidden {
+		opacity: 0.0001;
+		-webkit-transform: translate3d(25%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+		-moz-transform: translate3d(25%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+		-o-transform: translate3d(25%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+		transform: translate3d(25%, -50%, 0) scale3d(0.8, 0.8, 0.8) rotate3d(0, 0, 1, 130deg);
+	}
+}
 
 .sm-toast {
-	border: 1px solid $grass-light;
+	// border: 1px solid $grass-light;
 	position: relative;
 	display: block;
-	color: $charcoal-dark;
-	background-color: #fff;
+	color: #fff;
+	background-color: rgba(60, 59, 61, 0.8);
 	z-index: 999999;
 	padding: 5px 15px;
+	border-radius: 3px;
 	position: fixed;
 	top: 45px;
 	left: 50%;
@@ -2354,12 +2429,37 @@ html.ionic.ios {
 
 
 /* Conversations - START */
-
-#conversation-container {
+#conversation-animation-container {
+	position: absolute;
+	top: 0px;
+	left: 0px;
 	height: 100%;
 	width: 100%;
+	z-index: 4;
+	pointer-events: none;
+	@include transform(translate3d(0%, 0%, 0));
+	&.ng-enter {
+		@include transform(translate3d(100%, 0%, 0));
+	}
+	&.ng-enter.ng-enter-active {
+		@include transform(translate3d(0%, 0%, 0));
+	}
+	&.ng-leave {
+		@include transform(translate3d(0%, 0%, 0));
+	}
+	&.ng-leave.ng-leave-active {
+		@include transform(translate3d(100%, 0%, 0));
+	}
+}
+#conversation-container {
+	height: calc(100% - 40px);
+	width: 100%;
 	display: block;
-	position: relative;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 10;
+
 }
 #conversation-messages-container {
 	height: calc(100% - 36px);

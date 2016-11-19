@@ -6,12 +6,13 @@ function GetStuffController() {
 	var $timeout = arguments[3];
 	var $userData = arguments[4];
 	var $stuffTabs = arguments[5];
-	$stuffTabs.init($scope, '#tab-container .stuff-tabs .get-stuff-tab a');
+	$('#tab-container .stuff-tabs li a').removeClass('selected');
+	$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
 	$scope.listItems = [];
 	$scope.markers = [];
-	google.maps.event.addListenerOnce($scope.map, 'idle', function() {
-		//console.log(this.getBounds());
-	});
+	// google.maps.event.addListenerOnce($scope.map, 'idle', function() {
+	// 	//console.log(this.getBounds());
+	// });
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
 		$scope.listItems = data.res;
 		if($scope.listItems) {
@@ -136,9 +137,6 @@ function GetStuffController() {
 			});
 		});
 	}
-	$scope.search = function() {
-
-	};
 	$('#search-stuff').focus(function() {
 		if($scope.mapIsOpen) $scope.toggleMap();
 		$('#filter-container > .sm-background-semi-opaque').removeClass('sm-hidden');
@@ -186,6 +184,7 @@ function GetStuffController() {
 	$(window).on('resize', $scope.watchSize);
 	$scope.watchSize();
 	$scope.$on('$destroy', function() {
+		$('#tab-container .stuff-tabs li a').removeClass('selected');
 		$(window).off('resize', $scope.watchSize);
 		$('#tab-content-container').css({'pointer-events':''});
 		if($scope.mapbox) $scope.map.removeLayer('markers');
@@ -207,8 +206,6 @@ function GetStuffController() {
 				$scope.milesAway = e.milesAway;
 			});
 		});
-	};
-	$scope.cancelSearch = function () {
 	};
 	$scope.filterSearch = function () {
 		var searchQuery = $('#search-stuff').val().toLowerCase();

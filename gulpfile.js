@@ -86,19 +86,21 @@ gulp.task('jade', function(done) {
 	.pipe(gulp.dest('./web/'));
 });
 
-gulp.task('images', function(){
+gulp.task('images', function(done){
 	gulp.src('./src/img/**/*', {base: './src/img/'})
 	.pipe(multistream(
 		gulp.dest('./web/img'),
 		gulp.dest('./www/img'),
 		gulp.dest('./electron/img')
-	));
+	))
+	.on('end', done);
 });
 
 gulp.task('js', function(done) {
 	try {
 		gulp.src([
 			'./src/js/lib/jquery/dist/jquery.min.js',
+			'./src/js/util.js',
 			'./src/js/custom/counter_flipper.js',
 			'./src/js/lib/imagesloaded/imagesloaded.pkgd.min.js',
 			'./src/js/lib/masonry/dist/masonry.pkgd.js',
@@ -106,6 +108,7 @@ gulp.task('js', function(done) {
 			'./src/js/lib/angular-ui-router/release/angular-ui-router.min.js',
 			'./src/js/lib/angular-animate/angular-animate.min.js',
 			'./src/js/lib/select2/dist/js/select2.full.min.js',
+			'./src/js/lib/javascript-load-image/js/load-image.all.min.js',
 			'./src/js/app.js',
 			'./../stuffmapper-styleguide/src/js/directives.js',
 			'./src/js/settings.js',

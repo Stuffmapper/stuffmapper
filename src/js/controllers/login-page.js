@@ -9,13 +9,7 @@ function LoginPageController() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/login', {
 			username: $('#login-page-login-uname').val(),
 			password: $('#login-page-login-password').val()
-		}, {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-			},
-			transformRequest: function(data) {
-				return $.param(data);
-			}
+		}, {headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
 		}).success(function(data) {
 			if(!data.err) {
 				$('html').addClass('loggedIn');

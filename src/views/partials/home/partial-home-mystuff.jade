@@ -1,5 +1,5 @@
 #my-stuff-container
-	div(ui-view)
+	div.animate-500(ui-view)
 	#loading-get-stuff.noselect.loading-screen.animate-250
 		.spinner
 			.double-bounce1
@@ -14,5 +14,6 @@
 						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
 						.get-stuff-item-info
 							div.noselect {{ list.title }}
-						.stuff-item-category-distance-owner(style="float: left;max-width:calc(100% - 84px);text-align: center;") {{ list.category }}
+						.stuff-item-category-distance-owner(style="float: left;left: 7px;max-width:calc(100% - 84px);text-align: center;") {{ list.category }}
 						//- .stuff-item-category-distance-owner.number(style="float: right;text-align: center;") {{ list.milesAway }} mi.
+						//- order by most recently active

@@ -45,15 +45,11 @@ function setDefaultSettings() {
 		},
 		myItem : {
 			url: '/:id',
+			templateUrl: 'templates/partial-home-myitem.html',
 			controller: 'myItemsController'
 		},
-		myMessages : {
-			url: '/messages',
-			templateUrl: 'templates/partial-home-messages.html',
-			controller: 'messagesController'
-		},
 		myConversation : {
-			url: '/messages/:conversation',
+			url: '/messages',
 			templateUrl: 'templates/partial-home-conversation.html',
 			controller: 'conversationController'
 		},

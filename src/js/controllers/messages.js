@@ -7,8 +7,9 @@ function MessagesController() {
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
-			$scope.showModal();
+			$scope.openModal('modal');
 		} else {
+			$stuffTabs.init($scope, '#tab-container .stuff-tabs .my-stuff-tab a');
 			$http.get(config.api.host + '/api/v' + config.api.version + '/messages').success(function(data) {
 				$scope.messages = data.res;
 				// console.log(data.res);
