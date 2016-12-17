@@ -22,17 +22,15 @@ function MainController() {
 	var $ionicPlatform = (typeof arguments[9] !== 'function') ? arguments[10] : undefined;
 	var $cordovaSQLite = (typeof arguments[10] !== 'function') ? arguments[11] : undefined;
 	var $cordovaPush = (typeof arguments[11] !== 'function') ? arguments[12] : undefined;
-	$scope.delaySignIn = function() {
-		$timeout(function(){
-			location.hash='signin';
-		},550);
-	};
+	$scope.delaySignIn = delaySignIn;
 	$scope.openModal = function(modal) {
-		if(modal === 'modal') {
+		if(modal==='modal') {
 			if (config.html5) location.hash = 'signin';
 			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
+			$u.modal.open('sign-in-up-modal');
 		}
 		else if(modal==='email-verification-modal') {
+			$u.modal.open('email-verification-modal');
 			requestAnimationFrame(function() {
 				requestAnimationFrame(function() {
 					setTimeout(function() {
@@ -41,45 +39,17 @@ function MainController() {
 				});
 			});
 		}
-		$('#'+modal+'-window').removeClass('modal-window-open');
-		requestAnimationFrame(function() {
-			$scope.$apply(function() {
-				if ($scope.popUpOpen === false) {
-					$scope.popUpOpen = true;
-					$('#modal-windows').addClass('modal-windows-open');
-					$('#'+modal+'-window').parent('.modal-container').css({
-						'z-index': ''
-					});
-					requestAnimationFrame(function() {
-						$('.modal-windows-bg').addClass('modal-windows-bg-open');
-						$('#'+modal+'-window').parent('.modal-container').addClass('modal-window-open');
-						$('#'+modal+'-window').parent('.modal-container').parent().css({
-							'z-index': '3'
-						});
-					});
-				} else {
-					requestAnimationFrame(function() {
-						$('.modal-windows-bg').addClass('modal-windows-bg-open');
-						$('#sign').addClass('modal-window-open');
-					});
-				}
-			});
-		});
 	};
 	$scope.openPasswordResetModal = function(token) {
-		$http.post(config.api.host + '/api/v' + config.api.version + '/account/password/verify', {
-			passwordResetToken: token,
-		}, {
-			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
-		}).success(function(data) {
+		$.post(config.api.host + '/api/v' + config.api.version + '/account/password/verify', {
+			passwordResetToken: token
+		}, function(data) {
 			if (data.err) {
-				$scope.openModal('password-reset-modal-failure');
-				setTimeout(function() {
+				$u.modal.open('password-reset-modal-failure', function() {
 					$('#password-reset-confirmation-failure-step i').removeClass('sm-hidden');
-				},550);
-				return;
+				});
 			}
-			$scope.openModal('password-reset-modal');
+			else $u.modal.open('password-reset-modal');
 		});
 	};
 	$scope.resetPassword = function() {
@@ -88,14 +58,12 @@ function MainController() {
 		var password2 = $('#sm-reset-password2').val();
 		var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
 		if(password1 && password2 && password1 === password2 && passRe.test(password1)) {
-			$http.post(config.api.host + '/api/v' + config.api.version + '/account/password/reset', {
+			$.post(config.api.host + '/api/v' + config.api.version + '/account/password/reset', {
 				passwordResetToken: token,
 				password: password1
-			}, {
-				headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
-			}).success(function(data) {
-				$scope.hideModal('password-reset-modal');
-				$scope.delaySignIn();
+			}, function(data) {
+				$u.modal.close('password-reset-modal');
+				delaySignIn();
 			});
 		}
 		else {
@@ -108,20 +76,18 @@ function MainController() {
 		}
 	};
 	$scope.openEmailVerificationModal = function(token) {
-		$http.post(config.api.host + '/api/v' + config.api.version + '/account/verify', {
+		$.post(config.api.host + '/api/v' + config.api.version + '/account/verify', {
 			emailVerificationToken: token,
-		}, {
-			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
-		}).success(function(data) {
+		}, function(data) {
 			if (data.err) {
-				$scope.openModal('email-verification-modal');
+				$u.modal.open('email-verification-modal');
 				$('#email-verification-step i').addClass('sm-negative-color');
 				$('#email-verification-step i').addClass('fa-times-circle');
 				$('#email-verification-step h2').text('Account Already Verified!');
 				$('#email-verification-message').text('');
 				$('#email-verification-button1').css({display:'none'});
 			} else {
-				$scope.openModal('email-verification-modal');
+				$u.modal.open('email-verification-modal');
 				$('#email-verification-step i').addClass('sm-positive-color');
 				$('#email-verification-step i').addClass('fa-check-circle');
 				$('#email-verification-step h2').text('Email Verified!');
@@ -171,9 +137,16 @@ function MainController() {
 		$scope.toastCounter = 0;
 		if(data.err) return console.log(data.err);
 		if(data.res && data.res.user) {
-			$('html').addClass('loggedIn');			$userData.setUserId(data.res.user.id);
+			$('html').addClass('loggedIn');
+			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
+		}
+		if(data.res && data.res.messages) {
+			setTimeout(function() {
+				$('#tab-container .tab-message-badge').html(data.res.messages);
+				$('#tab-container .tab-message-badge').css({display:'inline-block'});
+			}, 1500);
 		}
 		var lt = parseInt(data.res.lt);
 		var count = 0;
@@ -183,44 +156,8 @@ function MainController() {
 		}
 		$scope.counterFlipperHeader.setCounter(data.res.lt);
 		$scope.counterFlipperMenu.setCounter(data.res.lt);
-		if ($cordovaSQLite) {
-			$scope.initDB = function() {
-				$cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS user (id integer primary key, username text, email text, firstname text, lastname text, password text, verified boolean)').then(function(res) {
-				}, function(err) {
-				});
-			};
-			$scope.addTestUser = function() {
-				$cordovaSQLite.execute(db, 'INSERT INTO user(id, username, email, firstname, lastname, password, verified) VALUES(1, \'RyanTheFarmer\', \'ryandafarmer@gmail.com\', \'Ryan\', \'Farmer\', \'Password1!\', \'true\')').then(function(res) {
-				}, function(err) {
-				});
-			};
-			$scope.setUser = function(email, password, verified) {
-				$scope.deleteUser();
-				$cordovaSQLite.execute(db, 'INSERT INTO user(id, email, password, verified) VALUES(1, $1, $2, $3)', [email, password, verified]).then(function(res) {
-				}, function(err) {
-				});
-			};
-			$scope.deleteUser = function() {
-				$cordovaSQLite.execute(db, 'DELETE FROM user WHERE id = 1').then(function(res) {
-				}, function(err) {
-				});
-			};
-			$scope.getUserData = function() {
-				$cordovaSQLite.execute(db, 'SELECT * FROM user').then(function(result) {
-					if(result.rows.length > 0) return result.rows.item(0);
-					else console.log('no user data');
-				}, function(error) {
-					console.log('err: ', error);
-				});
-			};
-			$ionicPlatform.ready(function() {
-				$scope.initDB();
-				$scope.addTestUser();
-				var userData = $scope.getUserData();
-				if(!data.res) {}
-			});
-		}
-		else initUserData(data);
+		// use sql stuff for mobile here
+		initUserData(data);
 	});
 	function initChatra() {
 		ChatraID = '5oMzBM7byxDdNPuMf';
@@ -240,16 +177,18 @@ function MainController() {
 			$userData.setUserId(data.res.user.id);
 			$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function(data) {
+				console.log('got a message!');
+				console.log(data);
 				// SMAlert.set(data.messages.message, 5000, function() {
 				// 	console.log('clicked!');
 				// });
 				var lPath = $location.$$path.split('/');
 				lPath.shift();
 				var out = document.getElementById('conversation-messages');
-				if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'messages' && lPath.length === 4 && parseInt(lPath[3]) === parseInt(data.messages.conversation)) {
+				if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
 					var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 					$('#conversation-messages').append([
-						'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="conversation-message conversation-in-message">',
+						'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
 						''+data.messages.message,
 						'</div></li>'
 					].join(''));
@@ -283,6 +222,7 @@ function MainController() {
 		$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
 		$scope.popUpOpen = false;
 		$u.modal.close(modalToClose);
+		console.log(modalToClose);
 		$scope.popUpTimeout = setTimeout(function() {
 			$('#sign-in-step').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').css({'transform':''});
@@ -292,12 +232,13 @@ function MainController() {
 			$('#confirmation-step-icon').addClass('sm-hidden');
 			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 			$('#sign-up-forgot-password-step').addClass('hidden-modal').removeClass('active');
-			$('#sign-up-forgot-password-step').css({
-				'transform': ''
-			});
-			$('#sign-up-forgot-password-step .sm-modal-title').css({
-				'transform': ''
-			});
+			$('#sign-up-forgot-password-step').css({'transform': ''});
+			$('#sign-up-forgot-password-step .sm-modal-title').css({'transform': ''});
+			$('#sign-up-forgot-password-success-step').css({'transform': ''});
+			$('#sign-up-forgot-password-success-step .sm-modal-title').css({'transform': '',});
+			$('#sign-up-forgot-password-step .sm-modal-title').removeClass('visible');
+			$('#sign-up-forgot-password-success-step').addClass('hidden-modal');
+			$('#password-confirmation-step-icon').addClass('sm-hidden');
 		}, 550);
 		resetAllInputsIn('#modal-windows');
 	};
@@ -378,8 +319,8 @@ function MainController() {
 				$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
 				return console.log(data.err);
 			}
-			initUserData(data);
 			location.hash = '';
+			initUserData(data);
 			$scope.hideModal('sign-in-up-modal');
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
@@ -390,7 +331,7 @@ function MainController() {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
-			SMToast.set('Welcome!', 5000);
+			$u.toast('Welcome!');
 			if(config.ionic.isIonic) {
 				$ionicPlatform.ready(function () {
 					var push = $cordovaPush.init({
@@ -453,7 +394,7 @@ function MainController() {
 		if (value) {
 			if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 			var hash = value.split('#').pop();
-			if (hash === 'signin') $u.modal.open('sign-in-up-modal', function() {location.hash='';$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');});//$scope.openModal('modal');
+			if (hash === 'signin') $u.modal.open('sign-in-up-modal', function() {$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');});//$scope.openModal('modal');
 		} else removeHash();
 		$(window).on('hashchange', function(event) {
 			var value = location.hash;
@@ -462,22 +403,16 @@ function MainController() {
 				var hash = value.split('#').pop();
 				if (hash === 'signin') $u.modal.open('sign-in-up-modal', function() {location.hash='';$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');});//$scope.openModal('modal');
 			} else if ($scope.popUpOpen) {
-				$u.modal.close('sign-in-up-modal');
-				// $scope.hideModal();
+				// $u.modal.close('sign-in-up-modal');
+				$scope.hideModal('sign-in-up-modal');
 			}
 			if (!value) removeHash();
 		});
 	}
 	function removeHash() {
-		var scrollV, scrollH, loc = window.location;
+		var loc = window.location;
 		if ('pushState' in history) history.pushState('', document.title, loc.pathname + loc.search);
-		else {
-			scrollV = document.body.scrollTop;
-			scrollH = document.body.scrollLeft;
-			loc.hash = '';
-			document.body.scrollTop = scrollV;
-			document.body.scrollLeft = scrollH;
-		}
+		else loc.hash = '';
 	}
 	var popupOpen = false;
 	$scope.showPopup = function() {
@@ -495,9 +430,7 @@ function MainController() {
 		}
 	};
 	$scope.userButton = $scope.showPopup;
-	$scope.aboutUs = function() {
-		$state.go('about');
-	};
+	$scope.aboutUs = function() {$state.go('about');};
 	var passwordVisible = false;
 	$scope.toggleVisibility = function() {
 		if(!passwordVisible) {
@@ -524,12 +457,13 @@ function MainController() {
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setLoggedIn(true);
+			$scope.hideModal('sign-in-up-modal');
+			location.hash = '';
 			if ($scope.redirectState) {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
-			SMToast.set('Welcome!', 5000);
-			location.hash = '';
+			$u.toast('Welcome!');
 			if(config.ionic.isIonic) {
 				$ionicPlatform.ready(function () {
 					// $cordovaPush.register({
@@ -561,7 +495,7 @@ function MainController() {
 			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
 				$state.go('stuff.get');
 				$state.reload();
-				SMToast.set('See you next time!');
+				$u.toast('See you next time!');
 			}
 		});
 	};
@@ -600,33 +534,33 @@ function MainController() {
 			$('#sign-up-password-reset-email-input').css({border:'1px solid red'});
 			message = 'invalid email address';
 			if (data.err || !data.res.isValid) return $('#sm-password-confirmation-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
-
 		}
 		if(!valid) {
-			// message stuff
+			$('#sign-up-password-reset-errors').text('invalid email address');
 			return;
 		}
 		else {
-			$http.post(config.api.host + '/api/v' + config.api.version + '/account/password/token', {
+			$.post(config.api.host + '/api/v' + config.api.version + '/account/password/token', {
 				email: emailInput
-			},
-			{headers:{'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest:function(data){return $.param(data);}})
-			.success(function(data) {
-				if(data.err) {
-					return console.log(err);
-				}
+			}, function(data) {
+				if(data.err) return console.log(err);
 				$('#sign-up-forgot-password-step').css({
 					'transform': 'translate3d(-100%, 0%, 0)'
 				});
 				$('#sign-up-forgot-password-step .sm-modal-title').css({
 					'transform': 'translate3d(-100%, 0%, 0)',
 				});
+				$('#sign-up-forgot-password-success-step').css({
+					'transform': 'translate3d(0%, 0%, 0)'
+				});
+				$('#sign-up-forgot-password-success-step .sm-modal-title').css({
+					'transform': 'translate3d(0%, 0%, 0)',
+				});
 				$('#sign-up-forgot-password-step .sm-modal-title').addClass('visible');
-				$('#confirmation-step').removeClass('hidden-modal');
+				$('#sign-up-forgot-password-success-step').removeClass('hidden-modal');
 				$('#sign-up-forgot-password-step').addClass('hidden-modal').removeClass('active');
 				setTimeout(function() {
 					$('#password-confirmation-step-icon').removeClass('sm-hidden');
-					$('#confirmation-step-icon').removeClass('sm-hidden');
 				}, 500);
 			});
 		}
@@ -758,42 +692,6 @@ function onResize() {
 $(document).ready(onResize);
 $(window).on('resize', onResize);
 
-var SMToast = (function() {
-	var toastQueue = [];
-	var toastTimeout;
-	var defaultToastTimeout = 5000;
-	var toasting = false;
-	function displayToast(toast) {
-		var toastElement = document.createElement('div');
-		toastElement.className = 'animate-250 sm-toast sm-hidden';
-		toastElement.innerHTML = toast.msg;
-		$('body').append(toastElement);
-		setTimeout(function() {
-			requestAnimationFrame(function() {
-				toastElement.className = 'animate-250 sm-toast';
-				setTimeout(function() {
-					toastElement.className = 'animate-250 sm-toast sm-hidden';
-					setTimeout($(toastElement).remove, 300);
-					if(toastQueue.length) displayToast(toastQueue.shift());
-					else toasting = false;
-				}, toast.to || defaultToastTimeout);
-			});
-		}, 50);
-	}
-	return {
-		set: function(msg, to) {
-			toastQueue.push({
-				msg: msg,
-				to: to || defaultToastTimeout
-			});
-			if(!toasting) {
-				toasting = true;
-				displayToast(toastQueue.shift());
-			}
-		}
-	};
-}());
-
 function resetAllInputsIn(parent) {
 	$(parent+' input[type=text], ' + parent + ' input[type=password],' + parent + ' textarea').each(function(i,e){
 		$(e).val('');
@@ -810,8 +708,8 @@ function getSearchQueries() {
 	return searchQuery;
 }
 
-function openPasswordRestModal() {
-}
-
-function closePasswordRestModal(windowName) {
+function delaySignIn() {
+	setTimeout(function(){
+		location.hash = 'signin';
+	},550);
 }

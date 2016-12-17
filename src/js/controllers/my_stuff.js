@@ -12,22 +12,23 @@ function MyStuffController() {
 			$state.go('stuff.get', {'#':'signin'});
 			$scope.openModal('modal');
 		} else {
-			['dibs','gives'].forEach(function(e) {
-
-			});
-			// console.log(data.res.user);
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my').success(function(data) {
-				// console.log(data);
-				$scope.listItems = data.res.rows;
-				console.log($scope.listItems);
+				$scope.dibbedItems = [];
+				$scope.givedItems = [];
+				data.res.forEach(function(e) {
+					if(e.dibber_id === null || parseInt(e.dibber_id) !== parseInt($userData.getUserId())) $scope.givedItems.push(e);
+					else $scope.dibbedItems.push(e);
+				});
+				$scope.listItems = data.res;
+				if(!data.res.length) {
+					$('#loading-get-stuff').addClass('sm-hidden');
+					$('#my-stuff-empty-list').removeClass('sm-hidden');
+				}
 				// $('#mystuff a').addClass('selected');
 				// $scope.$on("$destroy", function() {
 				//     $('#mystuff a').removeClass('selected');
 				// });
 				$scope.initMasonry = function() {
-					$('.masonry-grid').imagesLoaded( function() {
-						$('#loading-get-stuff').addClass('sm-hidden');
-					});
 					$('.masonry-grid').imagesLoaded( function() {
 						$('#loading-get-stuff').addClass('sm-hidden');
 						$('.masonry-grid').isotope({

@@ -29,7 +29,10 @@
 					$('#'+id).addClass('modal-window-hidden');
 					if(callback) {
 						requestAnimationFrame(function() {
-							requestAnimationFrame(callback);
+							requestAnimationFrame(function(){
+								callback();
+								bgCloseCallback();
+							});
 						});
 					}
 				}
@@ -60,11 +63,11 @@
 						$('#'+stepContainer+' .step-page').each(function(i, e) {
 							if(foundStep && !foundNextStep) {
 								foundNextStep = true;
-								$(e).removeClass('unactive').removeClass('hidden').addClass('active');
+								$(e).removeClass('sm-unactive').removeClass('sm-hidden').addClass('sm-active');
 							}
-							if(!foundStep && $(e).hasClass('active')) {
+							if(!foundStep && $(e).hasClass('sm-active')) {
 								foundStep = true;
-								$(e).addClass('unactive').addClass('hidden').removeClass('active');
+								$(e).addClass('sm-unactive').addClass('sm-hidden').removeClass('sm-active');
 							}
 						});
 					});
@@ -78,11 +81,11 @@
 						$($('#'+stepContainer+' .step-page').get().reverse()).each(function(i, e) {
 							if(foundStep && !foundPrevStep) {
 								foundPrevStep = true;
-								$(e).removeClass('unactive').removeClass('hidden').addClass('active');
+								$(e).removeClass('sm-unactive').removeClass('sm-hidden').addClass('sm-active');
 							}
-							if(!foundStep && $(e).hasClass('active')) {
+							if(!foundStep && $(e).hasClass('sm-active')) {
 								foundStep = true;
-								$(e).removeClass('unactive').addClass('hidden').removeClass('active');
+								$(e).removeClass('sm-unactive').addClass('sm-hidden').removeClass('sm-active');
 							}
 						});
 					});
@@ -110,19 +113,19 @@
 						loopObject.each(function(i,e) {
 							if(stepFound && objectsToMove === 1) {
 								objectsToMove--;
-								$(e).addClass('active').removeClass('hidden').removeClass('unactive');
+								$(e).addClass('sm-active').removeClass('sm-hidden').removeClass('unactive');
 							}
 							if(stepFound && objectsToMove !== 0) {
 								objectsToMove--;
-								$(e).removeClass('active').addClass('hidden');
-								if(next) $(e).addClass('unactive');
-								else $(e).removeClass('unactive');
+								$(e).removeClass('sm-active').addClass('sm-hidden');
+								if(next) $(e).addClass('sm-unactive');
+								else $(e).removeClass('sm-unactive');
 							}
-							if(!stepFound && $(e).hasClass('active')) {
+							if(!stepFound && $(e).hasClass('sm-active')) {
 								stepFound = true;
-								$(e).addClass('hidden').removeClass('active');
-								if(next) $(e).addClass('unactive');
-								else $(e).removeClass('unactive');
+								$(e).addClass('sm-hidden').removeClass('sm-active');
+								if(next) $(e).addClass('sm-unactive');
+								else $(e).removeClass('sm-unactive');
 							}
 						});
 					});
@@ -135,8 +138,8 @@
 				reset : function(stepContainer) {
 					verifyStep(stepContainer, function() {
 						$('#'+stepContainer+' .step-page').each(function(i, e) {
-							if(i === 0) $(e).addClass('active').removeClass('hidden').removeClass('unactive');
-							else $(e).removeClass('active').addClass('hidden').addClass('unactive');
+							if(i === 0) $(e).addClass('sm-active').removeClass('sm-hidden').removeClass('sm-unactive');
+							else $(e).removeClass('sm-active').addClass('sm-hidden').addClass('sm-unactive');
 						});
 						stepObjects[stepContainer].reset && stepObjects[stepContainer].reset(); // jshint ignore:line
 					});
@@ -144,8 +147,8 @@
 				destroy : function(stepContainer) {
 					verifyStep(stepContainer, function() {
 						$('#'+stepContainer+' .step-page').each(function(i, e) {
-							if(i === 0) $(e).addClass('active').removeClass('hidden').removeClass('unactive');
-							else $(e).removeClass('active').addClass('hidden').addClass('unactive');
+							if(i === 0) $(e).addClass('sm-active').removeClass('sm-hidden').removeClass('sm-unactive');
+							else $(e).removeClass('sm-active').addClass('sm-hidden').addClass('sm-unactive');
 						});
 						stepObjects[stepContainer].reset && stepObjects[stepContainer].reset(); // jshint ignore:line
 						delete stepObjects[stepContainer];
@@ -153,7 +156,41 @@
 				}
 			};
 		}();
+		$u.toast = function() {
+			var toastQueue = [];
+			var toastTimeout;
+			var defaultToastTimeout = 5000;
+			var toasting = false;
+			function displayToast(toast) {
+				var toastElement = document.createElement('div');
+				toastElement.className = 'animate-250 sm-toast sm-hidden';
+				toastElement.innerHTML = toast.msg;
+				$('body').append(toastElement);
+				setTimeout(function() {
+					requestAnimationFrame(function() {
+						toastElement.className = 'animate-250 sm-toast';
+						setTimeout(function() {
+							toastElement.className = 'animate-250 sm-toast sm-hidden';
+							setTimeout($(toastElement).remove, 300);
+							if(toastQueue.length) displayToast(toastQueue.shift());
+							else toasting = false;
+						}, toast.to || defaultToastTimeout);
+					});
+				}, 50);
+			}
+			return function(msg, to) {
+				toastQueue.push({
+					msg: msg,
+					to: to || defaultToastTimeout
+				});
+				if(!toasting) {
+					toasting = true;
+					displayToast(toastQueue.shift());
+				}
+			};
+		}();
 		$u.api = function() {
+			var apiVer = '/api/v1';
 			function returnStuff(type, url, obj, cb) {
 				if(typeof obj === 'function') {
 					cb = obj;
@@ -163,37 +200,42 @@
 					obj = {};
 					cb = function(){};
 				}
-				$[type](url, obj, function(data) {
-					if(!data.res && !data.err) return cb(data);
-					if(data.err) return cb(data.err);
-					cb(null, data.res);
+				$.ajax({
+					url: url,
+					data: obj,
+					type: type,
+					success: function(data) {
+						if(!data.res && !data.err) return cb(data);
+						if(data.err) return cb(data.err);
+						cb(null, data.res);
+					}
 				});
 			}
 			return {
-				getStuff : function(cb) {returnStuff('get', '/api/v1/stuff', cb);},
-				getStuffById : function(id, cb) {returnStuff('get', '/api/v1/stuff/id/'+id, cb);},
-				getMyStuff : function(cb) {returnStuff('get', '/api/v1/stuff/my', cb);},
-				getMyStuffById : function(id, cb) {returnStuff('get', '/api/v1/stuff/my/id/'+id, cb);},
-				//getStuffByLocation : function(id, cb) {returnStuff('get', '/api/v1/', cb);},
-				addStuff : function(fd, cb) {returnStuff('post', '/api/v1/stuff', fd, cb);},
-				editStuffById : function(id, fd, cb) {returnStuff('post', '/api/v1/stuff/'+id, fd, cb);},
-				deleteStuffById : function(id, cb) {returnStuff('delete', '/api/v1/id/'+id, cb);},
-				getCategories : function(cb) {returnStuff('get', '/api/v1/categories', cb);},
-				getAccountStatus : function(cb) {returnStuff('post', '/api/v1/account/status', cb);},
-				addAccount : function(data, cb) {returnStuff('post', '/api/v1/account/register', data, cb);},
-				getPasswordResetToken : function(email, cb) {returnStuff('post', '/api/v1/account/password/token', {email:email}, cb);},
-				verifyPasswordResetToken : function(token, cb) {returnStuff('post', '/api/v1/account/password/verify', {passwordResetToken:token}, cb);},
-				resetPassword : function(token, password, cb) {returnStuff('post', '/api/v1/account/password/reset', {passwordResetToken:token,password:password}, cb);},
-				verifyEmail : function(token, cb) {returnStuff('post', '/api/v1/account/confirmation', {email_token:token}, cb);},
-				login : function(data, cb) {returnStuff('post', '/api/v1/account/login', data, cb);},
-				logout : function(cb) {returnStuff('post', '/api/v1/account/logout', cb);},
-				getAccount : function(id, cb) {returnStuff('get', '/api/v1/account/info', cb);},
-				editAccount : function(data, cb) {returnStuff('put', '/api/v1/account/info', data, cb);},
-				// archiveAccount : function(cb) {returnStuff('delete', '/api/v1/account/info', cb);},
-				dibsStuffById : function(id, cb) {returnStuff('post', '/api/v1/dibs/'+id, cb);},
-				undibsStuffById : function(id, cb) {returnStuff('post', '/api/v1/undib/'+id, cb);},
-				cancelDibsById : function(id, cb) {returnStuff('delete', '/api/v1/dibs/reject/'+id, cb);},
-				// to be continued...
+				getStuff : function(cb) {returnStuff('get', apiVer+'/stuff', cb);},
+				getStuffById : function(id, cb) {returnStuff('get', apiVer+'/stuff/id/'+id, cb);},
+				getMyStuff : function(cb) {returnStuff('get', apiVer+'/stuff/my', cb);},
+				getMyStuffById : function(id, cb) {returnStuff('get', apiVer+'/stuff/my/id/'+id, cb);},
+				//getStuffByLocation : function(id, cb) {returnStuff('get', apiVer+'/', cb);},
+				addStuff : function(fd, cb) {returnStuff('post', apiVer+'/stuff', fd, cb);},
+				editStuffById : function(id, fd, cb) {returnStuff('post', apiVer+'/stuff/'+id, fd, cb);},
+				deleteStuffById : function(id, cb) {returnStuff('delete', apiVer+'/stuff/id/'+id, cb);},
+				getCategories : function(cb) {returnStuff('get', apiVer+'/categories', cb);},
+				getAccountStatus : function(cb) {returnStuff('post', apiVer+'/account/status', cb);},
+				addAccount : function(data, cb) {returnStuff('post', apiVer+'/account/register', data, cb);},
+				getPasswordResetToken : function(email, cb) {returnStuff('post', apiVer+'/account/password/token', {email:email}, cb);},
+				verifyPasswordResetToken : function(token, cb) {returnStuff('post', apiVer+'/account/password/verify', {passwordResetToken:token}, cb);},
+				resetPassword : function(token, password, cb) {returnStuff('post', apiVer+'/account/password/reset', {passwordResetToken:token,password:password}, cb);},
+				verifyEmail : function(token, cb) {returnStuff('post', apiVer+'/account/confirmation', {email_token:token}, cb);},
+				login : function(data, cb) {returnStuff('post', apiVer+'/account/login', data, cb);},
+				logout : function(cb) {returnStuff('post', apiVer+'/account/logout', cb);},
+				getAccount : function(id, cb) {returnStuff('get', apiVer+'/account/info', cb);},
+				editAccount : function(data, cb) {returnStuff('put', apiVer+'/account/info', data, cb);},
+				// archiveAccount : function(cb) {returnStuff('delete', apiVer+'/account/info', cb);},
+				dibsStuffById : function(id, cb) {returnStuff('post', apiVer+'/dibs/'+id, cb);},
+				undibsStuffById : function(id, cb) {returnStuff('post', apiVer+'/undib/'+id, cb);},
+				rejectStuffById : function(id, cb) {returnStuff('delete', apiVer+'/dibs/reject/'+id, cb);},
+				completeStuffById : function(id, cb) {returnStuff('post', apiVer+'/dibs/complete/'+id, cb);}
 			};
 		}();
 		return $u;

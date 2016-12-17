@@ -7,15 +7,17 @@ function MyItemsController() {
 	var $userData = arguments[4];
 	var $state = arguments[5];
 	var $timeout = arguments[6];
-	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
-		if(!data.res.user) {
+	var data = {};
+	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(result){
+		if(!result.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
 			$scope.openModal('modal');
 		} else {
-			var user = data.res.user;
-			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my/id/' + $stateParams.id).success(function(data) {
+			var user = result.res.user;
+			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my/id/' + $stateParams.id).success(function(result) {
 				if(!data.err) {
 					var imageSet = false;
+					data = result;
 					$scope.listItem = data.res;
 					$scope.googleMapStaticUrl = [
 						'https://maps.googleapis.com/maps/api/staticmap?',
@@ -32,16 +34,18 @@ function MyItemsController() {
 					$scope.editContainerHeader = $([
 						'<div class="animate-250" style="width: 100%;height: auto;background-color: #fff;display: inline-block;position: absolute;top: 0px;z-index: 2;opacity: 0.0001;">',
 						'	<i id="back-to-my-item" class="get-stuff-back-button fa fa-arrow-left animate-250"></i>',
-						'	<div class="sm-text-m" style="display:inline-block;position:relative;margin-left:15px;">Edit '+$scope.listItem.title+'</div>',
+						'	<div class="sm-text-m" style="display:inline-block;position:relative;margin-left:15px;">Edit '+data.res.title+'</div>',
 						'</div>'
 					].join('\n'));
 					$scope.editContainerHeader.css({'pointer-events':'none'});
 					$scope.editContainer = $([
 						'<div class="edit-item-single-details-container sm-hidden animate-250" style="top:40px;position:absolute;">',
 						'	<div class="edit-item-single-image-container">',
-						'		<div style="width: 100%; display: block; height: 120px; position: relative;">',
-						'			<div id="edit-item-image" style="background-position: 50% 50%;background-size:cover;height:100%;width:50%;position:relative;display:inline-block;background-image:url(https://cdn.stuffmapper.com'+$scope.listItem.image_url+');"></div>',
-						'			<input id="edit-image-button" type="button" value="change image" class="sm-button sm-button-default" style="width:calc(50% - 44px);display: inline-block;vertical-align: top;top: 50%;transform: translateY(calc(-50% - 15px));" />',
+						'		<div style="width: 100%; display: block; height: auto; position: relative;">',
+						'			<div style="width: 50%;display: inline-block;">',
+						'				<img src="https://cdn.stuffmapper.com'+$scope.listItem.image_url+'" id="edit-item-image" style="height:auto;width:100%;position:relative;display:inline-block;background-image:url();"></img>',
+						'			</div>',
+						'			<input id="edit-image-button" type="button" value="change image" class="sm-button sm-button-default" style="width:calc(50% - 44px);display: inline-block;vertical-align: top;top: 27px;" />',
 						'		</div>',
 						'		<div style="width: 100%; display: block; height: 120px; position: relative;">',
 						'			<div id="edit-item-location-image" style="background-position: 50% 50%;background-size:cover;height:100%;width:50%;position:relative;display:inline-block;background-image:url('+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+');"></div>',
@@ -70,11 +74,12 @@ function MyItemsController() {
 						'	<div class="sm-button-group" style="width: 100%;display:block;position:relative;">',
 						'		<div class="sm-button-group-2 sm-button-group-left" style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;">',
 						// CANCEL BUTTON SHOULD BE GHOST NEGATIVE
-						'			<input id="my-item-edit-cancel" class="sm-button sm-button-negative sm-text-m" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);color:white;" />',
+						'			<input id="my-item-edit-cancel" class="sm-button sm-button-ghost sm-button-negative sm-text-m" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);color:white;" />',
 						'		</div>',
 						'		<div class="sm-button-group-2 sm-button-group-right" style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;">',
 						'			<input id="my-item-edit-save" class="sm-button sm-button-default sm-text-m" type="button" value="Save" style="margin:20px 10px;width:calc(100% - 10px);float:left;" />',
 						'		</div>',
+						'		<div id="my-item-delete'+$stateParams.id+'" style="cursor: pointer; text-decoration: underline; text-align: center;">Delete item</div>',
 						'	</div>',
 						'</div>',
 						'<div id="edit-item-image-container" class="edit-item-image-container animate-250" style="position: absolute;top: 0px;z-index: 5;width: 100%;height: 100%;pointer-events:none;">',
@@ -113,12 +118,9 @@ function MyItemsController() {
 						'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top-32) + 'px, ' + '0)'
 					});
 					$scope.detailsContainer.html([
-						//'<button id="get-single-item-edit-dibs-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Edit</button>',
-						//($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'<button id="get-single-item-archive-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">Archive</button>':(($scope.listItem.type==='dibber')?'<button id="get-single-item-undibs-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">unDibs</button>':'<button id="get-single-item-reject-button'+$stateParams.id+'" class="sm-button sm-button-ghost sm-text-l sm-button-negative sm-button-full-width animate-250">Reject dibs</button>'),
-						//(!$scope.listItem.dibbed?'<button id="get-single-item-edit-button'+$stateParams.id+'" class="sm-button sm-button-default sm-text-l sm-button-full-width animate-250">Edit Listing</button>':''),
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
-						$scope.listItem.dibbed?'<button id="get-single-item-complete-button'+$stateParams.id+'" class="sm-button sm-button-positive sm-text-l sm-button-full-width animate-250" style="color:#fff;">Complete Dibs!</button>':'',
+						($scope.listItem.type === 'dibber')?'<button id="my-item-undibs-big'+$stateParams.id+'" class=" sm-button sm-text-l sm-button-ghost sm-button-ghost-solid sm-button-negative sm-button-full-width animate-250">UnDibs</button>':'',
 						((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
 						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />')
 					].join('\n'));
@@ -147,12 +149,10 @@ function MyItemsController() {
 					$scope.dropdownMenu = $([
 						'<div id="dropdown-menu" class="popups popups-top-right animate-250 hidden-popup">',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<li id="get-single-item-conversation-popup'+$stateParams.id+'">Go to conversation</li>':'',
-						($scope.listItem.dibbed || !$scope.listItem.attended)?'<li id="get-single-item-complete-popup'+$stateParams.id+'">Mark as picked up!</li>':'',
-						($scope.listItem.type==='lister' && $scope.listItem.dibbed)?'	<li id="get-single-item-reject-button'+$scope.listItem.id+'">Reject dibs</li>':'',
-						($scope.listItem.type==='dibber' && $scope.listItem.dibbed)?'	<li id="get-single-item-undibs-button'+$scope.listItem.id+'">unDibs</li>':'',
+						($scope.listItem.type==='lister' || ($scope.listItem.type==='dibber' && !$scope.listItem.attended))?'<li id="my-item-complete'+$stateParams.id+'">Mark as picked up</li>':'',
+						($scope.listItem.type==='lister' && $scope.listItem.dibbed)?'	<li id="my-item-reject'+$scope.listItem.id+'">Reject dibs</li>':'',
+						($scope.listItem.type==='dibber' && $scope.listItem.dibbed)?'	<li id="my-item-undibs'+$scope.listItem.id+'">unDibs</li>':'',
 						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'	<li id="get-single-item-edit-dibs-button'+$stateParams.id+'">Edit item</li>':'',
-						// ($scope.listItem.type==='lister')?'	<li id="get-single-item-archive-button'+$stateParams.id+'">Delete item</li>':'',
-						// ($scope.listItem.type==='list' && !$scope.listItem.dibbed)?'	<li>re-list</li>':'',
 						'</div>'
 					].join('\n'));
 					$scope.dropdownMenu.appendTo($scope.container);
@@ -207,7 +207,6 @@ function MyItemsController() {
 						$(window).on('resize', watchSize);
 						watchSize();
 					};
-
 					var setMarker = function() {
 						$('#center-marker').addClass('dropped');
 						var mapCenter = $scope.map.getCenter();
@@ -216,7 +215,6 @@ function MyItemsController() {
 						$('#edit-item-location-image').css({
 							'background-image':'url('+$scope.googleMapStaticUrl.replace('{lat}', $scope.lat).replace('{lng}', $scope.lng)+')'
 						});
-
 						// var mapZoom = $scope.map.getZoom();
 						// var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
 						// var mapAnchor = mapSize/2;
@@ -238,6 +236,7 @@ function MyItemsController() {
 								$('#center-marker').css({'display':'none'});
 							});
 						}, 250);
+						$u.toast('Location updated');
 					};
 					var updateItem = function() {
 						var values = {
@@ -265,7 +264,7 @@ function MyItemsController() {
 								$scope.listItem.lng = values.lng;
 								$scope.listItem.category = values.category;
 							}
-							SMToast.set('Item Successfully Updated!',10000);
+							$u.toast('Item Successfully Updated!');
 							$('#my-item-header-text').text(values.title);
 							$('#my-item-header-text').text(values.title);
 							$('#post-item-'+$stateParams.id+' .get-stuff-item-info div').text(values.title);
@@ -278,18 +277,6 @@ function MyItemsController() {
 					};
 					var cancelUpdate = function() {
 						exitEdit();
-					};
-					$scope.resetCompleteDibs = function() {
-						setTimeout(function(){
-							$('#dibs-complete-step i')
-							.addClass('sm-hidden');
-						}, 250);
-					};
-					var completeDibs = function() {
-						$u.modal.open('dibs-complete-modal');
-						setTimeout(function(){
-							$('#dibs-complete-step i').removeClass('sm-hidden');
-						}, 250);
 					};
 					var getLocation = function() {
 						$('#give-location-container').css({
@@ -340,9 +327,6 @@ function MyItemsController() {
 							});
 						},260);
 					};
-					$('#get-single-item-undibs-button'+$scope.listItem.id).on('click', undibs);
-					$('#get-single-item-archive-button'+$stateParams.id).on('click', archive);
-					$('#get-single-item-reject-button'+$stateParams.id).on('click', reject);
 					$('#get-single-item-edit-dibs-button'+$stateParams.id).on('click', edit);
 					$('#get-single-item-conversation-button'+$scope.listItem.id + ', #get-single-item-conversation-popup'+$scope.listItem.id).on('click', goToConversation);
 					$('#back-to-my-stuff').on('click', backToMyStuff);
@@ -352,7 +336,17 @@ function MyItemsController() {
 					$('#back-to-my-item').on('click', exitEdit);
 					$('#my-item-edit-save').on('click', updateItem);
 					$('#my-item-edit-cancel').on('click', cancelUpdate);
-					$('#get-single-item-complete-button'+$stateParams.id+', #get-single-item-complete-popup'+$stateParams.id).on('click', completeDibs);
+
+
+					$('#my-item-undibs-big'+$stateParams.id).on('click', openUndibsModal);
+					$('#my-item-undibs'+$stateParams.id).on('click', openUndibsModal);
+					$('#my-item-reject'+$stateParams.id).on('click', openRejectModal);
+					$('#my-item-delete'+$stateParams.id).on('click', openDeleteModal);
+					$('#my-item-complete'+$stateParams.id).on('click', openCompleteModal);
+
+
+
+
 					//$('#get-single-item-conversation-button'+$stateParams.id)
 					$('#give-image-select').change(function(event) {
 						if (this.files && this.files[0]) {
@@ -521,9 +515,100 @@ function MyItemsController() {
 					}
 				});
 			};
+			function openUndibsModal() {
+				var undibsBodyTemplate = 'Are you sure you want to unDibs <i>{{title}}</i>?  This cannot be undone.';
+				$('#undibs-confirm-modal-body').html(undibsBodyTemplate.replace('{{title}}', data.res.title));
+				$('#my-item-undibs-cancel').on('click', undibsCancel);
+				$('#my-item-undibs-confirm').on('click', undibsConfirm);
+				$u.modal.open('undibs-confirm-modal', function() {
+					$('#my-item-undibs-cancel').off('click', undibsCancel);
+					$('#my-item-undibs-confirm').off('click', undibsConfirm);
+				});
+			}
+			function undibsCancel() {
+				$u.modal.close('undibs-confirm-modal');
+			}
+			function undibsConfirm() {
+				$u.modal.close('undibs-confirm-modal');
+				$u.api.undibsStuffById(data.res.id, function() {
+					$state.go('stuff.my.items');
+					$('#post-item-'+data.res.id).parent().parent().remove();
+					$u.toast('You have successfully undibs\'d <i>'+data.res.title+'</i>');
+					requestAnimationFrame(function(){$(window).resize();});
+				});
+			}
+			function openRejectModal() {
+				var rejectBodyTemplate = 'Are you sure you want to reject <i>{{uname}}</i>\'s Dibs for your item <i>{{title}}</i>? This cannot be undone.'; //dibber uname
+				$('#reject-confirm-modal-body').html(rejectBodyTemplate.replace('{{title}}', data.res.title).replace('{{uname}}', data.res.users[data.res.dibber_id]));
+				$('#my-item-reject-cancel').on('click', rejectCancel);
+				$('#my-item-reject-confirm').on('click', rejectConfirm);
+				$u.modal.open('reject-confirm-modal', function() {
+					$('#my-item-reject-cancel').off('click', rejectCancel);
+					$('#my-item-reject-confirm').off('click', rejectConfirm);
+				});
+			}
+			function rejectCancel() {
+				$u.modal.close('reject-confirm-modal');
+			}
+			function rejectConfirm() {
+				$u.modal.close('reject-confirm-modal');
+				$u.api.rejectStuffById(data.res.id, function() {
+					$state.go('stuff.my.items');
+					$u.toast('You have rejected <i>'+data.res.user[data.res.dibber_id]+'</i>\'s Dibs for <i>'+data.res.title+'</i>');
+				});
+			}
+			function openDeleteModal() {
+				var deleteBodyTemplate = 'Are you sure you want to delete your item <i>{{title}}</i>? This cannot be undone.';
+				$('#delete-confirm-modal-body').html(deleteBodyTemplate.replace('{{title}}', data.res.title));
+				$('#my-item-delete-cancel').on('click', deleteCancel);
+				$('#my-item-delete-confirm').on('click', deleteConfirm);
+				$u.modal.open('delete-confirm-modal', function() {
+					$('#my-item-delete-cancel').off('click', deleteCancel);
+					$('#my-item-delete-confirm').off('click', deleteConfirm);
+				});
+			}
+			function deleteCancel() {
+				$u.modal.close('delete-confirm-modal');
+			}
+			function deleteConfirm() {
+				$u.modal.close('delete-confirm-modal');
+				$u.api.deleteStuffById(data.res.id, function() {
+					$state.go('stuff.my.items');
+					$('#post-item-'+data.res.id).parent().parent().remove();
+					$u.toast('You have successfully deleted <i>'+data.res.title+'</i>');
+					requestAnimationFrame(function(){$(window).resize();});
+				});
+			}
+			function openCompleteModal() {
+				var completeBodyTemplate = data.res.type==='lister'?'Have you given <i>{{dibber}}</i> your item <i>{{title}}</i>?':'Have you received <i>{{title}}</i> from <i>{{lister}}</i>?';
+				$('#complete-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.title).replace('{{dibber}}', data.res.users[data.res.dibber_id]).replace('{{lister}}', data.res.users[data.res.user_id]));
+				$('#my-item-complete-cancel').on('click', completeCancel);
+				$('#my-item-complete-confirm').on('click', completeConfirm);
+				$u.modal.open('complete-confirm-modal', function() {
+					$('#my-item-complete-cancel').off('click', completeCancel);
+					$('#my-item-complete-confirm').off('click', completeConfirm);
+				});
+			}
+			function completeCancel() {
+				$u.modal.close('complete-confirm-modal');
+			}
+			function completeConfirm() {
+				$u.modal.close('complete-confirm-modal');
+				$u.api.completeStuffById(data.res.id, function() {
+					$state.go('stuff.my.items');
+					$('#post-item-'+data.res.id).parent().parent().remove();
+					$u.toast('Dibs for <i>'+data.res.title+'</i> has been completed!');
+					requestAnimationFrame(function(){$(window).resize();});
+				});
+			}
+
 			$scope.$on('$destroy', function() {
+				$('#my-item-undibs-big'+$stateParams.id).off('click', openUndibsModal);
+				$('#my-item-undibs'+$stateParams.id).off('click', openUndibsModal);
+				$('#my-item-reject'+$stateParams.id).off('click', openRejectModal);
+				$('#my-item-delete'+$stateParams.id).off('click', openDeleteModal);
+				$('#my-item-complete'+$stateParams.id).off('click', openCompleteModal);
 				$('#tab-content-container').css({'pointer-events':'all'});
-				$('#get-single-item-undibs-button'+$scope.listItem.id).off('click', undibs);
 				$('#get-single-item-conversation-button'+$scope.listItem.id).off('click', goToConversation);
 				$('#get-stuff-back-button-container').addClass('sm-hidden');
 				$('.get-stuff-back-button').addClass('sm-hidden');
@@ -562,9 +647,7 @@ function MyItemsController() {
 /* jshint ignore:start */
 function getWordsBetweenCurlies(str) {
 	var results = [], re = /{{([^}]+)}}/g, text;
-	while(text = re.exec(str)) {
-		results.push(text[1]);
-	}
+	while(text = re.exec(str)) results.push(text[1]);
 	return results;
 }
 /* jshint ignore:end */

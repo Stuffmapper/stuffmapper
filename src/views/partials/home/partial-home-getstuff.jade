@@ -11,9 +11,11 @@
 	#get-stuff-back-button-container.sm-hidden.animate-250
 		i.get-stuff-back-button.fa.fa-arrow-left.sm-hidden.animate-250(ng-click="setGetStuff()")
 		#get-stuff-item-title.sm-text-m.sm-hidden.animate-250
+	#get-stuff-empty-list.empty-results.sm-hidden(style="background-image:url('img/empty-get.png');z-index:1;")
+		.empty-results-bottom.sm-full-width There doesn't appear to be any stuff in your area. Get started by <a ui-sref="stuff.give">giving stuff</a>!
+	#get-stuff-empty-results.empty-results.sm-hidden(style="background-image:url('img/empty-search.png');z-index: 2;background-color: #fff;")
+		.empty-results-bottom.sm-full-width There isn't any stuff that matches your search right now.
 	ion-content#masonry-container.animate-250.hide-masonry-container
-		//- if ionic
-		//- 	ion-refresher(pulling-text="Pull to refresh..." on-refresh="refresh()")
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems | filter:searchStuff:strict" repeat-done="initMasonry(); getDistance()")
 				a(ui-sref="stuff.get.item({id:{{ list.id }}})" style="cursor: pointer;")
@@ -29,7 +31,7 @@
 		.filter-content-container.sm-hidden.animate-250
 			#clear-filters-button.sm-text-m.sm-full-width.clear-filters(ng-click="clearAll(); showDistance()")
 				span.fa.fa-times(style="padding-right: 5px;padding-left: 1px;")
-				span.noselect clear filters
+				span.noselect reset filters
 			.sm-button-group(style="width: 100%;display:block;height: 34px;")
 				.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
 					input#sign-in-sign-in-button.sm-button.sm-button-s.sm-button-ghost.sm-button-negative.sm-text-m(type="button" value="cancel" style="margin:5px 10px;width:calc(100% - 10px);height:36px;line-height: 9px;" ng-click="hideFilter()")
@@ -45,25 +47,25 @@
 				.filter
 					.filter-label
 						input#item-status-both.item-status-checkbox(type="radio", name="item-status-un-attended", value="item-status-both" checked)
-						label(for="item-status-both" style="margin-left: 5px;")
+						label(for="item-status-both" style="font-weight:500;margin-left: 5px;")
 							span.noselect attended and unattended stuff
 					.filter-label
 						input#item-status-attended.item-status-checkbox(type="radio", name="item-status-un-attended", value="item-status-attended")
-						label(for="item-status-attended" style="margin-left: 5px;")
+						label(for="item-status-attended" style="font-weight:500;margin-left: 5px;")
 							span.noselect attended stuff only
 				.filter-label
 					input#item-status-unattended.item-status-checkbox(type="radio", name="item-status-un-attended", value="item-status-unattended")
-					label(for="item-status-unattended" style="margin-left: 5px;")
+					label(for="item-status-unattended" style="font-weight:500;margin-left: 5px;")
 						span.noselect unattended stuff only
 			#categories.sm-text-m.sm-full-width
 				p.noselect Categories
 				.select-deselect
 						#select-all.select-option(ng-click="selectAll()")
 							span.fa.fa-check.animate-250(style="padding-right: 5px;padding-left: 1px;")
-							span.noselect select all
+							span.noselect(style="text-decoration: underline;") select all
 						#deselect-all.deselect-option(ng-click="deselectAll()")
 							span.fa.fa-times.animate-250(style="padding-right: 5px;padding-left: 1px;")
-							span.noselect deselect all
+							span.noselect(style="text-decoration: underline;") deselect all
 				.filter
 					- each category in ['general', 'arts & crafts', 'books, games, & media', 'building & garden materials', 'clothing & accessories', 'electronics', 'furniture & household', 'kids & babies', 'recreation & sporting goods']
 						.filter-label

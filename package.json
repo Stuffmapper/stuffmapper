@@ -3,7 +3,7 @@
   "description": "",
   "version": "0.0.0",
   "private": true,
-  "main": "main.js",
+  "main": "electron.js",
   "dependencies": {
     "apn": "^1.7.8",
     "aws-sdk": "^2.3.16",

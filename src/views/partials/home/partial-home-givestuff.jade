@@ -13,8 +13,10 @@
 			.give-image-container
 				.give-image-bg
 					.give-image-bg-content
-						.give-image-take-a-pic Show us what you've got!
-						img.give-image-icon-1(src="/img/give-pic-empty-01.png")
+						.give-image-take-a-pic Get ready to give stuff!
+						//- img.give-image-icon-1(src="/img/give-pic-empty-01.png")
+						#give-stuff-empty-list.empty-results(style="background-image:url('/img/give-pic-empty-01.png');")
+							.empty-results-bottom.sm-full-width Show us what you've got!
 			button#give-photo-button.animate-250.give-image-select-container.give-image-buttons.sm-button.sm-button-default.sm-button-full-width.sm-text-l(ng-click="getPhoto()") Choose a photo!
 			input#give-image-select.give-image-select(type="file" accept=".jpg,.jpeg,.png" name="file")
 		li#give-step2.give-steps.animate-250
@@ -31,7 +33,7 @@
 			#give-step3-container
 				#give-image-detail-container
 					img#give-image-details
-				input#give-description-title.sm-text-input.sm-text-input-full-width.sm-text-input-give-stuff(type="text" placeholder="Title" ng-model="giveItem.title")
+				input#give-description-title.sm-text-input.sm-text-input-full-width.sm-text-input-give-stuff(type="text" placeholder="Title" ng-model="giveItem.title" maxlength="31")
 				sm-select#give-category-selector(placeholder="Choose a category..." full-width="true" ng-model="category" options="categories")
 				sm-checkbox(name="testName" ng-model="giveItem.outside" full-width="true") This item is outside <span class="sm-text-s">(do not contact me about this item)</span>
 				textarea#give-description.sm-text-area.sm-text-area-full-width.sm-text-input-give-stuff(name="Description" ng-model="giveItem.description" style="height: 80px;" placeholder="Description (i.e. size, dimensions, condition, etc.)")

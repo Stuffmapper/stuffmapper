@@ -1,6 +1,6 @@
 var bcrypt = require('bcrypt');
 var pg = require('pg');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper2';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper4';
 
 var braintree = require("braintree");
 

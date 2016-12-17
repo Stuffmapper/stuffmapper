@@ -14,6 +14,30 @@ function GetStuffController() {
 	// 	//console.log(this.getBounds());
 	// });
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
+
+
+
+		// setTimeout(function() {
+		// 	$u.step.init({
+		// 		name: 'undibs-confirm-modal-container'
+		// 	});
+		// 	$u.modal.open('undibs-confirm-modal', function() {
+		// 		$u.step.destroy('undibs-confirm-modal-container');
+		// 	});
+		// },5000);
+		$('#closeThingModal').click(function(e) {
+			$u.modal.close('undibs-confirm-modal');
+		});
+		$('#nextStep').click(function(e) {
+			$u.step.next('undibs-confirm-modal-container');
+		});
+		$('#confirmStuff').click(function(e) {
+			$u.modal.close('undibs-confirm-modal');
+		});
+		if(!data.res.length) {
+			$('#loading-get-stuff').addClass('sm-hidden');
+			$('#get-stuff-empty-list').removeClass('sm-hidden');
+		}
 		$scope.listItems = data.res;
 		if($scope.listItems) {
 			$scope.refresh = function() {
@@ -220,6 +244,7 @@ function GetStuffController() {
 				categories.push($(e).val());
 			}
 		});
+		var matchCount = 0;
 		categories = categories.join(' ');
 		if (categories || searchQuery || sliderValue) {
 			$scope.getLocation(function(position){
@@ -240,10 +265,17 @@ function GetStuffController() {
 					if((matches && (a.indexOf(b) > -1) &&
 					((e.attended && attended) || (!e.attended && unattended) || both))) {
 						$('#post-item-' + e.id).parent().parent().css({'display': ''});
+						matchCount++;
 					} else {
 						$('#post-item-' + e.id).parent().parent().css({'display': 'none'});
 					}
 				});
+				if(!matchCount) {
+					$('#get-stuff-empty-results').removeClass('sm-hidden');
+				}
+				else {
+					$('#get-stuff-empty-results').addClass('sm-hidden');
+				}
 				//refresh masonry
 				setTimeout(function () {
 					$(window).resize();

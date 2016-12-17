@@ -13,39 +13,39 @@ function ConversationController() {
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
 			$scope.openModal('modal');
-		} else {
-			var conversationPostId = window.location.pathname.split('items/')[1].split('/messages')[0];
+		}
+		else {
+			var conversationPostId = parseInt(window.location.pathname.split('items/')[1].split('/messages')[0]);
 			$('#conversation-animation-container').css({'pointer-events': 'all'});
 			$stuffTabs.init($scope, '#tab-container .stuff-tabs .my-stuff-tab a');
 			$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+conversationPostId).success(function(data) {
 				$scope.conversation = data.res.conversation;
 				$scope.conversationInfo = data.res.info;
-				console.log(data);
 				$scope.info = data.res.info;
 				requestAnimationFrame(function() {
 					out.scrollTop = out.scrollHeight - out.clientHeight;
 					var len = $('li.conversation-message-container').length;
-					if(!len) {
+					console.log('CONVERSATION LENGTH:', len);
+					if(len === 1 && data.res.info.type === 'dibber') {
 						$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
 					}
 				});
+				$('#conversation-title').text(data.res.info.title);
 				$('#back-to-edit-my-item').on('click', function() {
 					backToEditItem(conversationPostId);
 				});
+				$('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message"><img src="https://cdn.stuffmapper.com'+$scope.conversationInfo.image+'" /><div>'+$scope.conversationInfo.description+'</div></div></li>');
+				requestAnimationFrame(function() {
+					$('#conversation-input').val('');
+					$('#conversation-input').focus();
+					calcTextArea();
+				});
 				$scope.sendMessage = function() {
-					if(!$('#conversation-input').val()) return;
-					$http.post(config.api.host + '/api/v'+config.api.version+'/messages', {
-						conversation_id:(parseInt($scope.conversation.id)),
+					if(!$('#conversation-input').val().trim()) return;
+					$.post(config.api.host + '/api/v'+config.api.version+'/messages', {
+						conversation_id:(parseInt($scope.info.id)),
 						message:$('#conversation-input').val()
-					}, {headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data){return $.param(data);}
-					}).success(function(data) {
-						// console.log($scope.socket);
-						console.log({
-							to: $scope.info.inboundMessenger,
-							from: $scope.info.outboundMessenger,
-							conversation: $scope.conversationInfo.id,
-							message: $('#conversation-input').val()
-						});
+					}, function(data) {
 						$scope.socket.emit('message', {
 							to: $scope.info.inboundMessenger,
 							from: $scope.info.outboundMessenger,
@@ -55,14 +55,7 @@ function ConversationController() {
 						$scope.insertMessage('out', $('#conversation-input').val());
 						$('#conversation-input').val('');
 						$('#conversation-input').focus();
-						var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-						$('#conversation-input')[0].style.height = 'auto';
-						$('#conversation-input')[0].style.height = ($('#conversation-input')[0].scrollHeight) + 'px';
-						$('#conversation-messages-container').css({'height':'calc(100% - '+($('#conversation-input')[0].scrollHeight+10)+'px)'});
-						$('#conversation-input-container').height($('#conversation-input')[0].scrollHeight-2);
-						if(isScrolledToBottom) {
-							out.scrollTop = out.scrollHeight - out.clientHeight;
-						}
+						calcTextArea();
 					});
 				};
 			});
@@ -80,20 +73,21 @@ function ConversationController() {
 					}, 250);
 				}
 			};
-			$('#conversation-input').on('input', function(e) {
-				var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-				this.style.height = 'auto';
-				this.style.height = (this.scrollHeight) + 'px';
-				$('#conversation-messages-container').css({'height':'calc(100% - '+(this.scrollHeight+10)+'px)'});
-				$('#conversation-input-container').height(this.scrollHeight-2);
-				if(isScrolledToBottom) {
-					out.scrollTop = out.scrollHeight - out.clientHeight;
-				}
-			});
+			$('#conversation-input textarea').on('keypress', calcTextArea);
 			$scope.$on('$destroy', function() {
 				$('#conversation-animation-container').css({'pointer-events': 'none'});
 				$('#back-to-edit-my-item').off('click', backToEditItem);
 			});
+		}
+		function calcTextArea(e) {
+			if(e && e.keyCode === 13) return e.preventDefault();
+			var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+			$('#conversation-input textarea')[0].style.height = 'auto';
+			$('#conversation-input textarea')[0].style.height = ($('#conversation-input textarea')[0].scrollHeight) + 'px';
+			$('#conversation-messages-container').css({'height':'calc(100% - '+($('#conversation-input textarea')[0].scrollHeight+10)+'px)'});
+			$('#conversation-input-container').height($('#conversation-input textarea')[0].scrollHeight+10);
+			$('#conversation-input').height($('#conversation-input textarea')[0].scrollHeight+1);
+			if(isScrolledToBottom) out.scrollTop = out.scrollHeight - out.clientHeight;
 		}
 	});
 }

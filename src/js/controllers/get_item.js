@@ -162,7 +162,7 @@ function GetItemController() {
 								$('#loading-get-item').addClass('sm-hidden');
 								return console.log('Payment Failed');
 							}
-							if(data.res.res1[0].attended) $state.go('stuff.my.items.item.conversation', {conversation: data.res.res2[0].id});
+							if(data.res.res1[0].attended) $state.go('stuff.my.items.item.conversation', {id: data.res.res1[0].id});
 							else $state.go('stuff.my.items.item', {id: data.res.res1[0].id});
 						});
 					}
@@ -246,9 +246,7 @@ function GetItemController() {
 						sortBy: 'number',
 						isAnimated: true
 					});
-					setTimeout(function() {
-						$state.go('stuff.my.items.item',{id:$scope.listItem.id});
-					}, 250);
+					// $state.go('stuff.my.items.item',{id:$scope.listItem.id});
 				});
 			}
 		});

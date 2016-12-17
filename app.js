@@ -7,6 +7,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var session = require('express-session');
+var redis = require('redis');
+var redisStore = require('connect-redis')(session);
+var client = redis.createClient();
 var sharedsession = require('express-socket.io-session');
 var passport = require('passport');
 var User = require('./routes/api/v1/config/user');
@@ -18,7 +21,7 @@ var multerS3 = require('multer-s3');
 var braintree = require('braintree');
 var proxy = require('express-http-proxy');
 var pg = require('pg');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper2';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper4';
 AWS.config = new AWS.Config();
 AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
 AWS.config.secretAccessKey = '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';
@@ -50,6 +53,7 @@ var newSession = session({
 	cookie: {
 		maxAge: 36000000
 	},
+	store: new redisStore({ host: 'localhost', port: 6379, client: client,ttl :  260}),
 	secret: 'SuperSecretPassword1!',
 	saveUninitialized: true,
 	resave: true
@@ -108,7 +112,7 @@ app.get('/auth/google_oauth2/callback', function(req,res,next) {
 				'	<div class="sm-modal-content">',
 				'		<div id="sign-in-step" class="modal-step animate-250 active">',
 				'			<h2 class="sm-modal-title animate-250">Uh oh!</h2>',
-				'			<div class="sm-modal-error sm-full-width sm-text-l" style="text-align: center;">It looks like you already signed up with a '+err.type+' account: '+err.email+', not '+err.otherType+'</div><br><br><br><br><div class="sm-full-width sm-text-m" style="text-align: center;">Sign in with your '+err.type+' account below:</div>',
+				'			<div class="sm-modal-error sm-full-width sm-text-l" style="text-align: center;">It looks like you already signed up with a '+capitalizeFirstLetter(err.type)+' account: '+err.email+', not '+capitalizeFirstLetter(err.otherType)+'</div><br><br><br><br><div class="sm-full-width sm-text-m" style="text-align: center;">Sign in with your '+capitalizeFirstLetter(err.type)+' account below:</div>',
 				((err.type==='google')?
 				'			<a style="bottom: 10px;position: absolute;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/google" class="sign-in-up-input social-button google-plus-sign-in"><img src="/img/google-g-logo.svg" class="social-sign-in-icon social-sign-in-icon-google"><span class="social-sign-in-text sm-text-m">Sign in with Google</span></a>':
 				'			<a style="bottom: 10px;position: absolute; color: #fff !important;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/facebook" class="sign-in-up-input social-button facebook-sign-in"><img src="/img/facebook-f-logo.svg" class="social-sign-in-icon social-sign-in-icon-facebook"><span class="social-sign-in-text sm-text-m">Sign in with Facebook</span></a>'),
@@ -159,7 +163,6 @@ app.get('/auth/facebook_oauth2/callback', function(req,res,next){
 
 io.on('connection', function(socket){
 	socket.on('message', function(data) {
-		console.log(socket.handshake.session);
 		if(data.to) {
 			io.sockets.emit((''+data.to), {
 				messages: {
@@ -213,3 +216,6 @@ process.on('SIGINT', function() {
 		process.exit(1);
 	}, 1000);
 });
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}

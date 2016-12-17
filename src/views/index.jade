@@ -50,11 +50,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				var base = document.createElement('base');
 				base.href = path
 				section.insertBefore(base, section.firstChild);
-		else if electron
-			link(href="/styleguide/css/main.css" rel="stylesheet")
 		else
 			base(href="/")
-			link(href="/styleguide/css/main.css" rel="stylesheet")
+			link(href="styleguide/css/main.css" rel="stylesheet")
 		link(href="js/lib/normalize-css/normalize.css" rel="stylesheet")
 		link(href="js/lib/animate.css/animate.min.css" rel="stylesheet")
 		link(href="css/main.app.min.css" rel="stylesheet")
@@ -102,8 +100,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			include ./partials/home/partial-home-conversation
 		script(id="templates/partial-home-settings.html" type="text/ng-template")
 			include ./partials/home/partial-home-settings
-		script(id="templates/partial-home-messages.html" type="text/ng-template")
-			include ./partials/home/partial-home-messages
 		script(id="templates/partial-home-watchlist.html" type="text/ng-template")
 			include ./partials/home/partial-home-watchlist
 		script(id="templates/partial-home-givestuff.html" type="text/ng-template")
@@ -200,9 +196,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							.sm-full-width.sm-text-s
 								p(style="text-align: center;")
 									| By clicking "Sign In", you agree to the
-									a(href="/privacy" target="_blank") Privacy
+									a(href="/privacy" target="_blank" style="margin-left: 3px;margin-right:3px;") Privacy
 									| and
-									a(href="/useragreement" target="_blank") Terms
+									a(href="/useragreement" target="_blank" style="margin-left: 3px;") Terms
 							span.sign-in-local-text — or use your email —
 							input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
 							input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
@@ -228,9 +224,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							.privacy-and-terms-container
 								p(style="margin: 0 auto;font-size: 14px;text-align: center;width:90%;")
 									| By clicking "Sign Up", you agree to the
-									a(href="/privacy" target="_blank") Privacy
+									a(href="/privacy" target="_blank" style="margin-left: 3px;margin-right:3px;") Privacy
 									| and
-									a(href="useragreement" target="_blank") Terms
+									a(href="useragreement" target="_blank" style="margin-left: 3px;") Terms
 							input#sm-sign-up-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(type="button" value="Sign Up" ng-click="signUp()")
 						#confirmation-step.modal-step.animate-250.hidden-modal
 							h2.sm-modal-title Almost Done!
@@ -239,16 +235,17 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								.sm-text-l.sm-full-width.confirmation-text-top(style="text-align: center;") Please check your email
 								#confirmation-step-icon.fa.fa-envelope.sm-hidden
 								.sm-text-l.sm-full-width.confirmation-text-bottom(style="bottom: 0px;text-align: center;position: absolute;") to verify your account
-							input#sm-sign-up-ok-fine-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Ok" ng-click="hideModal()")
+							input#sm-sign-up-ok-fine-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Ok" ng-click="hideModal('sign-in-up-modal')")
 						#sign-up-forgot-password-step.modal-step.animate-250.hidden-modal
-							h2.sm-modal-title Whoops!
+							h2.sm-modal-title Reset
 							.modal-back-button(ng-click="signUpBack()")
 							.confirmation-container
 								.sm-text-m.sm-full-width.confirmation-text Enter your email to reset your password
 								input#sign-up-password-reset-email-input.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
+								#sign-up-password-reset-errors
 							input#sm-sign-up-reset-password-button1.sm-button.sm-button-default.sm-button-full-width(type="button" value="Submit" ng-click="passwordConfirmationStep()" style="position: absolute; bottom:0px;")
 						#sign-up-forgot-password-success-step.modal-step.animate-250.hidden-modal
-							h2.sm-modal-title Password Reset
+							h2.sm-modal-title Reset
 							.modal-back-button(ng-click="signUpBack()")
 							.confirmation-container
 								.sm-text-l.sm-full-width.confirmation-text-top(style="text-align: center;") Please check your email for instructions
@@ -279,16 +276,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							input#sm-reset-password2.sm-text-input.sm-text-input-full-width(type="password" placeholder="confirm password *")
 							#sm-reset-password-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#password-reset-button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Reset Password" ng-click="resetPassword();")
-						//- #password-reset-confirmation-step.modal-step.animate-250.active
-						//- 	h2.sm-modal-title.animate-250 Email Verified!
-						//- 	i.fa.fa-times-circle.sm-email-verification-icon.sm-hidden.animate-250
-						//- 	#email-verification-message.sm-text-m.sm-full-width(style="text-align: center;position: absolute;bottom: calc(48px + 10%);") You have successfully verified your email address?
-						//- 	input#email-verification-button1.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Sign In" ng-click="hideModal();delaySignIn();")
-						//- 	input#email-verification-button2.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Whoops!" ng-click="hideModal();")
 			#password-reset-failure-modal.modal-window.modal-window-hidden.animate-500
 				.modal-header
-				.modal-close(ng-click="hideModal('password-reset-failure-modal')")
-					i.fa.fa-close
 				.sm-modal-content
 					.modal-steps
 						#password-reset-confirmation-failure-step.modal-step.animate-250.active
@@ -296,33 +285,50 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							i.fa.fa-times-circle.sm-email-verification-icon.sm-hidden.animate-250
 							#email-verification-message.sm-text-m.sm-full-width(style="text-align: center;position: absolute;bottom: calc(48px + 10%);") Invalid password reset token!
 							input#password-reset-confirmation-failure-button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="hideModal('password-reset-failure-modal');")
-			#delete-item-modal.modal-window.modal-window-hidden.animate-500
+			#undibs-confirm-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
-				.modal-close(ng-click="hideModal('delete-item-modal')")
-					i.fa.fa-close
 				.sm-modal-content
-					.modal-steps
-						#delete-item-step.modal-step.animate-250.active
-							h2.sm-modal-title.animate-250 Confirm Delete
-							.give-location-text(style="top: 15px;") are you sure you want
-							i.fa.fa-trash.sm-email-verification-icon.animate-250(style="top:calc(50% - 40px);")
-							.give-location-text(style="bottom: 90px;") to delete this item?
-							.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
-								.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
-									button#sign-in-sign-in-button.give-reject-parent.sm-button.sm-text-m.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.fa.fa-times-circle.give-reject1.animate-250(style="margin:20px 10px;width:calc(100% - 10px);font-size:32px;line-height:25px;")
-								.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
-									button#sign-in-sign-up-button.fa.fa-check-circle.sm-button.sm-button-positive.sm-text-m.give-accept1.animate-250(style="margin:20px 10px;width:calc(100% - 10px);float: left;font-size:32px;line-height:25px;")
-			#dibs-complete-modal.modal-window.modal-window-hidden.animate-500
+					h2.sm-modal-title.animate-250 UnDibs Item
+					#undibs-confirm-modal-container.step-container
+						#undibs-confirm-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%;")
+						.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
+							.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+								button#my-item-undibs-cancel.give-reject-parent.sm-button.sm-text-l.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.animate-250(style="margin:20px 10px;width:calc(100% - 10px);") cancel
+							.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+								button#my-item-undibs-confirm.sm-button.sm-button-negative.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") undibs
+			#reject-confirm-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
-				.modal-close(ng-click="hideModal('dibs-complete-modal')")
-					i.fa.fa-close
 				.sm-modal-content
-					.modal-steps
-						#dibs-complete-step.modal-step.animate-250.active
-							h2.sm-modal-title.animate-250 Awesome!
-							i.fa.fa-times-check.sm-positive-color.sm-email-verification-icon.sm-hidden.animate-250
-							#dibs-complete-message.sm-text-m.sm-full-width(style="text-align: center;position: absolute;bottom: calc(48px + 10%);") Woo!
-							input#dibs-complete-button1.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Back to My Stuff" ng-click="hideModal('dibs-complete-modal');secureState('stuff.my.items');resetCompleteDibs();")
+					h2.sm-modal-title.animate-250 Reject Dibs
+					#reject-confirm-modal-container.step-container
+						#reject-confirm-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%;")
+						.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
+							.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+								button#my-item-reject-cancel.give-reject-parent.sm-button.sm-text-l.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.animate-250(style="margin:20px 10px;width:calc(100% - 10px);") cancel
+							.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+								button#my-item-reject-confirm.sm-button.sm-button-negative.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") reject
+			#delete-confirm-modal.modal-window.modal-window-hidden.animate-250
+				.modal-header
+				.sm-modal-content
+					h2.sm-modal-title.animate-250 Delete Item
+					#delete-confirm-modal-container.step-container
+						#delete-confirm-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%;")
+						.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
+							.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+								button#my-item-delete-cancel.give-reject-parent.sm-button.sm-text-l.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.animate-250(style="margin:20px 10px;width:calc(100% - 10px);") cancel
+							.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+								button#my-item-delete-confirm.sm-button.sm-button-negative.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") delete
+			#complete-confirm-modal.modal-window.modal-window-hidden.animate-250
+				.modal-header
+				.sm-modal-content
+					h2.sm-modal-title.animate-250 Confirm Pick Up
+					#complete-confirm-modal-container.step-container
+						#complete-confirm-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%;")
+						.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
+							.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+								button#my-item-complete-cancel.give-reject-parent.sm-button.sm-text-l.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.animate-250(style="margin:20px 10px;width:calc(100% - 10px);") not yet...
+							.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+								button#my-item-complete-confirm.sm-button.sm-button-positive.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") yes!
 		#popups
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
 				//- li
@@ -346,6 +352,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				li#sign-out-option-dropdown(style="display:none;")
 					i.fa.fa-sign-out
 					span(ng-click="logout()") Sign Out
+				a#sign-in-option-dropdown(style="display:none;" href="#signin")
+					li
+						i.fa.fa-sign-in
+						span Sign in
 		ul#side-menu.side-menu.sm-hidden.animate-250
 			#close-menu-button.fa.fa-times(ng-click="toggleSideMenu()")
 			li.side-menu-header
@@ -369,6 +379,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				a.side-menu-link(ng-click="logout(); toggleSideMenu();")
 					.side-menu-icon.fa.fa-sign-out
 					span Sign Out
+			li#side-menu-signin.side-menu-item(style="display:none;")
+				a.side-menu-link(href="#signin" ng-click="toggleSideMenu();")
+					.side-menu-icon.fa.fa-sign-out
+					span Sign Out
 			.side-menu-footer
 				a(ui-sref="/faq#landfill-tracker")
 					.new-thing Stuff saved from landfill
@@ -376,18 +390,18 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				#stuffmapper-logo-container-menu
 					img#logo-menu(src="img/logo-txt-only-bold.png" ng-click="aboutUs(); toggleSideMenu()")
 					.tiny-links
-						a(ui-sref="about", ng-click="toggleSideMenu()") about
+						a(ui-sref="about" ng-click="toggleSideMenu()") about
 						span.tiny-links-separator |
 						a(ui-sref="useragreement", ng-click="toggleSideMenu()") terms
 						span.tiny-links-separator |
-						a(ui-sref="privacy", ng-click="toggleSideMenu()") privacy
+						a(ui-sref="privacy" ng-click="toggleSideMenu()") privacy
 		#side-menu-background.side-menu-background.animate-250.sm-hidden(ng-click="toggleSideMenu()")
 		#container
 			#header
 				#header-menu-icon-container(ng-click="toggleSideMenu()")
 					#header-menu-icon.menu-icon.fa.fa-bars
 				a(ui-sref="stuff.get")
-					img#logo(src="img/logo-txt-only-bold.png" )
+					img#logo(src="img/logo-txt-only-bold.png")
 				#landfill-tracker-header
 				#landfill-tracker-description.sm-text-xs Stuff saved from landfill
 				#user-portal

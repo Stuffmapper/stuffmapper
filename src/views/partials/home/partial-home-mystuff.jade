@@ -5,6 +5,8 @@
 			.double-bounce1
 			.double-bounce2
 		.noselect.loading-text Finding Stuff...
+	#my-stuff-empty-list.empty-results.sm-hidden(style="background-image:url('img/empty-my.png');")
+		.empty-results-bottom.sm-full-width You haven't given or Dibs'd any stuff!  Get started by <a ui-sref="stuff.give">giving</a> or <a ui-sref="stuff.get">getting stuff</a>!
 	ion-content#masonry-container.animate-250(style="height: 100%;")
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems" repeat-done="initMasonry(); getDistance()")
