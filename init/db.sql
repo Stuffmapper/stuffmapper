@@ -1,8 +1,8 @@
 CREATE USER stuffmapper WITH CREATEDB LOGIN SUPERUSER ENCRYPTED PASSWORD 'SuperSecretPassword1!';
 
-CREATE DATABASE stuffmapper1 WITH OWNER stuffmapper;
+CREATE DATABASE stuffmapper4 WITH OWNER stuffmapper;
 
-\c stuffmapper1;
+\c stuffmapper4;
 
 CREATE TABLE status (
 	id BIGSERIAL PRIMARY KEY,
@@ -16,7 +16,7 @@ CREATE TABLE users (
 	uname varchar(32) UNIQUE NOT NULL,
 	email varchar(64) UNIQUE NOT NULL,
 	password text,
-	password_reset_token text,
+	password_reset_token text UNIQUE,
 	phone_number varchar(10),
 	verify_email_token varchar(32) UNIQUE DEFAULT md5(random()::text),
 	verified_email boolean DEFAULT false,
@@ -65,7 +65,7 @@ CREATE TABLE posts (
 	title char(32) NOT NULL,
 	description text,
 	date_created timestamp DEFAULT current_timestamp,
-	date_edited timestamp,
+	date_edited timestamp DEFAULT current_timestamp,
 	lat FLOAT NOT NULL,
 	lng FLOAT NOT NULL,
 	attended boolean NOT NULL,
@@ -144,7 +144,8 @@ CREATE TABLE messages (
 	date_created timestamp DEFAULT current_timestamp,
 	date_edited timestamp DEFAULT current_timestamp,
 	read boolean DEFAULT false,
-	archived boolean DEFAULT false
+	archived boolean DEFAULT false,
+	emailed boolean DEFAULT false
 );
 
 CREATE TABLE watchlist_items (
