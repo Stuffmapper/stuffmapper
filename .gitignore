@@ -40,12 +40,10 @@ www/libs/**
 
 hooks
 www
-js/lib/*
-!js/lib/counter_flipper.js
+src/js/lib/*
 plugins
-projects/electron
-projects/ionic
-projects/web
+electron
+web
 platforms
 .atomignore
 
