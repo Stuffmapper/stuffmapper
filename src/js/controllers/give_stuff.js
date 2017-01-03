@@ -210,7 +210,7 @@ function GiveController() {
 						}, 250);
 						$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
 						$('#give-finished-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
-						$u.toast('Your stuff has been mapped!', 5000);
+						$u.toast('Your stuff has been mapped! Find it in My Stuff!');
 					};
 
 					$scope.editPost = function() {

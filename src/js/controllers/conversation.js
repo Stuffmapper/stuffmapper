@@ -25,7 +25,6 @@ function ConversationController() {
 				requestAnimationFrame(function() {
 					out.scrollTop = out.scrollHeight - out.clientHeight;
 					var len = $('li.conversation-message-container').length;
-					console.log('CONVERSATION LENGTH:', len);
 					if(len === 1 && data.res.info.type === 'dibber') {
 						$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
 					}
@@ -40,12 +39,46 @@ function ConversationController() {
 					$('#conversation-input').focus();
 					calcTextArea();
 				});
+				$([
+					'<div id="dropdown-menu2" class="popups popups-top-right animate-250 hidden-popup">',
+					($scope.info.attended && $scope.info.dibbed)?'<li id="get-single-item-conversation-popup'+$scope.info.id+'">Go to conversation</li>':'',
+					($scope.info.type==='lister' || ($scope.info.type==='dibber' && !$scope.info.attended))?'<li id="my-item-complete'+$scope.info.id+'">Mark as picked up</li>':'',
+					($scope.info.type==='lister' && $scope.info.dibbed)?'	<li id="my-item-reject'+$scope.info.id+'">Reject Dibs</li>':'',
+					($scope.info.type==='dibber' && $scope.info.dibbed)?'	<li id="my-item-undibs'+$scope.info.id+'">unDibs</li>':'',
+					($scope.info.type==='lister' && !$scope.info.dibbed)?'	<li id="get-single-item-edit-dibs-button'+$scope.info.id+'">Edit item</li>':'',
+					'</div>'
+				].join('\n')).appendTo('#conversation-messages-container');
+				$('#my-item-menu-conversation').on('click', openMenu2);
 				$scope.sendMessage = function() {
 					if(!$('#conversation-input').val().trim()) return;
 					$.post(config.api.host + '/api/v'+config.api.version+'/messages', {
 						conversation_id:(parseInt($scope.info.id)),
 						message:$('#conversation-input').val()
 					}, function(data) {
+						if(!$scope.socket) {
+							$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
+							$scope.socket.on((data.res.user.id), function(data) {
+								// SMAlert.set(data.messages.message, 5000, function() {
+								// 	console.log('clicked!');
+								// });
+								var lPath = $location.$$path.split('/');
+								lPath.shift();
+								var out = document.getElementById('conversation-messages');
+								if(out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
+									var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+									$('#conversation-messages').append([
+										'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
+										''+data.messages.message,
+										'</div></li>'
+									].join(''));
+									if(isScrolledToBottom) {
+										$(out).animate({
+											scrollTop: out.scrollHeight - out.clientHeight
+										}, 250);
+									}
+								}
+							});
+						}
 						$scope.socket.emit('message', {
 							to: $scope.info.inboundMessenger,
 							from: $scope.info.outboundMessenger,
@@ -89,5 +122,13 @@ function ConversationController() {
 			$('#conversation-input').height($('#conversation-input textarea')[0].scrollHeight+1);
 			if(isScrolledToBottom) out.scrollTop = out.scrollHeight - out.clientHeight;
 		}
+	});
+}
+function openMenu2() {
+	$('#dropdown-menu2').removeClass('hidden-popup');
+	requestAnimationFrame(function() {
+		$('body').one('click', function() {
+			$('#dropdown-menu2').addClass('hidden-popup');
+		});
 	});
 }

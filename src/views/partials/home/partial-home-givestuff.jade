@@ -16,19 +16,18 @@
 						.give-image-take-a-pic Get ready to give stuff!
 						//- img.give-image-icon-1(src="/img/give-pic-empty-01.png")
 						#give-stuff-empty-list.empty-results(style="background-image:url('/img/give-pic-empty-01.png');")
-							.empty-results-bottom.sm-full-width Show us what you've got!
+							//- .empty-results-bottom.sm-full-width Show us what you've got!
 			button#give-photo-button.animate-250.give-image-select-container.give-image-buttons.sm-button.sm-button-default.sm-button-full-width.sm-text-l(ng-click="getPhoto()") Choose a photo!
 			input#give-image-select.give-image-select(type="file" accept=".jpg,.jpeg,.png" name="file")
 		li#give-step2.give-steps.animate-250
 			#give-location-container
-				#give-location-text1.give-location-text move the map around
-				i.fa.fa-location-arrow.give-location-icon
-				#give-location-text2.give-location-text to set the pick-up location
+				i.fa.fa-map-marker.give-location-icon(style="font-size: 160px;")
+				#give-location-text2.empty-results-bottom Move the map around to set the pick-up location.
 			.sm-button-group(style="width: 100%;display:block;position:absolute;bottom:0px;")
 				.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
-					input#give-location-prev-step.sm-button.sm-button-default.sm-text-m(type="button" value="Back" ng-click="prevStep()" style="margin:20px 10px;width:calc(100% - 10px);")
+					input#give-location-prev-step.sm-button-ghost.animate-250.sm-button.sm-button-default.sm-text-m(type="button" value="Back" ng-click="prevStep()" style="margin:20px 10px;width:calc(100% - 10px);")
 				.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
-					input#give-location-next-step.sm-button.sm-button-default.sm-text-m(type="button" value="Next" ng-click="setMarker()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
+					input#give-location-next-step.sm-button.sm-button-default.sm-text-m.animate-250(type="button" value="Next" ng-click="setMarker()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
 		li#give-step3.give-steps.animate-250
 			#give-step3-container
 				#give-image-detail-container
@@ -39,7 +38,7 @@
 				textarea#give-description.sm-text-area.sm-text-area-full-width.sm-text-input-give-stuff(name="Description" ng-model="giveItem.description" style="height: 80px;" placeholder="Description (i.e. size, dimensions, condition, etc.)")
 			.sm-button-group(style="width: 100%;display:block;position:absolute;bottom:0px;")
 				.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
-					input#give-description-submit-prev-step.sm-button.sm-button-default.sm-text-m(type="button" value="Back" ng-click="prevStep()" style="margin:20px 10px;width:calc(100% - 10px);")
+					input#give-description-submit-prev-step.sm-button.sm-button-ghost.sm-button-default.sm-text-m(type="button" value="Back" ng-click="prevStep()" style="margin:20px 10px;width:calc(100% - 10px);")
 				.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
 					input#give-description-submit.sm-button.sm-button-default.sm-text-m(type="button" value="Submit" ng-click="uploadItem()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
 		li#give-step4.give-steps.animate-250

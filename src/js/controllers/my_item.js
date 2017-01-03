@@ -73,13 +73,12 @@ function MyItemsController() {
 						'		</div>',
 						'	<div class="sm-button-group" style="width: 100%;display:block;position:relative;">',
 						'		<div class="sm-button-group-2 sm-button-group-left" style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;">',
-						// CANCEL BUTTON SHOULD BE GHOST NEGATIVE
-						'			<input id="my-item-edit-cancel" class="sm-button sm-button-ghost sm-button-negative sm-text-m" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);color:white;" />',
+						'			<input id="my-item-edit-cancel" class="sm-button sm-button-ghost sm-button-negative sm-text-m animate-250" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);" />',
 						'		</div>',
 						'		<div class="sm-button-group-2 sm-button-group-right" style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;">',
 						'			<input id="my-item-edit-save" class="sm-button sm-button-default sm-text-m" type="button" value="Save" style="margin:20px 10px;width:calc(100% - 10px);float:left;" />',
 						'		</div>',
-						'		<div id="my-item-delete'+$stateParams.id+'" style="cursor: pointer; text-decoration: underline; text-align: center;">Delete item</div>',
+						'		<div id="my-item-delete'+$stateParams.id+'" style="cursor: pointer; text-decoration: underline; color:#ED5565; text-align: center;">Delete item</div>',
 						'	</div>',
 						'</div>',
 						'<div id="edit-item-image-container" class="edit-item-image-container animate-250" style="position: absolute;top: 0px;z-index: 5;width: 100%;height: 100%;pointer-events:none;">',
@@ -100,9 +99,8 @@ function MyItemsController() {
 						'	<input id="give-image-select" type="file" accept=".jpg,.jpeg,.png" name="file" class="give-image-select" style="height: 0px;width: 0px;position: absolute;" />',
 						'</div>',
 						'<div id="give-location-container" class="animate-250" style="top:0px;z-index:9;width:100%;height:100%;position:absolute;opacity: 0.0001;transform: translate3d(0px, 10%, 0);pointer-events: none;">',
-						'	<div id="give-location-text1" class="give-location-text">move the map around</div>',
-						'	<i class="fa fa-location-arrow give-location-icon" style="font-size: 100px;"></i>',
-						'	<div id="give-location-text2" class="give-location-text">to set the pick-up location</div>',
+						'	<i class="fa fa-location-arrow give-location-icon" style="font-size: 160px !important;"></i>',
+						'	<div class="empty-results-bottom sm-full-width">Move the map around to set the pick-up location.</div>',
 						'	<div style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;" class="sm-button-group">',
 						'		<div style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;" class="sm-button-group-2 sm-button-group-left">',
 						'			<button id="edit-reject-location" style="margin:20px 10px;width:calc(100% - 10px);font-size:32px;line-height:25px;" class="give-reject-parent sm-button sm-text-m sm-button-ghost sm-button-ghost-solid sm-button-negative fa fa-times-circle give-reject1 animate-250"></button>',
@@ -120,7 +118,7 @@ function MyItemsController() {
 					$scope.detailsContainer.html([
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
-						($scope.listItem.type === 'dibber')?'<button id="my-item-undibs-big'+$stateParams.id+'" class=" sm-button sm-text-l sm-button-ghost sm-button-ghost-solid sm-button-negative sm-button-full-width animate-250">UnDibs</button>':'',
+						($scope.listItem.type === 'dibber')?'<button id="my-item-undibs-big'+$stateParams.id+'" class=" sm-button sm-text-l sm-button-ghost sm-button-ghost-solid sm-button-negative sm-button-full-width animate-250">unDibs</button>':'',
 						((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
 						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />')
 					].join('\n'));
@@ -142,7 +140,7 @@ function MyItemsController() {
 						'<div class="animate-250" style="transform:translate3d(0px,-100%,0);width:100%;height:auto;background-color:#fff;display:inline-block;position:relative;">',
 						'	<i id="back-to-my-stuff" class="get-stuff-back-button fa fa-arrow-left animate-250"></i>',
 						'	<div id="my-item-header-text" class="sm-text-m" style="display:inline-block;position:relative;margin-left:15px;">'+data.res.title+'</div>',
-						'	<i id="my-item-menu" class="fa fa-cog">',
+						(!$scope.listItem.dibbed?'	<i id="my-item-edit-button" class="fa fa-pencil-square-o">':'	<i id="my-item-menu" class="fa fa-cog">'),
 						'</div>'
 					].join('\n'));
 					$scope.titleHeader.appendTo($scope.container);
@@ -150,7 +148,7 @@ function MyItemsController() {
 						'<div id="dropdown-menu" class="popups popups-top-right animate-250 hidden-popup">',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<li id="get-single-item-conversation-popup'+$stateParams.id+'">Go to conversation</li>':'',
 						($scope.listItem.type==='lister' || ($scope.listItem.type==='dibber' && !$scope.listItem.attended))?'<li id="my-item-complete'+$stateParams.id+'">Mark as picked up</li>':'',
-						($scope.listItem.type==='lister' && $scope.listItem.dibbed)?'	<li id="my-item-reject'+$scope.listItem.id+'">Reject dibs</li>':'',
+						($scope.listItem.type==='lister' && $scope.listItem.dibbed)?'	<li id="my-item-reject'+$scope.listItem.id+'">Reject Dibs</li>':'',
 						($scope.listItem.type==='dibber' && $scope.listItem.dibbed)?'	<li id="my-item-undibs'+$scope.listItem.id+'">unDibs</li>':'',
 						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'	<li id="get-single-item-edit-dibs-button'+$stateParams.id+'">Edit item</li>':'',
 						'</div>'
@@ -264,7 +262,7 @@ function MyItemsController() {
 								$scope.listItem.lng = values.lng;
 								$scope.listItem.category = values.category;
 							}
-							$u.toast('Item Successfully Updated!');
+							$u.toast('Changes have been saved.');
 							$('#my-item-header-text').text(values.title);
 							$('#my-item-header-text').text(values.title);
 							$('#post-item-'+$stateParams.id+' .get-stuff-item-info div').text(values.title);
@@ -327,7 +325,7 @@ function MyItemsController() {
 							});
 						},260);
 					};
-					$('#get-single-item-edit-dibs-button'+$stateParams.id).on('click', edit);
+					$('#get-single-item-edit-dibs-button'+$stateParams.id+', #my-item-edit-button').on('click', edit);
 					$('#get-single-item-conversation-button'+$scope.listItem.id + ', #get-single-item-conversation-popup'+$scope.listItem.id).on('click', goToConversation);
 					$('#back-to-my-stuff').on('click', backToMyStuff);
 					$('#my-item-menu').on('click', openMenu);
@@ -453,6 +451,7 @@ function MyItemsController() {
 							});
 							setTimeout(function() {
 								$state.go('stuff.my.items');
+								$u.toast('You\'ve rejected this Dibs. Your item will be re-mapped shortly.');
 							}, 250);
 						});
 					}
@@ -533,7 +532,7 @@ function MyItemsController() {
 				$u.api.undibsStuffById(data.res.id, function() {
 					$state.go('stuff.my.items');
 					$('#post-item-'+data.res.id).parent().parent().remove();
-					$u.toast('You have successfully undibs\'d <i>'+data.res.title+'</i>');
+					$u.toast('You have successfully unDibs\'d <i>'+data.res.title+'</i>');
 					requestAnimationFrame(function(){$(window).resize();});
 				});
 			}
@@ -575,7 +574,7 @@ function MyItemsController() {
 				$u.api.deleteStuffById(data.res.id, function() {
 					$state.go('stuff.my.items');
 					$('#post-item-'+data.res.id).parent().parent().remove();
-					$u.toast('You have successfully deleted <i>'+data.res.title+'</i>');
+					$u.toast('Your listing has been removed.');
 					requestAnimationFrame(function(){$(window).resize();});
 				});
 			}

@@ -49,7 +49,9 @@ html.ionic.ios {
 .loggedIn #side-menu-logout, .loggedIn #sign-out-option-dropdown {
 	display: block !important;
 }
-
+.loggedIn #side-menu-signin, .loggedIn #sign-in-option-dropdown {
+	display: none !important;
+}
 #chatra {
 	left: 80px;
 	z-index: 1 !important;
@@ -115,7 +117,6 @@ html.ionic.ios {
 	left: 0px;
 	text-align: center;
 	font-size: 18px;
-	pointer-events: all;
 }
 #get-stuff-empty-results {
 	height: calc(100% - 42px);
@@ -654,7 +655,7 @@ html.ionic.ios {
 	}
 }
 
-#my-item-menu {
+#my-item-menu, #my-item-edit-button, #my-item-menu-conversation {
 	padding: 0px 14px;
 	right: 0px;
 	position: absolute;
@@ -663,7 +664,7 @@ html.ionic.ios {
 	cursor: pointer;
 }
 
-#dropdown-menu {
+#dropdown-menu, #dropdown-menu2 {
 	z-index: 99;
 	right: 3px;
 	width: 150px;
@@ -697,17 +698,20 @@ html.ionic.ios {
 	background-color: #fff;
 	position: fixed;
 	z-index: 1;
-	height: 375px;
+	max-height: 550px;
+	height: auto;
 	overflow: hidden;
 	padding: 0px;
 	width: 100%;
 	position: relative;
 	&.sm-hidden {
-		height: 0px;
+		max-height: 0px;
 	}
 }
 #checkout > .payment-form {
 	margin: 5%;
+	-webkit-overflow-scrolling: touch;
+	overflow-y: auto;
 }
 
 .get-item-single-image-container {
@@ -1645,7 +1649,7 @@ html.ionic.ios {
 	color: $charcoal-dark;
 }
 #give-location-container{
-	background-color: $fog-dark;
+	background-color: #fff;
 	height: 100%;
 	position: relative;
 	display: block;
