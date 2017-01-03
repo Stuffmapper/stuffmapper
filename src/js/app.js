@@ -3,7 +3,7 @@ var db;
 var stuffMapp = angular
 .module('stuffMapp', config.modules)
 .factory('$userData', function() {
-	var data = { loggedIn: $('html').hasClass('loggedIn'), braintreeToken: '', FirstName: '', LastName: '', email: '', userId: 0 };
+	var data = { loggedIn: $('html').hasClass('loggedIn'), braintreeToken: '', FirstName: '', LastName: '', email: '', userId: 0, userName: '' };
 	return {
 		isLoggedIn: function () { return data.loggedIn; },
 		setLoggedIn: function (loggedIn) { data.loggedIn = loggedIn; },
@@ -11,6 +11,8 @@ var stuffMapp = angular
 		setFirstName: function (firstName) { data.FirstName = firstName; },
 		getLastName: function () { return data.LastName; },
 		setLastName: function (lastName) { data.LastName = lastName; },
+		getUserName: function () { return data.UserName; },
+		setUserName: function (userName) { data.UserName = userName; },
 		getUserId: function () { return data.UserId; },
 		setUserId: function (userId) { data.UserId = userId; },
 		getEmail: function () { return data.Email; },
@@ -18,7 +20,7 @@ var stuffMapp = angular
 		getBraintreeToken: function () { return data.braintreeToken; },
 		setBraintreeToken: function (braintreeToken) { data.braintreeToken = braintreeToken; },
 		clearData: function () {
-			data = { FirstName: '', LastName: '', email: '', userId: 0, braintreeToken: '' };
+			data = { FirstName: '', LastName: '', email: '', userId: 0, braintreeToken: '', userName: '' };
 		}
 	};
 })

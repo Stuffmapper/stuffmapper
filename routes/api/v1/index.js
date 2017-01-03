@@ -198,7 +198,7 @@ router.get('/stuff/my', isAuthenticated, function(req, res) {
 			}
 			var rowsLen = result.rows.length;
 			var rowCount = 0;
-			var result1 = {['rows']:[]};
+			var result1 = {rows:[]};
 			result.rows.forEach(function(e, i) {
 				var query = [
 					'SELECT * FROM pick_up_success WHERE undibbed = false AND',

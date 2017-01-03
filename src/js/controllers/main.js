@@ -97,28 +97,28 @@ function MainController() {
 		});
 	};
 	$scope.queries = getSearchQueries();
-	var visited = localStorage.getItem('visited');
-	if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
-		$('#lock-screen').css({
-			'pointer-events': 'all',
-			opacity: 1
-		});
-		localStorage.setItem('visited', true);
-		$scope.closeLockScreen = function() {
-			$('#lock-screen').css({
-				'pointer-events': 'none',
-				opacity: 0.0001
-			});
-			setTimeout(function() {
-				requestAnimationFrame(function() {
-					$('#lock-screen').css({
-						display:'none'
-					});
-				});
-			}, 550);
-		};
-	}
-	else $('#lock-screen').css({display:'none'});
+	// var visited = localStorage.getItem('visited');
+	// if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
+	// 	$('#lock-screen').css({
+	// 		'pointer-events': 'all',
+	// 		opacity: 1
+	// 	});
+	// 	localStorage.setItem('visited', true);
+	// 	$scope.closeLockScreen = function() {
+	// 		$('#lock-screen').css({
+	// 			'pointer-events': 'none',
+	// 			opacity: 0.0001
+	// 		});
+	// 		setTimeout(function() {
+	// 			requestAnimationFrame(function() {
+	// 				$('#lock-screen').css({
+	// 					display:'none'
+	// 				});
+	// 			});
+	// 		}, 550);
+	// 	};©
+	// }
+	// else $('#lock-screen').css({display:'none'});
 	if($scope.queries.email_verification_token) $scope.openEmailVerificationModal($scope.queries.email_verification_token);
 	else if($scope.queries.password_reset_token) $scope.openPasswordResetModal($scope.queries.password_reset_token);
 	if ($ionicPlatform && $cordovaSQLite) {
@@ -140,6 +140,7 @@ function MainController() {
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
+			$userData.setUserName(data.res.user.uname);
 			$userData.setLoggedIn(true);
 		}
 		if(data.res && data.res.messages) {
@@ -177,8 +178,6 @@ function MainController() {
 			$userData.setUserId(data.res.user.id);
 			$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
 			$scope.socket.on((data.res.user.id), function(data) {
-				console.log('got a message!');
-				console.log(data);
 				// SMAlert.set(data.messages.message, 5000, function() {
 				// 	console.log('clicked!');
 				// });
@@ -222,7 +221,6 @@ function MainController() {
 		$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
 		$scope.popUpOpen = false;
 		$u.modal.close(modalToClose);
-		console.log(modalToClose);
 		$scope.popUpTimeout = setTimeout(function() {
 			$('#sign-in-step').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').css({'transform':''});
@@ -325,6 +323,7 @@ function MainController() {
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
+			$userData.setUserName(data.res.user.uname);
 			$userData.setLoggedIn(true);
 			if(!$scope.redirectState) $state.reload();
 			else {
@@ -456,6 +455,7 @@ function MainController() {
 			$('html').addClass('loggedIn');
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
+			$userData.setUserName(data.res.user.uname);
 			$userData.setLoggedIn(true);
 			$scope.hideModal('sign-in-up-modal');
 			location.hash = '';
@@ -495,7 +495,7 @@ function MainController() {
 			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
 				$state.go('stuff.get');
 				$state.reload();
-				$u.toast('See you next time!');
+				$u.toast('You\'ve been logged out. See you next time, <i>'+$userData.getUserName()+'</i>!');
 			}
 		});
 	};
@@ -535,10 +535,7 @@ function MainController() {
 			message = 'invalid email address';
 			if (data.err || !data.res.isValid) return $('#sm-password-confirmation-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
 		}
-		if(!valid) {
-			$('#sign-up-password-reset-errors').text('invalid email address');
-			return;
-		}
+		if(!valid) return $('#sign-up-password-reset-errors').text('invalid email address');
 		else {
 			$.post(config.api.host + '/api/v' + config.api.version + '/account/password/token', {
 				email: emailInput

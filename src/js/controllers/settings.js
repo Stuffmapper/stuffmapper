@@ -35,7 +35,7 @@ function SettingsController() {
 					}
 				}).success(function(data) {
 					//console.log(data);
-					$u.toast('Changes saved');
+					$u.toast('Changes have been saved.');
 				});
 			};
 

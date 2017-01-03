@@ -295,7 +295,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
 								button#my-item-undibs-cancel.give-reject-parent.sm-button.sm-text-l.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.animate-250(style="margin:20px 10px;width:calc(100% - 10px);") cancel
 							.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
-								button#my-item-undibs-confirm.sm-button.sm-button-negative.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") undibs
+								button#my-item-undibs-confirm.sm-button.sm-button-negative.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") unDibs
 			#reject-confirm-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
 				.sm-modal-content
@@ -321,7 +321,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			#complete-confirm-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
 				.sm-modal-content
-					h2.sm-modal-title.animate-250 Confirm Pick Up
+					h2.sm-modal-title.animate-250 Confirm Pick-up
 					#complete-confirm-modal-container.step-container
 						#complete-confirm-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%;")
 						.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
@@ -352,10 +352,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				li#sign-out-option-dropdown(style="display:none;")
 					i.fa.fa-sign-out
 					span(ng-click="logout()") Sign Out
-				a#sign-in-option-dropdown(style="display:none;" href="#signin")
-					li
-						i.fa.fa-sign-in
-						span Sign in
+				li#sign-in-option-dropdown(style="display:block;" href="#signin")
+					i.fa.fa-sign-in
+					span(ng-click="openModal('modal')") Sign in
 		ul#side-menu.side-menu.sm-hidden.animate-250
 			#close-menu-button.fa.fa-times(ng-click="toggleSideMenu()")
 			li.side-menu-header
@@ -379,10 +378,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				a.side-menu-link(ng-click="logout(); toggleSideMenu();")
 					.side-menu-icon.fa.fa-sign-out
 					span Sign Out
-			li#side-menu-signin.side-menu-item(style="display:none;")
-				a.side-menu-link(href="#signin" ng-click="toggleSideMenu();")
+			li#side-menu-signin.side-menu-item(style="display:block;")
+				a.side-menu-link(ng-click="openModal('modal'); toggleSideMenu();")
 					.side-menu-icon.fa.fa-sign-out
-					span Sign Out
+					span Sign In
 			.side-menu-footer
 				a(ui-sref="/faq#landfill-tracker")
 					.new-thing Stuff saved from landfill

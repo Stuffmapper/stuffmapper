@@ -2,6 +2,7 @@
 	.animate-250(style="width: 100%;height: auto;background-color: #fff;display: block;position: relative;z-index: 2;")
 		i#back-to-edit-my-item.get-stuff-back-button.fa.fa-arrow-left.animate-250
 		#conversation-title.sm-text-m(style="display:inline-block;position:relative;margin-left:15px;")
+		i#my-item-menu-conversation.fa.fa-cog
 	#conversation-messages-container
 		ul#conversation-messages
 			li.conversation-message-container(ng-repeat="message in conversation | reverse" class="conversation-message-container-{{ message.type }}")

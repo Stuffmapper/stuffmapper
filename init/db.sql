@@ -162,7 +162,6 @@ CREATE TABLE watchlist_keys (
 	category_id integer REFERENCES categories(id)
 );
 
-
 -- user does not have to be logged in
 CREATE TABLE tracker (
 	id BIGSERIAL PRIMARY KEY,
@@ -191,19 +190,3 @@ INSERT INTO categories (category) VALUES
 ('General'),
 ('Kids & Babies'),
 ('Recreation');
-
--- HARD MODE!  Create DB trigger that runs async on the server
--- CREATE FUNCTION notify_trigger() RETURNS trigger AS $$
--- DECLARE
--- BEGIN
---   PERFORM pg_notify('watchers', TG_TABLE_NAME || ',id,' || NEW.id );
---   RETURN new;
--- END;
--- $$ LANGUAGE plpgsql;
---
--- CREATE TRIGGER watched_table_trigger AFTER INSERT OR UPDATE ON bar
--- FOR EACH ROW EXECUTE PROCEDURE notify_trigger();
-
-
-
---
