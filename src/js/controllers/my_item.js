@@ -9,11 +9,12 @@ function MyItemsController() {
 	var $timeout = arguments[6];
 	var data = {};
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(result){
-		if(!result.res.user) {
+		if((result.res && !result.res.user) || !result.res) {
 			$state.go('stuff.get', {'#':'signin'});
 			$scope.openModal('modal');
 		} else {
 			var user = result.res.user;
+			var newWindow = !!($('#post-item-' + $stateParams.id + ' img').length === 0);
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my/id/' + $stateParams.id).success(function(result) {
 				if(!data.err) {
 					var imageSet = false;
@@ -96,7 +97,7 @@ function MyItemsController() {
 						'	    </div>',
 						'	  </div>',
 						'	</div>',
-						'	<input id="give-image-select" type="file" accept=".jpg,.jpeg,.png" name="file" class="give-image-select" style="height: 0px;width: 0px;position: absolute;" />',
+						'	<input id="give-image-select" style="opacity:0.0001;" type="file" accept=".jpg,.jpeg,.png" name="file" class="give-image-select" style="height: 0px;width: 0px;position: absolute;" />',
 						'</div>',
 						'<div id="give-location-container" class="animate-250" style="top:0px;z-index:9;width:100%;height:100%;position:absolute;opacity: 0.0001;transform: translate3d(0px, 10%, 0);pointer-events: none;">',
 						'	<i class="fa fa-location-arrow give-location-icon" style="font-size: 160px !important;"></i>',
@@ -112,9 +113,7 @@ function MyItemsController() {
 						'</div>'
 					].join('\n'));
 					$scope.containerBackground = $('<div class="get-item-single-background animate-250 sm-hidden"></div>');
-					$scope.imageContainer.css({
-						'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top-32) + 'px, ' + '0)'
-					});
+					if(!newWindow) $scope.imageContainer.css({'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top-32) + 'px, ' + '0)'});
 					$scope.detailsContainer.html([
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
@@ -147,7 +146,8 @@ function MyItemsController() {
 					$scope.dropdownMenu = $([
 						'<div id="dropdown-menu" class="popups popups-top-right animate-250 hidden-popup">',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<li id="get-single-item-conversation-popup'+$stateParams.id+'">Go to conversation</li>':'',
-						($scope.listItem.type==='lister' || ($scope.listItem.type==='dibber' && !$scope.listItem.attended))?'<li id="my-item-complete'+$stateParams.id+'">Mark as picked up</li>':'',
+						'<li id="my-item-complete'+$stateParams.id+'">Mark as picked up</li>',
+						(!$scope.listItem.attended)?'<li id="my-item-complete'+$stateParams.id+'">Mark as gone :(</li>':'',
 						($scope.listItem.type==='lister' && $scope.listItem.dibbed)?'	<li id="my-item-reject'+$scope.listItem.id+'">Reject Dibs</li>':'',
 						($scope.listItem.type==='dibber' && $scope.listItem.dibbed)?'	<li id="my-item-undibs'+$scope.listItem.id+'">unDibs</li>':'',
 						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'	<li id="get-single-item-edit-dibs-button'+$stateParams.id+'">Edit item</li>':'',
@@ -335,15 +335,11 @@ function MyItemsController() {
 					$('#my-item-edit-save').on('click', updateItem);
 					$('#my-item-edit-cancel').on('click', cancelUpdate);
 
-
 					$('#my-item-undibs-big'+$stateParams.id).on('click', openUndibsModal);
 					$('#my-item-undibs'+$stateParams.id).on('click', openUndibsModal);
 					$('#my-item-reject'+$stateParams.id).on('click', openRejectModal);
 					$('#my-item-delete'+$stateParams.id).on('click', openDeleteModal);
 					$('#my-item-complete'+$stateParams.id).on('click', openCompleteModal);
-
-
-
 
 					//$('#get-single-item-conversation-button'+$stateParams.id)
 					$('#give-image-select').change(function(event) {
@@ -487,6 +483,7 @@ function MyItemsController() {
 				});
 			};
 			var undibs = function() {
+				console.log('asdfjasdjfkalsdfj ', $scope.listItem.id);
 				$http.post(config.api.host + '/api/v' + config.api.version + '/undib/' + $scope.listItem.id, {}, {
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'

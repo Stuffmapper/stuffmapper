@@ -41,6 +41,17 @@ function MyStuffController() {
 							isAnimated: true
 						});
 					});
+					requestAnimationFrame(function() {
+						data.res.forEach(function(e) {
+							var isDibber = (parseInt(e.dibber_id) === parseInt($userData.getUserId()));
+							if(e.dibber_id === null) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-lister">posted</div>');
+							else if(parseInt(e.messages.from_user) === 0 && isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-warning"><i class="fa fa-commenting" /> !</div>');
+							else if(parseInt(e.messages.count) > 0 && isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-dibber">My Dibs!  <i class="fa fa-comment" />  '+e.messages.count+'</div>');
+							else if(parseInt(e.messages.count) > 0 && !isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-lister">Dibs\'d!  <i class="fa fa-comment" />  '+e.messages.count+'</div>');
+							else if(parseInt(e.messages.count) === 0 && isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-dibber">My Dibs!  <i class="fa fa-comment-o" /></div>');
+							else if(parseInt(e.messages.count) === 0 && !isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-lister">Dibs\'d!  <i class="fa fa-comment-o" /></div>');
+						});
+					});
 					$(window).resize(function() {
 						$('.masonry-grid').isotope({
 							columnWidth: $('.masonry-grid').width()/2,

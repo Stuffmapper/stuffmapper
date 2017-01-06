@@ -8,5 +8,6 @@
 			li.conversation-message-container(ng-repeat="message in conversation | reverse" class="conversation-message-container-{{ message.type }}")
 				.fa.fa-user.user-icon-message(ng-if="message.type=='in'")
 				.conversation-message(class="conversation-{{ message.type }}-message") {{ message.message }}
+				.conversation-message-date(class="conversation-date-{{ message.type }}-message") {{ message.date_created }}
 	#conversation-input-container
 		sm-textarea-group-button.sm-full-width#conversation-input(rows="1" placeholder="send a message" submit="sendMessage()")

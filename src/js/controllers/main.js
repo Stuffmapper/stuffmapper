@@ -176,28 +176,7 @@ function MainController() {
 	function initUserData(data) {
 		if (data.res.user) {
 			$userData.setUserId(data.res.user.id);
-			$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
-			$scope.socket.on((data.res.user.id), function(data) {
-				// SMAlert.set(data.messages.message, 5000, function() {
-				// 	console.log('clicked!');
-				// });
-				var lPath = $location.$$path.split('/');
-				lPath.shift();
-				var out = document.getElementById('conversation-messages');
-				if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
-					var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-					$('#conversation-messages').append([
-						'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
-						''+data.messages.message,
-						'</div></li>'
-					].join(''));
-					if (isScrolledToBottom) {
-						$(out).animate({
-							scrollTop: out.scrollHeight - out.clientHeight
-						}, 250);
-					}
-				}
-			});
+			resetSockets($scope, $state, data);
 		} else {
 			//if(config.ionic.isIonic) location.hash = 'signin';
 		}
@@ -709,4 +688,66 @@ function delaySignIn() {
 	setTimeout(function(){
 		location.hash = 'signin';
 	},550);
+}
+
+var smalerts = [];
+var smalerting = false;
+function SMAlert(title, message, button, time, callback) {
+	smalerts.push({
+		title: title,
+		message: message,
+		button: button,
+		time: time,
+		cb: callback
+	});
+	if(!smalerting) {
+		smalerting = true;
+		runSMAlert(smalerts.shift(), smalerts);
+	}
+}
+
+var runSMAlert;
+runSMAlert = function(alert, alerts) {
+	$('#smalert-container').html([
+		'<div class="message-title sm-full-width" style="font-size:16px;">'+alert.title+'</div>',
+		'<div class="message-body sm-full-width" style="font-size:12px;">'+alert.message+'</div>',
+		'<div id="tmp-message-button" class="sm-full-width message-button sm-button sm-button-default sm-button-ghost sm-button-ghost-solid sm-text-m">'+alert.button+'</div>'
+	].join('\n'));
+	$('#smalert-container').removeClass('sm-hidden');
+	requestAnimationFrame(function() {
+		$('#tmp-message-button').one('click', alert.cb);
+	});
+	alertTimeout = setTimeout(function() {
+		$('#tmp-message-button').off('click', alert.cb);
+		$('#smalert-container').addClass('sm-hidden');
+		setTimeout(function() {
+			callbackFn = null;
+			$('#smalert-container').children().remove();
+			if(alerts.length !== 0) runSMAlert(alerts.shift(), alerts);
+			else smalerting = false;
+		}, 250);
+	}, alert.time);
+};
+
+function resetSockets($scope, $state, data) {
+	if($scope.socket) $scope.socket.disconnect();
+	$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
+	$scope.socket.on((data.res.user.id), function(data) {
+		SMAlert('New Message!', data.messages.message, 'Go to Message', 5000, function() {
+			$state.go('stuff.my.items.item.conversation', {id: data.conversation});
+		});
+		$('#tab-message-badge').html(data.messages.unread);
+		var lPath = location.pathname.split('/');
+		lPath.shift();
+		var out = document.getElementById('conversation-messages');
+		if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
+			var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+			$('#conversation-messages').append([
+				'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
+				''+data.messages.message,
+				'</div></li>'
+			].join(''));
+			if (isScrolledToBottom) $(out).animate({ scrollTop: out.scrollHeight - out.clientHeight }, 250);
+		}
+	});
 }
