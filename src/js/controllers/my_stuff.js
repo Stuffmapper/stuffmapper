@@ -20,7 +20,8 @@ function MyStuffController() {
 					else $scope.dibbedItems.push(e);
 				});
 				$scope.listItems = data.res;
-				if(!data.res.length) {
+				$scope.testItems = data.test;
+				if(!data.res.length && !data.test.length) {
 					$('#loading-get-stuff').addClass('sm-hidden');
 					$('#my-stuff-empty-list').removeClass('sm-hidden');
 				}
@@ -41,6 +42,20 @@ function MyStuffController() {
 							isAnimated: true
 						});
 					});
+					requestAnimationFrame(resetBadges);
+					function resetBadges() {
+						data.res.forEach(function(e) {
+							var isDibber = (parseInt(e.dibber_id) === parseInt($userData.getUserId()));
+							if(e.dibber_id === null) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-lister">posted</div>');
+							else if(!e.attended && isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-warning">!</div>');
+							else if(!e.attended && !isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-lister">Dibs\'d!</div>');
+							else if(parseInt(e.messages.from_user) === 0 && isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-warning"><i class="fa fa-commenting" /> !</div>');
+							else if(parseInt(e.messages.count) > 0 && isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-dibber">My Dibs!  <i class="fa fa-comment" />  '+e.messages.count+'</div>');
+							else if(parseInt(e.messages.count) > 0 && !isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-lister">Dibs\'d!  <i class="fa fa-comment" />  '+e.messages.count+'</div>');
+							else if(parseInt(e.messages.count) === 0 && isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-dibber">My Dibs!  <i class="fa fa-comment-o" /></div>');
+							else if(parseInt(e.messages.count) === 0 && !isDibber) $('#post-item-'+e.id).append('<div class="my-stuff-badge my-stuff-badge-lister">Dibs\'d!  <i class="fa fa-comment-o" /></div>');
+						});
+					}
 					$(window).resize(function() {
 						$('.masonry-grid').isotope({
 							columnWidth: $('.masonry-grid').width()/2,

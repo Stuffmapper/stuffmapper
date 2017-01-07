@@ -51,9 +51,9 @@ app.use(function(req, res, next) {
 app.use(cookieParser('SuperSecretPassword1!'));
 var newSession = session({
 	cookie: {
-		maxAge: 36000000
+		maxAge: 360000000
 	},
-	store: new redisStore({ host: 'localhost', port: 6379, client: client,ttl :  260}),
+	store: new redisStore({ host: 'localhost', port: 6379, client: client }),
 	secret: 'SuperSecretPassword1!',
 	saveUninitialized: true,
 	resave: true
@@ -90,9 +90,9 @@ app.post('/checkout/paiddibs', function(req, res) {
 		amount: '1.00',
 		paymentMethodNonce: nonceFromTheClient,
 		options: {
-	    verifyCard: true
+			verifyCard: true
 		},
-	  deviceData: req.body.device_data
+		deviceData: req.body.device_data
 	}, function (err, result) {
 		if(err) return res.send('failure');
 		res.send('success');
@@ -125,9 +125,9 @@ app.get('/auth/google_oauth2/callback', function(req,res,next) {
 		}
 		if (err) return res.send(err);
 		req.logIn(user, function(err) {
-      if (err) { return next(err); }
+			if (err) { return next(err); }
 			return res.redirect('/redirect');
-    });
+		});
 	})(req,res,next);
 });
 
@@ -155,21 +155,25 @@ app.get('/auth/facebook_oauth2/callback', function(req,res,next){
 		}
 		if (err) return res.send(err);
 		req.logIn(user, function(err) {
-      if (err) { return next(err); }
+			if (err) { return next(err); }
 			return res.redirect('/redirect');
-    });
+		});
 	})(req,res,next);
 });
 
 io.on('connection', function(socket){
 	socket.on('message', function(data) {
 		if(data.to) {
-			io.sockets.emit((''+data.to), {
-				messages: {
-					message: data.message,
-					from: data.from,
-					conversation: data.conversation
-				}
+			queryServer('SELECT count(messages) FROM messages, conversations WHERE (conversations.lister_id = $1 OR conversations.dibber_id = $1) AND NOT messages.user_id = $1 AND messages.conversation_id = conversations.id AND conversations.archived = false AND messages.archived = false AND messages.read = false', [data.to], function(result) {
+				io.sockets.emit((''+data.to), {
+					messages: {
+						message: data.message,
+						from: data.from,
+						conversation: data.conversation,
+						unread:result.rows[0].count,
+						title: data.title
+					}
+				});
 			});
 		}
 	});
@@ -217,5 +221,16 @@ process.on('SIGINT', function() {
 	}, 1000);
 });
 function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+function queryServer(query, values, cb) {
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) return client.end();
+		client.query(query, values, function(err, result) {
+			if(err) return client.end();
+			client.end();
+			cb(result);
+		});
+	});
 }

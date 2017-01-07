@@ -60,7 +60,7 @@ function GetItemController() {
 		$scope.imageContainer = $('<div>', {class:'get-item-single-image-container animate-250'});
 		$scope.detailsContainer = $('<div>', {class:'get-item-single-details-container sm-hidden animate-250'});
 		$scope.containerBackground = $('<div>', {class:'get-item-single-background animate-250 sm-hidden'});
-		$scope.imageContainer.css({'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'});
+		if(!newWindow) $scope.imageContainer.css({'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'});
 		$scope.detailsContainer.html([
 			((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 			((data.res.description==='undefined')?(''):('<p style="white-space: pre-wrap;" class="get-item-single-description sm-text-m sm-full-width">'+data.res.description+'</p>')),
@@ -117,6 +117,7 @@ function GetItemController() {
 				requestAnimationFrame(function() {
 					initPayment();
 					initListener();
+					if(newWindow) $('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
 					$('#post-item-'+$stateParams.id+' img').css({'opacity':0.0001});
 					$scope.containerBackground.removeClass('sm-hidden');
 					$scope.detailsContainer.removeClass('sm-hidden');
@@ -296,6 +297,7 @@ function GetItemController() {
 		//}
 	}
 	$scope.$on('$destroy', function() {
+		if(newWindow) $('.get-item-single-image-container').css({'background-image':''});
 		$('#map-view').off('mousedown', backToGetStuff);
 		if(singleItemTemplateMap) {
 			singleItemTemplateMap.addClass('sm-hidden');

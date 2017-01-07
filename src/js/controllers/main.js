@@ -62,6 +62,7 @@ function MainController() {
 				passwordResetToken: token,
 				password: password1
 			}, function(data) {
+				$u.toast('Password Successfully Reset!');
 				$u.modal.close('password-reset-modal');
 				delaySignIn();
 			});
@@ -72,7 +73,8 @@ function MainController() {
 			var message = '';
 			if(!password1 || !password2) message = 'please enter a new password';
 			else if(password1!==password2) message = 'passwords do not match';
-			else if(passRe.test(password1)) message='password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';
+			else if(!passRe.test(password1)) message='password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';
+			$('#sm-reset-password-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
 		}
 	};
 	$scope.openEmailVerificationModal = function(token) {
@@ -176,28 +178,7 @@ function MainController() {
 	function initUserData(data) {
 		if (data.res.user) {
 			$userData.setUserId(data.res.user.id);
-			$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
-			$scope.socket.on((data.res.user.id), function(data) {
-				// SMAlert.set(data.messages.message, 5000, function() {
-				// 	console.log('clicked!');
-				// });
-				var lPath = $location.$$path.split('/');
-				lPath.shift();
-				var out = document.getElementById('conversation-messages');
-				if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
-					var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-					$('#conversation-messages').append([
-						'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
-						''+data.messages.message,
-						'</div></li>'
-					].join(''));
-					if (isScrolledToBottom) {
-						$(out).animate({
-							scrollTop: out.scrollHeight - out.clientHeight
-						}, 250);
-					}
-				}
-			});
+			resetSockets($scope, $state, data);
 		} else {
 			//if(config.ionic.isIonic) location.hash = 'signin';
 		}
@@ -252,6 +233,11 @@ function MainController() {
 	});
 	$('#sm-reset-password1, #sm-reset-password2').keydown(function(e) {
 		if(e.keyCode === 13) $('#password-reset-button').click();
+	});
+
+
+	$('#sign-in-password-eye').click(function() {
+		togglePasswordField('#sign-in-password-eye', '#sign-in-password');
 	});
 
 	$scope.googleOAuth = function() {
@@ -709,4 +695,77 @@ function delaySignIn() {
 	setTimeout(function(){
 		location.hash = 'signin';
 	},550);
+}
+
+var smalerts = [];
+var smalerting = false;
+function SMAlert(title, message, button, time, callback) {
+	smalerts.push({
+		title: title,
+		message: message,
+		button: button,
+		time: time,
+		cb: callback
+	});
+	if(!smalerting) {
+		smalerting = true;
+		runSMAlert(smalerts.shift(), smalerts);
+	}
+}
+
+var runSMAlert;
+runSMAlert = function(alert, alerts) {
+	$('#smalert-container').html([
+		'<div class="message-title sm-full-width" style="font-size:16px;">'+alert.title+'</div>',
+		'<div class="message-body sm-full-width" style="font-size:12px;">'+alert.message+'</div>',
+		'<div id="tmp-message-button" class="sm-full-width message-button sm-button sm-button-default sm-button-ghost sm-button-ghost-solid sm-text-m">'+alert.button+'</div>'
+	].join('\n'));
+	$('#smalert-container').removeClass('sm-hidden');
+	requestAnimationFrame(function() {
+		$('#tmp-message-button').one('click', alert.cb);
+	});
+	alertTimeout = setTimeout(function() {
+		$('#tmp-message-button').off('click', alert.cb);
+		$('#smalert-container').addClass('sm-hidden');
+		setTimeout(function() {
+			callbackFn = null;
+			$('#smalert-container').children().remove();
+			if(alerts.length !== 0) runSMAlert(alerts.shift(), alerts);
+			else smalerting = false;
+		}, 250);
+	}, alert.time);
+};
+
+function resetSockets($scope, $state, data) {
+	if($scope.socket) $scope.socket.disconnect();
+	$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
+	$scope.socket.on((data.res.user.id), function(data) {
+		if(window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
+			SMAlert('New Message for <em>'+data.messages.title+'</em>!', data.messages.message, 'Go to Message', 5000, function() {
+				$state.go('stuff.my.items.item.conversation', {id: data.messages.conversation});
+			});
+		}
+		$('#tab-message-badge').html(data.messages.unread);
+		var lPath = location.pathname.split('/');
+		lPath.shift();
+		var out = document.getElementById('conversation-messages');
+		if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
+			var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+			$('#conversation-messages').append([
+				'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
+				''+data.messages.message,
+				'</div></li>'
+			].join(''));
+			if (isScrolledToBottom) $(out).animate({ scrollTop: out.scrollHeight - out.clientHeight }, 250);
+		}
+	});
+}
+function togglePasswordField(button, inputField) {
+	$(button).toggleClass('fa-eye').toggleClass('fa-eye-slash');
+	if($(inputField).attr('type') === 'password') $(inputField).attr('type', 'text');
+	else $(inputField).attr('type', 'password');
+}
+function resetPasswordField(button, inputField) {
+	$(button).addClass('fa-eye').removeClass('fa-eye-slash');
+	$(inputField).attr('type', 'password');
 }

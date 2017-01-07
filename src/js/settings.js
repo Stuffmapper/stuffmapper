@@ -40,6 +40,7 @@ function setDefaultSettings() {
 		},
 		myStuff : {
 			url: '/items',
+			cache: false,
 			templateUrl: 'templates/partial-home-mystuff.html',
 			controller: 'myStuffController'
 		},
