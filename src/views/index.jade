@@ -202,7 +202,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							span.sign-in-local-text — or use your email —
 							input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
 							input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
-							#sign-in-password-eye.fa.fa.eye(style="position:absolute;")
+							#sign-in-password-eye.fa.fa-eye(style="position:absolute;top:268px;right:20px;height:20px;width:20px;cursor: pointer;")
 							#sign-in-error-warning-container(style="width:100%;display:block;position:relative;")
 							.sm-full-width(style="height: 20px;")
 								#sign-in-forgot-password.sm-text-s(style="float: right;" ng-click="forgotPassword()") Forgot your password?
@@ -329,6 +329,28 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								button#my-item-complete-cancel.give-reject-parent.sm-button.sm-text-l.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.animate-250(style="margin:20px 10px;width:calc(100% - 10px);") not yet...
 							.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
 								button#my-item-complete-confirm.sm-button.sm-button-positive.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") yes!
+			#complete-unattended-confirm-modal.modal-window.modal-window-hidden.animate-250
+				.modal-header
+				.sm-modal-content
+					h2.sm-modal-title.animate-250 Confirm Pick-up
+					#complete-unattended-confirm-modal-container.step-container
+						#complete-unattended-confirm-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%;")
+						.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
+							.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+								button#my-item-complete-unattended-cancel.give-reject-parent.sm-button.sm-text-l.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.animate-250(style="margin:20px 10px;width:calc(100% - 10px);") not yet...
+							.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+								button#my-item-complete-unattended-confirm.sm-button.sm-button-positive.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") yes!
+			#item-gone-confirm-modal.modal-window.modal-window-hidden.animate-250
+				.modal-header
+				.sm-modal-content
+					h2.sm-modal-title.animate-250 Unattended Item Pick-up
+					#item-gone-confirm-modal-container.step-container
+						#item-gone-confirm-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%;")
+						.sm-button-group(style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;")
+							.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
+								button#my-item-item-gone-cancel.give-reject-parent.sm-button.sm-text-l.sm-button-ghost.sm-button-ghost-solid.sm-button-negative.animate-250(style="margin:20px 10px;width:calc(100% - 10px);") not yet...
+							.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
+								button#my-item-item-gone-confirm.sm-button.sm-button-positive.sm-text-l.animate-250(style="color:white;margin:20px 10px;width:calc(100% - 10px);float: left;") yes!
 		#popups
 			#profile-popup.popups.popups-top-right.animate-250.hidden-popup
 				//- li

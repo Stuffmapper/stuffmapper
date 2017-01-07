@@ -170,7 +170,8 @@ io.on('connection', function(socket){
 						message: data.message,
 						from: data.from,
 						conversation: data.conversation,
-						unread:result.rows[0].count
+						unread:result.rows[0].count,
+						title: data.title
 					}
 				});
 			});

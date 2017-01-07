@@ -117,6 +117,7 @@ function GetItemController() {
 				requestAnimationFrame(function() {
 					initPayment();
 					initListener();
+					if(newWindow) $('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
 					$('#post-item-'+$stateParams.id+' img').css({'opacity':0.0001});
 					$scope.containerBackground.removeClass('sm-hidden');
 					$scope.detailsContainer.removeClass('sm-hidden');
@@ -296,6 +297,7 @@ function GetItemController() {
 		//}
 	}
 	$scope.$on('$destroy', function() {
+		if(newWindow) $('.get-item-single-image-container').css({'background-image':''});
 		$('#map-view').off('mousedown', backToGetStuff);
 		if(singleItemTemplateMap) {
 			singleItemTemplateMap.addClass('sm-hidden');

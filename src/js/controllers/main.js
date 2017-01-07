@@ -62,6 +62,7 @@ function MainController() {
 				passwordResetToken: token,
 				password: password1
 			}, function(data) {
+				$u.toast('Password Successfully Reset!');
 				$u.modal.close('password-reset-modal');
 				delaySignIn();
 			});
@@ -72,7 +73,8 @@ function MainController() {
 			var message = '';
 			if(!password1 || !password2) message = 'please enter a new password';
 			else if(password1!==password2) message = 'passwords do not match';
-			else if(passRe.test(password1)) message='password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';
+			else if(!passRe.test(password1)) message='password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';
+			$('#sm-reset-password-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
 		}
 	};
 	$scope.openEmailVerificationModal = function(token) {
@@ -231,6 +233,11 @@ function MainController() {
 	});
 	$('#sm-reset-password1, #sm-reset-password2').keydown(function(e) {
 		if(e.keyCode === 13) $('#password-reset-button').click();
+	});
+
+
+	$('#sign-in-password-eye').click(function() {
+		togglePasswordField('#sign-in-password-eye', '#sign-in-password');
 	});
 
 	$scope.googleOAuth = function() {
@@ -733,9 +740,11 @@ function resetSockets($scope, $state, data) {
 	if($scope.socket) $scope.socket.disconnect();
 	$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
 	$scope.socket.on((data.res.user.id), function(data) {
-		SMAlert('New Message!', data.messages.message, 'Go to Message', 5000, function() {
-			$state.go('stuff.my.items.item.conversation', {id: data.conversation});
-		});
+		if(window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
+			SMAlert('New Message for <em>'+data.messages.title+'</em>!', data.messages.message, 'Go to Message', 5000, function() {
+				$state.go('stuff.my.items.item.conversation', {id: data.messages.conversation});
+			});
+		}
 		$('#tab-message-badge').html(data.messages.unread);
 		var lPath = location.pathname.split('/');
 		lPath.shift();
@@ -750,4 +759,13 @@ function resetSockets($scope, $state, data) {
 			if (isScrolledToBottom) $(out).animate({ scrollTop: out.scrollHeight - out.clientHeight }, 250);
 		}
 	});
+}
+function togglePasswordField(button, inputField) {
+	$(button).toggleClass('fa-eye').toggleClass('fa-eye-slash');
+	if($(inputField).attr('type') === 'password') $(inputField).attr('type', 'text');
+	else $(inputField).attr('type', 'password');
+}
+function resetPasswordField(button, inputField) {
+	$(button).addClass('fa-eye').removeClass('fa-eye-slash');
+	$(inputField).attr('type', 'password');
 }

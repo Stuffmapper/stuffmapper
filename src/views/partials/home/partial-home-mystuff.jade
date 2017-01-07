@@ -19,3 +19,16 @@
 						.stuff-item-category-distance-owner(style="float: left;left: 7px;max-width:calc(100% - 84px);text-align: center;") {{ list.category }}
 						//- .stuff-item-category-distance-owner.number(style="float: right;text-align: center;") {{ list.milesAway }} mi.
 						//- order by most recently active
+		hr
+		.sm-text-m(style="margin-left: 12px;margin-bottom: 10px;") Completed Dibs:
+		ul.masonry-grid
+			li.masonry-grid-item(style="opacity: 0.7; pointer-events: none;" ng-repeat="list in testItems" repeat-done="initMasonry2(); getDistance()")
+				a(ui-sref="stuff.my.items.item({ id:{{ list.id }} })")
+					| {{ item.title }}
+					.list-item-img-container(id="post-item-{{ list.id }}")
+						img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
+						.get-stuff-item-info
+							div.noselect {{ list.title }} {{ list.last_touch_date }}
+						.stuff-item-category-distance-owner(style="float: left;left: 7px;max-width:calc(100% - 84px);text-align: center;") {{ list.category }}
+						//- .stuff-item-category-distance-owner.number(style="float: right;text-align: center;") {{ list.milesAway }} mi.
+						//- order by most recently active

@@ -52,7 +52,7 @@ function undib(post_id, user_id) {
 		if(err) return client.end();
 		var query = [
 			'UPDATE posts SET dibber_id = NULL, dibbed = false',
-			'WHERE dibbed = true AND id = $2 AND dibber_id = $1',
+			'WHERE dibbed = true AND unattended = false AND id = $2 AND dibber_id = $1',
 			'RETURNING *'
 		].join(' ');
 		var values = [
@@ -60,7 +60,7 @@ function undib(post_id, user_id) {
 			post_id
 		];
 		client.query(query, values, function(err, result1) {
-			if(err) return client.end();
+			if(err || result1.rows.length === 0) return client.end();
 			var query = [
 				'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
 				'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3 RETURNING *'

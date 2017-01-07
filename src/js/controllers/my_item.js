@@ -14,7 +14,7 @@ function MyItemsController() {
 			$scope.openModal('modal');
 		} else {
 			var user = result.res.user;
-			var newWindow = !!($('#post-item-' + $stateParams.id + ' img').length === 0);
+			var newWindow = (!!($('#my-stuff-container #post-item-' + $stateParams.id + ' img').length === 0));
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my/id/' + $stateParams.id).success(function(result) {
 				if(!data.err) {
 					var imageSet = false;
@@ -60,7 +60,7 @@ function MyItemsController() {
 						'	<div class="sm-text-m sm-full-width" style="margin-bottom: 0px;">Category</div>',
 						'		<div class="sm-select fa fa-chevron-down sm-select-full-width ng-not-empty" id="give-category-selector" placeholder="Choose a category..." full-width="true" ng-model="category" options="categories">',
 						'			<select id="edit-item-category" class="ng-pristine ng-valid ng-not-empty ng-touched">',
-						'				<option value="" selected="selected" class="ng-binding">'+$scope.listItem.category.trim()+'</option>',
+						'				<option value="'+$scope.listItem.category.trim()+'" selected="selected" class="ng-binding">'+$scope.listItem.category.trim()+'</option>',
 						'				<option label="Arts &amp; Crafts" value="1">Arts &amp; Crafts</option>',
 						'				<option label="Books, Games, Media" value="2">Books, Games, Media</option>',
 						'				<option label="Building &amp; Garden Materials" value="3">Building &amp; Garden Materials</option>',
@@ -115,6 +115,7 @@ function MyItemsController() {
 					$scope.containerBackground = $('<div class="get-item-single-background animate-250 sm-hidden"></div>');
 					if(!newWindow) $scope.imageContainer.css({'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top-32) + 'px, ' + '0)'});
 					$scope.detailsContainer.html([
+						((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
 						($scope.listItem.type === 'dibber')?'<button id="my-item-undibs-big'+$stateParams.id+'" class=" sm-button sm-text-l sm-button-ghost sm-button-ghost-solid sm-button-negative sm-button-full-width animate-250">unDibs</button>':'',
@@ -146,9 +147,9 @@ function MyItemsController() {
 					$scope.dropdownMenu = $([
 						'<div id="dropdown-menu" class="popups popups-top-right animate-250 hidden-popup">',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<li id="get-single-item-conversation-popup'+$stateParams.id+'">Go to conversation</li>':'',
-						'<li id="my-item-complete'+$stateParams.id+'">Mark as picked up</li>',
-						(!$scope.listItem.attended)?'<li id="my-item-complete'+$stateParams.id+'">Mark as gone :(</li>':'',
-						($scope.listItem.type==='lister' && $scope.listItem.dibbed)?'	<li id="my-item-reject'+$scope.listItem.id+'">Reject Dibs</li>':'',
+						($scope.listItem.attended)?'<li id="my-item-complete'+$stateParams.id+'">Mark as picked up</li>':'<li id="my-item-complete-unattended-'+$stateParams.id+'">Mark as picked up</li>',
+						// (!$scope.listItem.attended)?'<li id="my-item-complete'+$stateParams.id+'">Mark as gone :(</li>':'',
+						($scope.listItem.type==='lister' && $scope.listItem.dibbed && $scope.listItem.attended)?'	<li id="my-item-reject'+$scope.listItem.id+'">Reject Dibs</li>':'',
 						($scope.listItem.type==='dibber' && $scope.listItem.dibbed)?'	<li id="my-item-undibs'+$scope.listItem.id+'">unDibs</li>':'',
 						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'	<li id="get-single-item-edit-dibs-button'+$stateParams.id+'">Edit item</li>':'',
 						'</div>'
@@ -167,6 +168,7 @@ function MyItemsController() {
 							$('#post-item-'+$stateParams.id+' img').css({'opacity':0.0001});
 							$scope.containerBackground.removeClass('sm-hidden');
 							$scope.detailsContainer.removeClass('sm-hidden');
+							if(newWindow) $('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
 							$scope.imageContainer.css({
 								'transform' : 'translate3d(0px, 0px, 0)'
 							});
@@ -340,6 +342,8 @@ function MyItemsController() {
 					$('#my-item-reject'+$stateParams.id).on('click', openRejectModal);
 					$('#my-item-delete'+$stateParams.id).on('click', openDeleteModal);
 					$('#my-item-complete'+$stateParams.id).on('click', openCompleteModal);
+					$('#my-item-complete-unattended-'+$stateParams.id).on('click', openCompleteUnattendedModal);
+					// $('#my-item-complete-unattended-'+$stateParams.id).on('click', openCompleteUnattendedModal);
 
 					//$('#get-single-item-conversation-button'+$stateParams.id)
 					$('#give-image-select').change(function(event) {
@@ -483,7 +487,6 @@ function MyItemsController() {
 				});
 			};
 			var undibs = function() {
-				console.log('asdfjasdjfkalsdfj ', $scope.listItem.id);
 				$http.post(config.api.host + '/api/v' + config.api.version + '/undib/' + $scope.listItem.id, {}, {
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -550,7 +553,7 @@ function MyItemsController() {
 				$u.modal.close('reject-confirm-modal');
 				$u.api.rejectStuffById(data.res.id, function() {
 					$state.go('stuff.my.items');
-					$u.toast('You have rejected <i>'+data.res.user[data.res.dibber_id]+'</i>\'s Dibs for <i>'+data.res.title+'</i>');
+					$u.toast('You have rejected <i>'+data.res.users[data.res.dibber_id]+'</i>\'s Dibs for <i>'+data.res.title+'</i>');
 				});
 			}
 			function openDeleteModal() {
@@ -591,19 +594,46 @@ function MyItemsController() {
 			function completeConfirm() {
 				$u.modal.close('complete-confirm-modal');
 				$u.api.completeStuffById(data.res.id, function() {
-					$state.go('stuff.my.items');
 					$('#post-item-'+data.res.id).parent().parent().remove();
 					$u.toast('Dibs for <i>'+data.res.title+'</i> has been completed!');
 					requestAnimationFrame(function(){$(window).resize();});
+					$state.go('stuff.my.items');
+					setTimeout(function(){$state.reload('stuff.my.items');}, 250);
+				});
+			}
+
+			function openCompleteUnattendedModal() {
+				var completeBodyTemplate = data.res.type==='lister'?'Has <i>{{title}}</i> been picked up?':'Have you picked up <i>{{title}}</i>?';
+				$('#complete-unattended-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.title).replace('{{dibber}}', data.res.users[data.res.dibber_id]).replace('{{lister}}', data.res.users[data.res.user_id]));
+				$('#my-item-complete-unattended-cancel').on('click', completeUnattendedCancel);
+				$('#my-item-complete-unattended-confirm').on('click', completeUnattendedConfirm);
+				$u.modal.open('complete-unattended-confirm-modal', function() {
+					$('#my-item-complete-unattended-cancel').off('click', completeUnattendedCancel);
+					$('#my-item-complete-unattended-confirm').off('click', completeUnattendedConfirm);
+				});
+			}
+			function completeUnattendedCancel() {
+				$u.modal.close('complete-unattended-confirm-modal');
+			}
+			function completeUnattendedConfirm() {
+				$u.modal.close('complete-unattended-confirm-modal');
+				$u.api.completeStuffById(data.res.id, function() {
+					$('#post-item-'+data.res.id).parent().parent().remove();
+					$u.toast('Dibs for <i>'+data.res.title+'</i> has been completed!');
+					requestAnimationFrame(function(){$(window).resize();});
+					$state.go('stuff.my.items');
+					setTimeout(function(){$state.reload('stuff.my.items');}, 250);
 				});
 			}
 
 			$scope.$on('$destroy', function() {
+				if(newWindow) $('.get-item-single-image-container').css({'background-image':''});
 				$('#my-item-undibs-big'+$stateParams.id).off('click', openUndibsModal);
 				$('#my-item-undibs'+$stateParams.id).off('click', openUndibsModal);
 				$('#my-item-reject'+$stateParams.id).off('click', openRejectModal);
 				$('#my-item-delete'+$stateParams.id).off('click', openDeleteModal);
 				$('#my-item-complete'+$stateParams.id).off('click', openCompleteModal);
+				$('#my-item-complete-unattended'+$stateParams.id).off('click', openCompleteUnattendedModal);
 				$('#tab-content-container').css({'pointer-events':'all'});
 				$('#get-single-item-conversation-button'+$scope.listItem.id).off('click', goToConversation);
 				$('#get-stuff-back-button-container').addClass('sm-hidden');

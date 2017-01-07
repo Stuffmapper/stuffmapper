@@ -21,7 +21,6 @@ function ConversationController() {
 			$stuffTabs.init($scope, '#tab-container .stuff-tabs .my-stuff-tab a');
 			$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+conversationPostId).success(function(data) {
 				$.post(config.api.host + '/api/v'+config.api.version+'/conversation/read/'+conversationPostId, function(data) {
-					console.log(data.res);
 					$('#tab-message-badge').html(data.res);
 				});
 				$scope.conversation = data.res.conversation;
@@ -164,12 +163,13 @@ function ConversationController() {
 					$.post(config.api.host + '/api/v'+config.api.version+'/messages', {
 						conversation_id:(parseInt($scope.info.id)),
 						message:$('#conversation-input').val()
-					}, function(data) {
+					}, function() {
 						$scope.socket.emit('message', {
 							to: $scope.info.inboundMessenger,
 							from: $scope.info.outboundMessenger,
 							conversation: conversationPostId,
-							message: $('#conversation-input').val()
+							message: $('#conversation-input').val(),
+							title: data.res.info.title
 						});
 						$scope.insertMessage('out', $('#conversation-input').val());
 						$('#conversation-input').val('');

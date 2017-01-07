@@ -171,36 +171,27 @@ router.get('/stuff/my', isAuthenticated, function(req, res) {
 	var query = [
 		'SELECT posts.id, posts.title, posts.description, posts.archived,',
 		'posts.expired, images.image_url, categories.category,',
-		'posts.dibber_id, posts.date_edited FROM posts, images, categories WHERE',
+		'posts.dibber_id, posts.date_edited, posts.attended FROM posts, images, categories WHERE',
 		'(posts.user_id = $1 OR posts.dibber_id = $1) AND posts.archived = false AND',
 		'images.post_id = posts.id AND images.main = true AND',
 		'categories.id = posts.category_id'
 	].join(' ');
-	var values = [
-		req.session.passport.user.id
-	];
-	queryServer(res, query, values, function(result) {
-		if(!result.rows.length) {
-			return res.send({
-				err: null,
-				res: []
-			});
-		}
+	queryServer(res, query, [req.session.passport.user.id], function(result) {
+		if(!result.rows.length) return res.send({err: null, res: [], test: [] });
 		var rowsLen = result.rows.length;
 		var rowCount = 0;
 		var result1 = {rows:[]};
+		var testresult = {rows:[]};
 		result.rows.forEach(function(e, i) {
 			var query = [
 				'SELECT * FROM pick_up_success WHERE undibbed = false AND',
 				'(dibber_id = $1 OR lister_id = $1) AND post_id = $2',
 				'AND pick_up_success = true'
 			].join(' ');
-			var values = [
-				req.session.passport.user.id,
-				e.id
-			];
-			queryServer(res, query, values, function(result2) {
+			queryServer(res, query, [req.session.passport.user.id, e.id], function(result2) {
 				if(!result2.rows.length) result1.rows.push(e);
+				else testresult.rows.push(e);
+				// else if(parseInt(result2.rows[0].lister_id) === parseInt(req.session.passport.user.id)) testresult.rows.push(e);
 				if(++rowCount === rowsLen) {
 					rowsLen = result1.rows.length;
 					rowCount = 0;
@@ -212,12 +203,8 @@ router.get('/stuff/my', isAuthenticated, function(req, res) {
 							'messages.archived = false AND messages.read = false AND',
 							'NOT messages.user_id = $2'
 						].join(' ');
-						var values1 = [
-							parseInt(result1.rows[i].id),
-							req.session.passport.user.id
-						];
-						queryServer(res, query1, values1, function(result3) {
-							queryServer(res, 'SELECT count(messages) FROM messages, conversations WHERE conversations.post_id = $1 AND messages.conversation_id = conversations.id AND conversations.archived = false AND messages.archived = false AND messages.user_id = $2', values1, function(result4) {
+						queryServer(res, query1, [parseInt(result1.rows[i].id),req.session.passport.user.id], function(result3) {
+							queryServer(res, 'SELECT count(messages) FROM messages, conversations WHERE conversations.post_id = $1 AND messages.conversation_id = conversations.id AND conversations.archived = false AND messages.archived = false AND messages.user_id = $2', [parseInt(result1.rows[i].id),req.session.passport.user.id], function(result4) {
 								queryServer(res, 'select posts.date_edited from posts where posts.id = $1 order by posts.date_edited desc limit 1', [parseInt(result1.rows[i].id)], function(result5) {
 									queryServer(res, 'select messages.date_created from messages, conversations where conversations.post_id = $1 AND messages.conversation_id = conversations.id order by messages.date_created desc limit 1', [parseInt(result1.rows[i].id)], function(result6) {
 										queryServer(res, 'select conversations.date_created from messages, conversations where conversations.post_id = $1 AND messages.conversation_id = conversations.id order by conversations.date_created desc limit 1', [parseInt(result1.rows[i].id)], function(result7) {
@@ -237,7 +224,8 @@ router.get('/stuff/my', isAuthenticated, function(req, res) {
 											if(++rowCount === rowsLen) {
 												res.send({
 													err: null,
-													res: result1.rows
+													res: result1.rows,
+													test: testresult.rows
 												});
 											}
 										});
@@ -1176,12 +1164,6 @@ router.delete('/messages/:id', isAuthenticated, function(req, res) {
 });
 
 router.post('/conversation/read/:post_id', isAuthenticated, function(req, res) {
-	var query = [
-		'UPDATE messages SET messages.read = true FROM messages, conversations WHERE',
-		'conversations.post_id = $1 AND',
-		'messages.conversation_id = conversations.id AND',
-		'conversations.archived = false AND messages.archived = false'
-	].join(' ');
 	queryServer(res, 'SELECT id FROM conversations WHERE post_id = $1 AND archived = false', [req.params.post_id], function(result) {
 		queryServer(res, 'UPDATE messages SET read = true WHERE conversation_id = $1 AND archived = false', [result.rows[0].id], function() {
 			queryServer(res, 'SELECT count(messages) FROM messages, conversations WHERE (conversations.lister_id = $1 OR conversations.dibber_id = $1) AND NOT messages.user_id = $1 AND messages.conversation_id = conversations.id AND conversations.archived = false AND messages.archived = false AND messages.read = false', [req.session.passport.user.id], function(result) {
