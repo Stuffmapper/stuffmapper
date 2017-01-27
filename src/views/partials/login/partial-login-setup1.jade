@@ -9,12 +9,12 @@ ion-content#login-setup-one-container(scroll='false')
 				a(ui-sref="useragreement", ng-click="hideModal()") Terms
 		a.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
 			span.social-sign-in-icon.social-sign-in-icon-google
-				i.fa.fa-google-plus
-			span.social-sign-in-text Continue with Google
+				i.fa.fa-google-plus(style="vertical-align:top;")
+			span.social-sign-in-text(style="vertical-align:top;") Continue with Google
 		a.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
 			span.social-sign-in-icon.social-sign-in-icon-facebook
-				i.fa.fa-facebook
-			span.social-sign-in-text Continue with Facebook
+				i.fa.fa-facebook(style="vertical-align:top;")
+			span.social-sign-in-text(style="vertical-align:top;") Continue with Facebook
 		div(style="text-align: center;") or
 		br
 		a(ui-sref="setup2" style="width: 100%; text-align: center; display: block;") sign up with your email address

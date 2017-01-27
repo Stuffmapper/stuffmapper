@@ -1,6 +1,6 @@
 var bcrypt = require('bcrypt');
 var pg = require('pg');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper4';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
 
 var braintree = require("braintree");
 
@@ -74,6 +74,7 @@ module.exports = (function() {
 					email
 				];
 				client.query(query, values, function(err, result) {
+					console.log('1: ', err, result);
 					if(result && result.rows && result.rows.length) {
 						var rows = result.rows[0];
 						if(!rows[type+'_id']) {
@@ -82,6 +83,7 @@ module.exports = (function() {
 								email
 							];
 							client.query(query, values, function(err, result) {
+								console.log('2: ', err, result);
 								if(!result.rows.length || (req.session && req.session.passport && req.session.passport.user)) {
 									query = 'UPDATE users SET '+type+'_id = $1 where email = $2 RETURNING *';
 									values = [
@@ -89,6 +91,7 @@ module.exports = (function() {
 										email
 									];
 									client.query(query, values, function(err, result) {
+										console.log('3: ', err, result);
 										client.end();
 										if(err) return cb(err, null);
 										cb(null, result.rows[0]);

@@ -5,7 +5,8 @@ function ConversationController() {
 	var $stateParams = arguments[2];
 	var $state = arguments[3];
 	var authenticator = arguments[4];
-	var $stuffTabs = arguments[5];
+	// var $stuffTabs = arguments[5];
+
 	function backToEditItem(id) {
 		$state.go('stuff.my.items.item', {id: id});
 	}
@@ -18,7 +19,7 @@ function ConversationController() {
 			if(($scope.socket && !$scope.socket.connected) || !$scope.socket) resetSockets($scope, $state, data);
 			var conversationPostId = parseInt(window.location.pathname.split('items/')[1].split('/messages')[0]);
 			$('#conversation-animation-container').css({'pointer-events': 'all'});
-			$stuffTabs.init($scope, '#tab-container .stuff-tabs .my-stuff-tab a');
+			// $stuffTabs.init($scope, '#tab-container .stuff-tabs .my-stuff-tab a');
 			$http.get(config.api.host + '/api/v'+config.api.version+'/conversation/'+conversationPostId).success(function(data) {
 				$.post(config.api.host + '/api/v'+config.api.version+'/conversation/read/'+conversationPostId, function(data) {
 					$('#tab-message-badge').html(data.res);
@@ -32,13 +33,15 @@ function ConversationController() {
 					tmpTime = new Date(tmpTime.getTime() - (offsetTime*60000));
 					$scope.conversation[i].date_created = dateFormat(tmpTime, 'h:MMtt – dd mmm yyyy');
 				});
-				// requestAnimationFrame(function() {
-				// 	out.scrollTop = out.scrollHeight - out.clientHeight;
-				// 	var len = $('li.conversation-message-container').length;
-				// 	if(len === 1 && data.res.info.type === 'dibber') {
-				// 		$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
-				// 	}
-				// });
+				requestAnimationFrame(function() {
+					requestAnimationFrame(function() {
+						out.scrollTop = out.scrollHeight - out.clientHeight;
+						var len = $('li.conversation-message-container').length;
+						if(len === 1 && data.res.info.type === 'dibber') {
+							$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
+						}
+					});
+				});
 				$('#conversation-title').text(data.res.info.title);
 				if(data.res.info.type === 'lister') $('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div><em>'+data.res.info.users[data.res.info.dibber_id]+'</em> Dibs\'d your <em>'+data.res.info.title+'</em>. They must send you a message within 15 minutes to keep their Dibs.</div></div></li>');
 				if(data.res.info.type === 'dibber') $('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>You Dibs\'d <em>'+data.res.info.title+'</em> – Message the lister within 15 minutes to keep your Dibs!</div></div></li>');
@@ -59,7 +62,7 @@ function ConversationController() {
 
 
 				function openUndibsModal2() {
-					var undibsBodyTemplate = 'Are you sure you want to unDibs <i>{{title}}</i>?  This cannot be undone.';
+					var undibsBodyTemplate = 'Are you sure you want to unDibs <i>{{title}}</i>?  You will lose your Dibs and the stuff will be relisted.';
 					$('#undibs-confirm-modal-body').html(undibsBodyTemplate.replace('{{title}}', data.res.info.title));
 					$('#my-item-undibs-cancel').on('click', undibsCancel2);
 					$('#my-item-undibs-confirm').on('click', undibsConfirm2);
@@ -78,6 +81,7 @@ function ConversationController() {
 						$('#post-item-'+data.res.info.post_id).parent().parent().remove();
 						$u.toast('You have successfully unDibs\'d <i>'+data.res.info.title+'</i>');
 						requestAnimationFrame(function(){$(window).resize();});
+						setTimeout(function(){$state.reload('stuff.my.items');}, 250);
 					});
 				}
 				function openRejectModal2() {
@@ -98,6 +102,7 @@ function ConversationController() {
 					$u.api.rejectStuffById(data.res.info.post_id, function() {
 						$state.go('stuff.my.items');
 						$u.toast('You have rejected <i>'+data.res.info.user[data.res.info.dibber_id]+'</i>\'s Dibs for <i>'+data.res.info.title+'</i>');
+						setTimeout(function(){$state.reload('stuff.my.items');}, 250);
 					});
 				}
 				function openDeleteModal2() {
@@ -120,11 +125,12 @@ function ConversationController() {
 						$('#post-item-'+data.res.info.post_id).parent().parent().remove();
 						$u.toast('Your listing has been removed.');
 						requestAnimationFrame(function(){$(window).resize();});
+						setTimeout(function(){$state.reload('stuff.my.items');}, 250);
 					});
 				}
 				function openCompleteModal2() {
 					var completeBodyTemplate = data.res.info.type==='lister'?'Have you given <i>{{dibber}}</i> your item <i>{{title}}</i>?':'Have you received <i>{{title}}</i> from <i>{{lister}}</i>?';
-					$('#complete-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.info.title).replace('{{dibber}}', data.res.info.users[data.res.info.dibber_id]).replace('{{lister}}', data.res.info.users[data.res.info.lister_id]));
+					$('#complete-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.info.title.trim()).replace('{{dibber}}', data.res.info.users[data.res.info.dibber_id]).replace('{{lister}}', data.res.info.users[data.res.info.lister_id]));
 					$('#my-item-complete-cancel').on('click', completeCancel2);
 					$('#my-item-complete-confirm').on('click', completeConfirm2);
 					$u.modal.open('complete-confirm-modal', function() {
@@ -138,10 +144,11 @@ function ConversationController() {
 				function completeConfirm2() {
 					$u.modal.close('complete-confirm-modal');
 					$u.api.completeStuffById(data.res.info.post_id, function() {
-						$state.go('stuff.my.items');
 						$('#post-item-'+data.res.info.post_id).parent().parent().remove();
 						$u.toast('Dibs for <i>'+data.res.info.title+'</i> has been completed!');
 						requestAnimationFrame(function(){$(window).resize();});
+						$state.go('stuff.my.items');
+						setTimeout(function(){$state.reload('stuff.my.items');}, 250);
 					});
 				}
 

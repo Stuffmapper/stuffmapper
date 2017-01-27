@@ -6,9 +6,9 @@ function GetItemController() {
 	var $stateParams = arguments[2];
 	var $userData = arguments[3];
 	var $state = arguments[4];
-
 	var singleItemTemplateMap;
-	var newWindow = !!($('#post-item-' + $stateParams.id + ' img').length === 0);
+	$('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
+	$('#filter-container > .filter-content-container').addClass('sm-hidden');
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
 		$scope.listItem.date_created = new Date(data.res.date_created).getTime();
@@ -53,14 +53,10 @@ function GetItemController() {
 				].join('');
 			}
 		});
-		$scope.imgScale = 1;
-		var aspectRatio = (($('#get-item-single-container-'+$stateParams.id).width()/$('#get-item-single-container-'+$stateParams.id).height())>(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container').height())));
-		$scope.imgScale = ($('#post-item-' + $stateParams.id + ' img').height())/($('#masonry-container').height()*0.4);
-		$scope.container = $('<div>', {id:'get-item-single-'+$stateParams.id, class:'get-item-single-container animate-250'});
+		$scope.container = $('<div>', {id:'get-item-single-'+$stateParams.id, class:'get-item-single-container sm-hidden animate-250'});
 		$scope.imageContainer = $('<div>', {class:'get-item-single-image-container animate-250'});
-		$scope.detailsContainer = $('<div>', {class:'get-item-single-details-container sm-hidden animate-250'});
-		$scope.containerBackground = $('<div>', {class:'get-item-single-background animate-250 sm-hidden'});
-		if(!newWindow) $scope.imageContainer.css({'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'});
+		$scope.detailsContainer = $('<div>', {class:'get-item-single-details-container animate-250'});
+		$scope.containerBackground = $('<div>', {class:'get-item-single-background animate-250'});
 		$scope.detailsContainer.html([
 			((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 			((data.res.description==='undefined')?(''):('<p style="white-space: pre-wrap;" class="get-item-single-description sm-text-m sm-full-width">'+data.res.description+'</p>')),
@@ -86,69 +82,39 @@ function GetItemController() {
 			'<div class="">',
 			'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
 			'</div>',
+			'<div class="sm-text-s sm-full-width">Location of item is approximated to protect privacy. Dibs will connect you with lister to learn exact location.</div>',
 			'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl+'" />'
 		].join('\n'));
-		$scope.singleItem = $('#post-item-' + $stateParams.id + ' img')
-		.clone()
-		.attr('id', 'get-item-single-container-' + $stateParams.id)
-		.addClass('animate-250')
-		.css({
-			'position': 'absolute',
-			'top':'0px',
-			'left':'0px',
-			'transform': 'scale3d('+$scope.imgScale+', '+$scope.imgScale+', 1) translate3d(0px, 0px, 0)',
-			'z-index': '2',
-			'transform-origin': '0 0',
-			'width': (($(this).width()/$(this).height())>(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').height()))?'100%':'auto'),
-			'height': (($(this).width()/$(this).height())<=(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').height()))?'auto':'100%')
-		});
 		$scope.containerBackground.appendTo($scope.container);
-		$scope.singleItem.appendTo($scope.imageContainer);
 		$scope.imageContainer.appendTo($scope.container);
 		$scope.detailsContainer.appendTo($scope.container);
 		$scope.container.appendTo('#get-stuff-container');
-		if(newWindow) {
-			$($scope.imageContainer).children('img').on('load',function(){
-				completeAnimation();
-			});
-		} else completeAnimation();
-		function completeAnimation() {
+		requestAnimationFrame(function() {
 			requestAnimationFrame(function() {
+				initPayment();
+				initListener();
+				$('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
+				$scope.container.removeClass('sm-hidden');
+				($scope.listItem.description === undefined) && $('#get-item-single-'+$stateParams.id + ' .get-stuff-item-info').addClass('get-single-item-info').append([
+					'<h3 class="get-single-item-description sm-hidden animate-250">',
+					'	'+$scope.listItem.description,
+					'</h3>'
+				].join('\n'));
+				var $el = ($('#get-item-single'+$stateParams.id).append('<button class="get-single-item-dibs-button sm-hidden animate-250">Dibs!</button>'));
 				requestAnimationFrame(function() {
-					initPayment();
-					initListener();
-					if(newWindow) $('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
-					$('#post-item-'+$stateParams.id+' img').css({'opacity':0.0001});
-					$scope.containerBackground.removeClass('sm-hidden');
-					$scope.detailsContainer.removeClass('sm-hidden');
-					$scope.imageContainer.css({
-						'transform' : 'translate3d(0px, 0px, 0)'
-					});
-					$scope.singleItem.css({
-						'z-index': '3',
-						'transform': 'scale3d(1, 1, 1) translate3d('+($('#masonry-container').width()/2-$scope.singleItem.width()/2)+'px, 0px, 0)'
-					});
-					($scope.listItem.description === undefined) && $('#get-item-single-'+$stateParams.id + ' .get-stuff-item-info').addClass('get-single-item-info').append([
-						'<h3 class="get-single-item-description sm-hidden animate-250">',
-						'	'+$scope.listItem.description,
-						'</h3>'
-					].join('\n'));
-					var $el = ($('#get-item-single'+$stateParams.id).append('<button class="get-single-item-dibs-button sm-hidden animate-250">Dibs!</button>'));
-					requestAnimationFrame(function() {
-						$('.get-single-item-description, .get-single-item-dibs-button').removeClass('sm-hidden');
-						$('#get-stuff-back-button-container').removeClass('sm-hidden');
-						$('#get-stuff-item-title').text($scope.listItem.title);
-						setTimeout(function() {
-							$('.get-stuff-back-button').removeClass('sm-hidden');
-						},100);
-						setTimeout(function() {
-							$('#get-stuff-item-title').removeClass('sm-hidden');
-						},300);
-						checkScroll();
-					});
+					$('.get-single-item-description, .get-single-item-dibs-button').removeClass('sm-hidden');
+					$('#get-stuff-back-button-container').removeClass('sm-hidden');
+					$('#get-stuff-item-title').text($scope.listItem.title);
+					setTimeout(function() {
+						$('.get-stuff-back-button').removeClass('sm-hidden');
+					},100);
+					setTimeout(function() {
+						$('#get-stuff-item-title').removeClass('sm-hidden');
+					},300);
+					checkScroll();
 				});
 			});
-		}
+		});
 	});
 	function initPayment() {
 		var clientToken = $userData.getBraintreeToken();
@@ -198,12 +164,8 @@ function GetItemController() {
 				'background-color': 'gray'
 			}).html('dibsing...');
 			$http.post(config.api.host + '/api/v' + config.api.version + '/dibs/' + $scope.listItem.id, {}, {
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-				},
-				transformRequest: function(data) {
-					return $.param(data);
-				}
+				headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+				transformRequest: function(data) {return $.param(data);}
 			}).success(function(data) {
 				if(!data.err) {
 					//$('#get-single-item-dibs-button'+$scope.listItem.id).attr('disabled', 'disabled').addClass('sm-button-positive').text('You dibsed it!');
@@ -215,8 +177,9 @@ function GetItemController() {
 							getSortData: {
 								number: '.number parseInt'
 							},
+							animationEngine : 'css',
 							sortBy: 'number',
-							isAnimated: true
+							isAnimated: false
 						});
 						setTimeout(function() {
 							$state.go('stuff.my.items.item',{id:$scope.listItem.id});
@@ -226,15 +189,10 @@ function GetItemController() {
 			});
 		}
 	}
-
 	function paidDibsItem() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/dibs/' + $scope.listItem.id, {}, {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-			},
-			transformRequest: function(data) {
-				return $.param(data);
-			}
+			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+			transformRequest: function(data) {return $.param(data);}
 		}).success(function(data) {
 			if(!data.err) {
 				$('#post-item-'+$scope.listItem.id).parent().parent().remove();
@@ -245,8 +203,9 @@ function GetItemController() {
 						getSortData: {
 							number: '.number parseInt'
 						},
+						animationEngine : 'css',
 						sortBy: 'number',
-						isAnimated: true
+						isAnimated: false
 					});
 					// $state.go('stuff.my.items.item',{id:$scope.listItem.id});
 				});
@@ -256,12 +215,7 @@ function GetItemController() {
 
 	function earlyDibsItem() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/earlydibs/' + $scope.listItem.id, {}, {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-			},
-			transformRequest: function(data) {
-				return $.param(data);
-			}
+			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
 		}).success(function(data) {
 			if(!data.err) {
 				$('#post-item-'+$scope.listItem.id).parent().parent().remove();
@@ -272,8 +226,9 @@ function GetItemController() {
 						getSortData: {
 							number: '.number parseInt'
 						},
+						animationEngine : 'css',
 						sortBy: 'number',
-						isAnimated: true
+						isAnimated: false
 					});
 					setTimeout(function() {
 						$state.go('stuff.my.items.item',{id:$scope.listItem.id});
@@ -297,7 +252,6 @@ function GetItemController() {
 		//}
 	}
 	$scope.$on('$destroy', function() {
-		if(newWindow) $('.get-item-single-image-container').css({'background-image':''});
 		$('#map-view').off('mousedown', backToGetStuff);
 		if(singleItemTemplateMap) {
 			singleItemTemplateMap.addClass('sm-hidden');
@@ -317,28 +271,13 @@ function GetItemController() {
 				google.maps.event.trigger($scope.map, 'zoom_changed');
 			}
 		});
-		if($('#post-item-' + $stateParams.id).length) {
-			$scope.imageContainer.css({
-				'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top) + 'px, ' + '0)'
-			});
-		}
-		else {
-			$scope.imageContainer.css({
-				'transform' : 'translate3d(0px, -100%, 0)'
-			});
-		}
-		$scope.containerBackground.addClass('sm-hidden');
-		$scope.detailsContainer.addClass('sm-hidden');
-		$scope.singleItem.css({
-			'transform':'scale3d('+$scope.imgScale+', '+$scope.imgScale+', 1) translate3d(0px, 0px, 0)',
-			'z-index': '2'
-		});
 		$('.get-single-item-description, .get-single-item-dibs-button').addClass('sm-hidden');
+		$scope.container.addClass('sm-hidden');
 		setTimeout(function() {
-			$('#post-item-'+$stateParams.id + ' img').css({'opacity': ''});
 			requestAnimationFrame(function() {
 				requestAnimationFrame(function() {
 					$scope.container.remove();
+					$('iframe#braintree-dropin-modal-frame').remove();
 				});
 			});
 		}, 250);

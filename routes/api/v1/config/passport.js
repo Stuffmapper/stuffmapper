@@ -42,6 +42,7 @@ passport.use(new GoogleStrategy({
 function(req, accessToken, refreshToken, profile, done) {
 	console.log(req.session);
 	User.findOrCreateOne('google', profile, req, function (err, user) {
+		console.log(err, user);
 		if (err) return done(err);
 		if (!user) return done(null, false);
 		return done(null, user);
@@ -58,6 +59,7 @@ passport.use(new FacebookStrategy({
 function(req, accessToken, refreshToken, profile, done) {
 	console.log(req.session);
 	User.findOrCreateOne('facebook', profile, req, function (err, user) {
+		console.log(err, user);
 		if (err) return done(err);
 		if (!user) return done(null, false);
 		return done(null, user);

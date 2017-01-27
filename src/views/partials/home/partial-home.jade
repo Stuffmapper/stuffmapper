@@ -1,8 +1,4 @@
-#map-view-container
-	#map-view.map-view-open
-	img#get-location(src="/img/mylocation1.png")
-	img#center-marker.animate-250(src="img/test-pin1.png")
-#tab-container
+#tab-container(style="pointer-events:all;")
 	ul.stuff-tabs
 		li.logo-tab
 			a(ng-click)
@@ -14,6 +10,6 @@
 			a.tk-proxima-nova.sm-text-m(ng-click="secureState('stuff.my.items')")
 				| My Stuff
 				#tab-message-badge.tab-message-badge 0
-#tab-content-container
+#tab-content-container(style="pointer-events:all;")
 	#smalert-container.animate-250.sm-hidden
 	#tab-content.animate-500(ui-view)

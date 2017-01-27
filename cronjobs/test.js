@@ -1,7 +1,7 @@
 #!/usr/bin/node
 var pg = require('pg');
 var pgUser = 'stuffmapper';
-var pgDb = 'stuffmapper4';
+var pgDb = 'stuffmapper1';
 var pgPass = 'SuperSecretPassword1!';
 var pgHost = 'localhost';
 var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':5432/'+pgDb;
@@ -109,24 +109,26 @@ function messageUserMessageReminder(user_id, conversation_id, post_id) {
 	queryServer('SELECT * FROM messages WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false and emailed = false ORDER BY date_created ASC', [user_id, conversation_id], function(result1) {
 		queryServer('SELECT uname, email FROM users WHERE id = $1', [user_id], function(result2){
 			queryServer('UPDATE messages SET emailed = true WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false and emailed = false', [user_id, conversation_id], function(result10) {
-				queryServer('SELECT title, id FROM posts WHERE id = $1', [post_id], function(result3) {
+				queryServer('SELECT title, id, dibber_id, user_id FROM posts WHERE id = $1', [post_id], function(result3) {
 					queryServer('SELECT image_url FROM images WHERE post_id = $1 AND main = true', [post_id], function(result5) {
-						var test = [];
-						result1.rows.forEach(function(e){test.push(e.message);});
-						sendTemplate(
-							'message-notification',
-							'You received a message!',
-							{[result2.rows[0].uname]:result2.rows[0].email},
-							{
-								'FIRSTNAME' : result2.rows[0].uname,
-								'USERNAME' : result2.rows[0].uname,
-								'ITEMTITLE':result3.rows[0].title,
-								'ITEMNAME':result3.rows[0].title,
-								'CHATLINK':'https://gophers.stuffmapper.com/stuff/my/'+post_id+'/messages',
-								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
-								'MESSAGE':test.join('<br>')
-							}
-						);
+						queryServer('SELECT uname FROM users WHERE (id = $1 OR id = $2) AND NOT id = $3', [result3.rows[0].user_id, result3.rows[0].dibber_id, user_id], function(result6) {
+							var test = [];
+							result1.rows.forEach(function(e){test.push(e.message);});
+							sendTemplate(
+								'message-notification',
+								'You received a message!',
+								{[result2.rows[0].uname]:result2.rows[0].email},
+								{
+									'FIRSTNAME' : result2.rows[0].uname,
+									'USERNAME' : result6.rows[0].uname,
+									'ITEMTITLE':result3.rows[0].title,
+									'ITEMNAME':result3.rows[0].title,
+									'CHATLINK':'https://gophers.stuffmapper.com/stuff/my/'+post_id+'/messages',
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
+									'MESSAGE':test.join('<br>')
+								}
+							);
+						});
 					});
 				});
 			});

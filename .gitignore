@@ -45,6 +45,7 @@ plugins
 electron
 web
 platforms
+platforms2
 .atomignore
 
 .remote-sync.json

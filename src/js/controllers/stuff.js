@@ -18,15 +18,16 @@ function StuffController() {
 		[{"featureType":"water","elementType":"geometry","stylers":[{"color":"#48c0eb"}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#8bc34a"}]},{"featureType":"poi","stylers":[{"color":"#8bc34a"},{"lightness":-7}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#8bc34a"},{"lightness":-28}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#8bc34a"},{"visibility":"on"},{"lightness":-15}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#8bc34a"},{"lightness":-18}]},{"elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"elementType":"labels.text.stroke","stylers":[{"visibility":"off"}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#8bc34a"},{"lightness":-34}]},{"featureType":"administrative","elementType":"geometry","stylers":[{"visibility":"on"},{"color":"#48c0eb"},{"weight":0.8}]},{"featureType":"poi.park","stylers":[{"color":"#8bc34a"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"color":"#48c0eb"},{"weight":0.3},{"lightness":10}]}]
 	];
 	var styledMap = new google.maps.StyledMapType(style[0], {name: "Styled Map"});
+	var zoomLevel;
 	var mapOptions = {
-		zoom: 13,
+		zoom: 12,
 		center: {
 			lat: 47.608013,
 			lng: -122.335167
 		},
-		minZoom: 12,
+		minZoom: 10,
 		maxZoom: 17,
-		zoomControl: !config.ionic.isIonic,
+		zoomControl: false,
 		mapTypeControl: false,
 		scaleControl: false,
 		streetViewControl: false,
@@ -39,4 +40,13 @@ function StuffController() {
 	$scope.map = new google.maps.Map($('#map-view')[0], mapOptions);
 	$scope.map.mapTypes.set('map_style', styledMap);
 	$scope.map.setMapTypeId('map_style');
+	setTimeout(function(){
+		var zoomLevel = 13;
+		$('#sm-map-zoom-out').click(function() {
+			if(zoomLevel-1 >= 12) $scope.map.setZoom(--zoomLevel);
+		});
+		$('#sm-map-zoom-in').click(function() {
+			if(zoomLevel+1 <= 17) $scope.map.setZoom(++zoomLevel);
+		});
+	},1200);
 }

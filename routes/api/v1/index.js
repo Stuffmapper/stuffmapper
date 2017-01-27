@@ -9,7 +9,7 @@ var saltRounds = 10;
 var passport = require('passport');
 var path = require('path');
 var request = require('request');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper4';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
 var braintree = require('braintree');
 var stage = process.env.STAGE || 'development';
 var config = require(path.join(__dirname, '/../../../config'))[stage];
@@ -150,14 +150,14 @@ router.get('/stuff/id/:id', function(req, res) {
 			'WHERE images.post_id = posts.id AND posts.id = $1 AND',
 			'categories.id = posts.category_id AND images.main = true'
 		].join(' ');
-		var values = [
-			req.params.id
-		];
-		client.query(query, values, function(err, result) {
+		client.query(query, [req.params.id], function(err, result) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
+			var randVal = 0.0002;
+			result.rows[0].lat += ((Math.random() * randVal) - (randVal / 2));
+			result.rows[0].lng += ((Math.random() * randVal) - (randVal / 2));
 			res.send({
 				err: null,
 				res: result.rows[0]
@@ -318,6 +318,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 				// imagemin([__dirname+'/../../../uploads/original/'+time+'.png'], __dirname+'/../../../uploads/build/', {use: [imageminPngquant({speed:10,quality:60})]}).then(function(err, err2) {
 				// console.log(err, err2);
 				fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
+					console.log(err, data);
 					// var buf = new Buffer(req.body.test.replace(/^data:image\/\w+;base64,/, ""),'base64');
 					var key = 'posts/' + time;
 					s3.upload({
@@ -538,6 +539,7 @@ router.get('/views', function() {
 
 router.post('/account/status', function(req, res) {
 	queryServer(res, 'SELECT pick_up_success FROM pick_up_success WHERE pick_up_success = true AND undibbed = false', [], function(result1) {
+		console.log(req.session);
 		if(req.session.passport && req.session.passport.user) {
 			var query = [
 				'SELECT count(messages.read) FROM conversations, messages WHERE',
@@ -573,6 +575,7 @@ router.post('/account/register', function(req, res) {
 	queryServer(res, 'SELECT id FROM users WHERE email = $1', [b.email], function(result1) {
 		if(!result1.rows[0]) {
 			gateway.clientToken.generate({}, function (err, response) {
+				console.log(err, response);
 				bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
 					var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
 					var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
@@ -858,78 +861,71 @@ router.delete('/account/info', isAuthenticated, function(req, res) {
 
 
 router.post('/dibs/:id', isAuthenticated, function(req, res) {
-	var query = [
-		'UPDATE posts SET dibber_id = $1, dibbed = true',
-		'WHERE dibbed = false AND id = $2',
-		'RETURNING *'
-	].join(' ');
-	var values = [
-		req.session.passport.user.id,
-		req.params.id
-	];
-	queryServer(res, query, values, function(result1) {
-		var nonceFromTheClient = req.body.payment_method_nonce;
-		if(!nonceFromTheClient) return res.send('failure');
-		gateway.transaction.sale({
-			amount: '1.00',
-			paymentMethodNonce: nonceFromTheClient,
-			options: {
-				submitForSettlement: true
-			}
-		}, function (err, result) {
-			if(err) return res.send('failure');
-			var query = [
-				'INSERT INTO pick_up_success',
-				'(post_id, dibber_id, lister_id)',
-				'VALUES ($1, $2, $3) RETURNING *'
-			].join(' ');
-			var values = [
-				req.params.id,
-				req.session.passport.user.id,
-				result1.rows[0].user_id
-			];
-			queryServer(res, query, values, function(result2) {
-				query = [
-					'INSERT INTO conversations',
+	queryServer(res, 'UPDATE posts SET dibber_id = $1, dibbed = true WHERE dibbed = false AND id = $2 RETURNING *', [req.session.passport.user.id,req.params.id], function(result1) {
+		queryServer(res, 'SELECT email FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
+			var nonceFromTheClient = req.body.payment_method_nonce;
+			if(!nonceFromTheClient) return res.send('failure');
+			gateway.transaction.sale({
+				amount: '1.00',
+				paymentMethodNonce: nonceFromTheClient,
+				options: {
+					submitForSettlement: true
+				},
+				customer :{
+					email: result0.rows[0].email
+				}
+			}, function (err, result) {
+				console.log(err, result);
+				if(err) return res.send('failure');
+				var query = [
+					'INSERT INTO pick_up_success',
 					'(post_id, dibber_id, lister_id)',
 					'VALUES ($1, $2, $3) RETURNING *'
 				].join(' ');
-				values = [
+				var values = [
 					req.params.id,
 					req.session.passport.user.id,
 					result1.rows[0].user_id
 				];
-				queryServer(res, query, values, function(result3) {
-					res.send({
-						err: null,
-						res: {
-							'res1': result1.rows,
-							'res2': result2.rows,
-							'res3': result3.rows
-						}
-					});
-					if(result1.rows[0].unattended) return;
+				queryServer(res, query, values, function(result2) {
 					query = [
-						'SELECT image_url FROM images WHERE post_id = $1 AND main = true'
+						'INSERT INTO conversations',
+						'(post_id, dibber_id, lister_id)',
+						'VALUES ($1, $2, $3) RETURNING *'
 					].join(' ');
 					values = [
 						req.params.id,
+						req.session.passport.user.id,
+						result1.rows[0].user_id
 					];
-					queryServer(res, query, values, function(result4) {
-						var emailTo = {};
-						emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
-						sendTemplate(
-							'dibber-notification-1',
-							'You Dibs\'d an item!',
-							emailTo,
-							{
-								'FIRSTNAME' : req.session.passport.user.uname,
-								'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
-								'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
-								'ITEMTITLE':result1.rows[0].title,
-								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
+					queryServer(res, query, values, function(result3) {
+						res.send({
+							err: null,
+							res: {
+								'res1': result1.rows,
+								'res2': result2.rows,
+								'res3': result3.rows
 							}
-						);
+						});
+						if(result1.rows[0].unattended) return;
+						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result4) {
+							var emailTo = {};
+							emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
+							var slug = 'dibber-notification-1';
+							if(result1.rows[0].unattended) slug = 'dibber-notification-unattended';
+							sendTemplate(
+								slug,
+								'You Dibs\'d an item!',
+								emailTo,
+								{
+									'FIRSTNAME' : req.session.passport.user.uname,
+									'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
+									'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
+									'ITEMTITLE':result1.rows[0].title,
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
+								}
+							);
+						});
 					});
 				});
 			});
@@ -946,16 +942,25 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 		'(p2.user_id = $1 OR p2.dibber_id = $1)',
 		'RETURNING *'
 	].join(' ');
-	var values = [
-		req.session.passport.user.id,
-		req.params.id
-	];
-	queryServer(res, query, values, function(result1) {
+	queryServer(res, query, [req.session.passport.user.id,req.params.id], function(result1) {
 		res.send({
 			err: null,
-			res: {
-				success: (result1.rows.length === 1)
-			}
+			res: {success: (result1.rows.length === 1)}
+		});
+		queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result2) {
+			[result1.rows[0].dibber_id, result1.rows[0].user_id].forEach(function(e){
+				queryServer(res, 'SELECT email FROM users WHERE id = $1', [e], function(result3) {
+					sendTemplate(
+						'dibs-complete',
+						'Dibs for '+result1.rows[0].title+' is complete!',
+						result3.rows[0].email,
+						{
+							'ITEMTITLE':result1.rows[0].title,
+							'ITEMIMAGE':'https://cdn.stuffmapper.com'+result2.rows[0].image_url
+						}
+					);
+				});
+			});
 		});
 	});
 });
@@ -1080,7 +1085,8 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 									'FIRSTNAME' : result4.rows[0].uname,
 									'ITEMTITLE':result1.rows[0].title,
 									'ITEMNAME':result1.rows[0].title,
-									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
+									'GETSTUFFLINK':'https://www.stuffmapper.com'
 								}
 							);
 						});

@@ -5,8 +5,14 @@ function MyStuffController() {
 	var $userData = arguments[2];
 	var authenticator = arguments[3];
 	var $state = arguments[4];
-	var $stuffTabs = arguments[5];
-	$stuffTabs.init($scope, '#tab-container .stuff-tabs .my-stuff-tab a');
+	if($('#center-marker').hasClass('dropped')) {
+		$('#center-marker').removeClass('dropped');
+		$timeout(function() {
+			requestAnimationFrame(function() {
+				$('#center-marker').css({'display':'none'});
+			});
+		}, 250);
+	}
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
@@ -39,7 +45,7 @@ function MyStuffController() {
 								number: '.number parseInt'
 							},
 							sortBy: 'number',
-							isAnimated: true
+							isAnimated: false
 						});
 					});
 					requestAnimationFrame(resetBadges);
@@ -64,7 +70,7 @@ function MyStuffController() {
 								number: '.number parseInt'
 							},
 							sortBy: 'number',
-							isAnimated: true
+							isAnimated: false
 						});
 					});
 				};

@@ -131,12 +131,12 @@ gulp.task('js', function(done) {
 		));
 		gulp.src(['./src/js/lib/ionic/**/*','./src/js/lib/ngCordova/dist/*.js'], {base: './src/js/lib/'})
 		.pipe(gulp.dest('./www/lib/'));
-		gulp.src(['./src/js/lib/animate.css/animate.min.css'])
-		.pipe(multistream(
-			gulp.dest('./web/js/lib/animate.css/'),
-			gulp.dest('./electron/js/lib/animate.css/'),
-			gulp.dest('./www/js/lib/animate.css/')
-		));
+		// gulp.src(['./src/js/lib/animate.css/animate.min.css'])
+		// .pipe(multistream(
+		// 	gulp.dest('./web/js/lib/animate.css/'),
+		// 	gulp.dest('./electron/js/lib/animate.css/'),
+		// 	gulp.dest('./www/js/lib/animate.css/')
+		// ));
 	} catch (e) {}
 });
 

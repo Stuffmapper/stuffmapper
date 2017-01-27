@@ -32,6 +32,7 @@ html, body, #container {
 	padding: 0;
 	width: 100%;
 	height: 100%;
+	position: relative;
 	overflow: hidden;
 	min-height: 500px;
 	background-color: $grass;
@@ -88,6 +89,7 @@ html.ionic.ios {
 .empty-results {
 	top: 0px;
 	left: 0px;
+	background-color: #fff;
 	width: 100%;
 	height: 100%;
 	position: absolute;
@@ -117,6 +119,9 @@ html.ionic.ios {
 	left: 0px;
 	text-align: center;
 	font-size: 18px;
+	& a {
+		pointer-events: all;
+	}
 }
 #get-stuff-empty-results {
 	height: calc(100% - 42px);
@@ -418,13 +423,18 @@ html.ionic.ios {
 	cursor: pointer;
 }
 
+.ionic #content {
+	
+}
 #content {
+	position: absolute;
+  top: 40px;
+  right: 0px;
 	height: calc(100% - 40px);
 	width: 100%;
 	overflow: hidden;
-	position: relative;
-	display: block;
 	&.fre {
+		background-color: $primary-color;
 		position: fixed;
 		height: 100%;
 		top: 0px;
@@ -489,18 +499,23 @@ html.ionic.ios {
 			border-right: 15px solid transparent;
 		}
 	}
-	#get-location {
-		position: absolute;
-		bottom: 90px;
-		right: 10px;
-		width: 28px;
-		height: 28px;
-		padding: 4px;
+	#sm-map-button-container {
+		width:32px;
+		position:absolute;
+		top:7px;
+		right:7px;
+		border-radius:3px;
+		border:1px solid #efefef;
 		background-color: #FFFFF8;
 		color: #3C3B3D;
 		cursor: pointer;
-		border-radius: 2px;
 		box-shadow: 0 1px 1px rgba(0,0,0,.15);
+	}
+	#get-location {
+		width: 30px;
+		height: 30px;
+		padding: 4px;
+		position: relative;
 	}
 
 	#center-marker {
@@ -631,6 +646,10 @@ html.ionic.ios {
 	top: 40px;
 	left: 0;
 	display: block;
+	@include transform(translate3d(0, 0%, 0));
+	&.sm-hidden {
+		@include transform(translate3d(0, 100%, 0));
+	}
 }
 
 .stuff-item-category-distance-owner {
@@ -662,6 +681,7 @@ html.ionic.ios {
 	height: 40px;
 	line-height: 40px;
 	cursor: pointer;
+	z-index: 2;
 }
 
 #dropdown-menu, #dropdown-menu2 {
@@ -677,8 +697,12 @@ html.ionic.ios {
 	top: 0px;
 	left: 0px;
 	display: block;
-	overflow-y: auto;
-	overflow-x: hidden;
+	// overflow-y: auto;
+	// overflow-x: hidden;
+	@include transform(translate3d(0, 0%, 0));
+	&.sm-hidden {
+		@include transform(translate3d(0, 100%, 0));
+	}
 }
 
 .get-item-single-background {
@@ -2300,6 +2324,7 @@ html.ionic.ios {
 /* About Us - START */
 
 .about-us-main {
+	background-color: $primary-color;
 	display: block;
 	height: 100%;
 	// max-width: 1020px;
@@ -2475,10 +2500,10 @@ html.ionic.ios {
 }
 #smalert-container {
 	z-index: 99;
-  position: relative;
-  background: #fff;
-  display: block;
-  top: 0px;
+	position: relative;
+	background: #fff;
+	display: block;
+	top: 0px;
 	opacity: 1;
 	pointer-events: all;
 	box-sizing: border-box;
@@ -2739,7 +2764,7 @@ html.ionic.ios {
 	font-size: 10px;
 	color: $silver-dark;
 	left: 45px;
-  margin-bottom: 20px
+	margin-bottom: 20px
 }
 
 .conversation-date-out-message {
@@ -3008,11 +3033,13 @@ html.ionic.ios {
 	position: fixed;
 	top: -40px;
 	width: 100%;
+	pointer-events: all;
 }
 #slide-container-not-container {
 	height: 100%;
 	display: block;
 	position: relative;
+	pointer-events: all;
 }
 #login-step-one {
 	background-color: $grass-light;
@@ -3143,6 +3170,7 @@ html.ionic.ios {
 	width: 100%;
 	display: block;
 	background-color: #fff;
+	pointer-events: all;
 }
 
 #login-setup-two-container {
@@ -3152,6 +3180,7 @@ html.ionic.ios {
 	width: 100%;
 	display: block;
 	background-color: $grass-light;
+	pointer-events: all;
 }
 .login-setup-two-label {
 	margin: 25px auto 0;
@@ -3248,6 +3277,7 @@ html.ionic.ios {
 
 /* Useragreement -START */
 .useragreement-container {
+	background-color: $primary-color;
 	display: block;
 	height: 98%;
 	// max-width: 1020px;
@@ -3275,6 +3305,7 @@ html.ionic.ios {
 /* Faq - START */
 
 .faq-container {
+	pointer-events: all;
 	display: block;
 	height: 100%;
 	padding: 1%;
@@ -3341,40 +3372,43 @@ html.ionic.ios {
 }
 
 /* Sign Up - END */
-#lock-modal {
-	background-color:#fff;width: 500px;height:auto;left: 50%;top: 50%;transform: translate3d(-50%,-50%,0);position: absolute;
-	overflow-x: hidden;
-	overflow-y:scroll;
-	max-height: 100%;
-}
-#lock-sm {
-	width: 100%;
-}
-#lock-sm a {
-	padding: 10px;
-	bottom: 10px;
-	bottom: 10px;
-	position: relative;
-	color: $charcoal-dark;
-	padding-right:15px;
-	height: 40px;
-	font-weight: 700;
-}
-#lock-sm a i {
-	padding-right:5px;
-	font-weight: 700;
-}
-#lock-fb {
-	width: 170px;
-}
-#lock-twitter {
-	width: 115px;
-}
-#lock-instagram {
-	width: 115px;
-}
+// #lock-modal {
+// 	background-color:#fff;width: 500px;height:auto;left: 50%;top: 50%;transform: translate3d(-50%,-50%,0);position: absolute;
+// 	overflow-x: hidden;
+// 	overflow-y:scroll;
+// 	max-height: 100%;
+// }
+// #lock-sm {
+// 	width: 100%;
+// }
+// #lock-sm a {
+// 	padding: 10px;
+// 	bottom: 10px;
+// 	bottom: 10px;
+// 	position: relative;
+// 	color: $charcoal-dark;
+// 	padding-right:15px;
+// 	height: 40px;
+// 	font-weight: 700;
+// }
+// #lock-sm a i {
+// 	padding-right:5px;
+// 	font-weight: 700;
+// }
+// #lock-fb {
+// 	width: 170px;
+// }
+// #lock-twitter {
+// 	width: 115px;
+// }
+// #lock-instagram {
+// 	width: 115px;
+// }
 
 @media screen and (max-width: 436px) {
+	#sm-map-button-container {
+		top: 130px !important;
+	}
 	#landfill-tracker-description {
 		display: none;
 	}
@@ -3478,10 +3512,12 @@ html.ionic.ios {
 	#masonry-container.hide-masonry-container {
 		@include transform(translate3d(0px, 100%, 0));
 	}
-	#get-stuff-container .get-item-single-container, #my-stuff-container .get-item-single-container {
+	// #get-stuff-container .get-item-single-container,
+	#my-stuff-container .get-item-single-container {
 		@include transform(translate3d(0px, 0%, 0));
 	}
-	#get-stuff-container.hide-masonry-container .get-item-single-container, #my-stuff-container.hide-masonry-container .get-item-single-container {
+	// #get-stuff-container.hide-masonry-container .get-item-single-container,
+	#my-stuff-container.hide-masonry-container .get-item-single-container {
 		@include transform(translate3d(0px, 100%, 0));
 	}
 
@@ -3821,4 +3857,24 @@ html.ionic.ios {
 
 .my-stuff-badge-lister {
 	background-color: $aqua;
+}
+
+
+
+
+
+#give-location-container.mobile-page {
+	background-color: transparent !important;
+	-webkit-transform: translate(100%) !important;
+	-moz-transform: translate(100%) !important;
+	-o-transform: translate(100%) !important;
+	-ms-transform: translate(100%) !important;
+	transform: translate(100%) !important;
+	pointer-events: none !important;
+	& i, & .empty-results-bottom {
+		display: none !important;
+	}
+	& div {
+		pointer-events: all !important;
+	}
 }

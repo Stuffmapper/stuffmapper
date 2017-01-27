@@ -21,7 +21,7 @@ var multerS3 = require('multer-s3');
 var braintree = require('braintree');
 var proxy = require('express-http-proxy');
 var pg = require('pg');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper4';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
 AWS.config = new AWS.Config();
 AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
 AWS.config.secretAccessKey = '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';
@@ -51,7 +51,8 @@ app.use(function(req, res, next) {
 app.use(cookieParser('SuperSecretPassword1!'));
 var newSession = session({
 	cookie: {
-		maxAge: 360000000
+		maxAge: 360000000,
+		httpOnly: true
 	},
 	store: new redisStore({ host: 'localhost', port: 6379, client: client }),
 	secret: 'SuperSecretPassword1!',
@@ -85,6 +86,7 @@ var gateway = braintree.connect({
 
 app.post('/checkout/paiddibs', function(req, res) {
 	var nonceFromTheClient = req.body.payment_method_nonce;
+	console.log('nonce',nonceFromTheClient);
 	if(!nonceFromTheClient) return res.send('failure');
 	gateway.transaction.sale({
 		amount: '1.00',
@@ -94,6 +96,7 @@ app.post('/checkout/paiddibs', function(req, res) {
 		},
 		deviceData: req.body.device_data
 	}, function (err, result) {
+		console.log(err, result);
 		if(err) return res.send('failure');
 		res.send('success');
 	});

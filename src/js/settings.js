@@ -104,7 +104,7 @@ function setDefaultSettings() {
 	if(isIonic) {
 		modules.push('ionic');
 		modules.push('ngCordova');
-		modules.push('ngCordovaOauth');
+		// modules.push('ngCordovaOauth');
 		Object.keys(providers).forEach(function(key) {
 			if(!providers[key].resolve) {
 				providers[key].resolve = {

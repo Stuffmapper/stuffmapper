@@ -5,7 +5,7 @@ function GiveController() {
 	var $timeout = arguments[2];
 	var $state = arguments[3];
 	var $location = arguments[4];
-	var $stuffTabs = arguments[5];
+	// var $stuffTabs = arguments[5];
 	var authenticator = arguments[6];
 	var givePostId = 0;
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
@@ -13,7 +13,7 @@ function GiveController() {
 			$state.go('stuff.get', {'#':'signin'});
 			$scope.openModal('modal');
 		} else {
-			$stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
+			// $stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
 			$http.get(config.api.host + '/api/v' + config.api.version + '/categories').success(function(data) {
 				$scope.giveMarker = '';
 				$scope.data = data.res;
@@ -82,7 +82,6 @@ function GiveController() {
 								$('#give-image-verify-container').css({'display':'none'});
 							});
 							var input = $('#give-image-select')[0];
-							// super hacky, but totally works.  removes files from input.
 							try{
 								input.value = '';
 								if(input.value){
@@ -99,14 +98,21 @@ function GiveController() {
 					/* STEP 1 - Get photo -  END  */
 					/* STEP 2 - Get location - START */
 					function watchSize() {
-						if(window.width > 436) $('#tab-content-container').css({'pointer-events':''});
+						if(window.width > 436) $('#tab-content-container').css({'pointer-events':'all'});
 						else $('#tab-content-container').css({'pointer-events':'none'});
 						// var canvas = $('#give-image-canvas')[0];
 						// canvas.width = $('#give-image-canvas').width();
 						// canvas.height = $('#give-image-canvas').height();
 					}
 					$scope.initStep1 = function() {
-
+						if($('#center-marker').hasClass('dropped')) {
+							$('#center-marker').removeClass('dropped');
+							$timeout(function() {
+								requestAnimationFrame(function() {
+									$('#center-marker').css({'display':'none'});
+								});
+							}, 250);
+						}
 					};
 					$scope.initStep2 = function() {
 						if($scope.giveMarker) $scope.giveMarker.setMap(null);
@@ -140,12 +146,14 @@ function GiveController() {
 							},
 							map: $scope.map
 						});
-						$('#center-marker').removeClass('dropped');
-						$timeout(function() {
-							requestAnimationFrame(function() {
-								$('#center-marker').css({'display':'none'});
-							});
-						}, 250);
+						if($('#center-marker').hasClass('dropped')) {
+							$('#center-marker').removeClass('dropped');
+							$timeout(function() {
+								requestAnimationFrame(function() {
+									$('#center-marker').css({'display':'none'});
+								});
+							}, 250);
+						}
 						nextStep();
 					};
 
@@ -154,7 +162,7 @@ function GiveController() {
 
 					$scope.initStep3 = function() {
 						$(window).off('resize', watchSize);
-						$('#tab-content-container').css({'pointer-events':''});
+						$('#tab-content-container').css({'pointer-events':'all'});
 						$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
 						$('#give-image-details').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 					};
@@ -231,7 +239,7 @@ function GiveController() {
 					}
 
 					$scope.prevStep = function() {
-						$('#tab-content-container').css({'pointer-events':''});
+						$('#tab-content-container').css({'pointer-events':'all'});
 						$(window).off('resize', watchSize);
 						// $('#center-marker').removeClass('dropped');
 						// $timeout(function() {
