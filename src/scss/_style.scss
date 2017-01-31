@@ -424,7 +424,7 @@ html.ionic.ios {
 }
 
 .ionic #content {
-	
+
 }
 #content {
 	position: absolute;
@@ -3372,40 +3372,56 @@ html.ionic.ios {
 }
 
 /* Sign Up - END */
-// #lock-modal {
-// 	background-color:#fff;width: 500px;height:auto;left: 50%;top: 50%;transform: translate3d(-50%,-50%,0);position: absolute;
-// 	overflow-x: hidden;
-// 	overflow-y:scroll;
-// 	max-height: 100%;
-// }
-// #lock-sm {
-// 	width: 100%;
-// }
-// #lock-sm a {
-// 	padding: 10px;
-// 	bottom: 10px;
-// 	bottom: 10px;
-// 	position: relative;
-// 	color: $charcoal-dark;
-// 	padding-right:15px;
-// 	height: 40px;
-// 	font-weight: 700;
-// }
-// #lock-sm a i {
-// 	padding-right:5px;
-// 	font-weight: 700;
-// }
-// #lock-fb {
-// 	width: 170px;
-// }
-// #lock-twitter {
-// 	width: 115px;
-// }
-// #lock-instagram {
-// 	width: 115px;
-// }
+#lock-modal {
+	background-color:#fff;
+	max-width: 700px;
+	width:100%;
+	height:auto;
+	left: 50%;
+	top: 50%;
+	transform: translate3d(-50%,-50%,0);
+	position: absolute;
+	overflow-x: hidden;
+	overflow-y:scroll;
+	max-height: 100%;
+}
+#lock-sm {
+	width: 100%;
+}
+#lock-sm a {
+	padding: 10px;
+	bottom: 10px;
+	bottom: 10px;
+	position: relative;
+	color: $charcoal-dark;
+	padding-right:15px;
+	height: 40px;
+	font-weight: 700;
+}
+#lock-sm a i {
+	padding-right:5px;
+	font-weight: 700;
+}
+#lock-fb {
+	width: 170px;
+}
+#lock-twitter {
+	width: 115px;
+}
+#lock-instagram {
+	width: 115px;
+}
+.lock-modal-column {
+	width: calc(50% - 22px);
+	display:inline-block;
+	vertical-align:top;
+	margin:10px;
+}
 
 @media screen and (max-width: 436px) {
+	.lock-modal-column {
+		width: calc(100% - 40px);
+	}
 	#sm-map-button-container {
 		top: 130px !important;
 	}
@@ -3652,7 +3668,6 @@ html.ionic.ios {
 
 @media screen and (min-width: 767px) {
 	/* About Us - START */
-
 	#about-us-image-div {
 		height: 38em;
 		margin-bottom: 0;

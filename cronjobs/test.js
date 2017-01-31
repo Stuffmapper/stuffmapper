@@ -34,8 +34,9 @@ pool.connect(function(err, client, done) {
 				var currTime = new Date().getTime();
 				var convAgeMin = new Date(currTime - convTime).getUTCMinutes();
 				var messAgeMin = new Date(currTime - messTime).getUTCMinutes();
+				if(e.post_id === 74) console.log(lastMessage, messAgeMin);
 				if(!lastMessage && convAgeMin >= 15) undib(e.post_id, e.dibber_id);
-				else if(lastMessage && !lastMessage.emailed && messAgeMin >= 5) messageUserMessageReminder(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
+				else if(lastMessage && !lastMessage.emailed && messAgeMin >= 2) messageUserMessageReminder(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
 				if(++conversation_counter === conversations) jobsDone(done);
 			});
 		});
@@ -114,20 +115,22 @@ function messageUserMessageReminder(user_id, conversation_id, post_id) {
 						queryServer('SELECT uname FROM users WHERE (id = $1 OR id = $2) AND NOT id = $3', [result3.rows[0].user_id, result3.rows[0].dibber_id, user_id], function(result6) {
 							var test = [];
 							result1.rows.forEach(function(e){test.push(e.message);});
-							sendTemplate(
-								'message-notification',
-								'You received a message!',
-								{[result2.rows[0].uname]:result2.rows[0].email},
-								{
-									'FIRSTNAME' : result2.rows[0].uname,
-									'USERNAME' : result6.rows[0].uname,
-									'ITEMTITLE':result3.rows[0].title,
-									'ITEMNAME':result3.rows[0].title,
-									'CHATLINK':'https://gophers.stuffmapper.com/stuff/my/'+post_id+'/messages',
-									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
-									'MESSAGE':test.join('<br>')
-								}
-							);
+							if(test.join('') && test.join('').trim()) {
+								sendTemplate(
+									'message-notification',
+									'You received a message!',
+									{[result2.rows[0].uname]:result2.rows[0].email},
+									{
+										'FIRSTNAME' : result2.rows[0].uname,
+										'USERNAME' : result6.rows[0].uname,
+										'ITEMTITLE':result3.rows[0].title,
+										'ITEMNAME':result3.rows[0].title,
+										'CHATLINK':'https://www.stuffmapper.com/stuff/my/'+post_id+'/messages',
+										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
+										'MESSAGE':test.join('<br>').trim()
+									}
+								);
+							}
 						});
 					});
 				});

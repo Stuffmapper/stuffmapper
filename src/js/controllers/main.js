@@ -7,7 +7,6 @@ if (config.ionic.isIonic) {
 }
 mainControllerArgs.push(MainController);
 stuffMapp.controller('MainController', mainControllerArgs);
-console.log(angular.version);
 function MainController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
@@ -28,7 +27,7 @@ function MainController() {
 	},250);
 	$rootScope.$on('$locationChangeSuccess', function() {
 		$('#tab-container .stuff-tabs li a').removeClass('selected');
-		console.log(((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no'))));
+		// console.log(((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no'))));
 		$('#tab-container .stuff-tabs .'+((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no')))+'-stuff-tab a').addClass('selected');
 	});
 	$scope.openModal = function(modal) {
@@ -109,28 +108,35 @@ function MainController() {
 		});
 	};
 	$scope.queries = getSearchQueries();
-	// var visited = localStorage.getItem('visited');
-	// if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
-	// 	$('#lock-screen').css({
-	// 		'pointer-events': 'all',
-	// 		opacity: 1
-	// 	});
-	// 	localStorage.setItem('visited', true);
-	// 	$scope.closeLockScreen = function() {
-	// 		$('#lock-screen').css({
-	// 			'pointer-events': 'none',
-	// 			opacity: 0.0001
-	// 		});
-	// 		setTimeout(function() {
-	// 			requestAnimationFrame(function() {
-	// 				$('#lock-screen').css({
-	// 					display:'none'
-	// 				});
-	// 			});
-	// 		}, 550);
-	// 	};©
-	// }
-	// else $('#lock-screen').css({display:'none'});
+	var visited = localStorage.getItem('visited');
+	if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
+		$('#lock-screen').css({
+			'pointer-events': 'all',
+			opacity: 1
+		});
+		localStorage.setItem('visited', true);
+	}
+	else $('#lock-screen').css({display:'none'});
+	$scope.openLockScreen = function() {
+		$('#lock-screen').css({
+			'pointer-events': 'all',
+			opacity: 1,
+			display:''
+		});
+	};
+	$scope.closeLockScreen = function() {
+		$('#lock-screen').css({
+			'pointer-events': 'none',
+			opacity: 0.0001
+		});
+		setTimeout(function() {
+			requestAnimationFrame(function() {
+				$('#lock-screen').css({
+					display:'none'
+				});
+			});
+		}, 550);
+	};
 	if($scope.queries.email_verification_token) $scope.openEmailVerificationModal($scope.queries.email_verification_token);
 	else if($scope.queries.password_reset_token) $scope.openPasswordResetModal($scope.queries.password_reset_token);
 	if ($ionicPlatform) {
@@ -146,7 +152,6 @@ function MainController() {
 	$scope.counterFlipperMenu = new CounterFlipper('landfill-tracker-menu', 0, 7);
 	if(subdomain === 'www') initChatra();
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data) {
-		console.log('is this being called twice??');
 		$scope.toastCounter = 0;
 		if(data.err) return console.log(data.err);
 		if(data.res && data.res.user) {
@@ -172,9 +177,9 @@ function MainController() {
 		$scope.counterFlipperMenu.setCounter(data.res.lt);
 		// use sql stuff for mobile here
 		initUserData(data);
-		console.log(window.location.pathname);
-		console.log(data.res);
-		console.log(data.res.user);
+		// console.log(window.location.pathname);
+		// console.log(data.res);
+		// console.log(data.res.user);
 		if(window.location.pathname.indexOf('/login-steps') > -1 && data.res && data.res.user) {
 			$state.go('stuff.get');
 		}
@@ -294,7 +299,6 @@ function MainController() {
 		if(config.ionic.isIonic) {
 			w.addEventListener('loadstart', function(event) {
 				if (event.url.match('/redirect')) {
-					console.log('asdf');
 					w.close();
 					getAccountStatus();
 				}
@@ -333,63 +337,62 @@ function MainController() {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
-			console.log('logged in!');
 			$u.toast('Welcome!');
-		// 	if(config.ionic.isIonic) {
-		// 		// $ionicPlatform.ready(function () {
-		// 		var push = $cordovaPush.init({
-		// 			android: {
-		// 				senderID: "11148716793"
-		// 			},
-		// 			browser: {
-		// 				pushServiceURL: 'http://push.api.phonegap.com/v1/push'
-		// 			},
-		// 			ios: {
-		// 				alert: "true",
-		// 				badge: "true",
-		// 				sound: "true"
-		// 			},
-		// 			windows: {}
-		// 		});
-		//
-		// 		push.on('registration', function(data) {
-		// 			// data.registrationId
-		// 			console.log(data);
-		// 		});
-		//
-		// 		push.on('notification', function(data) {
-		// 			// data.message,
-		// 			// data.title,
-		// 			// data.count,
-		// 			// data.sound,
-		// 			// data.image,
-		// 			// data.additionalData
-		// 			console.log(data);
-		// 		});
-		//
-		// 		push.on('error', function(e) {
-		// 			// e.message
-		// 			console.log(e);
-		// 		});
-		// 		// $cordovaPush.register({
-		// 		// 	badge: true,
-		// 		// 	sound: true,
-		// 		// 	alert: true
-		// 		// }).then(function (result) {
-		// 		// 	UserService.registerDevice({
-		// 		// 		user: user,
-		// 		// 		token: result
-		// 		// 	}).then(function () {
-		// 		// 		console.log('did it.');
-		// 		// 		//$ionicLoading.hide();
-		// 		// 	}, function (err) {
-		// 		// 		console.log(err);
-		// 		// 	});
-		// 		// }, function (err) {
-		// 		// 	console.log('reg device error', err);
-		// 		// });
-		// 		// });
-		// 	}
+			// 	if(config.ionic.isIonic) {
+			// 		// $ionicPlatform.ready(function () {
+			// 		var push = $cordovaPush.init({
+			// 			android: {
+			// 				senderID: "11148716793"
+			// 			},
+			// 			browser: {
+			// 				pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+			// 			},
+			// 			ios: {
+			// 				alert: "true",
+			// 				badge: "true",
+			// 				sound: "true"
+			// 			},
+			// 			windows: {}
+			// 		});
+			//
+			// 		push.on('registration', function(data) {
+			// 			// data.registrationId
+			// 			console.log(data);
+			// 		});
+			//
+			// 		push.on('notification', function(data) {
+			// 			// data.message,
+			// 			// data.title,
+			// 			// data.count,
+			// 			// data.sound,
+			// 			// data.image,
+			// 			// data.additionalData
+			// 			console.log(data);
+			// 		});
+			//
+			// 		push.on('error', function(e) {
+			// 			// e.message
+			// 			console.log(e);
+			// 		});
+			// 		// $cordovaPush.register({
+			// 		// 	badge: true,
+			// 		// 	sound: true,
+			// 		// 	alert: true
+			// 		// }).then(function (result) {
+			// 		// 	UserService.registerDevice({
+			// 		// 		user: user,
+			// 		// 		token: result
+			// 		// 	}).then(function () {
+			// 		// 		console.log('did it.');
+			// 		// 		//$ionicLoading.hide();
+			// 		// 	}, function (err) {
+			// 		// 		console.log(err);
+			// 		// 	});
+			// 		// }, function (err) {
+			// 		// 	console.log('reg device error', err);
+			// 		// });
+			// 		// });
+			// 	}
 		});
 	}
 	// TODO:  Implement url listener.  if the url changes, see if it is has stuff/my, stuff/get, or stuff/give
@@ -630,7 +633,7 @@ function MainController() {
 			var valid = true;
 			var message = '';
 			var fd = {
-				email: $('#sign-up-email').val(),
+				email: $('#sign-up-email').val().toLowerCase(),
 				password: $('#sign-up-password1').val(),
 				fname: $('#sign-up-fname').val(),
 				lname: $('#sign-up-lname').val()

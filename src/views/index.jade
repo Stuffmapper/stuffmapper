@@ -205,6 +205,26 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		//- 			a#lock-instagram(href="https://www.instagram.com/stuffmapper")
 		//- 				i.fa.fa-instagram
 		//- 				| @stuffmapper
+		//-------------------------------------------------------------------------
+		//-------------------------------------------------------------------------
+		//-------------------------------------------------------------------------
+		#lock-screen.animate-500(style="z-index: 999999;position:fixed;top:0px;left:0px;width:100%;height:100%;background-color:rgba(0,0,0,0.4);opacity:0.0001;pointer-events: none;")
+			#lock-modal-bg(style="z-index:1;position:absolute;top:0px;left:0px;width:100%;height:100%;" ng-click="closeLockScreen()")
+			#lock-modal(style="z-index:2;")
+				img#lock-logo(src="/img/sharing-header.png" style="width:100%;")
+				.fa.fa-times(style="z-index: 2;color: #fff;position: absolute;top: 1px;right: 5px;padding: 5px;width: 24px;height: 24px;cursor: pointer;font-size: 22px;" ng-click="closeLockScreen()")
+				.lock-modal-container(style="margin: 0 auto; width:100%;max-width: 1024px;")
+					.sm-full-width
+						h2 Stuffmapper is a safer and easier experience for giving and getting free reusable stuff.
+						.lock-modal-column
+							h4 See something you want?
+							p Pay $1 to Dibs it and get exclusive messaging with the lister. The item is hidden from everyone else while you have the Dibs!
+						.lock-modal-column
+							h4 Want to give something away?
+							p List the item on Stuffmapper.<br>The first person to Dibs your item gets exclusive messaging with you -- no more wasting time answering questions from countless people. Simply coordinate with that one interested person to exchange your item.<br>When you list items, the location is always approximate.
+						p Stuffmapper’s purpose is to serve the free reusable stuff movement. We launched this project in 2014 because innovation, optimization, and modern technology were lacking in the free stuff realm. Thanks to the continued enthusiastic and encouraging support from the community, our mission of <strong>saving millions of items from landfills</strong> everywhere is coming true.
+						p Thank you!<br>~Team Stuffmapper
+						button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="margin-top:10px;" ng-click="closeLockScreen()") Continue to Stuffmapper
 		#modal-windows
 			#modal-bg.modal-windows-bg.modal-bg-hidden.animate-250
 			#sign-in-up-modal.modal-window.modal-window-hidden.animate-500
@@ -393,6 +413,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				li(ng-click="secureState('stuff.my.settings')")
 					i.fa.fa-cog
 					span Settings
+				li(ng-click="openLockScreen()")
+					i.fa.fa-graduation-cap
+					span Tutorial
 				li(ui-sref="faq")
 					i.fa.fa-question
 					span FAQ
@@ -424,6 +447,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				a.side-menu-link(ng-click="secureState('stuff.my.settings');toggleSideMenu();")
 					.side-menu-icon.fa.fa-wrench
 					span Profile & Settings
+			li.side-menu-item
+				a.side-menu-link(ng-click="toggleSideMenu();openLockScreen()")
+					.side-menu-icon.fa.fa-graduation-cap
+					span Tutorial
 			li.side-menu-item
 				a.side-menu-link(ui-sref="faq", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-question

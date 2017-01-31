@@ -193,6 +193,7 @@ function GiveController() {
 							fd.append('lat', $scope.lat);
 							fd.append('lng', $scope.lng);
 							fd.append('test', $('#give-image-canvas-uploader')[0].toDataURL());
+							console.log($scope.category);
 							fd.append('category', ($scope.category==="General"?7:$scope.category));
 							$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
 								transformRequest: angular.identity,
