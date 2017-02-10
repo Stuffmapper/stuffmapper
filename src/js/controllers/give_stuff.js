@@ -8,6 +8,7 @@ function GiveController() {
 	// var $stuffTabs = arguments[5];
 	var authenticator = arguments[6];
 	var givePostId = 0;
+	fbq('trackCustom', 'GiveStuff');
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
@@ -193,7 +194,6 @@ function GiveController() {
 							fd.append('lat', $scope.lat);
 							fd.append('lng', $scope.lng);
 							fd.append('test', $('#give-image-canvas-uploader')[0].toDataURL());
-							console.log($scope.category);
 							fd.append('category', ($scope.category==="General"?7:$scope.category));
 							$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
 								transformRequest: angular.identity,
@@ -221,6 +221,7 @@ function GiveController() {
 						}, 250);
 						$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
 						$('#give-finished-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+						fbq('trackCustom', 'GiveStuffComplete');
 						$u.toast('Your stuff has been mapped! Find it in My Stuff!');
 					};
 

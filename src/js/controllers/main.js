@@ -261,6 +261,7 @@ function MainController() {
 	});
 
 	$scope.googleOAuth = function() {
+		fbq('trackCustom', 'GoogleSignIn');
 		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
 		var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
 		var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
@@ -289,6 +290,7 @@ function MainController() {
 		}
 	};
 	$scope.facebookOAuth = function() {
+		fbq('trackCustom', 'FacebookSignIn');
 		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
 		var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
 		var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
@@ -627,6 +629,7 @@ function MainController() {
 	var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 	var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
 	$scope.signUp = function() {
+		fbq('trackCustom', 'SignedUp');
 		if(!signingUp) {
 			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 			$('#sm-sign-up-button').attr('disabled', '');

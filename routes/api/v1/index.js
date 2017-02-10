@@ -122,7 +122,7 @@ router.get('/stuff', function(req, res) {
 				});
 			}
 			result.rows.forEach(function(e, i) {
-				var randVal = 0.0002;
+				var randVal = 0.001;
 				result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
 				result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
 			});
@@ -174,7 +174,7 @@ router.get('/stuff/my', isAuthenticated, function(req, res) {
 		'posts.dibber_id, posts.date_edited, posts.attended FROM posts, images, categories WHERE',
 		'(posts.user_id = $1 OR posts.dibber_id = $1) AND posts.archived = false AND',
 		'images.post_id = posts.id AND images.main = true AND',
-		'categories.id = posts.category_id'
+		'categories.id = posts.category_id AND ((posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))'
 	].join(' ');
 	queryServer(res, query, [req.session.passport.user.id], function(result) {
 		if(!result.rows.length) return res.send({err: null, res: [], test: [] });
@@ -491,7 +491,7 @@ router.get('/categories', function(req, res) {
 			apiError(res, err);
 			return client.end();
 		}
-		var query = 'SELECT * FROM categories';
+		var query = 'SELECT * FROM categories order by id asc';
 		client.query(query, function(err, result) {
 			if(err) {
 				apiError(res, err);

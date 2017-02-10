@@ -6,7 +6,7 @@ function ConversationController() {
 	var $state = arguments[3];
 	var authenticator = arguments[4];
 	// var $stuffTabs = arguments[5];
-
+	$('#my-stuff-container').addClass('in-conversation');
 	function backToEditItem(id) {
 		$state.go('stuff.my.items.item', {id: id});
 	}
@@ -28,10 +28,7 @@ function ConversationController() {
 				$scope.conversationInfo = data.res.info;
 				$scope.info = data.res.info;
 				$scope.conversation.forEach(function(e,i) {
-					var tmpTime = new Date(e.date_created);
-					var offsetTime = new Date().getTimezoneOffset();
-					tmpTime = new Date(tmpTime.getTime() - (offsetTime*60000));
-					$scope.conversation[i].date_created = dateFormat(tmpTime, 'h:MMtt – dd mmm yyyy');
+					$scope.conversation[i].date_created = dateFormat(new Date(e.date_created), 'h:MMtt – dd mmm yyyy');
 				});
 				requestAnimationFrame(function() {
 					requestAnimationFrame(function() {
@@ -185,6 +182,7 @@ function ConversationController() {
 					});
 				};
 				$scope.$on('$destroy', function() {
+					$('#my-stuff-container').removeClass('in-conversation');
 					$('#conversation-undibs'+$scope.info.post_id).off('click', openUndibsModal2);
 					$('#conversation-reject'+$scope.info.post_id).off('click', openRejectModal2);
 					$('#conversation-delete'+$scope.info.post_id).off('click', openDeleteModal2);
@@ -208,17 +206,17 @@ function ConversationController() {
 					}, 250);
 				}
 			};
-			$('#conversation-input textarea').on('keypress', calcTextArea);
+			$('#conversation-input textarea').on('keyup', calcTextArea);
 
 		}
 		function calcTextArea(e) {
 			if(e && e.keyCode === 13) return e.preventDefault();
 			var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 			$('#conversation-input textarea')[0].style.height = 'auto';
-			$('#conversation-input textarea')[0].style.height = ($('#conversation-input textarea')[0].scrollHeight) + 'px';
-			$('#conversation-messages-container').css({'height':'calc(100% - '+($('#conversation-input textarea')[0].scrollHeight+10)+'px)'});
-			$('#conversation-input-container').height($('#conversation-input textarea')[0].scrollHeight+10);
-			$('#conversation-input').height($('#conversation-input textarea')[0].scrollHeight+1);
+			$('#conversation-input textarea')[0].style.height = (parseInt(($('#conversation-input textarea')[0].scrollHeight))+10) + 'px';
+			$('#conversation-messages-container').css({'height':'calc(100% - '+(parseInt(($('#conversation-input textarea')[0].scrollHeight+20)))+'px)'});
+			$('#conversation-input-container').height(parseInt($('#conversation-input textarea')[0].scrollHeight)+30);
+			$('#conversation-input').height(parseInt($('#conversation-input textarea')[0].scrollHeight)+1);
 			if(isScrolledToBottom) out.scrollTop = out.scrollHeight - out.clientHeight;
 		}
 	});

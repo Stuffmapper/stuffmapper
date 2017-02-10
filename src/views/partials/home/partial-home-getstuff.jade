@@ -67,7 +67,7 @@
 							span.fa.fa-times.animate-250(style="padding-right: 5px;padding-left: 1px;")
 							span.noselect(style="text-decoration: underline;") deselect all
 				.filter
-					- each category in ['general', 'arts & crafts', 'books, games, & media', 'building & garden materials', 'clothing & accessories', 'electronics', 'furniture & household', 'kids & babies', 'recreation & sporting goods']
+					- each category in ['general', 'arts & crafts', 'books, games, & media', 'building & garden materials', 'clothing & accessories', 'electronics', 'furniture & household', 'kids & babies', 'office', 'recreation & sporting goods']
 						.filter-label
 							input.category-input(id="#{category.split(' ').join('-')}" ng-click="clearSelectDeselect()", type="checkbox", name="#{category.split(' ').join('-')}", value="#{category.split(' ').join('-')}" checked)
 							label(for="#{category.split(' ').join('-')}")

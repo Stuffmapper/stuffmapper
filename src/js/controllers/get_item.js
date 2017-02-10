@@ -12,23 +12,23 @@ function GetItemController() {
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
 		$scope.listItem.date_created = new Date(data.res.date_created).getTime();
-		function openInfoWindow(e) {
-			e.category = 'test-category';
-			var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
-			getWordsBetweenCurlies(template).forEach(function(f) {
-				template = template.replace('{{'+f+'}}',e[f]);
-			});
-			singleItemTemplateMap = $(template);
-			singleItemTemplateMap.appendTo($('#map-view-container'));
-			requestAnimationFrame(function() {
-				requestAnimationFrame(function() {
-					singleItemTemplateMap.removeClass('sm-hidden');
-					$('.info-windows').click(function() {
-						$scope.toggleMap();
-					});
-				});
-			});
-		}
+		// function openInfoWindow(e) {
+		// 	e.category = 'test-category';
+		// 	var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
+		// 	getWordsBetweenCurlies(template).forEach(function(f) {
+		// 		template = template.replace('{{'+f+'}}',e[f]);
+		// 	});
+		// 	singleItemTemplateMap = $(template);
+		// 	singleItemTemplateMap.appendTo($('#map-view-container'));
+		// 	requestAnimationFrame(function() {
+		// 		requestAnimationFrame(function() {
+		// 			singleItemTemplateMap.removeClass('sm-hidden');
+		// 			$('.info-windows').click(function() {
+		// 				$scope.toggleMap();
+		// 			});
+		// 		});
+		// 	});
+		// }
 		/* jshint ignore:start */
 		function getWordsBetweenCurlies(str) {
 			var results = [], re = /{{([^}]+)}}/g, text;
@@ -38,7 +38,7 @@ function GetItemController() {
 			return results;
 		}
 		/* jshint ignore:end */
-		openInfoWindow(data.res);
+		// openInfoWindow(data.res);
 		$scope.markers.forEach(function(e) {
 			if(e.data.id === $scope.listItem.id) {
 				e.data.selected = true;
@@ -48,7 +48,7 @@ function GetItemController() {
 				$scope.googleMapStaticUrl = [
 					'https://maps.googleapis.com/maps/api/staticmap?',
 					'zoom=13&size=600x300&maptype=roadmap&',
-					'markers=icon:http://%7C'+e.data.lat+','+e.data.lng+'&',
+					'markers=icon:https://'+subdomain+'.stuffmapper.com/img/Marker-all-64x64.png%7C'+e.data.lat+','+e.data.lng+'&',
 					'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
 				].join('');
 			}
@@ -56,7 +56,6 @@ function GetItemController() {
 		$scope.container = $('<div>', {id:'get-item-single-'+$stateParams.id, class:'get-item-single-container sm-hidden animate-250'});
 		$scope.imageContainer = $('<div>', {class:'get-item-single-image-container animate-250'});
 		$scope.detailsContainer = $('<div>', {class:'get-item-single-details-container animate-250'});
-		$scope.containerBackground = $('<div>', {class:'get-item-single-background animate-250'});
 		$scope.detailsContainer.html([
 			((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 			((data.res.description==='undefined')?(''):('<p style="white-space: pre-wrap;" class="get-item-single-description sm-text-m sm-full-width">'+data.res.description+'</p>')),
@@ -85,7 +84,6 @@ function GetItemController() {
 			'<div class="sm-text-s sm-full-width">Location of item is approximated to protect privacy. Dibs will connect you with lister to learn exact location.</div>',
 			'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl+'" />'
 		].join('\n'));
-		$scope.containerBackground.appendTo($scope.container);
 		$scope.imageContainer.appendTo($scope.container);
 		$scope.detailsContainer.appendTo($scope.container);
 		$scope.container.appendTo('#get-stuff-container');
@@ -128,8 +126,10 @@ function GetItemController() {
 						$.post('/api/v1/dibs/'+$stateParams.id, {payment_method_nonce: nonce}, function(data, textStatus, xhr) {
 							if(data.err) {
 								$('#loading-get-item').addClass('sm-hidden');
+								fbq('trackCustom', 'UnsuccessfulDibs');
 								return console.log('Payment Failed');
 							}
+							fbq('trackCustom', 'SuccessfulDibs');
 							if(data.res.res1[0].attended) $state.go('stuff.my.items.item.conversation', {id: data.res.res1[0].id});
 							else $state.go('stuff.my.items.item', {id: data.res.res1[0].id});
 						});

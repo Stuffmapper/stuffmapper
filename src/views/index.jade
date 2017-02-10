@@ -30,6 +30,19 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		//- link(rel="icon" sizes="192x192" href="nice-highres.png")
 		script var subdomain = "#{config.subdomain}";
 		title Stuffmapper
+		//- Facebook Pixel Code
+		script.
+			!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+			n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+			n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+			t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+			document,'script','https://connect.facebook.net/en_US/fbevents.js');
+			fbq('init', '732563186893526'); // Insert your pixel ID here.
+			fbq('track', 'PageView');
+		noscript
+			img(height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=732563186893526&ev=PageView&noscript=1")
+		//- DO NOT MODIFY
+		//- End Facebook Pixel Code
 		if ionic
 			script.
 				var deviceType = (navigator.userAgent.match(/iPad/i))  == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i))  == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : (navigator.userAgent.match(/BlackBerry/i)) == "BlackBerry" ? "BlackBerry" : "null";
@@ -53,6 +66,17 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		else
 			base(href="/")
 			link(href="styleguide/css/main.css" rel="stylesheet")
+			if config.subdomain == 'www'
+				//- Hotjar Tracking Code for www.stuffmapper.com
+				script.
+					(function(h,o,t,j,a,r){
+						h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+						h._hjSettings={hjid:409836,hjsv:5};
+						a=o.getElementsByTagName('head')[0];
+						r=o.createElement('script');r.async=1;
+						r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+						a.appendChild(r);
+					})(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
 		link(href="js/lib/normalize-css/normalize.css" rel="stylesheet")
 		//- link(href="js/lib/animate.css/animate.min.css" rel="stylesheet")
 		link(href="css/main.app.min.css" rel="stylesheet")
@@ -217,12 +241,17 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					.sm-full-width
 						h2 Stuffmapper is a safer and easier experience for giving and getting free reusable stuff.
 						.lock-modal-column
-							h4 See something you want?
-							p Pay $1 to Dibs it and get exclusive messaging with the lister. The item is hidden from everyone else while you have the Dibs!
+							h4 Looking for something?
+							.sm-text-s Search the map or scroll the offerings.
+							ul
+								li Pay $1 to Dibs it and get exclusive messaging with the lister. The item is hidden from everyone else while you have the Dibs!
 						.lock-modal-column
 							h4 Want to give something away?
-							p List the item on Stuffmapper.<br>The first person to Dibs your item gets exclusive messaging with you -- no more wasting time answering questions from countless people. Simply coordinate with that one interested person to exchange your item.<br>When you list items, the location is always approximate.
-						p Stuffmapper’s purpose is to serve the free reusable stuff movement. We launched this project in 2014 because innovation, optimization, and modern technology were lacking in the free stuff realm. Thanks to the continued enthusiastic and encouraging support from the community, our mission of <strong>saving millions of items from landfills</strong> everywhere is coming true.
+							.sm-text-s List the item on Stuffmapper.
+							ul
+								li The first person to Dibs your item gets exclusive messaging with you -- no more wasting time answering questions from countless people. Simply coordinate with that one interested person to exchange your item.
+								li When you list items, the location is always approximate.
+						p Stuffmapper’s purpose is to advance the free reusable stuff movement. We launched this project in 2014 because innovation, optimization, and modern technology were lacking in the free stuff realm. Thanks to the continued enthusiastic and encouraging support from the community, our mission of <strong>saving millions of items from landfills</strong> everywhere is coming true.
 						p Thank you!<br>~Team Stuffmapper
 						button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="margin-top:10px;" ng-click="closeLockScreen()") Continue to Stuffmapper
 		#modal-windows
@@ -428,7 +457,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				li#sign-out-option-dropdown(style="display:none;" ng-click="logout()")
 					i.fa.fa-sign-out
 					span Sign Out
-				li#sign-in-option-dropdown(style="display:block;" ng-click="openModal('modal')") 
+				li#sign-in-option-dropdown(style="display:block;" ng-click="openModal('modal')")
 					//- ng-click="openModal('modal')")
 					i.fa.fa-sign-in
 					span Sign in

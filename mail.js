@@ -85,9 +85,39 @@ function sendTemplate(template, subject, to, args) {
 		console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
 	});
 }
+function sendBasicText(to) {
+	var mandrill = require('mandrill-api/mandrill');
+	var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
+	var emailTo = [];
+	Object.keys(to).forEach(function(e) {
+		emailTo.push({
+			"email" : to[e],
+			"name" : e,
+			"type": "to"
+		});
+	});
+	var message = {
+		"subject": "Howdy!",
+		"html": "<p>Example HTML content</p>",
+		"text": "Example text content",
+		"from_email": "support@stuffmapper.com",
+		"from_name": "Stuffmapper Support",
+		"to": emailTo,
+		"headers": { "Reply-To": "no_reply@stuffmapper.com" },
+		"merge": true,
+		"merge_language": "mailchimp"
+	};
+	mandrill_client.messages.send({ "message": message, "async": false, "ip_pool": "Main Pool"}, function(result) {
+		console.log(result);
+	}, function(e) {
+		console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
+	});
+}
 
-
-
+sendBasicText({
+	'Ryan Farmer' : 'ryan.the.farmer@gmail.com',
+	// 'Delaney Cunningham' : ''
+});
 
 // sendTemplate(
 // 	'dibs-declined',
@@ -155,21 +185,21 @@ function sendTemplate(template, subject, to, args) {
 // );
 
 
-sendTemplate(
-	'notify-undib',
-	'Your *|ITEMNAME|* has been unDibs',
-	{
-		'Delaney Cunningham' : 'ryan.the.farmer@gmail.com'
-	},
-	{
-		'ITEMTITLE' : 'item title goes here',
-		'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
-		'FIRSTNAME' : 'Delaney',
-		'USERNAME' : 'JankyToaster420',
-		'ITEMURL' : 'https://www.stuffmapper.com/stuff/get/1',
-		'UPDATE_PROFILE' : 'https://www.stuffmapper.com/stuff/my/settings'
-	}
-);
+// sendTemplate(
+// 	'notify-undib',
+// 	'Your *|ITEMNAME|* has been unDibs',
+// 	{
+// 		'Delaney Cunningham' : 'ryan.the.farmer@gmail.com'
+// 	},
+// 	{
+// 		'ITEMTITLE' : 'item title goes here',
+// 		'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
+// 		'FIRSTNAME' : 'Delaney',
+// 		'USERNAME' : 'JankyToaster420',
+// 		'ITEMURL' : 'https://www.stuffmapper.com/stuff/get/1',
+// 		'UPDATE_PROFILE' : 'https://www.stuffmapper.com/stuff/my/settings'
+// 	}
+// );
 //
 // sendTemplate(
 // 	'password-reset',

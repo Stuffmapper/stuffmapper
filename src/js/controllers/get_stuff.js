@@ -104,8 +104,6 @@ function GetStuffController() {
 		var maxZoom = 20;
 		var mapZoom = $scope.map.getZoom();
 		var mapSize = (mapZoom*mapZoom*2)/(60/mapZoom);
-		mapSize = (15/((maxZoom+1)-$scope.map.getZoom()))*10;
-
 		var mapAnchor = mapSize/2;
 		$scope.listItems.forEach(function(e) {
 			$scope.markers.push(new google.maps.Marker({
@@ -275,7 +273,7 @@ function GetStuffController() {
 					);
 					var matches = false;
 					// TODO: investigate this further
-					if(!searchQuery.toLowerCase().trim() || e.title.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1) matches = true;
+					if(!searchQuery.toLowerCase().trim() || e.title.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1 || e.description.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1) matches = true;
 					// e.title.split(' ').forEach(function(f) {
 					// 	if(!searchQuery || f.toLowerCase().startsWith(searchQuery)) matches = true;
 					// });

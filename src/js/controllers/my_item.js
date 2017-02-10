@@ -12,6 +12,7 @@ function MyItemsController() {
 	var $state = arguments[5];
 	var $timeout = arguments[6];
 	var data = {};
+	$('#my-stuff-container').addClass('in-my-item');
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(result){
 		if((result.res && !result.res.user) || !result.res) {
 			$state.go('stuff.get', {'#':'signin'});
@@ -26,7 +27,7 @@ function MyItemsController() {
 					$scope.googleMapStaticUrl = [
 						'https://maps.googleapis.com/maps/api/staticmap?',
 						'zoom=13&size=600x300&maptype=roadmap&',
-						'markers=color:red%7C{lat},{lng}&',
+						data.res.attended?'markers=icon:https://'+subdomain+'.stuffmapper.com/img/Marker-all-64x64.png%7C{lat},{lng}&':'markers=color:red%7C{lat},{lng}&',
 						'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
 					].join('');
 					$scope.container = $('<div id="get-item-single-'+$stateParams.id+'" class="my-item-single-container animate-250 sm-hidden"></div>');
@@ -40,7 +41,7 @@ function MyItemsController() {
 					].join('\n'));
 					$scope.editContainerHeader.css({'pointer-events':'none'});
 					$scope.editContainer = $([
-						'<div class="edit-item-single-details-container sm-hidden animate-250" style="top:40px;position:absolute;">',
+						'<div class="edit-item-single-details-container sm-hidden animate-250" style="top: 40px;height: calc(100% - 40px);position: absolute;overflow: scroll;">',
 						'	<div class="edit-item-single-image-container">',
 						'		<div style="width: 100%; display: block; height: auto; position: relative;">',
 						'			<div style="width: 50%;display: inline-block;">',
@@ -61,7 +62,7 @@ function MyItemsController() {
 						'		<div class="sm-select fa fa-chevron-down sm-select-full-width ng-not-empty" id="give-category-selector" placeholder="Choose a category..." full-width="true" ng-model="category" options="categories">',
 						'			<select id="edit-item-category" class="ng-pristine ng-valid ng-not-empty ng-touched">',
 						// loop through these and select whatever matches or something
-						'				<option value="'+$scope.listItem.category.trim()+'" selected="selected" class="ng-binding">'+$scope.listItem.category.trim()+'</option>',
+						// '				<option value="'+$scope.listItem.category.trim()+'" selected="selected" class="ng-binding">'+$scope.listItem.category.trim()+'</option>',
 						'				<option label="Arts &amp; Crafts" value="1">Arts &amp; Crafts</option>',
 						'				<option label="Books, Games, Media" value="2">Books, Games, Media</option>',
 						'				<option label="Building &amp; Garden Materials" value="3">Building &amp; Garden Materials</option>',
@@ -102,8 +103,9 @@ function MyItemsController() {
 						'	<input id="give-image-select" style="opacity:0.0001;" type="file" accept=".jpg,.jpeg,.png" name="file" class="give-image-select" style="height: 0px;width: 0px;position: absolute;" />',
 						'</div>',
 						'<div id="give-location-container" class="animate-250" style="top:0px;z-index:9;width:100%;height:100%;position:absolute;opacity: 0.0001;transform: translate3d(0px, 10%, 0);pointer-events: none;">',
+						'	<div id="give-location-text3" style="top: 0px;position: fixed;background-color: rgba(0,0,0,0.3);padding: 10px;color: white;height: 80px;"</div>Move the map around to set the pick-up location. For privacy, only the approximate location will be displayed to public.</div>',
 						'	<i class="fa fa-location-arrow give-location-icon" style="font-size: 160px !important;"></i>',
-						'	<div class="empty-results-bottom sm-full-width">Move the map around to set the pick-up location.</div>',
+						'	<div class="empty-results-bottom sm-full-width" style="bottom: 90px;top: initial;">Move the map around to set the pick-up location. For privacy, only the approximate location will be displayed to public.</div>',
 						'	<div style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;" class="sm-button-group">',
 						'		<div style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;" class="sm-button-group-2 sm-button-group-left">',
 						'			<button id="edit-reject-location" style="margin:20px 10px;width:calc(100% - 10px);font-size:32px;line-height:25px;" class="give-reject-parent sm-button sm-text-m sm-button-ghost sm-button-ghost-solid sm-button-negative fa fa-times-circle give-reject1 animate-250"></button>',
@@ -114,15 +116,15 @@ function MyItemsController() {
 						'	</div>',
 						'</div>'
 					].join('\n'));
-					$scope.containerBackground = $('<div class="get-item-single-background animate-250"></div>');
 					$scope.detailsContainer.html([
 						((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
 						($scope.listItem.type === 'dibber')?'<button id="my-item-undibs-big'+$stateParams.id+'" class=" sm-button sm-text-l sm-button-ghost sm-button-ghost-solid sm-button-negative sm-button-full-width animate-250">unDibs</button>':'',
-						($scope.listItem.dibbed || !data.res.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">If the item has been picked up, then click the button below!</div>':'',
+						($scope.listItem.dibbed && data.res.attended && $scope.listItem.type === 'dibber')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the lister. Send a message to learn exact location, time to meet, etc.</div>':'',
+						($scope.listItem.dibbed && data.res.attended && $scope.listItem.type === 'lister')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the Dibber.</div>':'',
 						($scope.listItem.dibbed || !data.res.attended)?'<button id="my-item-complete-body'+$stateParams.id+'" class="sm-button sm-text-l sm-button-positive sm-button-full-width" style="color:#fff;">Mark as Picked Up</button>':'',
-						((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
+						// ((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
 						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />'),
 					].join('\n'));
 					$scope.titleHeader = $([
@@ -132,7 +134,6 @@ function MyItemsController() {
 						(!$scope.listItem.dibbed?'	<i id="my-item-edit-button" class="fa fa-pencil-square-o">':'	<i id="my-item-menu" class="fa fa-ellipsis-v">'),
 						'</div>'
 					].join('\n'));
-					$scope.titleHeader.appendTo($scope.container);
 					$scope.dropdownMenu = $([
 						'<div id="dropdown-menu" class="popups popups-top-right animate-250 hidden-popup">',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<li id="get-single-item-conversation-popup'+$stateParams.id+'">Go to conversation</li>':'',
@@ -143,12 +144,14 @@ function MyItemsController() {
 						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'	<li id="get-single-item-edit-dibs-button'+$stateParams.id+'">Edit item</li>':'',
 						'</div>'
 					].join('\n'));
+					$scope.titleHeader.appendTo($scope.container);
 					$scope.dropdownMenu.appendTo($scope.container);
-					$scope.containerBackground.appendTo($scope.container);
-					$scope.imageContainer.appendTo($scope.container);
-					$scope.detailsContainer.appendTo($scope.container);
-					$scope.editContainer.appendTo($scope.container);
-					$scope.editContainerHeader.appendTo($scope.container);
+					var containerContainer = $('<div class="get-item-single-item-container-container"></div>');
+					$scope.imageContainer.appendTo(containerContainer);
+					$scope.detailsContainer.appendTo(containerContainer);
+					$scope.editContainer.appendTo(containerContainer);
+					$scope.editContainerHeader.appendTo(containerContainer);
+					containerContainer.appendTo($scope.container);
 					$scope.container.appendTo('#my-stuff-container');
 					requestAnimationFrame(function() {
 						requestAnimationFrame(function() {
@@ -216,6 +219,7 @@ function MyItemsController() {
 							});
 						}, 250);
 						$u.toast('Location updated');
+						updateItem();
 					};
 					var updateItem = function() {
 						var values = {
@@ -245,8 +249,10 @@ function MyItemsController() {
 							}
 							$u.toast('Changes have been saved.');
 							$('#my-item-header-text').text(values.title);
-							$('#my-item-header-text').text(values.title);
 							$('#post-item-'+$stateParams.id+' .get-stuff-item-info div').text(values.title);
+							$('#get-item-single-'+$stateParams.id+' div p').text(values.description);
+							$('#get-item-single-'+$stateParams.id+' div a').attr('href', 'https://maps.google.com/maps?q='+values.lat+','+values.lng);
+							$('#get-item-single-'+$stateParams.id+' div a img').attr('src', 'https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C'+values.lat+','+values.lng+'&key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U');
 							if(imageSet) {
 								$('#my-item-single-container-'+$stateParams.id).attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 								$('#post-item-'+$stateParams.id+' img').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
@@ -260,6 +266,7 @@ function MyItemsController() {
 					watchSize();
 					var getLocation = function() {
 						locationOpen = true;
+						$('#my-stuff-container').attr('style', 'overflow: visible !important;');
 						watchSize();
 						$('#give-location-container').css({
 							'opacity':1,
@@ -267,11 +274,12 @@ function MyItemsController() {
 							'pointer-events':'all'
 						});
 						$('#my-container').css({
-							'overflow':'visible !important'
+							'overflow':'visible'
 						});
 						initStep2();
 					};
 					var acceptLocation = function() {
+						$('#my-stuff-container').css({overflow:''});
 						$('#tab-content-container').css({'pointer-events':''});
 						$('#give-location-container').css({
 							'opacity':0.0001,
@@ -286,6 +294,7 @@ function MyItemsController() {
 						watchSize();
 					};
 					var rejectLocation = function() {
+						$('#my-stuff-container').css({overflow:''});
 						$('#tab-content-container').css({'pointer-events':''});
 						$('#give-location-container').css({
 							'opacity':0.0001,
@@ -456,9 +465,7 @@ function MyItemsController() {
 				$state.go('stuff.my.items');
 			};
 			var edit = function() {
-				$('option:first-child').text($scope.listItem.category);
-				$('option').attr('selected', 'selected');
-				$('option:first-child').attr('selected', 'selected');
+				$('#edit-item-category option[label="'+$scope.listItem.category+'"]').attr('selected','selected');
 				$('.edit-item-single-details-container').removeClass('sm-hidden');
 				$scope.editContainerHeader.css({
 					'opacity':1,
@@ -524,6 +531,7 @@ function MyItemsController() {
 			}
 			function undibsConfirm() {
 				$u.modal.close('undibs-confirm-modal');
+				fbq('trackCustom', 'UnDibsDibs');
 				$u.api.undibsStuffById(data.res.id, function() {
 					$state.go('stuff.my.items');
 					$('#post-item-'+data.res.id).parent().parent().remove();
@@ -546,6 +554,7 @@ function MyItemsController() {
 			}
 			function rejectConfirm() {
 				$u.modal.close('reject-confirm-modal');
+				fbq('trackCustom', 'RejectDibs');
 				$u.api.rejectStuffById(data.res.id, function() {
 					$state.go('stuff.my.items');
 					$u.toast('You have rejected <i>'+data.res.users[data.res.dibber_id]+'</i>\'s Dibs for <i>'+data.res.title+'</i>');
@@ -591,6 +600,7 @@ function MyItemsController() {
 				$u.api.completeStuffById(data.res.id, function() {
 					$('#post-item-'+data.res.id).parent().parent().remove();
 					$u.toast('Dibs for <i>'+data.res.title+'</i> has been completed!');
+					fbq('trackCustom', 'CompleteDibs');
 					requestAnimationFrame(function(){$(window).resize();});
 					$state.go('stuff.my.items');
 					setTimeout(function(){$state.reload('stuff.my.items');}, 250);
@@ -614,6 +624,7 @@ function MyItemsController() {
 				$u.api.completeStuffById(data.res.id, function() {
 					$('#post-item-'+data.res.id).parent().parent().remove();
 					$u.toast('Dibs for <i>'+data.res.title+'</i> has been completed!');
+					fbq('trackCustom', 'CompleteDibs');
 					requestAnimationFrame(function(){$(window).resize();});
 					$state.go('stuff.my.items');
 					setTimeout(function(){$state.reload('stuff.my.items');}, 250);
@@ -621,6 +632,8 @@ function MyItemsController() {
 			}
 
 			$scope.$on('$destroy', function() {
+				$('#my-stuff-container').css({overflow:''});
+				$('#my-stuff-container').removeClass('in-my-item');
 				$('#center-marker').css({'display':''});
 				$('#center-marker').removeClass('dropped');
 				locationOpen = false;
