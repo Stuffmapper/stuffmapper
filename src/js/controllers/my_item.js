@@ -24,6 +24,20 @@ function MyItemsController() {
 					var imageSet = false;
 					data = result;
 					$scope.listItem = data.res;
+					$scope.markers.forEach(function(e) {
+						if(e.data.id === $scope.listItem.id) {
+							e.data.selected = true;
+							//$scope.resizeMarkers();
+							google.maps.event.trigger($scope.map, 'zoom_changed');
+							$scope.map.panTo(new google.maps.LatLng(e.data.lat, e.data.lng));
+							$scope.googleMapStaticUrl = [
+								'https://maps.googleapis.com/maps/api/staticmap?',
+								'zoom=13&size=600x300&maptype=roadmap&',
+								'markers=icon:https://'+subdomain+'.stuffmapper.com/img/Marker-all-64x64.png%7C'+e.data.lat+','+e.data.lng+'&',
+								'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
+							].join('');
+						}
+					});
 					$scope.googleMapStaticUrl = [
 						'https://maps.googleapis.com/maps/api/staticmap?',
 						'zoom=13&size=600x300&maptype=roadmap&',
@@ -197,6 +211,16 @@ function MyItemsController() {
 						$('#edit-item-location-image').css({
 							'background-image':'url('+$scope.googleMapStaticUrl.replace('{lat}', $scope.lat).replace('{lng}', $scope.lng)+')'
 						});
+						$('#get-item-single-'+$scope.listItem.id+' .get-item-single-item-container-container .get-item-single-details-container img').attr('src', $scope.googleMapStaticUrl.replace('{lat}', $scope.lat).replace('{lng}', $scope.lng));
+						$scope.markers.forEach(function(e) {
+							if(e.data.id === $scope.listItem.id) {
+								e.setPosition({
+									lat:$scope.lat,
+									lng:$scope.lng
+								});
+								google.maps.event.trigger($scope.map, 'zoom_changed');
+							}
+						});
 						// var mapZoom = $scope.map.getZoom();
 						// var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
 						// var mapAnchor = mapSize/2;
@@ -221,7 +245,7 @@ function MyItemsController() {
 						$u.toast('Location updated');
 						updateItem();
 					};
-					var updateItem = function() {
+					var updateItem = function(cb) {
 						var values = {
 							title:$('#edit-item-title').val(),
 							description:$('#edit-item-description').val() || ' ',
@@ -257,7 +281,8 @@ function MyItemsController() {
 								$('#my-item-single-container-'+$stateParams.id).attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 								$('#post-item-'+$stateParams.id+' img').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 							}
-							exitEdit();
+							// exitEdit();
+							cb && cb();
 						});
 					};
 					var cancelUpdate = function() {
@@ -338,7 +363,7 @@ function MyItemsController() {
 					$('#edit-image-button').on('click', $scope.getPhoto);
 					$('#edit-location-button').on('click', getLocation);
 					$('#back-to-my-item').on('click', exitEdit);
-					$('#my-item-edit-save').on('click', updateItem);
+					$('#my-item-edit-save').on('click', function(){updateItem(exitEdit);});
 					$('#my-item-edit-cancel').on('click', cancelUpdate);
 
 					$('#my-item-undibs-big'+$stateParams.id).on('click', openUndibsModal);
@@ -639,6 +664,12 @@ function MyItemsController() {
 				locationOpen = false;
 				$('#my-container').css({
 					'overflow':''
+				});
+				$scope.markers.forEach(function(e) {
+					if(e.data.id === $scope.listItem.id) {
+						e.data.selected = false;
+						google.maps.event.trigger($scope.map, 'zoom_changed');
+					}
 				});
 				watchSize();
 				$('#my-item-undibs-big'+$stateParams.id).off('click', openUndibsModal);

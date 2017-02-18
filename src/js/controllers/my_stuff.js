@@ -5,6 +5,8 @@ function MyStuffController() {
 	var $userData = arguments[2];
 	var authenticator = arguments[3];
 	var $state = arguments[4];
+
+	$scope.markers = [];
 	if($('#center-marker').hasClass('dropped')) {
 		$('#center-marker').removeClass('dropped');
 		$timeout(function() {
@@ -31,6 +33,8 @@ function MyStuffController() {
 					$('#loading-get-stuff').addClass('sm-hidden');
 					$('#my-stuff-empty-list').removeClass('sm-hidden');
 				}
+				initMarkers();
+
 				// $('#mystuff a').addClass('selected');
 				// $scope.$on("$destroy", function() {
 				//     $('#mystuff a').removeClass('selected');
@@ -90,6 +94,49 @@ function MyStuffController() {
 			});
 		}
 	});
+
+	$scope.map.addListener('zoom_changed', resizeMarkers);
+	function resizeMarkers() {
+		var mapZoom = $scope.map.getZoom();
+		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
+		var mapAnchor = mapSize/2;
+		$scope.markers.forEach(function(e) {
+			console.log(e.data);
+			e.setIcon({
+				url: e.data.dibber_id?(e.data.selected?'img/marker-dibsd-selected.png':'img/Marker-dibsd-all.png'):(e.data.selected?'img/marker-selected.png':'img/Marker-all.png'),
+				scaledSize: new google.maps.Size(mapSize, mapSize),
+				anchor: new google.maps.Point(mapAnchor, mapAnchor)
+			});
+		});
+	}
+	function initMarkers() {
+		$scope.markers.forEach(function(e) {
+			e.setMap(null);
+			$scope.markers = [];
+		});
+		var maxZoom = 20;
+		var mapZoom = $scope.map.getZoom();
+		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
+		var mapAnchor = mapSize/2;
+		$scope.listItems.forEach(function(e) {
+			$scope.markers.push(new google.maps.Marker({
+				position: {
+					lat: e.lat,
+					lng : e.lng
+				},
+				icon: {
+					url: e.dibber_id?'img/Marker-dibsd-all.png':'img/Marker-all.png',
+					scaledSize: new google.maps.Size(mapSize, mapSize),
+					anchor: new google.maps.Point(mapAnchor, mapAnchor)
+				},
+				map: $scope.map,
+				data: e
+			}));
+			$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
+				$state.go('stuff.get.item', {id:this.data.id});
+			});
+		});
+	}
 	$scope.getLocation = function(callback) {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {

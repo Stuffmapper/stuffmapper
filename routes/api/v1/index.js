@@ -170,7 +170,7 @@ router.get('/stuff/id/:id', function(req, res) {
 router.get('/stuff/my', isAuthenticated, function(req, res) {
 	var query = [
 		'SELECT posts.id, posts.title, posts.description, posts.archived,',
-		'posts.expired, images.image_url, categories.category,',
+		'posts.expired, images.image_url, categories.category, posts.lat, posts.lng,',
 		'posts.dibber_id, posts.date_edited, posts.attended FROM posts, images, categories WHERE',
 		'(posts.user_id = $1 OR posts.dibber_id = $1) AND posts.archived = false AND',
 		'images.post_id = posts.id AND images.main = true AND',
@@ -343,6 +343,18 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 								res : {
 									id: result.rows[0].id
 								}
+							});
+							queryServer(res, 'SELECT uname FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
+								sendTemplate(
+									'item-listed',
+									'Your '+result.rows[0].title+' has been mapped!',
+									{[result0.rows[0].uname]:result0.rows[0].email},
+									{
+										'FIRSTNAME' : result0.rows[0].uname,
+										'ITEMTITLE' : result.rows[0].title,
+										'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-©-01.png'
+									}
+								);
 							});
 						});
 					});
@@ -607,12 +619,10 @@ router.post('/account/register', function(req, res) {
 								user: result.rows[0]
 							}
 						});
-						var emailTo = {};
-						emailTo[uname] = b.email;
 						sendTemplate(
 							'email-verification',
 							'Stuffmapper needs your confirmation!',
-							emailTo,
+							{[uname]:b.email},
 							{
 								'FIRSTNAME' : uname,
 								'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
@@ -907,16 +917,11 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 								'res3': result3.rows
 							}
 						});
-						if(result1.rows[0].unattended) return;
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result4) {
-							var emailTo = {};
-							emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
-							var slug = 'dibber-notification-1';
-							if(result1.rows[0].unattended) slug = 'dibber-notification-unattended';
 							sendTemplate(
-								slug,
+								result1.rows[0].unattended?'dibber-notification-unattended':'dibber-notification-1',
 								'You Dibs\'d an item!',
-								emailTo,
+								{[(req.session.passport.user.uname)]: req.session.passport.user.email},
 								{
 									'FIRSTNAME' : req.session.passport.user.uname,
 									'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
@@ -1144,16 +1149,12 @@ router.get('/messages', isAuthenticated, function(req, res) {
 });
 
 router.post('/messages', isAuthenticated, function(req, res) {
-	var query = [
-		'INSERT INTO messages(conversation_id, user_id, message)',
-		'values($1, $2, $3) RETURNING *'
-	].join(' ');
 	var values = [
 		parseInt(req.body.conversation_id),
 		req.session.passport.user.id,
 		req.body.message
 	];
-	queryServer(res, query, values, function(result) {
+	queryServer(res, 'INSERT INTO messages(conversation_id, user_id, message) values($1, $2, $3) RETURNING *', values, function(result) {
 		res.send({
 			err: null,
 			res: result.rows
@@ -1216,6 +1217,7 @@ router.get('/conversation/:post_id', isAuthenticated, function(req, res) {
 					result.rows.forEach(function(e, i) {
 						result.rows[i].type = ((parseInt(result.rows[i].user_id) === parseInt(req.session.passport.user.id))?'out':'in');
 					});
+					console.log(result.rows);
 					res.send({
 						err: null,
 						res: {

@@ -9,9 +9,10 @@ function GetStuffController() {
 	$scope.listItems = [];
 	$scope.markers = [];
 	$('#content').removeClass('fre');
-	// google.maps.event.addListenerOnce($scope.map, 'idle', function() {
-	// 	//console.log(this.getBounds());
-	// });
+	google.maps.event.addListener($scope.map, 'idle', function() {
+		console.log(this.getBounds());
+	});
+	var gotActualLocation = false;
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
 		if($('#center-marker').hasClass('dropped')) {
 			$('#center-marker').removeClass('dropped');
@@ -22,7 +23,14 @@ function GetStuffController() {
 			}, 250);
 		}
 
-
+		$http.get('https://freegeoip.net/json/').success(function(data) {
+			if(!gotActualLocation) {
+				$scope.map.setCenter({
+					lat: data.latitude,
+					lng: data.longitude
+				});
+			}
+		});
 		// setTimeout(function() {
 		// 	$u.step.init({
 		// 		name: 'undibs-confirm-modal-container'
@@ -103,7 +111,7 @@ function GetStuffController() {
 		});
 		var maxZoom = 20;
 		var mapZoom = $scope.map.getZoom();
-		var mapSize = (mapZoom*mapZoom*2)/(60/mapZoom);
+		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
 		var mapAnchor = mapSize/2;
 		$scope.listItems.forEach(function(e) {
 			$scope.markers.push(new google.maps.Marker({
@@ -132,6 +140,7 @@ function GetStuffController() {
 		}
 		else if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {
+				gotActualLocation = true;
 				$scope.geoLocation = {
 					lat: position.coords.latitude,
 					lng: position.coords.longitude
@@ -168,7 +177,7 @@ function GetStuffController() {
 	$('#get-location').click($scope.getLocation);
 	function resizeMarkers() {
 		var mapZoom = $scope.map.getZoom();
-		var mapSize = (mapZoom*mapZoom*2)/(60/mapZoom);
+		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
 		var mapAnchor = mapSize/2;
 		$scope.markers.forEach(function(e) {
 			e.setIcon({

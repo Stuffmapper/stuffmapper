@@ -133,7 +133,7 @@ function GiveController() {
 						$scope.lat = mapCenter.lat();
 						$scope.lng = mapCenter.lng();
 						var mapZoom = $scope.map.getZoom();
-						var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
+						var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
 						var mapAnchor = mapSize/2;
 						$scope.giveMarker = new google.maps.Marker({
 							position: {
