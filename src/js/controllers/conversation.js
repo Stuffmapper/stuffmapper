@@ -6,6 +6,7 @@ function ConversationController() {
 	var $state = arguments[3];
 	var authenticator = arguments[4];
 	// var $stuffTabs = arguments[5];
+	var firstMessage = false;
 	$('#my-stuff-container').addClass('in-conversation');
 	function backToEditItem(id) {
 		$state.go('stuff.my.items.item', {id: id});
@@ -35,13 +36,18 @@ function ConversationController() {
 						out.scrollTop = out.scrollHeight - out.clientHeight;
 						var len = $('li.conversation-message-container').length;
 						if(len === 1 && data.res.info.type === 'dibber') {
+							console.log('setting first message!');
+							firstMessage = true;
 							$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
 						}
 					});
 				});
 				$('#conversation-title').text(data.res.info.title);
 				if(data.res.info.type === 'lister') $('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div><em>'+data.res.info.users[data.res.info.dibber_id]+'</em> Dibs\'d your <em>'+data.res.info.title+'</em>. They must send you a message within 15 minutes to keep their Dibs.</div></div></li>');
-				if(data.res.info.type === 'dibber') $('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>You Dibs\'d <em>'+data.res.info.title+'</em> – Message the lister within 15 minutes to keep your Dibs!</div></div></li>');
+				if(data.res.info.type === 'dibber') {
+					firstMessage = true;
+					$('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>You Dibs\'d <em>'+data.res.info.title+'</em> – Message the lister within 15 minutes to keep your Dibs!</div></div></li>');
+				}
 				$('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><img src="https://cdn.stuffmapper.com'+$scope.conversationInfo.image+'" /><strong>'+$scope.conversationInfo.title+'</strong><div>'+$scope.conversationInfo.description+'</div></div></li>');
 				requestAnimationFrame(function() {
 					$('#conversation-input').val('');
@@ -178,6 +184,12 @@ function ConversationController() {
 						$scope.insertMessage('out', $('#conversation-input').val());
 						$('#conversation-input').val('');
 						$('#conversation-input').focus();
+						if(firstMessage) {
+							setTimeout(function() {
+								$('#conversation-messages').append('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>Dibs secured! Thanks for initiating communication. We\'ll notify you via email of any new messages sent from lister while you\'re offline. Enjoy your new stuff!</div></div></li>');
+							}, 750);
+							firstMessage = false;
+						}
 						calcTextArea();
 					});
 				};

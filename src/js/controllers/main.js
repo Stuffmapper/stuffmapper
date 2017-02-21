@@ -776,24 +776,35 @@ runSMAlert = function(alert, alerts) {
 function resetSockets($scope, $state, data) {
 	if($scope.socket) $scope.socket.disconnect();
 	$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
-	$scope.socket.on((data.res.user.id), function(data) {
-		if(window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
+	$scope.socket.on((''+data.res.user.id), function(data) {
+		console.log(data);
+		if(data.messages && window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
 			SMAlert('New Message for <em>'+data.messages.title+'</em>!', data.messages.message, 'Go to Message', 5000, function() {
 				$state.go('stuff.my.items.item.conversation', {id: data.messages.conversation});
 			});
 		}
-		$('#tab-message-badge').html(data.messages.unread);
-		var lPath = location.pathname.split('/');
-		lPath.shift();
-		var out = document.getElementById('conversation-messages');
-		if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
-			var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-			$('#conversation-messages').append([
-				'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
-				''+data.messages.message,
-				'</div></li>'
-			].join(''));
-			if (isScrolledToBottom) $(out).animate({ scrollTop: out.scrollHeight - out.clientHeight }, 250);
+		else if(data.undibsd) {
+			if(window.location.pathname.indexOf('/items/'+data.undibsd) >= -1) {
+				$state.reload();
+				setTimeout(function() {
+					$u.toast('Dibs lost. Failed to message lister within 15 minutes after Dibsing item.');
+				});
+			}
+		}
+		if(data.messages) {
+			$('#tab-message-badge').html(data.messages.unread);
+			var lPath = location.pathname.split('/');
+			lPath.shift();
+			var out = document.getElementById('conversation-messages');
+			if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
+				var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+				$('#conversation-messages').append([
+					'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
+					''+data.messages.message,
+					'</div></li>'
+				].join(''));
+				if (isScrolledToBottom) $(out).animate({ scrollTop: out.scrollHeight - out.clientHeight }, 250);
+			}
 		}
 	});
 }

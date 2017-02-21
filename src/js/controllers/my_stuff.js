@@ -36,9 +36,12 @@ function MyStuffController() {
 				initMarkers();
 
 				// $('#mystuff a').addClass('selected');
-				// $scope.$on("$destroy", function() {
-				//     $('#mystuff a').removeClass('selected');
-				// });
+				$scope.$on('$destroy', function() {
+					$scope.markers.forEach(function(e) {
+						e.setMap(null);
+					});
+					// $('#mystuff a').removeClass('selected');
+				});
 				$scope.initMasonry = function() {
 					$('.masonry-grid').imagesLoaded( function() {
 						$('#loading-get-stuff').addClass('sm-hidden');
@@ -133,7 +136,7 @@ function MyStuffController() {
 				data: e
 			}));
 			$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
-				$state.go('stuff.get.item', {id:this.data.id});
+				$state.go('stuff.my.items.item', {id:this.data.id});
 			});
 		});
 	}

@@ -318,7 +318,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 				// imagemin([__dirname+'/../../../uploads/original/'+time+'.png'], __dirname+'/../../../uploads/build/', {use: [imageminPngquant({speed:10,quality:60})]}).then(function(err, err2) {
 				// console.log(err, err2);
 				fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
-					console.log(err, data);
+					// console.log(err, data);
 					// var buf = new Buffer(req.body.test.replace(/^data:image\/\w+;base64,/, ""),'base64');
 					var key = 'posts/' + time;
 					s3.upload({
@@ -352,7 +352,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 									{
 										'FIRSTNAME' : result0.rows[0].uname,
 										'ITEMTITLE' : result.rows[0].title,
-										'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-©-01.png'
+										'ITEMIMAGE' : 'https://'+config.subdomain+'.stuffmapper.com/img/give-pic-©-01.png'
 									}
 								);
 							});
@@ -551,7 +551,7 @@ router.get('/views', function() {
 
 router.post('/account/status', function(req, res) {
 	queryServer(res, 'SELECT pick_up_success FROM pick_up_success WHERE pick_up_success = true AND undibbed = false', [], function(result1) {
-		console.log(req.session);
+		// console.log(req.session);
 		if(req.session.passport && req.session.passport.user) {
 			var query = [
 				'SELECT count(messages.read) FROM conversations, messages WHERE',
@@ -587,7 +587,7 @@ router.post('/account/register', function(req, res) {
 	queryServer(res, 'SELECT id FROM users WHERE email = $1', [b.email], function(result1) {
 		if(!result1.rows[0]) {
 			gateway.clientToken.generate({}, function (err, response) {
-				console.log(err, response);
+				// console.log(err, response);
 				bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
 					var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
 					var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
@@ -626,7 +626,7 @@ router.post('/account/register', function(req, res) {
 							{
 								'FIRSTNAME' : uname,
 								'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
-								'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-©-01.png'
+								'ITEMIMAGE' : 'https://'+config.subdomain+'.stuffmapper.com/img/give-pic-©-01.png'
 							}
 						);
 					});
@@ -885,7 +885,6 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 					email: result0.rows[0].email
 				}
 			}, function (err, result) {
-				console.log(err, result);
 				if(err) return res.send('failure');
 				var query = [
 					'INSERT INTO pick_up_success',
@@ -919,7 +918,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 						});
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result4) {
 							sendTemplate(
-								result1.rows[0].unattended?'dibber-notification-unattended':'dibber-notification-1',
+								result1.rows[0].attended?'dibber-notification-1':'dibber-notification-unattended',
 								'You Dibs\'d an item!',
 								{[(req.session.passport.user.uname)]: req.session.passport.user.email},
 								{
@@ -954,11 +953,11 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 		});
 		queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result2) {
 			[result1.rows[0].dibber_id, result1.rows[0].user_id].forEach(function(e){
-				queryServer(res, 'SELECT email FROM users WHERE id = $1', [e], function(result3) {
+				queryServer(res, 'SELECT email, uname FROM users WHERE id = $1', [e], function(result3) {
 					sendTemplate(
 						'dibs-complete',
 						'Dibs for '+result1.rows[0].title+' is complete!',
-						result3.rows[0].email,
+						{[result3.rows[0].uname]:result3.rows[0].email},
 						{
 							'ITEMTITLE':result1.rows[0].title,
 							'ITEMIMAGE':'https://cdn.stuffmapper.com'+result2.rows[0].image_url
@@ -997,10 +996,7 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 				'WHERE post_id = $1',
 				'RETURNING *'
 			].join(' ');
-			var values = [
-				req.params.id
-			];
-			queryServer(res, query, values, function(result3) {
+			queryServer(res, query, [req.params.id], function(result3) {
 				res.send({
 					err: null,
 					res: {
@@ -1009,16 +1005,8 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 						'res3': result3.rows
 					}
 				});
-				var query = 'SELECT uname, email FROM users WHERE id = $1';
-				var values = [result1.rows[0].user_id];
-				queryServer(res, query, values, function(result4){
-					query = [
-						'SELECT image_url FROM images WHERE post_id = $1 AND main = true'
-					].join(' ');
-					values = [
-						req.params.id,
-					];
-					queryServer(res, query, values, function(result5) {
+				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function(result4){
+					queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result5) {
 						var emailTo = {[result4.rows[0].uname]:result4.rows[0].email};
 						sendTemplate(
 							'notify-undib',
@@ -1067,10 +1055,7 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 					'WHERE post_id = $1',
 					'RETURNING *'
 				].join(' ');
-				var values = [
-					req.params.id
-				];
-				queryServer(res, query, values, function(result3) {
+				queryServer(res, query, [req.params.id], function(result3) {
 					res.send({
 						err: null,
 						res: {
@@ -1081,17 +1066,16 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 					});
 					queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result0.rows[0].dibber_id], function(result4) {
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result5) {
-							var emailTo = {[result4.rows[0].uname] : result4.rows[0].email};
 							sendTemplate(
 								'dibs-declined',
 								'Your Dibs has been cancelled',
-								emailTo,
+								{[result4.rows[0].uname] : result4.rows[0].email},
 								{
 									'FIRSTNAME' : result4.rows[0].uname,
 									'ITEMTITLE':result1.rows[0].title,
 									'ITEMNAME':result1.rows[0].title,
 									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
-									'GETSTUFFLINK':'https://www.stuffmapper.com'
+									'GETSTUFFLINK':'https://'+config.subdomain+'.stuffmapper.com'
 								}
 							);
 						});
@@ -1116,10 +1100,7 @@ router.get('/messages', isAuthenticated, function(req, res) {
 		'images.post_id = conversations.post_id',
 		'ORDER BY conversations.date_created DESC'
 	].join(' ');
-	var values = [
-		req.session.passport.user.id
-	];
-	queryServer(res, query, values, function(result1) {
+	queryServer(res, query, [req.session.passport.user.id], function(result1) {
 		var catcher = 0;
 		var messagesRows = {};
 		var cb = function(result2) {
@@ -1155,9 +1136,32 @@ router.post('/messages', isAuthenticated, function(req, res) {
 		req.body.message
 	];
 	queryServer(res, 'INSERT INTO messages(conversation_id, user_id, message) values($1, $2, $3) RETURNING *', values, function(result) {
-		res.send({
-			err: null,
-			res: result.rows
+		queryServer(res, 'SELECT conversations.lister_id, conversations.dibber_id, messages.user_id, conversations.post_id FROM messages, conversations where conversations.id = $1 and messages.conversation_id = $1 and conversations.dibber_id = messages.user_id', [parseInt(req.body.conversation_id)], function(result1) {
+			console.log(result1.rows);
+			if(result1.rows.length === 1) {
+				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function(result2){
+					queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
+						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
+							sendTemplate(
+								'lister-notification',
+								'Your '+result3.rows[0].title + ' has been dibs\'d!',
+								{[result2.rows[0].uname]:result2.rows[0].email},
+								{
+									'FIRSTNAME' : result2.rows[0].uname,
+									'ITEMTITLE':result3.rows[0].title,
+									'ITEMNAME':result3.rows[0].title,
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
+									'CHATLINK':'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+result1.rows[0].post_id+'/messages'
+								}
+							);
+						});
+					});
+				});
+			}
+			res.send({
+				err: null,
+				res: result.rows
+			});
 		});
 	});
 });
@@ -1190,20 +1194,14 @@ router.get('/conversation/:post_id', isAuthenticated, function(req, res) {
 		'conversations.post_id = $1 AND conversations.archived = false AND',
 		'posts.id = $1 AND images.post_id = $1 AND images.main = true'
 	].join(' ');
-	var values = [
-		req.params.post_id
-	];
-	queryServer(res, query, values, function(result1) {
+	queryServer(res, query, [req.params.post_id], function(result1) {
 		var query = [
 			'SELECT messages.user_id, messages.message, messages.date_created,',
 			// 'SELECT messages.user_id, messages.message, TO_CHAR(messages.date_created, \'HH:MIam – DD Mon YYYY TZ\') as date_created,',
 			'messages.read FROM messages WHERE messages.conversation_id = $1 AND',
 			'messages.archived = false ORDER BY messages.date_created DESC'
 		].join(' ');
-		var values = [
-			result1.rows[0].id
-		];
-		queryServer(res, query, values, function(result) {
+		queryServer(res, query, [result1.rows[0].id], function(result) {
 			queryServer(res, 'SELECT id, uname FROM users WHERE id = $1 OR id = $2', [result1.rows[0].lister_id, result1.rows[0].dibber_id], function(result3) {
 				if(result3.rows.length) {
 					var tmp = {};

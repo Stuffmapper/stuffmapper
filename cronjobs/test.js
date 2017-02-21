@@ -34,7 +34,6 @@ pool.connect(function(err, client, done) {
 				var currTime = new Date().getTime();
 				var convAgeMin = new Date(currTime - convTime).getUTCMinutes();
 				var messAgeMin = new Date(currTime - messTime).getUTCMinutes();
-				if(e.post_id === 74) console.log(lastMessage, messAgeMin);
 				if(!lastMessage && convAgeMin >= 15) undib(e.post_id, e.dibber_id);
 				else if(lastMessage && !lastMessage.emailed && messAgeMin >= 2) messageUserMessageReminder(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
 				if(++conversation_counter === conversations) jobsDone(done);
@@ -50,10 +49,10 @@ pool.on('error', function(err, client) {
 function undib(post_id, user_id) {
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
-		if(err) return client.end();
+		if(err) return console.log(err, client.end());
 		var query = [
 			'UPDATE posts SET dibber_id = NULL, dibbed = false',
-			'WHERE dibbed = true AND unattended = false AND id = $2 AND dibber_id = $1',
+			'WHERE dibbed = true AND attended = true AND id = $2 AND dibber_id = $1',
 			'RETURNING *'
 		].join(' ');
 		var values = [
@@ -61,7 +60,7 @@ function undib(post_id, user_id) {
 			post_id
 		];
 		client.query(query, values, function(err, result1) {
-			if(err || result1.rows.length === 0) return client.end();
+			if(err || result1.rows.length === 0) return console.log(err,client.end());
 			var query = [
 				'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
 				'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3 RETURNING *'
