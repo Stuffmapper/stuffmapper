@@ -314,7 +314,7 @@ function undib(post_id, user_id) {
 				post_id
 			];
 			client.query(query, values, function(err, result1) {
-				if(err || result1.rows.length === 0) return console.log(err,client.end());
+				if(err || result1.rows.length === 0) return client.end();
 				var query = [
 					'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
 					'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3 RETURNING *'

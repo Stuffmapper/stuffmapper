@@ -258,21 +258,39 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		#modal-windows
 			#modal-bg.modal-windows-bg.modal-bg-hidden.animate-250
 			#sign-in-up-modal.modal-window.modal-window-hidden.animate-500
-				#swiper-container.swiper-container(style="background-color:rgba(139, 195, 74, 1.0);opacity:1;pointer-events:all;width:100%;height:100%;position:absolute;top:0px;left:0px;")
+				#swiper-container.swiper-container(style="display:none;z-index:4;background-color:rgba(139, 195, 74, 1.0);opacity:1;pointer-events:all;width:100%;height:100%;position:absolute;top:0px;left:0px;")
 					.swiper-wrapper
 						.swiper-slide(style="background-color:rgba(139, 195, 74, 1.0);")
+							.sm-full-width(style="text-align:center;margin-top: 40px;color:#fff;font-size:20px;") Free reusable stuff lives on<br />Stuffmapper!
+							img(src="")
+							.sm-full-width(style="text-align:center;color:#fff;font-size:16px;") Stuffmapper is for givers and getters of donated stuff who want a secure and anonymous reliable exchange.
 						.swiper-slide(style="background-color:rgba(128, 103, 183, 1.0);")
-							div(style="background-color:rgba(227, 222, 238, 1.0);")
+							.sm-full-width(style="color: #fff;margin-top: 40px;font-size: 20px;text-align: center;") Find perfectly good reusable items and reserve it for $1 with Dibs!
+							div(style="background-color:rgba(227, 222, 238, 1.0);width:100%;height:235px;display:block;position:relative;")
+								div(style="background-color: rgba(128, 103, 183, 1.0);color: #fff;margin: 0 auto;font-size: 57px;text-align: center;width: 260px;border-radius: 10px;height: 90px;line-height: 90px;top: 50%;position: absolute;left: 50%;transform: translate(-50%, -50%);") Dibs!
+							.sm-full-width(style="color:#fff;") Dibs lets you…
+							ul.sm-full-width(style="color:#fff;")
+								li hide items from everyone else on the map
+								li get exclusive messaging with the person who posted the item to complete the exchange
 						.swiper-slide(style="background-color:rgba(235, 87, 103, 1.0);")
+							.sm-full-width(style="color: #fff;margin-top: 40px;font-size: 20px;text-align: center;") Outgrown your goods? Someone will appreciate your stuff!
+							img.sm-full-width(style="height:220px; width: auto;margin:0 auto;" src="/img/give-pic-empty-01.png")
+							.sm-full-width(style="text-align:center;color:#fff;font-size:16px;") Easily take a picture to list an item and give your stuff a second life! You can also list free unattended items on the curb.
 						.swiper-slide(style="background-color:rgba(59, 175, 218, 1.0);")
-							div words
-							div(style="background-color:rgba(154, 213, 235, 1.0);")
-							div more words
+							.sm-full-width(style="color: #fff;margin-top: 40px;font-size: 20px;text-align: center;") Safely and reliably exchange with people who won’t waste your time
+							div(style="height:183px; width: 100%;background-color:rgba(154, 213, 235, 1.0);")
+								img(src="")
+							.sm-full-width(style="color:#fff;") Here’s how…
+							ul.sm-full-width(style="color:#fff;")
+								li anonymous in-app messaging and usernames — you don’t have to share your email or phone #
+								li HTTPS encryption to keep your data safe
+								li Dibs, which encourages people to follow through in picking up items
 						.swiper-slide(style="background-color:rgba(71, 71, 71, 1.0);")
 					.swiper-pagination
-					.swiper-button-prev
-					.swiper-button-next
-					.swiper-button-skip Skip
+					.swiper-button-prev.sm-text-m(style="background-image: none;color:#fff;bottom: -14px;top: initial;left: 10px;") Back
+					.swiper-button-next.sm-text-m(style="background-image: none;color: #fff;bottom: -14px;top: initial;left: initial;right: 14px;") Next
+					#swiper-button-done.swiper-button-done.sm-text-m(style="background-image: none;color: #fff;bottom: -14px;top: initial;left: initial;right: 14px;display: none;") Go!
+					#swiper-button-skip.swiper-button-skip.sm-text-m(style="cursor:pointer;color: #fff;position: absolute;top: 7px;right: 7px;z-index: 2;") Skip
 				.modal-header
 				.modal-close(ng-click="hideModal('sign-in-up-modal')")
 					i.fa.fa-close

@@ -3920,3 +3920,16 @@ html.ionic.ios {
 		pointer-events: all !important;
 	}
 }
+
+.swiper-container {
+
+}
+
+.swiper-pagination-bullet {
+	background-color: transparent;
+	border: 1px solid #fff;
+	opacity: 1;
+}
+.swiper-pagination-bullet-active {
+	background-color: #fff;
+}

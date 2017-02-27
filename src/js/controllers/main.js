@@ -1,4 +1,3 @@
-
 var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window','$stuffTabs'];
 if (config.ionic.isIonic) {
 	// mainControllerArgs.push('$cordovaOauth');
@@ -21,28 +20,7 @@ function MainController() {
 	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[10] : undefined;
 	// var $cordovaPush = (typeof arguments[10] !== 'function') ? arguments[12] : undefined;
 	$scope.delaySignIn = delaySignIn;
-	var swiperAtEnd = false;
-	var mySwiper = new Swiper ('.swiper-container', {
-    direction: 'horizontal',
-    loop: false,
-    pagination: '.swiper-pagination',
-    nextButton: '.swiper-button-next',
-    prevButton: '.swiper-button-prev',
-		onSlidePrevEnd: function() {
-			console.log('back');
-			if(swiperAtEnd) {
-				swiperAtEnd = false;
-				console.log('going back');
-			}
-		},
-		onReachBeginning: function() {
-			console.log('start!');
-		},
-		onReachEnd: function() {
-			console.log('end!');
-			swiperAtEnd = true;
-		}
-  });
+
 	setTimeout(function() {
 		$('#tab-container .stuff-tabs li a').removeClass('selected');
 		$('#tab-container .stuff-tabs .'+((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no')))+'-stuff-tab a').addClass('selected');
@@ -131,12 +109,38 @@ function MainController() {
 	};
 	$scope.queries = getSearchQueries();
 	var visited = localStorage.getItem('visited');
-	if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
-		$('#lock-screen').css({
-			'pointer-events': 'all',
-			opacity: 1
-		});
+	// if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
+	if(true) {
+		// $('#lock-screen').css({
+		// 	'pointer-events': 'all',
+		// 	opacity: 1
+		// });
 		localStorage.setItem('visited', true);
+		window.location.hash = 'signin';
+		$('#swiper-container').css({display:'block'});
+		var swiperAtEnd = false;
+		var mySwiper = new Swiper ('.swiper-container', {
+	    direction: 'horizontal',
+	    loop: false,
+	    pagination: '.swiper-pagination',
+	    nextButton: '.swiper-button-next',
+	    prevButton: '.swiper-button-prev',
+			onSlidePrevEnd: function() {
+				if(swiperAtEnd) {
+					swiperAtEnd = false;
+				}
+			},
+			onReachBeginning: function() {
+				$('#swiper-container').css({'background-color':'rgba(139, 195, 74, 1.0)'});
+			},
+			onReachEnd: function() {
+				$('#swiper-container').css({'background-color':'rgba(71, 71, 71, 1.0)'});
+				swiperAtEnd = true;
+			}
+	  });
+		$('#swiper-button-done, #swiper-button-skip').click(function() {
+			$('#swiper-container').css({'opacity':0.001,'pointer-events':'none'});
+		});
 	}
 	else $('#lock-screen').css({display:'none'});
 	$scope.openLockScreen = function() {
