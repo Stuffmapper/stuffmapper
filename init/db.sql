@@ -182,15 +182,19 @@ CREATE TABLE tracker_item (
 
 CREATE TABLE event (
 	id BIGSERIAL PRIMARY KEY,
-	event_message_id integer REFERENCES event_title(id),
+	-- event_message_id integer REFERENCES event_title(id),
 	post_id integer REFERENCES posts(id),
-	user_id integer REFERENCES users(id)
+	user_id1 integer REFERENCES users(id),
+	user_id2 integer REFERENCES users(id),
+	date_created timestamp DEFAULT current_timestamp,
+	message text,
+	level integer
 );
 
-CREATE TABLE event_message (
-	id BIGSERIAL PRIMARY KEY,
-	message text
-);
+-- CREATE TABLE event_message (
+-- 	id BIGSERIAL PRIMARY KEY,
+-- 	message text
+-- );
 
 INSERT INTO categories (category) VALUES
 ('Arts & Crafts'),
@@ -203,14 +207,14 @@ INSERT INTO categories (category) VALUES
 ('Kids & Babies'),
 ('Recreation');
 
-INSERT INTO event_message (message) VALUES
-('{{title}} was dibs\'d by {{dibber}}'),
-('{{title}} was undibs\'d by {{dibber}}'),
-('{{lister}} rejected you for {{title}}'),
-('{{dibber}} picked up {{title}}'),
-('You picked up {{title}}'),
-('You deleted {{title}}'),
-('You rejected {{user}} from {{title}}'),
-('You undibs\'d {{title}}'),
-('You dibs\'d {{title}}'),
-('Your dibs was cancelled; you did not message the user'),
+-- INSERT INTO event_message (message) VALUES
+-- ('{{title}} was dibs\'d by {{dibber}}'),
+-- ('{{title}} was undibs\'d by {{dibber}}'),
+-- ('{{lister}} rejected you for {{title}}'),
+-- ('{{dibber}} picked up {{title}}'),
+-- ('You picked up {{title}}'),
+-- ('You deleted {{title}}'),
+-- ('You rejected {{user}} from {{title}}'),
+-- ('You undibs\'d {{title}}'),
+-- ('You dibs\'d {{title}}'),
+-- ('Your dibs was cancelled; you did not message the user'),

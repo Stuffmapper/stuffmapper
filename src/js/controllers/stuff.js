@@ -1,13 +1,16 @@
 var stuffControllerArgs = [];
 stuffControllerArgs.push('$scope');
 stuffControllerArgs.push('$userData');
+stuffControllerArgs.push('$http');
 if(config.ionic) stuffControllerArgs.push('authenticator');
 stuffControllerArgs.push(StuffController);
 stuffMapp.controller('stuffController', stuffControllerArgs);
 function StuffController() {
 	var $scope = arguments[0];
 	var $userData = arguments[1];
-	var authenticated = (typeof arguments[2] !== 'function' && typeof arguments[3] !== 'undefined')?arguments[2]:undefined;
+	var $http = arguments[2];
+	var authenticated = (typeof arguments[3] !== 'function' && typeof arguments[3] !== 'undefined')?arguments[3]:undefined;
+
 	if(typeof authenticated !== 'undefined') {
 		// check login
 	}
@@ -40,6 +43,12 @@ function StuffController() {
 	$scope.map = new google.maps.Map($('#map-view')[0], mapOptions);
 	$scope.map.mapTypes.set('map_style', styledMap);
 	$scope.map.setMapTypeId('map_style');
+	$http.get('https://freegeoip.net/json/').success(function(data) {
+		$scope.map.setCenter({
+			lat: data.latitude,
+			lng: data.longitude
+		});
+	});
 	setTimeout(function(){
 		var zoomLevel = 13;
 		$('#sm-map-zoom-out').click(function() {

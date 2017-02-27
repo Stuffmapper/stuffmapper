@@ -20,14 +20,11 @@
 						//- .stuff-item-category-distance-owner.number(style="float: right;text-align: center;") {{ list.milesAway }} mi.
 						//- order by most recently active
 		hr
-		.sm-text-m.sm-full-width(style="margin-left: 12px;margin-bottom: 10px;") Dibs History:
-		li.masonry-grid-item(style="opacity: 0.7; pointer-events: none;" ng-repeat="list in testItems")
-			a(ui-sref="stuff.my.items.item({ id:{{ list.id }} })")
-				| {{ item.title }}
-				.list-item-img-container(id="post-item-{{ list.id }}")
-					img(ng-attr-src="https://cdn.stuffmapper.com{{ list.image_url }}")
-					.get-stuff-item-info
-						div.noselect {{ list.title }} {{ list.last_touch_date }}
-					.stuff-item-category-distance-owner(style="float: left;left: 7px;max-width:calc(100% - 84px);text-align: center;") {{ list.category }}
-					//- .stuff-item-category-distance-owner.number(style="float: right;text-align: center;") {{ list.milesAway }} mi.
-					//- order by most recently active
+		.sm-text-m(style="margin-left: 12px;margin-bottom: 10px;") Dibs History:
+		ul.sm-full-width(style="padding: 0;")
+			li(style="overflow:hidden;list-style: none;height: 100px;position:relative; display:block;list-style: none;height: 100px;position: relative;display: block;border: 1px solid #DCE1E5;border-radius: 3px;margin-top: 10px;" ng-repeat="event in events")
+				span(style="height: 100%;position:relative;display: inline-block;width: 100px;background-repeat: no-repeat;background-image: url(https://cdn.stuffmapper.com{{ event.image_url }});background-size:cover;background-position:50% 50%;")
+				span(style="width: calc(100% - 100px);height:100%;display:inline-block;position:relative;vertical-align: top; padding: 12px;")
+					.sm-text-m {{ event.title }}
+					.sm-text-xs {{ event.date_created }}
+					.sm-text-s(ng-bind-html="event.message")

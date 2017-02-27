@@ -603,7 +603,7 @@ html.ionic.ios {
 	position: absolute;
 }
 #my-stuff-container {
-	height: 100%;
+	height: calc(100% - 7px);
 	padding-top: 7px;
 }
 

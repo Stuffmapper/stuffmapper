@@ -9,11 +9,9 @@ function GetStuffController() {
 	$scope.listItems = [];
 	$scope.markers = [];
 	$('#content').removeClass('fre');
-	google.maps.event.addListener($scope.map, 'idle', function() {
-		console.log(this.getBounds());
-	});
+	var initResize = false;
 	var gotActualLocation = false;
-	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
+	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/'+$scope.map.getCenter().lat()+'/'+$scope.map.getCenter().lng()).success(function(data) {
 		if($('#center-marker').hasClass('dropped')) {
 			$('#center-marker').removeClass('dropped');
 			$timeout(function() {
@@ -23,22 +21,6 @@ function GetStuffController() {
 			}, 250);
 		}
 
-		$http.get('https://freegeoip.net/json/').success(function(data) {
-			if(!gotActualLocation) {
-				$scope.map.setCenter({
-					lat: data.latitude,
-					lng: data.longitude
-				});
-			}
-		});
-		// setTimeout(function() {
-		// 	$u.step.init({
-		// 		name: 'undibs-confirm-modal-container'
-		// 	});
-		// 	$u.modal.open('undibs-confirm-modal', function() {
-		// 		$u.step.destroy('undibs-confirm-modal-container');
-		// 	});
-		// },5000);
 		$('#closeThingModal').click(function(e) {
 			$u.modal.close('undibs-confirm-modal');
 		});
@@ -75,30 +57,70 @@ function GetStuffController() {
 							queue: false
 						}
 					});
+					$('.masonry-grid').addClass('isotope');
 				});
-				$(window).resize(function() {
-					$('.masonry-grid').isotope({
-						columnWidth: $('.masonry-grid').width()/2,
-						itemSelector: '.masonry-grid-item',
-						getSortData: {
-							number: '.number parseInt'
-						},
-						sortBy: 'number',
-						isAnimated: false,
-						layoutMode: 'masonry',
-						transitionDuration: 0,
-						animationOptions: {
-							duration: 0,
-							queue: false
-						}
+				if(!initResize) {
+					initResize = true;
+					$(window).resize(function() {
+						$('.masonry-grid').isotope({
+							columnWidth: $('.masonry-grid').width()/2,
+							itemSelector: '.masonry-grid-item',
+							getSortData: {
+								number: '.number parseInt'
+							},
+							sortBy: 'number',
+							isAnimated: false,
+							layoutMode: 'masonry',
+							transitionDuration: 0,
+							animationOptions: {
+								duration: 0,
+								queue: false
+							}
+						});
 					});
-				});
+				}
 			};
 			var tempSearchText = '';
 			var searchTextTimeout;
 			var lastSearch;
 			initMarkers();
+
 		}
+		google.maps.event.addListener($scope.map, 'idle', function() {
+			var c = this.getCenter();
+			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/' + c.lat() + '/' + c.lng() + '/').success(function(data) {
+				if(!data.res || !data.res.length) {
+					$('#loading-get-stuff').addClass('sm-hidden');
+					$('#get-stuff-empty-list').removeClass('sm-hidden');
+				}
+				else {
+					$('#loading-get-stuff').addClass('sm-hidden');
+					$('#get-stuff-empty-list').addClass('sm-hidden');
+				}
+				requestAnimationFrame(function() {
+					$scope.listItems = data.res;
+					if ($('.masonry-grid').hasClass('isotope')) {
+						$('.masonry-grid').isotope('reloadItems');
+						$('.masonry-grid').isotope({
+							columnWidth: $('.masonry-grid').width()/2,
+							itemSelector: '.masonry-grid-item',
+							getSortData: {
+								number: '.number parseInt'
+							},
+							sortBy: 'number',
+							isAnimated: false,
+							layoutMode: 'masonry',
+							transitionDuration: 0,
+							animationOptions: {
+								duration: 0,
+								queue: false
+							}
+						});
+					}
+					initMarkers();
+				});
+			});
+		});
 	});
 	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
 		$scope.getLocation();
@@ -245,19 +267,6 @@ function GetStuffController() {
 			});
 		}
 	});
-	$scope.getDistance = function() {
-		var milesAway;
-		$scope.getLocation(function(position) {
-			$scope.listItems.forEach(function(e) {
-				var radius = google.maps.geometry.spherical.computeDistanceBetween(
-					new google.maps.LatLng(position.lat, position.lng),
-					new google.maps.LatLng(e.lat, e.lng)
-				);
-				e.milesAway = Math.ceil(radius/1609.344);
-				$scope.milesAway = e.milesAway;
-			});
-		});
-	};
 	$scope.filterSearch = function () {
 		var searchQuery = $('#search-stuff').val().toLowerCase();
 		var sliderValue = parseInt($('.distance-slider').val());

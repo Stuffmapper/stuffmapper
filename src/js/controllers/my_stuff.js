@@ -1,10 +1,11 @@
-stuffMapp.controller('myStuffController', ['$scope', '$http', '$userData', 'authenticator', '$state', '$stuffTabs', MyStuffController]);
+stuffMapp.controller('myStuffController', ['$scope', '$http', '$userData', 'authenticator', '$state', '$sce', MyStuffController]);
 function MyStuffController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $userData = arguments[2];
 	var authenticator = arguments[3];
 	var $state = arguments[4];
+	var $sce = arguments[5];
 
 	$scope.markers = [];
 	if($('#center-marker').hasClass('dropped')) {
@@ -29,7 +30,11 @@ function MyStuffController() {
 				});
 				$scope.listItems = data.res;
 				$scope.testItems = data.test;
-				if(!data.res.length && !data.test.length) {
+				$scope.events = data.events;
+				$scope.events.forEach(function(e,i) {
+					$scope.events[i].message = $sce.trustAsHtml($scope.events[i].message);
+				});
+				if(!data.res.length && !data.test.length && !data.events.length) {
 					$('#loading-get-stuff').addClass('sm-hidden');
 					$('#my-stuff-empty-list').removeClass('sm-hidden');
 				}

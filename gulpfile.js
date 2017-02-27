@@ -104,6 +104,7 @@ gulp.task('js', function(done) {
 			'./src/js/custom/counter_flipper.js',
 			'./src/js/lib/imagesloaded/imagesloaded.pkgd.min.js',
 			'./src/js/lib/masonry/dist/masonry.pkgd.js',
+			'./src/js/lib/swiper/dist/js/swiper.min.js',
 			'./src/js/lib/isotope/dist/isotope.pkgd.min.js',
 			'./src/js/lib/angular-ui-router/release/angular-ui-router.min.js',
 			'./src/js/lib/angular-animate/angular-animate.min.js',

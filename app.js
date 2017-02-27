@@ -30,6 +30,8 @@ AWS.config = new AWS.Config();
 AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
 AWS.config.secretAccessKey = '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';
 var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
+var util = require('./util.js');
+var db = new util.db();
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -276,7 +278,7 @@ setInterval(function() {
 						if(!dibberMessaged && (e.dibber_id === f.user_id)) dibberMessaged = true;
 					});
 					if((!lastMessage && !dibberMessaged) && convAgeMin >= 15) undib(e.post_id, e.dibber_id);
-					else if(lastMessage && !lastMessage.emailed && messAgeMin >= 2) messageUserMessageReminder(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
+					else if(lastMessage && !lastMessage.emailed && messAgeMin >= 24*60) messageUserMessageReminder(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
 					if(++conversation_counter === conversations) jobsDone(done);
 				});
 			});
