@@ -258,11 +258,11 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		#modal-windows
 			#modal-bg.modal-windows-bg.modal-bg-hidden.animate-250
 			#sign-in-up-modal.modal-window.modal-window-hidden.animate-500
-				#swiper-container.swiper-container(style="display:none;z-index:4;background-color:rgba(139, 195, 74, 1.0);opacity:1;pointer-events:all;width:100%;height:100%;position:absolute;top:0px;left:0px;")
+				#swiper-container.swiper-container(style="transition:opacity 250ms;-webkit-transition:opacity 250ms;-moz-transition:opacity 250ms;-ms-transition:opacity 250ms;-o-transition:opacity 250ms;display:none;z-index:4;background-color:rgba(139, 195, 74, 1.0);opacity:1;pointer-events:all;width:100%;height:100%;position:absolute;top:0px;left:0px;")
 					.swiper-wrapper
 						.swiper-slide(style="background-color:rgba(139, 195, 74, 1.0);")
 							.sm-full-width(style="text-align:center;margin-top: 40px;color:#fff;font-size:20px;") Free reusable stuff lives on<br />Stuffmapper!
-							img(src="")
+							img(src="/img/sharing_is_caring.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")
 							.sm-full-width(style="text-align:center;color:#fff;font-size:16px;") Stuffmapper is for givers and getters of donated stuff who want a secure and anonymous reliable exchange.
 						.swiper-slide(style="background-color:rgba(128, 103, 183, 1.0);")
 							.sm-full-width(style="color: #fff;margin-top: 40px;font-size: 20px;text-align: center;") Find perfectly good reusable items and reserve it for $1 with Dibs!
@@ -279,17 +279,22 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 						.swiper-slide(style="background-color:rgba(59, 175, 218, 1.0);")
 							.sm-full-width(style="color: #fff;margin-top: 40px;font-size: 20px;text-align: center;") Safely and reliably exchange with people who won’t waste your time
 							div(style="height:183px; width: 100%;background-color:rgba(154, 213, 235, 1.0);")
-								img(src="")
+								img(src="/img/speech-bubbles.png" style="max-height: 183px;margin: 0 auto;position: relative;display: block;")
 							.sm-full-width(style="color:#fff;") Here’s how…
 							ul.sm-full-width(style="color:#fff;")
 								li anonymous in-app messaging and usernames — you don’t have to share your email or phone #
 								li HTTPS encryption to keep your data safe
 								li Dibs, which encourages people to follow through in picking up items
 						.swiper-slide(style="background-color:rgba(71, 71, 71, 1.0);")
+							img(src="/img/planet_stuffmapper.png" style="max-height: 190px;margin: 0 auto;position: relative;display: block;")
+							.sm-full-width(style="color: #fff;margin-top: 40px;font-size: 16px;text-align: center;") Since 2014, Stuffmapper’s purpose has been to advance the free reusable stuff movement.<br/>Join us in our mission is to save millions of items from landfills everywhere!
+							a.sm-full-width(href="https://www.facebook.com/stuffmapper" target="_blank" style="background-color: #33AEDC;border-radius: 7px;padding: 10px 0px;")
+								i.fa.fa-facebook-square(style="color: white;font-size: 80px;padding: 10px 20px;display: inline-block;vertical-align: bottom;width: 106px;")
+								span(style="color: white;font-size: 16px;width: calc(100% - 106px);display: inline-block;padding: 3px;") Join us in finding good reusable stuff a home. Like us on Facebook to be informed of special updates and giveaways!
 					.swiper-pagination
 					.swiper-button-prev.sm-text-m(style="background-image: none;color:#fff;bottom: -14px;top: initial;left: 10px;") Back
 					.swiper-button-next.sm-text-m(style="background-image: none;color: #fff;bottom: -14px;top: initial;left: initial;right: 14px;") Next
-					#swiper-button-done.swiper-button-done.sm-text-m(style="background-image: none;color: #fff;bottom: -14px;top: initial;left: initial;right: 14px;display: none;") Go!
+					#swiper-button-done.swiper-button-done.sm-text-m(style="cursor:pointer;z-index:9999999;position:absolute;width: 48px;height: 21px;background-color:rgba(71, 71, 71, 1.0);color: #fff;bottom: 9px;top: initial;left: initial;right: 0px;text-align: center;display: none;") Go!
 					#swiper-button-skip.swiper-button-skip.sm-text-m(style="cursor:pointer;color: #fff;position: absolute;top: 7px;right: 7px;z-index: 2;") Skip
 				.modal-header
 				.modal-close(ng-click="hideModal('sign-in-up-modal')")

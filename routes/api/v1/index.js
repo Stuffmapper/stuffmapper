@@ -1123,7 +1123,7 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 			db.setEvent(3, '{{user}} rejected {{post}}', req.session.passport.user.id, req.params.id);
 			db.setEvent(3, '{{user}} rejected your Dibs for {{post}}', result0.rows[0].dibber_id, req.params.id);
 			query = [
-				'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
+				'UPDATE pick_up_success SET undibbed = true, rejected = true, undibbed_date = current_timestamp, rejection_date = current_timestamp',
 				'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3',
 				'RETURNING *'
 			].join(' ');

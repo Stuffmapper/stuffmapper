@@ -109,8 +109,8 @@ function MainController() {
 	};
 	$scope.queries = getSearchQueries();
 	var visited = localStorage.getItem('visited');
-	// if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
-	if(true) {
+	console.log(visited);
+	if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
 		// $('#lock-screen').css({
 		// 	'pointer-events': 'all',
 		// 	opacity: 1
@@ -125,9 +125,11 @@ function MainController() {
 	    pagination: '.swiper-pagination',
 	    nextButton: '.swiper-button-next',
 	    prevButton: '.swiper-button-prev',
-			onSlidePrevEnd: function() {
+			paginationClickable: true,
+			onSlidePrevStart: function() {
 				if(swiperAtEnd) {
 					swiperAtEnd = false;
+					$('#swiper-button-done').css({display:"none"});
 				}
 			},
 			onReachBeginning: function() {
@@ -135,6 +137,7 @@ function MainController() {
 			},
 			onReachEnd: function() {
 				$('#swiper-container').css({'background-color':'rgba(71, 71, 71, 1.0)'});
+				$('#swiper-button-done').css({display:"block"});
 				swiperAtEnd = true;
 			}
 	  });
