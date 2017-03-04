@@ -1,3 +1,7 @@
+var locationOpen = false;
+$('#my-container').css({
+	'overflow':''
+});
 stuffMapp.controller('myItemsController', ['$scope', '$http', 'authenticator', '$stateParams', '$userData', '$state', '$timeout', MyItemsController]);
 function MyItemsController() {
 	var $scope = arguments[0];
@@ -8,39 +12,50 @@ function MyItemsController() {
 	var $state = arguments[5];
 	var $timeout = arguments[6];
 	var data = {};
+	$('#my-stuff-container').addClass('in-my-item');
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(result){
 		if((result.res && !result.res.user) || !result.res) {
 			$state.go('stuff.get', {'#':'signin'});
 			$scope.openModal('modal');
 		} else {
 			var user = result.res.user;
-			var newWindow = (!!($('#my-stuff-container #post-item-' + $stateParams.id + ' img').length === 0));
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my/id/' + $stateParams.id).success(function(result) {
-				if(!data.err) {
+				if(!result.err) {
 					var imageSet = false;
 					data = result;
 					$scope.listItem = data.res;
+					$scope.markers.forEach(function(e) {
+						if(e.data.id === $scope.listItem.id) {
+							e.data.selected = true;
+							//$scope.resizeMarkers();
+							google.maps.event.trigger($scope.map, 'zoom_changed');
+							$scope.map.panTo(new google.maps.LatLng(e.data.lat, e.data.lng));
+							$scope.googleMapStaticUrl = [
+								'https://maps.googleapis.com/maps/api/staticmap?',
+								'zoom=13&size=600x300&maptype=roadmap&',
+								'markers=icon:https://'+subdomain+'.stuffmapper.com/img/Marker-all-64x64.png%7C'+e.data.lat+','+e.data.lng+'&',
+								'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
+							].join('');
+						}
+					});
 					$scope.googleMapStaticUrl = [
 						'https://maps.googleapis.com/maps/api/staticmap?',
 						'zoom=13&size=600x300&maptype=roadmap&',
-						'markers=color:red%7C{lat},{lng}&',
+						data.res.attended?'markers=icon:https://'+subdomain+'.stuffmapper.com/img/Marker-all-64x64.png%7C{lat},{lng}&':'markers=color:red%7C{lat},{lng}&',
 						'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
 					].join('');
-					$scope.imgScale = 1;
-					var aspectRatio = (($('#my-item-single-container-'+$stateParams.id).width()/$('#my-item-single-container-'+$stateParams.id).height())>(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container').height())));
-					$scope.imgScale = ($('#post-item-' + $stateParams.id + ' img').height())/($('#masonry-container').height()*0.4);
-					$scope.container = $('<div id="get-item-single-'+$stateParams.id+'" class="my-item-single-container animate-250"></div>');
+					$scope.container = $('<div id="get-item-single-'+$stateParams.id+'" class="my-item-single-container animate-250 sm-hidden"></div>');
 					$scope.imageContainer = $('<div class="get-item-single-image-container animate-250"></div>');
-					$scope.detailsContainer = $('<div class="get-item-single-details-container sm-hidden animate-250"></div>');
+					$scope.detailsContainer = $('<div class="get-item-single-details-container animate-250"></div>');
 					$scope.editContainerHeader = $([
-						'<div class="animate-250" style="width: 100%;height: auto;background-color: #fff;display: inline-block;position: absolute;top: 0px;z-index: 2;opacity: 0.0001;">',
+						'<div class="animate-250" style="width: 100%;height: auto;background-color: #fff;display: inline-block;position: absolute;top: 0px;z-index: 2;opacity:0.0001;">',
 						'	<i id="back-to-my-item" class="get-stuff-back-button fa fa-arrow-left animate-250"></i>',
 						'	<div class="sm-text-m" style="display:inline-block;position:relative;margin-left:15px;">Edit '+data.res.title+'</div>',
 						'</div>'
 					].join('\n'));
 					$scope.editContainerHeader.css({'pointer-events':'none'});
 					$scope.editContainer = $([
-						'<div class="edit-item-single-details-container sm-hidden animate-250" style="top:40px;position:absolute;">',
+						'<div class="edit-item-single-details-container sm-hidden animate-250" style="top: 40px;height: calc(100% - 40px);position: absolute;overflow: scroll;">',
 						'	<div class="edit-item-single-image-container">',
 						'		<div style="width: 100%; display: block; height: auto; position: relative;">',
 						'			<div style="width: 50%;display: inline-block;">',
@@ -60,7 +75,8 @@ function MyItemsController() {
 						'	<div class="sm-text-m sm-full-width" style="margin-bottom: 0px;">Category</div>',
 						'		<div class="sm-select fa fa-chevron-down sm-select-full-width ng-not-empty" id="give-category-selector" placeholder="Choose a category..." full-width="true" ng-model="category" options="categories">',
 						'			<select id="edit-item-category" class="ng-pristine ng-valid ng-not-empty ng-touched">',
-						'				<option value="'+$scope.listItem.category.trim()+'" selected="selected" class="ng-binding">'+$scope.listItem.category.trim()+'</option>',
+						// loop through these and select whatever matches or something
+						// '				<option value="'+$scope.listItem.category.trim()+'" selected="selected" class="ng-binding">'+$scope.listItem.category.trim()+'</option>',
 						'				<option label="Arts &amp; Crafts" value="1">Arts &amp; Crafts</option>',
 						'				<option label="Books, Games, Media" value="2">Books, Games, Media</option>',
 						'				<option label="Building &amp; Garden Materials" value="3">Building &amp; Garden Materials</option>',
@@ -69,7 +85,8 @@ function MyItemsController() {
 						'				<option label="Furniture &amp; Household" value="6">Furniture &amp; Household</option>',
 						'				<option label="General" value="7">General</option>',
 						'				<option label="Kids &amp; Babies" value="8">Kids &amp; Babies</option>',
-						'				<option label="Recreation" value="9">Recreation</option>',
+						'				<option label="Office" value="9">Office</option>',
+						'				<option label="Recreation" value="10">Recreation</option>',
 						'			</select>',
 						'		</div>',
 						'	<div class="sm-button-group" style="width: 100%;display:block;position:relative;">',
@@ -100,8 +117,9 @@ function MyItemsController() {
 						'	<input id="give-image-select" style="opacity:0.0001;" type="file" accept=".jpg,.jpeg,.png" name="file" class="give-image-select" style="height: 0px;width: 0px;position: absolute;" />',
 						'</div>',
 						'<div id="give-location-container" class="animate-250" style="top:0px;z-index:9;width:100%;height:100%;position:absolute;opacity: 0.0001;transform: translate3d(0px, 10%, 0);pointer-events: none;">',
+						'	<div id="give-location-text3" style="top: 0px;position: fixed;background-color: rgba(0,0,0,0.3);padding: 10px;color: white;height: 80px;"</div>Move the map around to set the pick-up location. For privacy, only the approximate location will be displayed to public.</div>',
 						'	<i class="fa fa-location-arrow give-location-icon" style="font-size: 160px !important;"></i>',
-						'	<div class="empty-results-bottom sm-full-width">Move the map around to set the pick-up location.</div>',
+						'	<div class="empty-results-bottom sm-full-width" style="bottom: 90px;top: initial;">Move the map around to set the pick-up location. For privacy, only the approximate location will be displayed to public.</div>',
 						'	<div style="z-index:3;width: 100%;display:block;position:absolute;bottom:0px;" class="sm-button-group">',
 						'		<div style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;" class="sm-button-group-2 sm-button-group-left">',
 						'			<button id="edit-reject-location" style="margin:20px 10px;width:calc(100% - 10px);font-size:32px;line-height:25px;" class="give-reject-parent sm-button sm-text-m sm-button-ghost sm-button-ghost-solid sm-button-negative fa fa-times-circle give-reject1 animate-250"></button>',
@@ -112,38 +130,25 @@ function MyItemsController() {
 						'	</div>',
 						'</div>'
 					].join('\n'));
-					$scope.containerBackground = $('<div class="get-item-single-background animate-250 sm-hidden"></div>');
-					if(!newWindow) $scope.imageContainer.css({'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top-32) + 'px, ' + '0)'});
 					$scope.detailsContainer.html([
 						((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
 						($scope.listItem.type === 'dibber')?'<button id="my-item-undibs-big'+$stateParams.id+'" class=" sm-button sm-text-l sm-button-ghost sm-button-ghost-solid sm-button-negative sm-button-full-width animate-250">unDibs</button>':'',
-						((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
-						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />')
+						($scope.listItem.dibbed && data.res.attended && $scope.listItem.type === 'dibber')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the lister. Send a message to learn exact location, time to meet, etc.</div>':'',
+						($scope.listItem.dibbed && data.res.attended && $scope.listItem.type === 'lister')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the Dibber.</div>':'',
+						($scope.listItem.dibbed || !data.res.attended)?'<button id="my-item-complete-body'+$stateParams.id+'" class="sm-button sm-text-l sm-button-positive sm-button-full-width" style="color:#fff;">Mark as Picked Up</button>':'',
+						// ((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
+						($scope.listItem.type === 'lister' && !$scope.listItem.dibbed)?'<div class="sm-text-s sm-full-width">You will be notified by email when someone Dibs your stuff!</div>':'',
+						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />'),
 					].join('\n'));
-					$scope.singleItem = $('#post-item-' + $stateParams.id + ' img')
-					.clone()
-					.attr('id', 'my-item-single-container-' + $stateParams.id)
-					.addClass('animate-250')
-					.css({
-						'position': 'absolute',
-						'top':'0px',
-						'left':'0px',
-						'transform': 'scale3d('+$scope.imgScale+', '+$scope.imgScale+', 1) translate3d(0px, 0px, 0)',
-						'z-index': '2',
-						'transform-origin': '0 0',
-						'width': (($(this).width()/$(this).height())>(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').height()))?'100%':'auto'),
-						'height': (($(this).width()/$(this).height())<=(($('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').width()/$('#get-item-single-'+$stateParams.id+' .get-item-single-image-container animate-250').height()))?'auto':'100%')
-					});
 					$scope.titleHeader = $([
-						'<div class="animate-250" style="transform:translate3d(0px,-100%,0);width:100%;height:auto;background-color:#fff;display:inline-block;position:relative;">',
+						'<div style="width:100%;height:auto;background-color:#fff;display:inline-block;position:relative;">',
 						'	<i id="back-to-my-stuff" class="get-stuff-back-button fa fa-arrow-left animate-250"></i>',
 						'	<div id="my-item-header-text" class="sm-text-m" style="display:inline-block;position:relative;margin-left:15px;">'+data.res.title+'</div>',
-						(!$scope.listItem.dibbed?'	<i id="my-item-edit-button" class="fa fa-pencil-square-o">':'	<i id="my-item-menu" class="fa fa-cog">'),
+						(!$scope.listItem.dibbed?'	<i id="my-item-edit-button" class="fa fa-pencil-square-o">':'	<i id="my-item-menu" class="fa fa-ellipsis-v">'),
 						'</div>'
 					].join('\n'));
-					$scope.titleHeader.appendTo($scope.container);
 					$scope.dropdownMenu = $([
 						'<div id="dropdown-menu" class="popups popups-top-right animate-250 hidden-popup">',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<li id="get-single-item-conversation-popup'+$stateParams.id+'">Go to conversation</li>':'',
@@ -154,28 +159,19 @@ function MyItemsController() {
 						($scope.listItem.type==='lister' && !$scope.listItem.dibbed)?'	<li id="get-single-item-edit-dibs-button'+$stateParams.id+'">Edit item</li>':'',
 						'</div>'
 					].join('\n'));
+					$scope.titleHeader.appendTo($scope.container);
 					$scope.dropdownMenu.appendTo($scope.container);
-					$scope.containerBackground.appendTo($scope.container);
-					$scope.singleItem.appendTo($scope.imageContainer);
-					$scope.imageContainer.appendTo($scope.container);
-					$scope.detailsContainer.appendTo($scope.container);
-					$scope.editContainer.appendTo($scope.container);
-					$scope.editContainerHeader.appendTo($scope.container);
+					var containerContainer = $('<div class="get-item-single-item-container-container"></div>');
+					$scope.imageContainer.appendTo(containerContainer);
+					$scope.detailsContainer.appendTo(containerContainer);
+					$scope.editContainer.appendTo(containerContainer);
+					$scope.editContainerHeader.appendTo(containerContainer);
+					containerContainer.appendTo($scope.container);
 					$scope.container.appendTo('#my-stuff-container');
 					requestAnimationFrame(function() {
 						requestAnimationFrame(function() {
-							$scope.titleHeader.css({transform:'translate3d(0px, 0%, 0)'});
-							$('#post-item-'+$stateParams.id+' img').css({'opacity':0.0001});
-							$scope.containerBackground.removeClass('sm-hidden');
-							$scope.detailsContainer.removeClass('sm-hidden');
-							if(newWindow) $('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
-							$scope.imageContainer.css({
-								'transform' : 'translate3d(0px, 0px, 0)'
-							});
-							$scope.singleItem.css({
-								'z-index': '3',
-								'transform': 'scale3d(1, 1, 1) translate3d('+($('#masonry-container').width()/2-$scope.singleItem.width()/2)+'px, 0px, 0)'
-							});
+							$('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
+							$scope.container.removeClass('sm-hidden');
 							$('#get-item-single-'+$stateParams.id + ' .get-stuff-item-info').addClass('get-single-item-info').append([
 								'<h3 class="sm-text-m sm-full-width sm-hidden animate-250">',
 								'	'+$scope.listItem.description,
@@ -197,6 +193,7 @@ function MyItemsController() {
 						});
 					});
 					var initStep2 = function() {
+						$scope.map.panTo(new google.maps.LatLng(data.res.lat, data.res.lng));
 						if($scope.giveMarker) $scope.giveMarker.setMap(null);
 						requestAnimationFrame(function() {
 							$('#center-marker').css({'display':'block'});
@@ -214,6 +211,16 @@ function MyItemsController() {
 						$scope.lng = mapCenter.lng();
 						$('#edit-item-location-image').css({
 							'background-image':'url('+$scope.googleMapStaticUrl.replace('{lat}', $scope.lat).replace('{lng}', $scope.lng)+')'
+						});
+						$('#get-item-single-'+$scope.listItem.id+' .get-item-single-item-container-container .get-item-single-details-container img').attr('src', $scope.googleMapStaticUrl.replace('{lat}', $scope.lat).replace('{lng}', $scope.lng));
+						$scope.markers.forEach(function(e) {
+							if(e.data.id === $scope.listItem.id) {
+								e.setPosition({
+									lat:$scope.lat,
+									lng:$scope.lng
+								});
+								google.maps.event.trigger($scope.map, 'zoom_changed');
+							}
 						});
 						// var mapZoom = $scope.map.getZoom();
 						// var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
@@ -237,8 +244,9 @@ function MyItemsController() {
 							});
 						}, 250);
 						$u.toast('Location updated');
+						updateItem();
 					};
-					var updateItem = function() {
+					var updateItem = function(cb) {
 						var values = {
 							title:$('#edit-item-title').val(),
 							description:$('#edit-item-description').val() || ' ',
@@ -266,27 +274,38 @@ function MyItemsController() {
 							}
 							$u.toast('Changes have been saved.');
 							$('#my-item-header-text').text(values.title);
-							$('#my-item-header-text').text(values.title);
 							$('#post-item-'+$stateParams.id+' .get-stuff-item-info div').text(values.title);
+							$('#get-item-single-'+$stateParams.id+' div p').text(values.description);
+							$('#get-item-single-'+$stateParams.id+' div a').attr('href', 'https://maps.google.com/maps?q='+values.lat+','+values.lng);
+							$('#get-item-single-'+$stateParams.id+' div a img').attr('src', 'https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C'+values.lat+','+values.lng+'&key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U');
 							if(imageSet) {
 								$('#my-item-single-container-'+$stateParams.id).attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 								$('#post-item-'+$stateParams.id+' img').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 							}
-							exitEdit();
+							// exitEdit();
+							cb && cb();
 						});
 					};
 					var cancelUpdate = function() {
 						exitEdit();
 					};
+					watchSize();
 					var getLocation = function() {
+						locationOpen = true;
+						$('#my-stuff-container').attr('style', 'overflow: visible !important;');
+						watchSize();
 						$('#give-location-container').css({
 							'opacity':1,
 							'transform':'translate3d(0px,0%,0)',
 							'pointer-events':'all'
 						});
+						$('#my-container').css({
+							'overflow':'visible'
+						});
 						initStep2();
 					};
 					var acceptLocation = function() {
+						$('#my-stuff-container').css({overflow:''});
 						$('#tab-content-container').css({'pointer-events':''});
 						$('#give-location-container').css({
 							'opacity':0.0001,
@@ -294,8 +313,14 @@ function MyItemsController() {
 							'pointer-events':'none'
 						});
 						setMarker();
+						locationOpen = false;
+						$('#my-container').css({
+							'overflow':''
+						});
+						watchSize();
 					};
 					var rejectLocation = function() {
+						$('#my-stuff-container').css({overflow:''});
 						$('#tab-content-container').css({'pointer-events':''});
 						$('#give-location-container').css({
 							'opacity':0.0001,
@@ -308,6 +333,11 @@ function MyItemsController() {
 								$('#center-marker').css({'display':'none'});
 							});
 						}, 250);
+						locationOpen = false;
+						$('#my-container').css({
+							'overflow':''
+						});
+						watchSize();
 					};
 					$scope.getPhoto = function(){
 						$('#give-image-select').click();
@@ -334,14 +364,14 @@ function MyItemsController() {
 					$('#edit-image-button').on('click', $scope.getPhoto);
 					$('#edit-location-button').on('click', getLocation);
 					$('#back-to-my-item').on('click', exitEdit);
-					$('#my-item-edit-save').on('click', updateItem);
+					$('#my-item-edit-save').on('click', function(){updateItem(exitEdit);});
 					$('#my-item-edit-cancel').on('click', cancelUpdate);
 
 					$('#my-item-undibs-big'+$stateParams.id).on('click', openUndibsModal);
 					$('#my-item-undibs'+$stateParams.id).on('click', openUndibsModal);
 					$('#my-item-reject'+$stateParams.id).on('click', openRejectModal);
 					$('#my-item-delete'+$stateParams.id).on('click', openDeleteModal);
-					$('#my-item-complete'+$stateParams.id).on('click', openCompleteModal);
+					$('#my-item-complete'+$stateParams.id+', #my-item-complete-body'+$stateParams.id).on('click', openCompleteModal);
 					$('#my-item-complete-unattended-'+$stateParams.id).on('click', openCompleteUnattendedModal);
 					// $('#my-item-complete-unattended-'+$stateParams.id).on('click', openCompleteUnattendedModal);
 
@@ -424,7 +454,7 @@ function MyItemsController() {
 									number: '.number parseInt'
 								},
 								sortBy: 'number',
-								isAnimated: true
+								isAnimated: false
 							});
 							setTimeout(function() {
 								$state.go('stuff.my.items');
@@ -447,7 +477,7 @@ function MyItemsController() {
 									number: '.number parseInt'
 								},
 								sortBy: 'number',
-								isAnimated: true
+								isAnimated: false
 							});
 							setTimeout(function() {
 								$state.go('stuff.my.items');
@@ -461,9 +491,7 @@ function MyItemsController() {
 				$state.go('stuff.my.items');
 			};
 			var edit = function() {
-				$('option:first-child').text($scope.listItem.category);
-				$('option').attr('selected', 'selected');
-				$('option:first-child').attr('selected', 'selected');
+				$('#edit-item-category option[label="'+$scope.listItem.category+'"]').attr('selected','selected');
 				$('.edit-item-single-details-container').removeClass('sm-hidden');
 				$scope.editContainerHeader.css({
 					'opacity':1,
@@ -471,6 +499,11 @@ function MyItemsController() {
 				});
 			};
 			var exitEdit = function() {
+				locationOpen = false;
+				$('#my-container').css({
+					'overflow':''
+				});
+				watchSize();
 				$('#tab-content-container').css({'pointer-events':'all'});
 				$('.edit-item-single-details-container').addClass('sm-hidden');
 				$scope.editContainerHeader.css({
@@ -488,12 +521,7 @@ function MyItemsController() {
 			};
 			var undibs = function() {
 				$http.post(config.api.host + '/api/v' + config.api.version + '/undib/' + $scope.listItem.id, {}, {
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-					},
-					transformRequest: function(data) {
-						return $.param(data);
-					}
+					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
 				}).success(function(data) {
 					if(!data.err) {
 						$('#post-item-'+$scope.listItem.id).parent().parent().remove();
@@ -505,7 +533,7 @@ function MyItemsController() {
 									number: '.number parseInt'
 								},
 								sortBy: 'number',
-								isAnimated: true
+								isAnimated: false
 							});
 							setTimeout(function() {
 								$state.go('stuff.my.items');
@@ -515,7 +543,7 @@ function MyItemsController() {
 				});
 			};
 			function openUndibsModal() {
-				var undibsBodyTemplate = 'Are you sure you want to unDibs <i>{{title}}</i>?  This cannot be undone.';
+				var undibsBodyTemplate = 'Are you sure you want to unDibs <i>{{title}}</i>?  You will lose your Dibs and the stuff will be relisted.';
 				$('#undibs-confirm-modal-body').html(undibsBodyTemplate.replace('{{title}}', data.res.title));
 				$('#my-item-undibs-cancel').on('click', undibsCancel);
 				$('#my-item-undibs-confirm').on('click', undibsConfirm);
@@ -529,6 +557,7 @@ function MyItemsController() {
 			}
 			function undibsConfirm() {
 				$u.modal.close('undibs-confirm-modal');
+				fbq('trackCustom', 'UnDibsDibs');
 				$u.api.undibsStuffById(data.res.id, function() {
 					$state.go('stuff.my.items');
 					$('#post-item-'+data.res.id).parent().parent().remove();
@@ -551,6 +580,7 @@ function MyItemsController() {
 			}
 			function rejectConfirm() {
 				$u.modal.close('reject-confirm-modal');
+				fbq('trackCustom', 'RejectDibs');
 				$u.api.rejectStuffById(data.res.id, function() {
 					$state.go('stuff.my.items');
 					$u.toast('You have rejected <i>'+data.res.users[data.res.dibber_id]+'</i>\'s Dibs for <i>'+data.res.title+'</i>');
@@ -596,12 +626,12 @@ function MyItemsController() {
 				$u.api.completeStuffById(data.res.id, function() {
 					$('#post-item-'+data.res.id).parent().parent().remove();
 					$u.toast('Dibs for <i>'+data.res.title+'</i> has been completed!');
+					fbq('trackCustom', 'CompleteDibs');
 					requestAnimationFrame(function(){$(window).resize();});
 					$state.go('stuff.my.items');
 					setTimeout(function(){$state.reload('stuff.my.items');}, 250);
 				});
 			}
-
 			function openCompleteUnattendedModal() {
 				var completeBodyTemplate = data.res.type==='lister'?'Has <i>{{title}}</i> been picked up?':'Have you picked up <i>{{title}}</i>?';
 				$('#complete-unattended-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.title).replace('{{dibber}}', data.res.users[data.res.dibber_id]).replace('{{lister}}', data.res.users[data.res.user_id]));
@@ -620,6 +650,7 @@ function MyItemsController() {
 				$u.api.completeStuffById(data.res.id, function() {
 					$('#post-item-'+data.res.id).parent().parent().remove();
 					$u.toast('Dibs for <i>'+data.res.title+'</i> has been completed!');
+					fbq('trackCustom', 'CompleteDibs');
 					requestAnimationFrame(function(){$(window).resize();});
 					$state.go('stuff.my.items');
 					setTimeout(function(){$state.reload('stuff.my.items');}, 250);
@@ -627,7 +658,21 @@ function MyItemsController() {
 			}
 
 			$scope.$on('$destroy', function() {
-				if(newWindow) $('.get-item-single-image-container').css({'background-image':''});
+				$('#my-stuff-container').css({overflow:''});
+				$('#my-stuff-container').removeClass('in-my-item');
+				$('#center-marker').css({'display':''});
+				$('#center-marker').removeClass('dropped');
+				locationOpen = false;
+				$('#my-container').css({
+					'overflow':''
+				});
+				$scope.markers.forEach(function(e) {
+					if(e.data.id === $scope.listItem.id) {
+						e.data.selected = false;
+						google.maps.event.trigger($scope.map, 'zoom_changed');
+					}
+				});
+				watchSize();
 				$('#my-item-undibs-big'+$stateParams.id).off('click', openUndibsModal);
 				$('#my-item-undibs'+$stateParams.id).off('click', openUndibsModal);
 				$('#my-item-reject'+$stateParams.id).off('click', openRejectModal);
@@ -636,30 +681,11 @@ function MyItemsController() {
 				$('#my-item-complete-unattended'+$stateParams.id).off('click', openCompleteUnattendedModal);
 				$('#tab-content-container').css({'pointer-events':'all'});
 				$('#get-single-item-conversation-button'+$scope.listItem.id).off('click', goToConversation);
-				$('#get-stuff-back-button-container').addClass('sm-hidden');
-				$('.get-stuff-back-button').addClass('sm-hidden');
-				$('#get-stuff-item-title').addClass('sm-hidden');
-				//$('#get-single-item-dibs-button'+$stateParams.id).off('click', dibs);
-				if($('#post-item-' + $stateParams.id).length) {
-					$scope.imageContainer.css({
-						'transform' : 'translate3d(' + ($('#post-item-' + $stateParams.id).offset().left - $('#masonry-container').offset().left)+'px, '+($('#post-item-' + $stateParams.id).offset().top - $('#masonry-container').offset().top-36) + 'px, ' + '0)'
-					});
-				} else {
-					$scope.imageContainer.css({
-						'transform' : 'translate3d(0px, -100%, 0)'
-					});
-				}
-				$scope.titleHeader.css({transform:'translate3d(0px, -100%, 0)'});
-				$scope.containerBackground.addClass('sm-hidden');
-				$scope.detailsContainer.addClass('sm-hidden');
-				$scope.singleItem.css({
-					'transform':'scale3d('+$scope.imgScale+', '+$scope.imgScale+', 1) translate3d(0px, 0px, 0)',
-					'z-index': '2'
-				});
-				$('.get-single-item-description, .get-single-item-dibs-button').addClass('sm-hidden');
-				$scope.editContainer.css({opacity:0.0001});
+				// $('#get-stuff-back-button-container').addClass('sm-hidden');
+				// $('.get-stuff-back-button').addClass('sm-hidden');
+				// $('#get-stuff-item-title').addClass('sm-hidden');
+				$scope.container.addClass('sm-hidden');
 				setTimeout(function() {
-					$('#post-item-'+$stateParams.id + ' img').css({'opacity': ''});
 					requestAnimationFrame(function() {
 						requestAnimationFrame(function() {
 							$scope.container.remove();
@@ -678,6 +704,38 @@ function getWordsBetweenCurlies(str) {
 }
 /* jshint ignore:end */
 function watchSize() {
-	if(window.width > 436) $('#tab-content-container').css({'pointer-events':''});
-	else $('#tab-content-container').css({'pointer-events':'none'});
+	if($(document).width() > 436) {
+		$('#tab-content-container').css({'pointer-events':'all'});
+		$('#give-location-container').removeClass('mobile-page');
+		$('#tab-content').css({
+			'-webkit-transform' : '',
+			'-moz-transform' : '',
+			'-ms-transform' : '',
+			'-o-transform' : '',
+			'transform' : ''
+		});
+	}
+	else {
+		$('#give-location-container').addClass('mobile-page');
+		if(locationOpen) {
+			$('#tab-content-container').css({'pointer-events':'none'});
+			$('#tab-content').css({
+				'-webkit-transform' : 'translate(-100%)',
+				'-moz-transform' : 'translate(-100%)',
+				'-ms-transform' : 'translate(-100%)',
+				'-o-transform' : 'translate(-100%)',
+				'transform' : 'translate(-100%)'
+			});
+		}
+		else {
+			$('#tab-content-container').css({'pointer-events':'all'});
+			$('#tab-content').css({
+				'-webkit-transform' : '',
+				'-moz-transform' : '',
+				'-ms-transform' : '',
+				'-o-transform' : '',
+				'transform' : ''
+			});
+		}
+	}
 }

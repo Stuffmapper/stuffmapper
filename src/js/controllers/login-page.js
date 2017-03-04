@@ -9,15 +9,42 @@ function LoginPageController() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/login', {
 			username: $('#login-page-login-uname').val(),
 			password: $('#login-page-login-password').val()
-		}, {headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
+		}, {
+			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
 		}).success(function(data) {
-			if(!data.err) {
-				$('html').addClass('loggedIn');
-				$userData.setUserId(data.res.id);
-				$userData.setBraintreeToken(data.res.braintree_token);
-				$userData.setLoggedIn(true);
-				return $state.go('stuff.get');
-			}
+			console.log(data);
+			location.hash = '';
+			resetAllInputsIn('#modal-windows');
+			$('html').addClass('loggedIn');
+			$userData.setUserId(data.res.user.id);
+			$userData.setBraintreeToken(data.res.user.braintree_token);
+			$userData.setUserName(data.res.user.uname);
+			$userData.setLoggedIn(true);
+			$scope.hideModal('sign-in-up-modal');
+			location.hash = '';
+			$state.go('stuff.get');
+			$u.toast('Welcome!');
+			// if(config.ionic.isIonic) {
+				// $ionicPlatform.ready(function () {
+					// $cordovaPush.register({
+					// 	badge: true,
+					// 	sound: true,
+					// 	alert: true
+					// }).then(function (result) {
+					// 	UserService.registerDevice({
+					// 		user: user,
+					// 		token: result
+					// 	}).then(function () {
+					// 		$ionicLoading.hide();
+					// 		$state.go('tab.news');
+					// 	}, function (err) {
+					// 		console.log(err);
+					// 	});
+					// }, function (err) {
+					// 	console.log('reg device error', err);
+					// });
+				// });
+			// }
 		});
 	};
 

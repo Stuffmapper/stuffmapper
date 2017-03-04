@@ -5,26 +5,22 @@ function GetStuffController() {
 	var $state = arguments[2];
 	var $timeout = arguments[3];
 	var $userData = arguments[4];
-	var $stuffTabs = arguments[5];
-	$('#tab-container .stuff-tabs li a').removeClass('selected');
-	$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
+
 	$scope.listItems = [];
 	$scope.markers = [];
-	// google.maps.event.addListenerOnce($scope.map, 'idle', function() {
-	// 	//console.log(this.getBounds());
-	// });
-	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/').success(function(data) {
+	$('#content').removeClass('fre');
+	var initResize = false;
+	var gotActualLocation = false;
+	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/'+$scope.map.getCenter().lat()+'/'+$scope.map.getCenter().lng()).success(function(data) {
+		if($('#center-marker').hasClass('dropped')) {
+			$('#center-marker').removeClass('dropped');
+			$timeout(function() {
+				requestAnimationFrame(function() {
+					$('#center-marker').css({'display':'none'});
+				});
+			}, 250);
+		}
 
-
-
-		// setTimeout(function() {
-		// 	$u.step.init({
-		// 		name: 'undibs-confirm-modal-container'
-		// 	});
-		// 	$u.modal.open('undibs-confirm-modal', function() {
-		// 		$u.step.destroy('undibs-confirm-modal-container');
-		// 	});
-		// },5000);
 		$('#closeThingModal').click(function(e) {
 			$u.modal.close('undibs-confirm-modal');
 		});
@@ -34,7 +30,7 @@ function GetStuffController() {
 		$('#confirmStuff').click(function(e) {
 			$u.modal.close('undibs-confirm-modal');
 		});
-		if(!data.res.length) {
+		if(!data.res || !data.res.length) {
 			$('#loading-get-stuff').addClass('sm-hidden');
 			$('#get-stuff-empty-list').removeClass('sm-hidden');
 		}
@@ -53,28 +49,78 @@ function GetStuffController() {
 							number: '.number parseInt'
 						},
 						sortBy: 'number',
-						isAnimated: true,
-						layoutMode: 'masonry'
+						isAnimated: false,
+						layoutMode: 'masonry',
+						transitionDuration: 0,
+						animationOptions: {
+							duration: 0,
+							queue: false
+						}
 					});
+					$('.masonry-grid').addClass('isotope');
 				});
-				$(window).resize(function() {
-					$('.masonry-grid').isotope({
-						columnWidth: $('.masonry-grid').width()/2,
-						itemSelector: '.masonry-grid-item',
-						getSortData: {
-							number: '.number parseInt'
-						},
-						sortBy: 'number',
-						isAnimated: true,
-						layoutMode: 'masonry'
+				if(!initResize) {
+					initResize = true;
+					$(window).resize(function() {
+						$('.masonry-grid').isotope({
+							columnWidth: $('.masonry-grid').width()/2,
+							itemSelector: '.masonry-grid-item',
+							getSortData: {
+								number: '.number parseInt'
+							},
+							sortBy: 'number',
+							isAnimated: false,
+							layoutMode: 'masonry',
+							transitionDuration: 0,
+							animationOptions: {
+								duration: 0,
+								queue: false
+							}
+						});
 					});
-				});
+				}
 			};
 			var tempSearchText = '';
 			var searchTextTimeout;
 			var lastSearch;
 			initMarkers();
+
 		}
+		google.maps.event.addListener($scope.map, 'idle', function() {
+			var c = this.getCenter();
+			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/' + c.lat() + '/' + c.lng() + '/').success(function(data) {
+				if(!data.res || !data.res.length) {
+					$('#loading-get-stuff').addClass('sm-hidden');
+					$('#get-stuff-empty-list').removeClass('sm-hidden');
+				}
+				else {
+					$('#loading-get-stuff').addClass('sm-hidden');
+					$('#get-stuff-empty-list').addClass('sm-hidden');
+				}
+				requestAnimationFrame(function() {
+					$scope.listItems = data.res;
+					if ($('.masonry-grid').hasClass('isotope')) {
+						$('.masonry-grid').isotope('reloadItems');
+						$('.masonry-grid').isotope({
+							columnWidth: $('.masonry-grid').width()/2,
+							itemSelector: '.masonry-grid-item',
+							getSortData: {
+								number: '.number parseInt'
+							},
+							sortBy: 'number',
+							isAnimated: false,
+							layoutMode: 'masonry',
+							transitionDuration: 0,
+							animationOptions: {
+								duration: 0,
+								queue: false
+							}
+						});
+					}
+					initMarkers();
+				});
+			});
+		});
 	});
 	google.maps.event.addListenerOnce($scope.map, 'idle', function(){
 		$scope.getLocation();
@@ -85,8 +131,9 @@ function GetStuffController() {
 			e.setMap(null);
 			$scope.markers = [];
 		});
+		var maxZoom = 20;
 		var mapZoom = $scope.map.getZoom();
-		var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
+		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
 		var mapAnchor = mapSize/2;
 		$scope.listItems.forEach(function(e) {
 			$scope.markers.push(new google.maps.Marker({
@@ -111,10 +158,11 @@ function GetStuffController() {
 	$scope.getLocation = function(callback) {
 		if($scope.geoLocation) {
 			$scope.map.setCenter($scope.geoLocation);
-			if(callback) callback($scope.geoLocation);
+			if(typeof callback === 'function') callback($scope.geoLocation);
 		}
 		else if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {
+				gotActualLocation = true;
 				$scope.geoLocation = {
 					lat: position.coords.latitude,
 					lng: position.coords.longitude
@@ -151,7 +199,7 @@ function GetStuffController() {
 	$('#get-location').click($scope.getLocation);
 	function resizeMarkers() {
 		var mapZoom = $scope.map.getZoom();
-		var mapSize = (mapZoom*mapZoom*2)/(20/mapZoom);
+		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
 		var mapAnchor = mapSize/2;
 		$scope.markers.forEach(function(e) {
 			e.setIcon({
@@ -184,7 +232,7 @@ function GetStuffController() {
 	$scope.mapIsOpen = false;
 	$scope.toggleMap = function() {
 		if($scope.mapIsOpen) {
-			$('#tab-content-container').css({'pointer-events':''});
+			$('#tab-content-container').css({'pointer-events':'all'});
 			$('#get-stuff-container').removeClass('hide-masonry-container');
 			$('#masonry-container').removeClass('hide-masonry-container');
 			$('#map-toggle-switch').removeClass('fa-th-large').addClass('fa-map');
@@ -199,18 +247,19 @@ function GetStuffController() {
 	};
 	$scope.toggleMap();
 	$scope.watchSize = function() {
-		if($(document).width() > 436) $('#tab-content-container').css({'pointer-events':''});
+		if($(document).width() > 436) $('#tab-content-container').css({'pointer-events':'all'});
 		else {
 			if($scope.mapIsOpen) $('#tab-content-container').css({'pointer-events':'none'});
-			else $('#tab-content-container').css({'pointer-events':''});
+			else $('#tab-content-container').css({'pointer-events':'all'});
 		}
 	};
 	$(window).on('resize', $scope.watchSize);
 	$scope.watchSize();
 	$scope.$on('$destroy', function() {
-		$('#tab-container .stuff-tabs li a').removeClass('selected');
+		$('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
+		$('#filter-container > .filter-content-container').addClass('sm-hidden');
 		$(window).off('resize', $scope.watchSize);
-		$('#tab-content-container').css({'pointer-events':''});
+		$('#tab-content-container').css({'pointer-events':'all'});
 		if($scope.mapbox) $scope.map.removeLayer('markers');
 		else {
 			$scope.markers.forEach(function(e) {
@@ -218,19 +267,6 @@ function GetStuffController() {
 			});
 		}
 	});
-	$scope.getDistance = function() {
-		var milesAway;
-		$scope.getLocation(function(position) {
-			$scope.listItems.forEach(function(e) {
-				var radius = google.maps.geometry.spherical.computeDistanceBetween(
-					new google.maps.LatLng(position.lat, position.lng),
-					new google.maps.LatLng(e.lat, e.lng)
-				);
-				e.milesAway = Math.ceil(radius/1609.344);
-				$scope.milesAway = e.milesAway;
-			});
-		});
-	};
 	$scope.filterSearch = function () {
 		var searchQuery = $('#search-stuff').val().toLowerCase();
 		var sliderValue = parseInt($('.distance-slider').val());
@@ -254,11 +290,11 @@ function GetStuffController() {
 						new google.maps.LatLng(e.lat, e.lng)
 					);
 					var matches = false;
-					e.title.split(' ').forEach(function(f) {
-						if(!searchQuery || f.toLowerCase().startsWith(searchQuery)) {
-							matches = true;
-						}
-					});
+					// TODO: investigate this further
+					if(!searchQuery.toLowerCase().trim() || e.title.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1 || e.description.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1) matches = true;
+					// e.title.split(' ').forEach(function(f) {
+					// 	if(!searchQuery || f.toLowerCase().startsWith(searchQuery)) matches = true;
+					// });
 					// if(((convertValue >= radius) && matches) &&
 					var a = categories.toLowerCase().split('-').join(' ');
 					var b = e.category.toLowerCase();

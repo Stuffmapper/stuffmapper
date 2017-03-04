@@ -13,19 +13,20 @@
 			.give-image-container
 				.give-image-bg
 					.give-image-bg-content
-						.give-image-take-a-pic Get ready to give stuff!
+						.give-image-take-a-pic(style="z-index:999;") Get ready to give stuff!
 						//- img.give-image-icon-1(src="/img/give-pic-empty-01.png")
 						#give-stuff-empty-list.empty-results(style="background-image:url('/img/give-pic-empty-01.png');")
 							//- .empty-results-bottom.sm-full-width Show us what you've got!
 			button#give-photo-button.animate-250.give-image-select-container.give-image-buttons.sm-button.sm-button-default.sm-button-full-width.sm-text-l(ng-click="getPhoto()") Choose a photo!
 			input#give-image-select.give-image-select(type="file" accept=".jpg,.jpeg,.png" name="file")
 		li#give-step2.give-steps.animate-250
+			#give-location-text3(style="top: 0px;position: fixed;background-color: rgba(0,0,0,0.3);padding: 10px;color: white;height: 80px;") Move the map around to set the pick-up location. For privacy, only the approximate location will be displayed to public.
 			#give-location-container
 				i.fa.fa-map-marker.give-location-icon(style="font-size: 160px;")
-				#give-location-text2.empty-results-bottom Move the map around to set the pick-up location.
+				#give-location-text2.empty-results-bottom(style="bottom: 90px;top: initial;") Move the map around to set the pick-up location. For privacy, only the approximate location will be displayed to public.
 			.sm-button-group(style="width: 100%;display:block;position:absolute;bottom:0px;")
 				.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
-					input#give-location-prev-step.sm-button-ghost.animate-250.sm-button.sm-button-default.sm-text-m(type="button" value="Back" ng-click="prevStep()" style="margin:20px 10px;width:calc(100% - 10px);")
+					input#give-location-prev-step.sm-button-ghost.sm-button-ghost-solid.animate-250.sm-button.sm-button-default.sm-text-m(type="button" value="Back" ng-click="prevStep()" style="margin:20px 10px;width:calc(100% - 10px);")
 				.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
 					input#give-location-next-step.sm-button.sm-button-default.sm-text-m.animate-250(type="button" value="Next" ng-click="setMarker()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
 		li#give-step3.give-steps.animate-250
@@ -42,6 +43,7 @@
 				.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
 					input#give-description-submit.sm-button.sm-button-default.sm-text-m(type="button" value="Submit" ng-click="uploadItem()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
 		li#give-step4.give-steps.animate-250
+			.sm-text-m.sm-full-width You will be notified by email when someone Dibs your stuff!
 			.sm-button-group(style="width: 100%;display:block;height: 94px;")
 				.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
 					input#sign-in-sign-in-button.sm-button.sm-button-ghost.sm-button-default.sm-text-l(type="button" value="View item" ng-click="goToMyStuffItem()" style="margin:20px 10px;width:calc(100% - 10px);")

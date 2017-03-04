@@ -25,6 +25,7 @@ var stuffMapp = angular
 	};
 })
 .factory('$stuffTabs', function() {
+	// do not use
 	return {
 		init : function($scope, e) {
 			$(e).addClass('selected');
@@ -100,7 +101,7 @@ if(config.ionic.isIonic) {
 	// $rootScope.$on('newNoteQuickAction', function() {
 	// 	vm.showNewNoteModal();
 	// });
-	stuffMapp.run(function($ionicPlatform, $cordovaSQLite/*, QuickActionService*/) {
+	stuffMapp.run(function($ionicPlatform/*, $cordovaSQLite, QuickActionService*/) {
 		$ionicPlatform.ready(function() {
 			if(window.cordova && window.cordova.plugins.Keyboard) {
 				cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
@@ -109,7 +110,8 @@ if(config.ionic.isIonic) {
 			if(window.StatusBar) {
 				StatusBar.styleDefault();
 			}
-			db = $cordovaSQLite.openDB({name:'stuffmapper.db', location: 'default'});
+
+			// db = $cordovaSQLite.openDB({name:'stuffmapper.db', location: 'default'});
 			//var deploy = new Ionic.Deploy();
 
 			// Update app code with new release from Ionic Deploy

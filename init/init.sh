@@ -9,7 +9,7 @@ echo 'alias gulpStuff="cd ~/stuffmapper && gulp && gulp watch"' >> ./.bash_alias
 # grab the newest version of node 4.x
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 # install dependencies from apt-get
-sudo apt-get install make git nodejs postgresql nginx g++ python -y
+sudo apt-get install make git nodejs postgresql postgresql-contrib nginx g++ python -y
 # clone the code from github into the stuffmapper folder
 git clone https://github.com/RyantheFarmer/stuffmapper.git
 # move into ~/stuffmapper to perform next tasks

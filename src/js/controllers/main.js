@@ -1,13 +1,11 @@
 var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window','$stuffTabs'];
 if (config.ionic.isIonic) {
-	mainControllerArgs.push('$cordovaOauth');
+	// mainControllerArgs.push('$cordovaOauth');
 	mainControllerArgs.push('$ionicPlatform');
-	mainControllerArgs.push('$cordovaSQLite');
-	mainControllerArgs.push('$cordovaPush');
+	// mainControllerArgs.push('$cordovaPush');
 }
 mainControllerArgs.push(MainController);
 stuffMapp.controller('MainController', mainControllerArgs);
-
 function MainController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
@@ -17,17 +15,28 @@ function MainController() {
 	var $location = arguments[5];
 	var $rootScope = arguments[6];
 	var $window = arguments[7];
-	var $stuffTabs = arguments[8];
-	var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
-	var $ionicPlatform = (typeof arguments[9] !== 'function') ? arguments[10] : undefined;
-	var $cordovaSQLite = (typeof arguments[10] !== 'function') ? arguments[11] : undefined;
-	var $cordovaPush = (typeof arguments[11] !== 'function') ? arguments[12] : undefined;
+	// var $stuffTabs = arguments[8];
+	// var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
+	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[10] : undefined;
+	// var $cordovaPush = (typeof arguments[10] !== 'function') ? arguments[12] : undefined;
 	$scope.delaySignIn = delaySignIn;
+
+	setTimeout(function() {
+		$('#tab-container .stuff-tabs li a').removeClass('selected');
+		$('#tab-container .stuff-tabs .'+((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no')))+'-stuff-tab a').addClass('selected');
+	},250);
+	$rootScope.$on('$locationChangeSuccess', function() {
+		$('#tab-container .stuff-tabs li a').removeClass('selected');
+		// console.log(((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no'))));
+		$('#tab-container .stuff-tabs .'+((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no')))+'-stuff-tab a').addClass('selected');
+	});
 	$scope.openModal = function(modal) {
 		if(modal==='modal') {
 			if (config.html5) location.hash = 'signin';
 			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
-			$u.modal.open('sign-in-up-modal');
+			$u.modal.open('sign-in-up-modal', function() {
+				window.location.hash = '';
+			});
 		}
 		else if(modal==='email-verification-modal') {
 			$u.modal.open('email-verification-modal');
@@ -99,31 +108,67 @@ function MainController() {
 		});
 	};
 	$scope.queries = getSearchQueries();
-	// var visited = localStorage.getItem('visited');
-	// if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
-	// 	$('#lock-screen').css({
-	// 		'pointer-events': 'all',
-	// 		opacity: 1
-	// 	});
-	// 	localStorage.setItem('visited', true);
-	// 	$scope.closeLockScreen = function() {
-	// 		$('#lock-screen').css({
-	// 			'pointer-events': 'none',
-	// 			opacity: 0.0001
-	// 		});
-	// 		setTimeout(function() {
-	// 			requestAnimationFrame(function() {
-	// 				$('#lock-screen').css({
-	// 					display:'none'
-	// 				});
-	// 			});
-	// 		}, 550);
-	// 	};©
-	// }
-	// else $('#lock-screen').css({display:'none'});
+	var visited = localStorage.getItem('visited');
+	console.log(visited);
+	if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
+		// $('#lock-screen').css({
+		// 	'pointer-events': 'all',
+		// 	opacity: 1
+		// });
+		localStorage.setItem('visited', true);
+		window.location.hash = 'signin';
+		$('#swiper-container').css({display:'block'});
+		var swiperAtEnd = false;
+		var mySwiper = new Swiper ('.swiper-container', {
+	    direction: 'horizontal',
+	    loop: false,
+	    pagination: '.swiper-pagination',
+	    nextButton: '.swiper-button-next',
+	    prevButton: '.swiper-button-prev',
+			paginationClickable: true,
+			onSlidePrevStart: function() {
+				if(swiperAtEnd) {
+					swiperAtEnd = false;
+					$('#swiper-button-done').css({display:"none"});
+				}
+			},
+			onReachBeginning: function() {
+				$('#swiper-container').css({'background-color':'rgba(139, 195, 74, 1.0)'});
+			},
+			onReachEnd: function() {
+				$('#swiper-container').css({'background-color':'rgba(71, 71, 71, 1.0)'});
+				$('#swiper-button-done').css({display:"block"});
+				swiperAtEnd = true;
+			}
+	  });
+		$('#swiper-button-done, #swiper-button-skip').click(function() {
+			$('#swiper-container').css({'opacity':0.001,'pointer-events':'none'});
+		});
+	}
+	else $('#lock-screen').css({display:'none'});
+	$scope.openLockScreen = function() {
+		$('#lock-screen').css({
+			'pointer-events': 'all',
+			opacity: 1,
+			display:''
+		});
+	};
+	$scope.closeLockScreen = function() {
+		$('#lock-screen').css({
+			'pointer-events': 'none',
+			opacity: 0.0001
+		});
+		setTimeout(function() {
+			requestAnimationFrame(function() {
+				$('#lock-screen').css({
+					display:'none'
+				});
+			});
+		}, 550);
+	};
 	if($scope.queries.email_verification_token) $scope.openEmailVerificationModal($scope.queries.email_verification_token);
 	else if($scope.queries.password_reset_token) $scope.openPasswordResetModal($scope.queries.password_reset_token);
-	if ($ionicPlatform && $cordovaSQLite) {
+	if ($ionicPlatform) {
 		$ionicPlatform.registerBackButtonAction(function(event) {
 			if ($state.current.name !== 'stuff.get') {
 				event.preventDefault();
@@ -161,6 +206,12 @@ function MainController() {
 		$scope.counterFlipperMenu.setCounter(data.res.lt);
 		// use sql stuff for mobile here
 		initUserData(data);
+		// console.log(window.location.pathname);
+		// console.log(data.res);
+		// console.log(data.res.user);
+		if(window.location.pathname.indexOf('/login-steps') > -1 && data.res && data.res.user) {
+			$state.go('stuff.get');
+		}
 	});
 	function initChatra() {
 		ChatraID = '5oMzBM7byxDdNPuMf';
@@ -198,8 +249,8 @@ function MainController() {
 		if (config.html5) location.hash = '';
 		else console.log('this should close popups... not sure what to do without html5 :<');
 		if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
-		$('#tab-container .stuff-tabs li a').removeClass('selected');
-		$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
+		// $('#tab-container .stuff-tabs li a').removeClass('selected');
+		// $('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
 		$scope.popUpOpen = false;
 		$u.modal.close(modalToClose);
 		$scope.popUpTimeout = setTimeout(function() {
@@ -234,13 +285,12 @@ function MainController() {
 	$('#sm-reset-password1, #sm-reset-password2').keydown(function(e) {
 		if(e.keyCode === 13) $('#password-reset-button').click();
 	});
-
-
 	$('#sign-in-password-eye').click(function() {
 		togglePasswordField('#sign-in-password-eye', '#sign-in-password');
 	});
 
 	$scope.googleOAuth = function() {
+		fbq('trackCustom', 'GoogleSignIn');
 		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
 		var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
 		var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
@@ -269,6 +319,7 @@ function MainController() {
 		}
 	};
 	$scope.facebookOAuth = function() {
+		fbq('trackCustom', 'FacebookSignIn');
 		var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : screen.left;
 		var dualScreenTop = window.screenTop !== undefined ? window.screenTop : screen.top;
 		var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
@@ -299,8 +350,8 @@ function MainController() {
 	function getAccountStatus() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
 			if (data.err || !data.res.user) {
-				$('#tab-container .stuff-tabs li a').removeClass('selected');
-				$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
+				// $('#tab-container .stuff-tabs li a').removeClass('selected');
+				// $('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
 				return console.log(data.err);
 			}
 			location.hash = '';
@@ -311,67 +362,76 @@ function MainController() {
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setUserName(data.res.user.uname);
 			$userData.setLoggedIn(true);
+			if(window.location.pathname.indexOf('/login-setup1') > -1) $scope.redirectState = 'stuff.get';
 			if(!$scope.redirectState) $state.reload();
 			else {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
 			$u.toast('Welcome!');
-			if(config.ionic.isIonic) {
-				$ionicPlatform.ready(function () {
-					var push = $cordovaPush.init({
-						android: {
-							senderID: "11148716793"
-						},
-						browser: {
-							pushServiceURL: 'http://push.api.phonegap.com/v1/push'
-						},
-						ios: {
-							alert: "true",
-							badge: "true",
-							sound: "true"
-						},
-						windows: {}
-					});
-
-					push.on('registration', function(data) {
-						// data.registrationId
-						console.log(data);
-					});
-
-					push.on('notification', function(data) {
-						// data.message,
-						// data.title,
-						// data.count,
-						// data.sound,
-						// data.image,
-						// data.additionalData
-						console.log(data);
-					});
-
-					push.on('error', function(e) {
-						// e.message
-						console.log(e);
-					});
-					// $cordovaPush.register({
-					// 	badge: true,
-					// 	sound: true,
-					// 	alert: true
-					// }).then(function (result) {
-					// 	UserService.registerDevice({
-					// 		user: user,
-					// 		token: result
-					// 	}).then(function () {
-					// 		console.log('did it.');
-					// 		//$ionicLoading.hide();
-					// 	}, function (err) {
-					// 		console.log(err);
-					// 	});
-					// }, function (err) {
-					// 	console.log('reg device error', err);
-					// });
-				});
-			}
+			// 	if(config.ionic.isIonic) {
+			// 		// $ionicPlatform.ready(function () {
+			// 		var push = $cordovaPush.init({
+			// 			android: {
+			// 				senderID: "11148716793"
+			// 			},
+			// 			browser: {
+			// 				pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+			// 			},
+			// 			ios: {
+			// 				alert: "true",
+			// 				badge: "true",
+			// 				sound: "true"
+			// 			},
+			// 			windows: {}
+			// 		});
+			//
+			// 		push.on('registration', function(data) {
+			// 			// data.registrationId
+			// 			console.log(data);
+			// 		});
+			//
+			// 		push.on('notification', function(data) {
+			// 			// data.message,
+			// 			// data.title,
+			// 			// data.count,
+			// 			// data.sound,
+			// 			// data.image,
+			// 			// data.additionalData
+			// 			console.log(data);
+			// 		});
+			//
+			// 		push.on('error', function(e) {
+			// 			// e.message
+			// 			console.log(e);
+			// 		});
+			// 		// $cordovaPush.register({
+			// 		// 	badge: true,
+			// 		// 	sound: true,
+			// 		// 	alert: true
+			// 		// }).then(function (result) {
+			// 		// 	UserService.registerDevice({
+			// 		// 		user: user,
+			// 		// 		token: result
+			// 		// 	}).then(function () {
+			// 		// 		console.log('did it.');
+			// 		// 		//$ionicLoading.hide();
+			// 		// 	}, function (err) {
+			// 		// 		console.log(err);
+			// 		// 	});
+			// 		// }, function (err) {
+			// 		// 	console.log('reg device error', err);
+			// 		// });
+			// 		// });
+			// 	}
+		});
+	}
+	// TODO:  Implement url listener.  if the url changes, see if it is has stuff/my, stuff/get, or stuff/give
+	function windowLocationPathnameListener() {
+		// $stuffTabs.init($scope, '#tab-container .stuff-tabs .give-stuff-tab a');
+		$('#tab-container .stuff-tabs').children().each(function(i, e) {
+			if(window.location.pathname.split('/')[1] === $(e.className).split(' ')[0].split('-')[0]) $(e).children('a').addClass('selected');
+			else $(e).children('a').removeClass('selected');
 		});
 	}
 	if (config.html5) {
@@ -379,14 +439,14 @@ function MainController() {
 		if (value) {
 			if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 			var hash = value.split('#').pop();
-			if (hash === 'signin') $u.modal.open('sign-in-up-modal', function() {$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');});//$scope.openModal('modal');
+			if (hash === 'signin') $scope.openModal('modal');//$u.modal.open('sign-in-up-modal', function() {/*$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');*/});//$scope.openModal('modal');
 		} else removeHash();
 		$(window).on('hashchange', function(event) {
 			var value = location.hash;
 			if (value) {
 				if ($scope.popUpTimeout) clearTimeout($scope.popUpTimeout);
 				var hash = value.split('#').pop();
-				if (hash === 'signin') $u.modal.open('sign-in-up-modal', function() {location.hash='';$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');});//$scope.openModal('modal');
+				if (hash === 'signin') $scope.openModal('modal');//$u.modal.open('sign-in-up-modal', function() {/*location.hash='';$('#tab-container .stuff-tabs li a').removeClass('selected');$('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');*/});//$scope.openModal('modal');
 			} else if ($scope.popUpOpen) {
 				// $u.modal.close('sign-in-up-modal');
 				$scope.hideModal('sign-in-up-modal');
@@ -445,7 +505,8 @@ function MainController() {
 			$userData.setLoggedIn(true);
 			$scope.hideModal('sign-in-up-modal');
 			location.hash = '';
-			if ($scope.redirectState) {
+			if(!$scope.redirectState) $state.reload();
+			else {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
@@ -482,20 +543,24 @@ function MainController() {
 				$state.go('stuff.get');
 				$state.reload();
 				$u.toast('You\'ve been logged out. See you next time, <i>'+$userData.getUserName()+'</i>!');
+				setTimeout(function() {
+					$('#tab-container .stuff-tabs li a').removeClass('selected');
+					$('#tab-container .stuff-tabs .'+(window.location.pathname.indexOf('/stuff/get')?'get':(window.location.pathname.indexOf('/stuff/my')?'my':(window.location.pathname.indexOf('/stuff/give')?'give':'no')))+'-stuff-tab a').addClass('selected');
+				},250);
 			}
 		});
 	};
 	$scope.secureState = function(state) {
 		if ($userData.isLoggedIn()) $state.go(state);
 		else {
-			if(/my/.test(state)) {
-				$('#tab-container .stuff-tabs li a').removeClass('selected');
-				$('#tab-container .stuff-tabs .my-stuff-tab a').addClass('selected');
-			}
-			else if(/give/.test(state)) {
-				$('#tab-container .stuff-tabs li a').removeClass('selected');
-				$('#tab-container .stuff-tabs .give-stuff-tab a').addClass('selected');
-			}
+			// if(/my/.test(state)) {
+			// 	// $('#tab-container .stuff-tabs li a').removeClass('selected');
+			// 	// $('#tab-container .stuff-tabs .my-stuff-tab a').addClass('selected');
+			// }
+			// else if(/give/.test(state)) {
+			// 	// $('#tab-container .stuff-tabs li a').removeClass('selected');
+			// 	// $('#tab-container .stuff-tabs .give-stuff-tab a').addClass('selected');
+			// }
 			$scope.redirectState = state;
 			location.hash = 'signin';
 		}
@@ -593,13 +658,14 @@ function MainController() {
 	var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 	var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
 	$scope.signUp = function() {
+		fbq('trackCustom', 'SignedUp');
 		if(!signingUp) {
 			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
 			$('#sm-sign-up-button').attr('disabled', '');
 			var valid = true;
 			var message = '';
 			var fd = {
-				email: $('#sign-up-email').val(),
+				email: $('#sign-up-email').val().toLowerCase(),
 				password: $('#sign-up-password1').val(),
 				fname: $('#sign-up-fname').val(),
 				lname: $('#sign-up-lname').val()
@@ -739,24 +805,35 @@ runSMAlert = function(alert, alerts) {
 function resetSockets($scope, $state, data) {
 	if($scope.socket) $scope.socket.disconnect();
 	$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
-	$scope.socket.on((data.res.user.id), function(data) {
-		if(window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
+	$scope.socket.on((''+data.res.user.id), function(data) {
+		console.log(data);
+		if(data.messages && window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
 			SMAlert('New Message for <em>'+data.messages.title+'</em>!', data.messages.message, 'Go to Message', 5000, function() {
 				$state.go('stuff.my.items.item.conversation', {id: data.messages.conversation});
 			});
 		}
-		$('#tab-message-badge').html(data.messages.unread);
-		var lPath = location.pathname.split('/');
-		lPath.shift();
-		var out = document.getElementById('conversation-messages');
-		if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
-			var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-			$('#conversation-messages').append([
-				'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
-				''+data.messages.message,
-				'</div></li>'
-			].join(''));
-			if (isScrolledToBottom) $(out).animate({ scrollTop: out.scrollHeight - out.clientHeight }, 250);
+		else if(data.undibsd) {
+			if(window.location.pathname.indexOf('/items/'+data.undibsd) >= -1) {
+				$state.reload();
+				setTimeout(function() {
+					$u.toast('Dibs lost. Failed to message lister within 15 minutes after Dibsing item.');
+				});
+			}
+		}
+		if(data.messages) {
+			$('#tab-message-badge').html(data.messages.unread);
+			var lPath = location.pathname.split('/');
+			lPath.shift();
+			var out = document.getElementById('conversation-messages');
+			if (out && lPath[0] === 'stuff' && lPath[1] === 'my' && lPath[2] === 'items' && parseInt(lPath[3]) === parseInt(data.messages.conversation) && lPath[4] === 'messages' && lPath.length === 5) {
+				var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+				$('#conversation-messages').append([
+					'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
+					''+data.messages.message,
+					'</div></li>'
+				].join(''));
+				if (isScrolledToBottom) $(out).animate({ scrollTop: out.scrollHeight - out.clientHeight }, 250);
+			}
 		}
 	});
 }

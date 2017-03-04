@@ -1,8 +1,8 @@
 CREATE USER stuffmapper WITH CREATEDB LOGIN SUPERUSER ENCRYPTED PASSWORD 'SuperSecretPassword1!';
 
-CREATE DATABASE stuffmapper4 WITH OWNER stuffmapper;
+CREATE DATABASE stuffmapper1 WITH OWNER stuffmapper;
 
-\c stuffmapper4;
+\c stuffmapper1;
 
 CREATE TABLE status (
 	id BIGSERIAL PRIMARY KEY,
@@ -180,6 +180,22 @@ CREATE TABLE tracker_item (
 	tracker_time timestamp default current_timestamp
 );
 
+CREATE TABLE event (
+	id BIGSERIAL PRIMARY KEY,
+	-- event_message_id integer REFERENCES event_title(id),
+	post_id integer REFERENCES posts(id),
+	user_id1 integer REFERENCES users(id),
+	user_id2 integer REFERENCES users(id),
+	date_created timestamp DEFAULT current_timestamp,
+	message text,
+	level integer
+);
+
+-- CREATE TABLE event_message (
+-- 	id BIGSERIAL PRIMARY KEY,
+-- 	message text
+-- );
+
 INSERT INTO categories (category) VALUES
 ('Arts & Crafts'),
 ('Books, Games, Media'),
@@ -190,3 +206,15 @@ INSERT INTO categories (category) VALUES
 ('General'),
 ('Kids & Babies'),
 ('Recreation');
+
+-- INSERT INTO event_message (message) VALUES
+-- ('{{title}} was dibs\'d by {{dibber}}'),
+-- ('{{title}} was undibs\'d by {{dibber}}'),
+-- ('{{lister}} rejected you for {{title}}'),
+-- ('{{dibber}} picked up {{title}}'),
+-- ('You picked up {{title}}'),
+-- ('You deleted {{title}}'),
+-- ('You rejected {{user}} from {{title}}'),
+-- ('You undibs\'d {{title}}'),
+-- ('You dibs\'d {{title}}'),
+-- ('Your dibs was cancelled; you did not message the user'),

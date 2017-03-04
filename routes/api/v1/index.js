@@ -9,7 +9,7 @@ var saltRounds = 10;
 var passport = require('passport');
 var path = require('path');
 var request = require('request');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper4';
+var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
 var braintree = require('braintree');
 var stage = process.env.STAGE || 'development';
 var config = require(path.join(__dirname, '/../../../config'))[stage];
@@ -19,6 +19,10 @@ AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
 AWS.config.secretAccessKey = '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';
 AWS.config.region = 'us-west-2';
 var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
+
+var util = require('./../../../util.js');
+var db = new util.db();
+
 
 if(stage==='production' || stage==='test') {
 	var gateway = braintree.connect({
@@ -90,6 +94,69 @@ function apiError(res, err) {
 }
 
 /* STUFF MANAGEMENT - START */
+router.get('/stuff/:lat/:lng', function(req, res, next) {
+	if(req.params.lat === 'id') return next();
+	else if(!req.params.lat && !req.params.lng) return next();
+	var lng = req.params.lng;
+	var lat = req.params.lat;
+	var client = new pg.Client(conString);
+	client.connect(function(err) {
+		if(err) {
+			apiError(res, err);
+			return client.end();
+		}
+		// var r = 3959;
+		var r = 6371000;
+		var query = [
+			'SELECT posts.id, posts.title, posts.description, posts.attended,',
+			'posts.lat, posts.lng, categories.category,',
+			'($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) as distance,',
+			'images.image_url FROM posts, images, categories WHERE',
+			'images.post_id = posts.id AND categories.id = posts.category_id AND',
+			'posts.dibbed = false AND images.main = true AND',
+			// 'posts.archived = false AND ((posts.date_created > now()::date - 7 AND posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
+			'posts.archived = false AND',
+			'($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) < $4 AND ',
+			'((posts.attended = true) OR',
+			'(posts.date_created > now()::date - 3 AND posts.attended = false))'
+		].join(' ');
+		var values = [r, lat, lng, 15*1609.34*65];
+		if(req.session.passport && req.session.passport.user) {
+			query += ' AND NOT posts.user_id = $5 ';
+			values.push(req.session.passport.user.id);
+		}
+		query += 'ORDER BY ($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) ASC';
+		client.query(query, values, function(err, result) {
+			if(err) {
+				apiError(res, err);
+				return client.end();
+			}
+			else if(!result.rows.length) {
+				client.end();
+				return res.send({
+					err: null,
+					res: []
+				});
+			}
+			// console.log(result.rows);
+			result.rows.forEach(function(e, i) {
+				var randVal = 0.001;
+				result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
+				result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
+			});
+			res.send({
+				err: null,
+				res: result.rows
+			});
+			client.end();
+		});
+	});
+});
+
+
+
+
+
 router.get('/stuff', function(req, res) {
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
@@ -116,13 +183,14 @@ router.get('/stuff', function(req, res) {
 				return client.end();
 			}
 			else if(!result.rows.length) {
+				client.end();
 				return res.send({
 					err: null,
 					res: []
 				});
 			}
 			result.rows.forEach(function(e, i) {
-				var randVal = 0.0002;
+				var randVal = 0.001;
 				result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
 				result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
 			});
@@ -136,6 +204,7 @@ router.get('/stuff', function(req, res) {
 });
 
 router.get('/stuff/id/:id', function(req, res) {
+	if(req.isAuthenticated()) db.setEvent(2,'{{user}} viewed item {{post}}',req.session.passport.user.id, req.params.id);
 	var client = new pg.Client(conString);
 	client.connect(function(err) {
 		if(err) {
@@ -150,14 +219,14 @@ router.get('/stuff/id/:id', function(req, res) {
 			'WHERE images.post_id = posts.id AND posts.id = $1 AND',
 			'categories.id = posts.category_id AND images.main = true'
 		].join(' ');
-		var values = [
-			req.params.id
-		];
-		client.query(query, values, function(err, result) {
+		client.query(query, [req.params.id], function(err, result) {
 			if(err) {
 				apiError(res, err);
 				return client.end();
 			}
+			var randVal = 0.0002;
+			result.rows[0].lat += ((Math.random() * randVal) - (randVal / 2));
+			result.rows[0].lng += ((Math.random() * randVal) - (randVal / 2));
 			res.send({
 				err: null,
 				res: result.rows[0]
@@ -168,79 +237,90 @@ router.get('/stuff/id/:id', function(req, res) {
 });
 
 router.get('/stuff/my', isAuthenticated, function(req, res) {
-	var query = [
-		'SELECT posts.id, posts.title, posts.description, posts.archived,',
-		'posts.expired, images.image_url, categories.category,',
-		'posts.dibber_id, posts.date_edited, posts.attended FROM posts, images, categories WHERE',
-		'(posts.user_id = $1 OR posts.dibber_id = $1) AND posts.archived = false AND',
-		'images.post_id = posts.id AND images.main = true AND',
-		'categories.id = posts.category_id'
-	].join(' ');
-	queryServer(res, query, [req.session.passport.user.id], function(result) {
-		if(!result.rows.length) return res.send({err: null, res: [], test: [] });
-		var rowsLen = result.rows.length;
-		var rowCount = 0;
-		var result1 = {rows:[]};
-		var testresult = {rows:[]};
-		result.rows.forEach(function(e, i) {
-			var query = [
-				'SELECT * FROM pick_up_success WHERE undibbed = false AND',
-				'(dibber_id = $1 OR lister_id = $1) AND post_id = $2',
-				'AND pick_up_success = true'
-			].join(' ');
-			queryServer(res, query, [req.session.passport.user.id, e.id], function(result2) {
-				if(!result2.rows.length) result1.rows.push(e);
-				else testresult.rows.push(e);
-				// else if(parseInt(result2.rows[0].lister_id) === parseInt(req.session.passport.user.id)) testresult.rows.push(e);
-				if(++rowCount === rowsLen) {
-					rowsLen = result1.rows.length;
-					rowCount = 0;
-					result1.rows.forEach(function(e, i) {
-						var query1 = [
-							'SELECT count(messages) FROM messages, conversations WHERE',
-							'conversations.post_id = $1 AND messages.conversation_id =',
-							'conversations.id AND conversations.archived = false AND',
-							'messages.archived = false AND messages.read = false AND',
-							'NOT messages.user_id = $2'
-						].join(' ');
-						queryServer(res, query1, [parseInt(result1.rows[i].id),req.session.passport.user.id], function(result3) {
-							queryServer(res, 'SELECT count(messages) FROM messages, conversations WHERE conversations.post_id = $1 AND messages.conversation_id = conversations.id AND conversations.archived = false AND messages.archived = false AND messages.user_id = $2', [parseInt(result1.rows[i].id),req.session.passport.user.id], function(result4) {
-								queryServer(res, 'select posts.date_edited from posts where posts.id = $1 order by posts.date_edited desc limit 1', [parseInt(result1.rows[i].id)], function(result5) {
-									queryServer(res, 'select messages.date_created from messages, conversations where conversations.post_id = $1 AND messages.conversation_id = conversations.id order by messages.date_created desc limit 1', [parseInt(result1.rows[i].id)], function(result6) {
-										queryServer(res, 'select conversations.date_created from messages, conversations where conversations.post_id = $1 AND messages.conversation_id = conversations.id order by conversations.date_created desc limit 1', [parseInt(result1.rows[i].id)], function(result7) {
-											var dates = {
-												post_id: result5.rows[0].date_edited,
-												message_id: (result6.rows[0] && result6.rows[0].date_created) || 0,
-												conversation_id: (result7.rows[0] && result7.rows[0].date_created) || 0
-											};
-											var newDate = new Date(dates.post_date).getTime()>new Date(dates.message_date)?dates.post_date:dates.message_date;
-											newDate = new Date(newDate).getTime()>new Date(dates.conversation_date)?newDate:dates.conversation_date;
-											result1.rows[i].messages = {
-												post_id: result1.rows[i].id,
-												count: result3.rows[0].count,
-												from_user: result4.rows[0].count
-											};
-											result1.rows[i].last_touch_date = new Date(newDate).getTime();
-											if(++rowCount === rowsLen) {
-												res.send({
-													err: null,
-													res: result1.rows,
-													test: testresult.rows
-												});
-											}
+	if(req.isAuthenticated()) db.setEvent(2,'{{user}} loaded their stuff', req.session.passport.user.id);
+	queryServer(res, 'SELECT posts.title, users.uname, images.image_url, event.message, event.date_created FROM event, posts, users, images WHERE event.user_id1 = $1 AND users.id = event.user_id1 AND images.post_id = event.post_id AND posts.id = event.post_id AND level >= 3 ORDER BY event.date_created DESC LIMIT 10', [req.session.passport.user.id], function(result8) {
+		result8.rows.forEach(function(e, i) {
+			result8.rows[i].message = e.message.replace('{{user}}', '<i>'+result8.rows[i].uname+'</i>').replace('{{post}}', '<i>'+result8.rows[i].title+'</i>');
+			result8.rows[i].date_created = new Date(e.date_created).toLocaleTimeString('en-us', {
+				weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+			});
+		});
+		var query = [
+			'SELECT posts.id, posts.title, posts.description, posts.archived,',
+			'posts.expired, images.image_url, categories.category, posts.lat, posts.lng,',
+			'posts.dibber_id, posts.date_edited, posts.attended FROM posts, images, categories WHERE',
+			'(posts.user_id = $1 OR posts.dibber_id = $1) AND posts.archived = false AND',
+			'images.post_id = posts.id AND images.main = true AND',
+			'categories.id = posts.category_id AND ((posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))'
+		].join(' ');
+		queryServer(res, query, [req.session.passport.user.id], function(result) {
+			if(!result.rows.length) return res.send({err: null, res: [], test: [] });
+			var rowsLen = result.rows.length;
+			var rowCount = 0;
+			var result1 = {rows:[]};
+			var testresult = {rows:[]};
+			result.rows.forEach(function(e, i) {
+				var query = [
+					'SELECT * FROM pick_up_success WHERE undibbed = false AND',
+					'(dibber_id = $1 OR lister_id = $1) AND post_id = $2',
+					'AND pick_up_success = true'
+				].join(' ');
+				queryServer(res, query, [req.session.passport.user.id, e.id], function(result2) {
+					if(!result2.rows.length) result1.rows.push(e);
+					else testresult.rows.push(e);
+					// else if(parseInt(result2.rows[0].lister_id) === parseInt(req.session.passport.user.id)) testresult.rows.push(e);
+					if(++rowCount === rowsLen) {
+						rowsLen = result1.rows.length;
+						rowCount = 0;
+						result1.rows.forEach(function(e, i) {
+							var query1 = [
+								'SELECT count(messages) FROM messages, conversations WHERE',
+								'conversations.post_id = $1 AND messages.conversation_id =',
+								'conversations.id AND conversations.archived = false AND',
+								'messages.archived = false AND messages.read = false AND',
+								'NOT messages.user_id = $2'
+							].join(' ');
+							queryServer(res, query1, [parseInt(result1.rows[i].id),req.session.passport.user.id], function(result3) {
+								queryServer(res, 'SELECT count(messages) FROM messages, conversations WHERE conversations.post_id = $1 AND messages.conversation_id = conversations.id AND conversations.archived = false AND messages.archived = false AND messages.user_id = $2', [parseInt(result1.rows[i].id),req.session.passport.user.id], function(result4) {
+									queryServer(res, 'select posts.date_edited from posts where posts.id = $1 order by posts.date_edited desc limit 1', [parseInt(result1.rows[i].id)], function(result5) {
+										queryServer(res, 'select messages.date_created from messages, conversations where conversations.post_id = $1 AND messages.conversation_id = conversations.id order by messages.date_created desc limit 1', [parseInt(result1.rows[i].id)], function(result6) {
+											queryServer(res, 'select conversations.date_created from messages, conversations where conversations.post_id = $1 AND messages.conversation_id = conversations.id order by conversations.date_created desc limit 1', [parseInt(result1.rows[i].id)], function(result7) {
+												var dates = {
+													post_id: result5.rows[0].date_edited,
+													message_id: (result6.rows[0] && result6.rows[0].date_created) || 0,
+													conversation_id: (result7.rows[0] && result7.rows[0].date_created) || 0
+												};
+												var newDate = new Date(dates.post_date).getTime()>new Date(dates.message_date)?dates.post_date:dates.message_date;
+												newDate = new Date(newDate).getTime()>new Date(dates.conversation_date)?newDate:dates.conversation_date;
+												result1.rows[i].messages = {
+													post_id: result1.rows[i].id,
+													count: result3.rows[0].count,
+													from_user: result4.rows[0].count
+												};
+												result1.rows[i].last_touch_date = new Date(newDate).getTime();
+												if(++rowCount === rowsLen) {
+													res.send({
+														err: null,
+														res: result1.rows,
+														// test: testresult.rows,
+														events: result8.rows
+													});
+												}
+											});
 										});
 									});
 								});
 							});
 						});
-					});
-				}
+					}
+				});
 			});
 		});
 	});
 });
 
 router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
+	db.setEvent(2,'{{user}} loaded {{post}}',req.session.passport.user.id, req.params.id);
 	var query = [
 		'SELECT posts.id, posts.dibbed, posts.user_id, posts.dibber_id, posts.user_id, posts.title, posts.description, posts.attended,',
 		'posts.lat, posts.lng, categories.category, images.image_url',
@@ -253,7 +333,7 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 		parseInt(req.params.id)
 	];
 	queryServer(res, query, values, function(result) {
-		result.rows[0].type = (parseInt(result.rows[0].dibber_id) === parseInt(req.session.passport.user.id))?'dibber':'lister';
+		if(result.rows[0]) result.rows[0].type = (parseInt(result.rows[0].dibber_id) === parseInt(req.session.passport.user.id))?'dibber':'lister';
 		queryServer(res, 'SELECT id FROM conversations WHERE post_id = $1 AND archived = false', [result.rows[0].id], function(result2) {
 			if(result2.rows.length) result.rows[0].conversation_id = result2.rows[0].id;
 			queryServer(res, 'SELECT id, uname FROM users WHERE id = $1 OR id = $2', [result.rows[0].user_id, result.rows[0].dibber_id], function(result3) {
@@ -306,6 +386,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 		req.body.category
 	];
 	queryServer(res, query, values, function(result) {
+		db.setEvent(3,'{{user}} uploaded {{post}}',req.session.passport.user.id, result.rows[0].id);
 		if(req.body.test) {
 			var query = [
 				'INSERT INTO images',
@@ -318,6 +399,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 				// imagemin([__dirname+'/../../../uploads/original/'+time+'.png'], __dirname+'/../../../uploads/build/', {use: [imageminPngquant({speed:10,quality:60})]}).then(function(err, err2) {
 				// console.log(err, err2);
 				fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
+					// console.log(err, data);
 					// var buf = new Buffer(req.body.test.replace(/^data:image\/\w+;base64,/, ""),'base64');
 					var key = 'posts/' + time;
 					s3.upload({
@@ -343,6 +425,18 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 									id: result.rows[0].id
 								}
 							});
+							queryServer(res, 'SELECT uname FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
+								sendTemplate(
+									'item-listed',
+									'Your '+result.rows[0].title+' has been mapped!',
+									{[result0.rows[0].uname]:result0.rows[0].email},
+									{
+										'FIRSTNAME' : result0.rows[0].uname,
+										'ITEMTITLE' : result.rows[0].title,
+										'ITEMIMAGE' : 'https://'+config.subdomain+'.stuffmapper.com/img/give-pic-©-01.png'
+									}
+								);
+							});
 						});
 					});
 				});
@@ -361,6 +455,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 });
 
 router.post('/stuff/:id', isAuthenticated, function(req, res) {
+	db.setEvent(3,'{{user}} updated {{post}}',req.session.passport.user.id, req.params.id);
 	var query = [
 		'UPDATE posts SET title = $2, description = $3, lat = $4, lng = $5,',
 		'category_id = $6 WHERE id = $7 AND user_id = $1',
@@ -434,6 +529,7 @@ router.post('/stuff/:id', isAuthenticated, function(req, res) {
 });
 
 router.delete('/stuff/id/:id', isAuthenticated, function(req, res) {
+	db.setEvent(3,'{{user}} deleted {{post}}',req.session.passport.user.id, req.params.id);
 	var query = [
 		'UPDATE posts SET archived = true',
 		'WHERE dibbed = false AND id = $2 AND user_id = $1',
@@ -490,7 +586,7 @@ router.get('/categories', function(req, res) {
 			apiError(res, err);
 			return client.end();
 		}
-		var query = 'SELECT * FROM categories';
+		var query = 'SELECT * FROM categories order by id asc';
 		client.query(query, function(err, result) {
 			if(err) {
 				apiError(res, err);
@@ -538,6 +634,7 @@ router.get('/views', function() {
 
 router.post('/account/status', function(req, res) {
 	queryServer(res, 'SELECT pick_up_success FROM pick_up_success WHERE pick_up_success = true AND undibbed = false', [], function(result1) {
+		// console.log(req.session);
 		if(req.session.passport && req.session.passport.user) {
 			var query = [
 				'SELECT count(messages.read) FROM conversations, messages WHERE',
@@ -573,6 +670,7 @@ router.post('/account/register', function(req, res) {
 	queryServer(res, 'SELECT id FROM users WHERE email = $1', [b.email], function(result1) {
 		if(!result1.rows[0]) {
 			gateway.clientToken.generate({}, function (err, response) {
+				// console.log(err, response);
 				bcrypt.hash(b.password, saltRounds, function(err, hashedPassword) {
 					var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
 					var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
@@ -604,16 +702,15 @@ router.post('/account/register', function(req, res) {
 								user: result.rows[0]
 							}
 						});
-						var emailTo = {};
-						emailTo[uname] = b.email;
+						db.setEvent(1,'{{user}} joined Stuffmapper!',result.rows[0].id);
 						sendTemplate(
 							'email-verification',
 							'Stuffmapper needs your confirmation!',
-							emailTo,
+							{[uname]:b.email},
 							{
 								'FIRSTNAME' : uname,
 								'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
-								'ITEMIMAGE' : 'https://www.stuffmapper.com/img/give-pic-©-01.png'
+								'ITEMIMAGE' : 'https://'+config.subdomain+'.stuffmapper.com/img/give-pic-©-01.png'
 							}
 						);
 					});
@@ -638,13 +735,16 @@ router.post('/account/verify', function(req,res) {
 		var query = [
 			'UPDATE users SET verify_email_token = null, verified_email = true',
 			'WHERE verify_email_token = $1',
-			'RETURNING email'
+			'RETURNING email, id'
 		].join(' ');
 		var values = [
 			req.body.emailVerificationToken,
 		];
 		queryServer(res, query, values, function(result) {
-			if(result.rows.length >= 1) res.send({err:null,res:result.rows[0].email});
+			if(result.rows.length >= 1) {
+				db.setEvent(1,'{{user}} verified their account',result.rows[0].id);
+				res.send({err:null,res:result.rows[0].email});
+			}
 			else res.send({err:'invalid token',res:null});
 		});
 	}
@@ -699,7 +799,10 @@ router.post('/account/password/reset', function(req,res) {
 				req.body.passwordResetToken
 			];
 			queryServer(res, query, values, function(result) {
-				if(result.rows.length >= 1) res.send({err:null});
+				if(result.rows.length >= 1) {
+					db.setEvent(1, '{{user}} updated their password', result.rows[0].id);
+					res.send({err:null});
+				}
 				else res.send({err:'error'});
 			});
 		});
@@ -711,7 +814,7 @@ router.post('/account/confirmation', function(req, res) {
 		var query = [
 			'UPDATE users SET verified_email = true, verify_email_token = null',
 			'WHERE verified_email = false AND verify_email_token = $1',
-			'RETURNING email'
+			'RETURNING email, id'
 		].join(' ');
 		queryServer(res, query, [req.body.email_token], function(result) {
 			if(result.rows.length >= 1) res.send({res:result.rows[0].email});
@@ -760,6 +863,7 @@ router.post('/account/login', function(req, res, next) {
 });
 
 router.post('/account/logout', isAuthenticated, function(req, res) {
+	db.setEvent(2, '{{user}} signed out', req.session.passport.user.id);
 	req.logout();
 	res.send({
 		err : null,
@@ -841,95 +945,69 @@ router.delete('/account/info', isAuthenticated, function(req, res) {
 
 
 /* DIBS MANAGEMENT - START */
-// router.post('/checkout/paiddibs', function(req, res) {
-// 	var nonceFromTheClient = req.body.payment_method_nonce;
-// 	if(!nonceFromTheClient) return res.send('failure');
-// 	gateway.transaction.sale({
-// 		amount: '1.00',
-// 		paymentMethodNonce: nonceFromTheClient,
-// 		options: {
-// 			submitForSettlement: true
-// 		}
-// 	}, function (err, result) {
-// 		if(err) return res.send('failure');
-// 		res.send('success');
-// 	});
-// });
 
 
 router.post('/dibs/:id', isAuthenticated, function(req, res) {
-	var query = [
-		'UPDATE posts SET dibber_id = $1, dibbed = true',
-		'WHERE dibbed = false AND id = $2',
-		'RETURNING *'
-	].join(' ');
-	var values = [
-		req.session.passport.user.id,
-		req.params.id
-	];
-	queryServer(res, query, values, function(result1) {
-		var nonceFromTheClient = req.body.payment_method_nonce;
-		if(!nonceFromTheClient) return res.send('failure');
-		gateway.transaction.sale({
-			amount: '1.00',
-			paymentMethodNonce: nonceFromTheClient,
-			options: {
-				submitForSettlement: true
-			}
-		}, function (err, result) {
-			if(err) return res.send('failure');
-			var query = [
-				'INSERT INTO pick_up_success',
-				'(post_id, dibber_id, lister_id)',
-				'VALUES ($1, $2, $3) RETURNING *'
-			].join(' ');
-			var values = [
-				req.params.id,
-				req.session.passport.user.id,
-				result1.rows[0].user_id
-			];
-			queryServer(res, query, values, function(result2) {
-				query = [
-					'INSERT INTO conversations',
+	queryServer(res, 'UPDATE posts SET dibber_id = $1, dibbed = true WHERE dibbed = false AND id = $2 RETURNING *', [req.session.passport.user.id,req.params.id], function(result1) {
+		queryServer(res, 'SELECT email FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
+			var nonceFromTheClient = req.body.payment_method_nonce;
+			if(!nonceFromTheClient) return res.send('failure');
+			gateway.transaction.sale({
+				amount: '1.00',
+				paymentMethodNonce: nonceFromTheClient,
+				options: {
+					submitForSettlement: true
+				},
+				customer :{
+					email: result0.rows[0].email
+				}
+			}, function (err, result) {
+				if(err) return res.send('failure');
+				db.setEvent(2, '{{user}} dibs\'d {{post}}', req.session.passport.user.id, req.params.id);
+				var query = [
+					'INSERT INTO pick_up_success',
 					'(post_id, dibber_id, lister_id)',
 					'VALUES ($1, $2, $3) RETURNING *'
 				].join(' ');
-				values = [
+				var values = [
 					req.params.id,
 					req.session.passport.user.id,
 					result1.rows[0].user_id
 				];
-				queryServer(res, query, values, function(result3) {
-					res.send({
-						err: null,
-						res: {
-							'res1': result1.rows,
-							'res2': result2.rows,
-							'res3': result3.rows
-						}
-					});
-					if(result1.rows[0].unattended) return;
+				queryServer(res, query, values, function(result2) {
 					query = [
-						'SELECT image_url FROM images WHERE post_id = $1 AND main = true'
+						'INSERT INTO conversations',
+						'(post_id, dibber_id, lister_id)',
+						'VALUES ($1, $2, $3) RETURNING *'
 					].join(' ');
 					values = [
 						req.params.id,
+						req.session.passport.user.id,
+						result1.rows[0].user_id
 					];
-					queryServer(res, query, values, function(result4) {
-						var emailTo = {};
-						emailTo[(req.session.passport.user.uname)] = req.session.passport.user.email;
-						sendTemplate(
-							'dibber-notification-1',
-							'You Dibs\'d an item!',
-							emailTo,
-							{
-								'FIRSTNAME' : req.session.passport.user.uname,
-								'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
-								'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
-								'ITEMTITLE':result1.rows[0].title,
-								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
+					queryServer(res, query, values, function(result3) {
+						res.send({
+							err: null,
+							res: {
+								'res1': result1.rows,
+								'res2': result2.rows,
+								'res3': result3.rows
 							}
-						);
+						});
+						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result4) {
+							sendTemplate(
+								result1.rows[0].attended?'dibber-notification-1':'dibber-notification-unattended',
+								'You Dibs\'d an item!',
+								{[(req.session.passport.user.uname)]: req.session.passport.user.email},
+								{
+									'FIRSTNAME' : req.session.passport.user.uname,
+									'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
+									'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
+									'ITEMTITLE':result1.rows[0].title,
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
+								}
+							);
+						});
 					});
 				});
 			});
@@ -946,16 +1024,26 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 		'(p2.user_id = $1 OR p2.dibber_id = $1)',
 		'RETURNING *'
 	].join(' ');
-	var values = [
-		req.session.passport.user.id,
-		req.params.id
-	];
-	queryServer(res, query, values, function(result1) {
+	queryServer(res, query, [req.session.passport.user.id,req.params.id], function(result1) {
+		db.setEvent(3, '{{user}} picked up {{post}}', req.session.passport.user.id, req.params.id);
 		res.send({
 			err: null,
-			res: {
-				success: (result1.rows.length === 1)
-			}
+			res: {success: (result1.rows.length === 1)}
+		});
+		queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result2) {
+			[result1.rows[0].dibber_id, result1.rows[0].user_id].forEach(function(e){
+				queryServer(res, 'SELECT email, uname FROM users WHERE id = $1', [e], function(result3) {
+					sendTemplate(
+						'dibs-complete',
+						'Dibs for '+result1.rows[0].title+' is complete!',
+						{[result3.rows[0].uname]:result3.rows[0].email},
+						{
+							'ITEMTITLE':result1.rows[0].title,
+							'ITEMIMAGE':'https://cdn.stuffmapper.com'+result2.rows[0].image_url
+						}
+					);
+				});
+			});
 		});
 	});
 });
@@ -971,6 +1059,8 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 		req.params.id
 	];
 	queryServer(res, query, values, function(result1) {
+		db.setEvent(3, '{{user}}\'s {{post}} was unDibs\'d', req.session.passport.user.id, req.params.id);
+		db.setEvent(3, '{{user}} unDibs\'d your {{post}}', result.rows[0].user_id, req.params.id);
 		var query = [
 			'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
 			'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3',
@@ -987,10 +1077,7 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 				'WHERE post_id = $1',
 				'RETURNING *'
 			].join(' ');
-			var values = [
-				req.params.id
-			];
-			queryServer(res, query, values, function(result3) {
+			queryServer(res, query, [req.params.id], function(result3) {
 				res.send({
 					err: null,
 					res: {
@@ -999,16 +1086,8 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 						'res3': result3.rows
 					}
 				});
-				var query = 'SELECT uname, email FROM users WHERE id = $1';
-				var values = [result1.rows[0].user_id];
-				queryServer(res, query, values, function(result4){
-					query = [
-						'SELECT image_url FROM images WHERE post_id = $1 AND main = true'
-					].join(' ');
-					values = [
-						req.params.id,
-					];
-					queryServer(res, query, values, function(result5) {
+				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function(result4){
+					queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result5) {
 						var emailTo = {[result4.rows[0].uname]:result4.rows[0].email};
 						sendTemplate(
 							'notify-undib',
@@ -1041,8 +1120,10 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 			req.params.id
 		];
 		queryServer(res, query, values, function(result1) {
+			db.setEvent(3, '{{user}} rejected {{post}}', req.session.passport.user.id, req.params.id);
+			db.setEvent(3, '{{user}} rejected your Dibs for {{post}}', result0.rows[0].dibber_id, req.params.id);
 			query = [
-				'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
+				'UPDATE pick_up_success SET undibbed = true, rejected = true, undibbed_date = current_timestamp, rejection_date = current_timestamp',
 				'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3',
 				'RETURNING *'
 			].join(' ');
@@ -1057,10 +1138,7 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 					'WHERE post_id = $1',
 					'RETURNING *'
 				].join(' ');
-				var values = [
-					req.params.id
-				];
-				queryServer(res, query, values, function(result3) {
+				queryServer(res, query, [req.params.id], function(result3) {
 					res.send({
 						err: null,
 						res: {
@@ -1071,16 +1149,16 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 					});
 					queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result0.rows[0].dibber_id], function(result4) {
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result5) {
-							var emailTo = {[result4.rows[0].uname] : result4.rows[0].email};
 							sendTemplate(
 								'dibs-declined',
 								'Your Dibs has been cancelled',
-								emailTo,
+								{[result4.rows[0].uname] : result4.rows[0].email},
 								{
 									'FIRSTNAME' : result4.rows[0].uname,
 									'ITEMTITLE':result1.rows[0].title,
 									'ITEMNAME':result1.rows[0].title,
-									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
+									'GETSTUFFLINK':'https://'+config.subdomain+'.stuffmapper.com'
 								}
 							);
 						});
@@ -1105,10 +1183,7 @@ router.get('/messages', isAuthenticated, function(req, res) {
 		'images.post_id = conversations.post_id',
 		'ORDER BY conversations.date_created DESC'
 	].join(' ');
-	var values = [
-		req.session.passport.user.id
-	];
-	queryServer(res, query, values, function(result1) {
+	queryServer(res, query, [req.session.passport.user.id], function(result1) {
 		var catcher = 0;
 		var messagesRows = {};
 		var cb = function(result2) {
@@ -1138,19 +1213,38 @@ router.get('/messages', isAuthenticated, function(req, res) {
 });
 
 router.post('/messages', isAuthenticated, function(req, res) {
-	var query = [
-		'INSERT INTO messages(conversation_id, user_id, message)',
-		'values($1, $2, $3) RETURNING *'
-	].join(' ');
 	var values = [
 		parseInt(req.body.conversation_id),
 		req.session.passport.user.id,
 		req.body.message
 	];
-	queryServer(res, query, values, function(result) {
-		res.send({
-			err: null,
-			res: result.rows
+	queryServer(res, 'INSERT INTO messages(conversation_id, user_id, message) values($1, $2, $3) RETURNING *', values, function(result) {
+		queryServer(res, 'SELECT conversations.lister_id, conversations.dibber_id, messages.user_id, conversations.post_id FROM messages, conversations where conversations.id = $1 and messages.conversation_id = $1 and conversations.dibber_id = messages.user_id', [parseInt(req.body.conversation_id)], function(result1) {
+			console.log(result1.rows);
+			if(result1.rows.length === 1) {
+				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function(result2){
+					queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
+						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
+							sendTemplate(
+								'lister-notification',
+								'Your '+result3.rows[0].title + ' has been dibs\'d!',
+								{[result2.rows[0].uname]:result2.rows[0].email},
+								{
+									'FIRSTNAME' : result2.rows[0].uname,
+									'ITEMTITLE':result3.rows[0].title,
+									'ITEMNAME':result3.rows[0].title,
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
+									'CHATLINK':'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+result1.rows[0].post_id+'/messages'
+								}
+							);
+						});
+					});
+				});
+			}
+			res.send({
+				err: null,
+				res: result.rows
+			});
 		});
 	});
 });
@@ -1183,20 +1277,14 @@ router.get('/conversation/:post_id', isAuthenticated, function(req, res) {
 		'conversations.post_id = $1 AND conversations.archived = false AND',
 		'posts.id = $1 AND images.post_id = $1 AND images.main = true'
 	].join(' ');
-	var values = [
-		req.params.post_id
-	];
-	queryServer(res, query, values, function(result1) {
+	queryServer(res, query, [req.params.post_id], function(result1) {
 		var query = [
 			'SELECT messages.user_id, messages.message, messages.date_created,',
 			// 'SELECT messages.user_id, messages.message, TO_CHAR(messages.date_created, \'HH:MIam – DD Mon YYYY TZ\') as date_created,',
 			'messages.read FROM messages WHERE messages.conversation_id = $1 AND',
 			'messages.archived = false ORDER BY messages.date_created DESC'
 		].join(' ');
-		var values = [
-			result1.rows[0].id
-		];
-		queryServer(res, query, values, function(result) {
+		queryServer(res, query, [result1.rows[0].id], function(result) {
 			queryServer(res, 'SELECT id, uname FROM users WHERE id = $1 OR id = $2', [result1.rows[0].lister_id, result1.rows[0].dibber_id], function(result3) {
 				if(result3.rows.length) {
 					var tmp = {};
@@ -1210,6 +1298,7 @@ router.get('/conversation/:post_id', isAuthenticated, function(req, res) {
 					result.rows.forEach(function(e, i) {
 						result.rows[i].type = ((parseInt(result.rows[i].user_id) === parseInt(req.session.passport.user.id))?'out':'in');
 					});
+					console.log(result.rows);
 					res.send({
 						err: null,
 						res: {

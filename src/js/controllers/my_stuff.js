@@ -1,12 +1,21 @@
-stuffMapp.controller('myStuffController', ['$scope', '$http', '$userData', 'authenticator', '$state', '$stuffTabs', MyStuffController]);
+stuffMapp.controller('myStuffController', ['$scope', '$http', '$userData', 'authenticator', '$state', '$sce', MyStuffController]);
 function MyStuffController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $userData = arguments[2];
 	var authenticator = arguments[3];
 	var $state = arguments[4];
-	var $stuffTabs = arguments[5];
-	$stuffTabs.init($scope, '#tab-container .stuff-tabs .my-stuff-tab a');
+	var $sce = arguments[5];
+
+	$scope.markers = [];
+	if($('#center-marker').hasClass('dropped')) {
+		$('#center-marker').removeClass('dropped');
+		$timeout(function() {
+			requestAnimationFrame(function() {
+				$('#center-marker').css({'display':'none'});
+			});
+		}, 250);
+	}
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
@@ -21,14 +30,23 @@ function MyStuffController() {
 				});
 				$scope.listItems = data.res;
 				$scope.testItems = data.test;
-				if(!data.res.length && !data.test.length) {
+				$scope.events = data.events;
+				$scope.events.forEach(function(e,i) {
+					$scope.events[i].message = $sce.trustAsHtml($scope.events[i].message);
+				});
+				if(!data.res.length && !data.test.length && !data.events.length) {
 					$('#loading-get-stuff').addClass('sm-hidden');
 					$('#my-stuff-empty-list').removeClass('sm-hidden');
 				}
+				initMarkers();
+
 				// $('#mystuff a').addClass('selected');
-				// $scope.$on("$destroy", function() {
-				//     $('#mystuff a').removeClass('selected');
-				// });
+				$scope.$on('$destroy', function() {
+					$scope.markers.forEach(function(e) {
+						e.setMap(null);
+					});
+					// $('#mystuff a').removeClass('selected');
+				});
 				$scope.initMasonry = function() {
 					$('.masonry-grid').imagesLoaded( function() {
 						$('#loading-get-stuff').addClass('sm-hidden');
@@ -39,7 +57,7 @@ function MyStuffController() {
 								number: '.number parseInt'
 							},
 							sortBy: 'number',
-							isAnimated: true
+							isAnimated: false
 						});
 					});
 					requestAnimationFrame(resetBadges);
@@ -64,7 +82,7 @@ function MyStuffController() {
 								number: '.number parseInt'
 							},
 							sortBy: 'number',
-							isAnimated: true
+							isAnimated: false
 						});
 					});
 				};
@@ -84,6 +102,49 @@ function MyStuffController() {
 			});
 		}
 	});
+
+	$scope.map.addListener('zoom_changed', resizeMarkers);
+	function resizeMarkers() {
+		var mapZoom = $scope.map.getZoom();
+		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
+		var mapAnchor = mapSize/2;
+		$scope.markers.forEach(function(e) {
+			console.log(e.data);
+			e.setIcon({
+				url: e.data.dibber_id?(e.data.selected?'img/marker-dibsd-selected.png':'img/Marker-dibsd-all.png'):(e.data.selected?'img/marker-selected.png':'img/Marker-all.png'),
+				scaledSize: new google.maps.Size(mapSize, mapSize),
+				anchor: new google.maps.Point(mapAnchor, mapAnchor)
+			});
+		});
+	}
+	function initMarkers() {
+		$scope.markers.forEach(function(e) {
+			e.setMap(null);
+			$scope.markers = [];
+		});
+		var maxZoom = 20;
+		var mapZoom = $scope.map.getZoom();
+		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
+		var mapAnchor = mapSize/2;
+		$scope.listItems.forEach(function(e) {
+			$scope.markers.push(new google.maps.Marker({
+				position: {
+					lat: e.lat,
+					lng : e.lng
+				},
+				icon: {
+					url: e.dibber_id?'img/Marker-dibsd-all.png':'img/Marker-all.png',
+					scaledSize: new google.maps.Size(mapSize, mapSize),
+					anchor: new google.maps.Point(mapAnchor, mapAnchor)
+				},
+				map: $scope.map,
+				data: e
+			}));
+			$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
+				$state.go('stuff.my.items.item', {id:this.data.id});
+			});
+		});
+	}
 	$scope.getLocation = function(callback) {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function(position) {
