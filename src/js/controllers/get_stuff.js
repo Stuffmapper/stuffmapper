@@ -127,6 +127,7 @@ function GetStuffController() {
 	});
 	$scope.map.addListener('zoom_changed', resizeMarkers);
 	function initMarkers() {
+		var oldMarkers = $scope.markers;
 		$scope.markers.forEach(function(e) {
 			e.setMap(null);
 			$scope.markers = [];
@@ -152,6 +153,24 @@ function GetStuffController() {
 			$scope.markers[$scope.markers.length - 1].addListener('click', function(event) {
 				$state.go('stuff.get.item', {id:this.data.id});
 			});
+		});
+		oldMarkers.forEach(function(e) {
+			if(e.data.selected) {
+				$scope.markers.forEach(function(f,i) {
+					if($scope.markers[i].data.id === e.data.id) {
+						f.data.selected = true;
+						$scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(),e.position.lng()));
+						resizeMarkers();
+					}
+				});
+			}
+			else {
+				$scope.markers.forEach(function(f,i) {
+					if(f.data.id === e.data.id) {
+						$scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(),e.position.lng()));
+					}
+				});
+			}
 		});
 	}
 	$scope.geoLocation = undefined;

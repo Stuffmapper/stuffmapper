@@ -342,7 +342,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 		req.body.category
 	];
 	queryServer(res, query, values, function(result) {
-		db.setEvent(3,'You uploaded {{post}}',req.session.passport.user.id, result.rows[0].id);
+		db.setEvent(3,'{{user}} uploaded {{post}}',req.session.passport.user.id, result.rows[0].id);
 		if(req.body.test) {
 			var query = [
 				'INSERT INTO images',
@@ -351,52 +351,63 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 			].join(' ');
 			var time = Date.now().toString();
 			var buff = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+			var buff2 = new Buffer(req.body.original.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
 			fs.writeFile(__dirname + '/../../../uploads/original/'+time+'.png', buff, function(err) {
-				// imagemin([__dirname+'/../../../uploads/original/'+time+'.png'], __dirname+'/../../../uploads/build/', {use: [imageminPngquant({speed:10,quality:60})]}).then(function(err, err2) {
-				// console.log(err, err2);
-				fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
-					// console.log(err, data);
-					// var buf = new Buffer(req.body.test.replace(/^data:image\/\w+;base64,/, ""),'base64');
-					var key = 'posts/' + time;
-					s3.upload({
-						Bucket: 'stuffmapper-v2',
-						Key: key,
-						Body: data,
-						ContentEncoding: 'base64',
-						ContentType:'image/png',
-						ACL: 'public-read'
-					}, function(err, data) {
-						if (err) {
-							res.send('Error uploading data: ', err);
-							return console.log('Error uploading data: ', err);
-						}
-						var values = [
-							result.rows[0].id,
-							'/'+key
-						];
-						queryServer(res, query, values, function() {
-							res.send({
-								err : null,
-								res : {
-									id: result.rows[0].id
+				fs.writeFile(__dirname + '/../../../uploads/original/'+time+'_original.png', buff2, function(err) {
+					fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
+						fs.readFile(__dirname + '/../../../uploads/original/'+time+'_original.png', function(err, data2) {
+							var key = 'posts/' + time;
+							var key2 = 'posts/' + time + '_original';
+							s3.upload({
+								Bucket: 'stuffmapper-v2',
+								Key: key,
+								Body: data,
+								ContentEncoding: 'base64',
+								ContentType:'image/png',
+								ACL: 'public-read'
+							}, function(err, data) {
+								if (err) {
+									res.send('Error uploading data: ', err);
+									return console.log('Error uploading data: ', err);
 								}
-							});
-							queryServer(res, 'SELECT uname FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
-								sendTemplate(
-									'item-listed',
-									'Your '+result.rows[0].title+' has been mapped!',
-									{[result0.rows[0].uname]:result0.rows[0].email},
-									{
-										'FIRSTNAME' : result0.rows[0].uname,
-										'ITEMTITLE' : result.rows[0].title,
-										'ITEMIMAGE' : 'https://'+config.subdomain+'.stuffmapper.com/img/give-pic-©-01.png'
-									}
-								);
+								s3.upload({
+									Bucket: 'stuffmapper-v2',
+									Key: key2,
+									Body: data2,
+									ContentEncoding: 'base64',
+									ContentType:'image/png',
+									ACL: 'public-read'
+								}, function(err, data) {});
+								var values = [
+									result.rows[0].id,
+									'/'+key
+								];
+								queryServer(res, query, values, function() {
+									res.send({
+										err : null,
+										res : {
+											id: result.rows[0].id
+										}
+									});
+									queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function(result5) {
+										queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
+											sendTemplate(
+												'item-listed',
+												'Your '+req.body.title+' has been mapped!',
+												{[result0.rows[0].uname]:result0.rows[0].email},
+												{
+													'FIRSTNAME' : result0.rows[0].uname,
+													'ITEMTITLE' : req.body.title,
+													'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url
+												}
+											);
+										});
+									});
+								});
 							});
 						});
 					});
 				});
-				// });
 			});
 		}
 		else {
@@ -1028,24 +1039,26 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 		'RETURNING *'
 	].join(' ');
 	queryServer(res, query, [req.session.passport.user.id,req.params.id], function(result1) {
-		/*lister*/ db.setEvent(3, 'Dibs complete - you gave {{post}}!', result1.rows[0].user_id, req.params.id);
-		/*dibber*/ db.setEvent(3, 'Dibs complete - you received {{post}}!', result1.rows[0].dibber_id, req.params.id);
-		res.send({
-			err: null,
-			res: {success: (result1.rows.length === 1)}
-		});
-		queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result2) {
-			[result1.rows[0].dibber_id, result1.rows[0].user_id].forEach(function(e){
-				queryServer(res, 'SELECT email, uname FROM users WHERE id = $1', [e], function(result3) {
-					sendTemplate(
-						'dibs-complete',
-						'Dibs for '+result1.rows[0].title+' is complete!',
-						{[result3.rows[0].uname]:result3.rows[0].email},
-						{
-							'ITEMTITLE':result1.rows[0].title,
-							'ITEMIMAGE':'https://cdn.stuffmapper.com'+result2.rows[0].image_url
-						}
-					);
+		queryServer(res, 'UPDATE posts SET archived = true WHERE id = $1', [req.params.id], function(result0) {
+			/*lister*/ db.setEvent(3, 'Dibs complete - you gave {{post}}!', result1.rows[0].user_id, req.params.id);
+			/*dibber*/ db.setEvent(3, 'Dibs complete - you received {{post}}!', result1.rows[0].dibber_id, req.params.id);
+			res.send({
+				err: null,
+				res: {success: (result1.rows.length === 1)}
+			});
+			queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result2) {
+				[result1.rows[0].dibber_id, result1.rows[0].user_id].forEach(function(e){
+					queryServer(res, 'SELECT email, uname FROM users WHERE id = $1', [e], function(result3) {
+						sendTemplate(
+							'dibs-complete',
+							'Dibs for '+result1.rows[0].title+' is complete!',
+							{[result3.rows[0].uname]:result3.rows[0].email},
+							{
+								'ITEMTITLE':result1.rows[0].title,
+								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result2.rows[0].image_url
+							}
+						);
+					});
 				});
 			});
 		});
@@ -1226,21 +1239,29 @@ router.post('/messages', isAuthenticated, function(req, res) {
 		queryServer(res, 'SELECT conversations.lister_id, conversations.dibber_id, messages.user_id, conversations.post_id FROM messages, conversations where conversations.id = $1 and messages.conversation_id = $1 and conversations.dibber_id = messages.user_id', [parseInt(req.body.conversation_id)], function(result1) {
 			console.log(result1.rows);
 			if(result1.rows.length === 1) {
-				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function(result2){
+				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
 					queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
-							sendTemplate(
-								'lister-notification',
-								'Your '+result3.rows[0].title + ' has been dibs\'d!',
-								{[result2.rows[0].uname]:result2.rows[0].email},
-								{
-									'FIRSTNAME' : result2.rows[0].uname,
-									'ITEMTITLE':result3.rows[0].title,
-									'ITEMNAME':result3.rows[0].title,
-									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
-									'CHATLINK':'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+result1.rows[0].post_id+'/messages'
-								}
-							);
+							queryServer(res, 'SELECT message FROM messages WHERE user_id = $1 AND conversation_id = $2 ORDER BY date_created DESC', [req.session.passport.user.id, parseInt(req.body.conversation_id)], function(result5) {
+								var messages = [];
+								result5.rows.forEach(function(e) {
+									messages.unshift(e.message);
+								});
+								sendTemplate(
+									'lister-notification',
+									'Your '+result3.rows[0].title + ' has been Dibs\'d!',
+									{[result2.rows[0].uname]:result2.rows[0].email},
+									{
+										'FIRSTNAME' : result2.rows[0].uname,
+										'USERNAME' : result2.rows[0].uname,
+										'MESSAGE' : messages.join('<br>'),
+										'ITEMTITLE':result3.rows[0].title,
+										'ITEMNAME':result3.rows[0].title,
+										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
+										'CHATLINK':'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+result1.rows[0].post_id+'/messages'
+									}
+								);
+							});
 						});
 					});
 				});
