@@ -262,7 +262,10 @@ setInterval(function() {
 	pool.connect(function(err, client, done) {
 		if(err) return console.error('error fetching client from pool', err);
 		client.query('SELECT * FROM conversations WHERE archived = false', [], function(err, result1) {
-			if(err) return console.error('error running query', err);
+			if(err) {
+				done();
+				return console.error('error running query', err);
+			}
 			var conversations = result1.rows.length;
 			var conversation_counter = 0;
 			result1.rows.forEach(function(e, i) {
@@ -279,7 +282,7 @@ setInterval(function() {
 					});
 					if((!lastMessage && !dibberMessaged) && convAgeMin >= 15) undib(e.post_id, e.dibber_id);
 					else if(lastMessage && !lastMessage.emailed && messAgeMin >= 24*60) messageUserMessageReminder(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
-					if(++conversation_counter === conversations) jobsDone(done);
+					if(++conversation_counter === conversations) {jobsDone(done);done();}
 				});
 			});
 		});
@@ -314,7 +317,7 @@ function undib(post_id, user_id) {
 				post_id
 			];
 			client.query(query, values, function(err, result1) {
-				if(err || result1.rows.length === 0) return client.end();
+				if(err || result1.rows.length === 0) return done();
 				var query = [
 					'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
 					'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3 RETURNING *'
@@ -325,23 +328,24 @@ function undib(post_id, user_id) {
 					result1.rows[0].user_id
 				];
 				client.query(query, values, function(err, result2) {
-					if(err) return client.end();
+					if(err) return done();
 					var query = [
 						'UPDATE conversations SET archived = true, date_edited = current_timestamp',
 						'WHERE post_id = $1 RETURNING *'
 					].join(' ');
 					client.query(query, [post_id], function(err, result3) {
-						if(err) return client.end();
+						if(err) return done();
 						var query = 'SELECT uname, email FROM users WHERE id = $1';
 						var values = [user_id];
 						client.query(query, values, function(err, result4){
-							if(err) return client.end();
+							if(err) return done();
 							query = 'SELECT image_url FROM images WHERE post_id = $1 AND main = true';
 							client.query(query, [post_id], function(err, result5) {
-								if(err) return client.end();
+								if(err) return done();
 								io.sockets.emit((''+user_id), {
 									undibsd:post_id
 								});
+								db.setEvent(3,'Dibs for {{post}} cancelled; you did not send a message.',user_id, post_id);
 								sendTemplate(
 									'dibs-expired',
 									'Your Dibs has expired',
@@ -354,6 +358,7 @@ function undib(post_id, user_id) {
 										'GETSTUFFLINK':'https://'+config.subdomain+'.stuffmapper.com/stuff/get'
 									}
 								);
+								done();
 								return client.end();
 							});
 						});

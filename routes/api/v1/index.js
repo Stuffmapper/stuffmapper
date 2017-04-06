@@ -99,56 +99,43 @@ router.get('/stuff/:lat/:lng', function(req, res, next) {
 	else if(!req.params.lat && !req.params.lng) return next();
 	var lng = req.params.lng;
 	var lat = req.params.lat;
-	var client = new pg.Client(conString);
-	client.connect(function(err) {
-		if(err) {
-			apiError(res, err);
-			return client.end();
-		}
-		// var r = 3959;
-		var r = 6371000;
-		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended,',
-			'posts.lat, posts.lng, categories.category,',
-			'($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) as distance,',
-			'images.image_url FROM posts, images, categories WHERE',
-			'images.post_id = posts.id AND categories.id = posts.category_id AND',
-			'posts.dibbed = false AND images.main = true AND',
-			// 'posts.archived = false AND ((posts.date_created > now()::date - 7 AND posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
-			'posts.archived = false AND',
-			'($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) < $4 AND ',
-			'((posts.attended = true) OR',
-			'(posts.date_created > now()::date - 3 AND posts.attended = false))'
-		].join(' ');
-		var values = [r, lat, lng, 15*1609.34*65];
-		if(req.session.passport && req.session.passport.user) {
-			query += ' AND NOT posts.user_id = $5 ';
-			values.push(req.session.passport.user.id);
-		}
-		query += 'ORDER BY ($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) ASC';
-		client.query(query, values, function(err, result) {
-			if(err) {
-				apiError(res, err);
-				return client.end();
-			}
-			else if(!result.rows.length) {
-				client.end();
-				return res.send({
-					err: null,
-					res: []
-				});
-			}
-			// console.log(result.rows);
-			result.rows.forEach(function(e, i) {
-				var randVal = 0.001;
-				result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
-				result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
-			});
-			res.send({
+	// var r = 3959;
+	var r = 6371000;
+	var query = [
+		'SELECT posts.id, posts.title, posts.description, posts.attended,',
+		'posts.lat, posts.lng, categories.category,',
+		'($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) as distance,',
+		'images.image_url FROM posts, images, categories WHERE',
+		'images.post_id = posts.id AND categories.id = posts.category_id AND',
+		'posts.dibbed = false AND images.main = true AND',
+		// 'posts.archived = false AND ((posts.date_created > now()::date - 7 AND posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
+		'posts.archived = false AND',
+		'($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) < $4 AND ',
+		'((posts.attended = true) OR',
+		'(posts.date_created > now()::date - 3 AND posts.attended = false))'
+	].join(' ');
+	var values = [r, lat, lng, 15*1609.34*65];
+	if(req.session.passport && req.session.passport.user) {
+		query += ' AND NOT posts.user_id = $5 ';
+		values.push(req.session.passport.user.id);
+	}
+	query += 'ORDER BY ($1*acos(cos($2)*cos(posts.lat)+sin($2)*sin(posts.lat)*cos($3-posts.lng))) ASC';
+	queryServer(res, query, values, function(result) {
+		if(!result.rows.length) {
+			return res.send({
 				err: null,
-				res: result.rows
+				res: []
 			});
-			client.end();
+		}
+		// console.log(result.rows);
+		result.rows.forEach(function(e, i) {
+			var randVal = 0.001;
+			result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
+			result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
+		});
+		res.send({
+			err: null,
+			res: result.rows
 		});
 	});
 });
@@ -158,80 +145,49 @@ router.get('/stuff/:lat/:lng', function(req, res, next) {
 
 
 router.get('/stuff', function(req, res) {
-	var client = new pg.Client(conString);
-	client.connect(function(err) {
-		if(err) {
-			apiError(res, err);
-			return client.end();
-		}
-		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended,',
-			'posts.lat, posts.lng, categories.category, images.image_url',
-			'FROM posts, images, categories WHERE images.post_id = posts.id AND',
-			'categories.id = posts.category_id AND posts.dibbed = false AND images.main = true AND',
-			// 'posts.archived = false AND ((posts.date_created > now()::date - 7 AND posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
-			'posts.archived = false AND ((posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
-		].join(' ');
-		var values = [];
-		if(req.session.passport && req.session.passport.user) {
-			query += ' AND NOT posts.user_id = $1';
-			values.push(req.session.passport.user.id);
-		}
-		client.query(query, values, function(err, result) {
-			if(err) {
-				apiError(res, err);
-				return client.end();
-			}
-			else if(!result.rows.length) {
-				client.end();
-				return res.send({
-					err: null,
-					res: []
-				});
-			}
-			result.rows.forEach(function(e, i) {
-				var randVal = 0.001;
-				result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
-				result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
-			});
-			res.send({
-				err: null,
-				res: result.rows
-			});
-			client.end();
+	var query = [
+		'SELECT posts.id, posts.title, posts.description, posts.attended,',
+		'posts.lat, posts.lng, categories.category, images.image_url',
+		'FROM posts, images, categories WHERE images.post_id = posts.id AND',
+		'categories.id = posts.category_id AND posts.dibbed = false AND images.main = true AND',
+		// 'posts.archived = false AND ((posts.date_created > now()::date - 7 AND posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
+		'posts.archived = false AND ((posts.attended = true) OR (posts.date_created > now()::date - 3 AND posts.attended = false))',
+	].join(' ');
+	var values = [];
+	if(req.session.passport && req.session.passport.user) {
+		query += ' AND NOT posts.user_id = $1';
+		values.push(req.session.passport.user.id);
+	}
+	queryServer(res, query, values, function(result) {
+		result.rows.forEach(function(e, i) {
+			var randVal = 0.001;
+			result.rows[i].lat += ((Math.random() * randVal) - (randVal / 2));
+			result.rows[i].lng += ((Math.random() * randVal) - (randVal / 2));
+		});
+		res.send({
+			err: null,
+			res: result.rows
 		});
 	});
 });
 
 router.get('/stuff/id/:id', function(req, res) {
 	if(req.isAuthenticated()) db.setEvent(2,'{{user}} viewed item {{post}}',req.session.passport.user.id, req.params.id);
-	var client = new pg.Client(conString);
-	client.connect(function(err) {
-		if(err) {
-			apiError(res, err);
-			return client.end();
-		}
-		var query = [
-			'SELECT posts.id, posts.title, posts.description, posts.attended,',
-			'posts.lat, posts.lng, categories.category, images.image_url,',
-			'posts.date_created',
-			'FROM posts, images, categories',
-			'WHERE images.post_id = posts.id AND posts.id = $1 AND',
-			'categories.id = posts.category_id AND images.main = true'
-		].join(' ');
-		client.query(query, [req.params.id], function(err, result) {
-			if(err) {
-				apiError(res, err);
-				return client.end();
-			}
-			var randVal = 0.0002;
-			result.rows[0].lat += ((Math.random() * randVal) - (randVal / 2));
-			result.rows[0].lng += ((Math.random() * randVal) - (randVal / 2));
-			res.send({
-				err: null,
-				res: result.rows[0]
-			});
-			client.end();
+	var query = [
+		'SELECT posts.id, posts.title, posts.description, posts.attended,',
+		'posts.lat, posts.lng, categories.category, images.image_url,',
+		'posts.date_created',
+		'FROM posts, images, categories',
+		'WHERE images.post_id = posts.id AND posts.id = $1 AND',
+		'categories.id = posts.category_id AND images.main = true'
+	].join(' ');
+	queryServer(res, query, [req.params.id], function(result) {
+		var randVal = 0.0002;
+		result.rows[0].lat += ((Math.random() * randVal) - (randVal / 2));
+		result.rows[0].lng += ((Math.random() * randVal) - (randVal / 2));
+		res.send({
+			err: null,
+			res: result.rows[0]
 		});
 	});
 });
@@ -386,7 +342,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 		req.body.category
 	];
 	queryServer(res, query, values, function(result) {
-		db.setEvent(3,'{{user}} uploaded {{post}}',req.session.passport.user.id, result.rows[0].id);
+		db.setEvent(3,'You uploaded {{post}}',req.session.passport.user.id, result.rows[0].id);
 		if(req.body.test) {
 			var query = [
 				'INSERT INTO images',
@@ -529,7 +485,7 @@ router.post('/stuff/:id', isAuthenticated, function(req, res) {
 });
 
 router.delete('/stuff/id/:id', isAuthenticated, function(req, res) {
-	db.setEvent(3,'{{user}} deleted {{post}}',req.session.passport.user.id, req.params.id);
+	db.setEvent(3,'You deleted {{post}}',req.session.passport.user.id, req.params.id);
 	var query = [
 		'UPDATE posts SET archived = true',
 		'WHERE dibbed = false AND id = $2 AND user_id = $1',
@@ -580,23 +536,11 @@ router.delete('/stuff/id/:id', isAuthenticated, function(req, res) {
 /* CATEGORIES - START */
 
 router.get('/categories', function(req, res) {
-	var client = new pg.Client(conString);
-	client.connect(function(err) {
-		if(err) {
-			apiError(res, err);
-			return client.end();
-		}
-		var query = 'SELECT * FROM categories order by id asc';
-		client.query(query, function(err, result) {
-			if(err) {
-				apiError(res, err);
-				return client.end();
-			}
-			res.send({
-				err: null,
-				res: result.rows
-			});
-			return client.end();
+	var query = 'SELECT * FROM categories order by id asc';
+	queryServer(res, query, [], function(result) {
+		res.send({
+			err: null,
+			res: result.rows
 		});
 	});
 });
@@ -923,10 +867,17 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-router.delete('/account/info', isAuthenticated, function(req, res) {
-	// auto sign out when complete
-	var id = req.session.passport.user.id;
-
+router.delete('/account', isAuthenticated, function(req, res) {
+	queryServer(res, 'SELECT count(*) FROM pick_up_success', [req.session.passport.user.id],function(result0) {
+		if(result0.rows[0].count > 0) {
+			return res.send({success:false});
+		}
+		queryServer(res, 'UPDATE users SET archived = true WHERE id = $1', [req.session.passport.user.id], function(result1) {
+			queryServer(res, 'UPDATE posts SET archived = true WHERE user_id = $1', [req.session.passport.user.id], function(result2) {
+				res.send({success:true});
+			});
+		});
+	});
 });
 
 
@@ -950,19 +901,70 @@ router.delete('/account/info', isAuthenticated, function(req, res) {
 router.post('/dibs/:id', isAuthenticated, function(req, res) {
 	queryServer(res, 'UPDATE posts SET dibber_id = $1, dibbed = true WHERE dibbed = false AND id = $2 RETURNING *', [req.session.passport.user.id,req.params.id], function(result1) {
 		queryServer(res, 'SELECT email FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
-			var nonceFromTheClient = req.body.payment_method_nonce;
-			if(!nonceFromTheClient) return res.send('failure');
-			gateway.transaction.sale({
-				amount: '1.00',
-				paymentMethodNonce: nonceFromTheClient,
-				options: {
-					submitForSettlement: true
-				},
-				customer :{
-					email: result0.rows[0].email
-				}
-			}, function (err, result) {
-				if(err) return res.send('failure');
+			if(result1.rows[0].attended) {
+
+				var nonceFromTheClient = req.body.payment_method_nonce;
+				if(!nonceFromTheClient) return res.send('failure');
+				gateway.transaction.sale({
+					amount: '1.00',
+					paymentMethodNonce: nonceFromTheClient,
+					options: {
+						submitForSettlement: true
+					},
+					customer :{
+						email: result0.rows[0].email
+					}
+				}, function (err, result) {
+					if(err) return res.send('failure');
+					db.setEvent(2, '{{user}} dibs\'d {{post}}', req.session.passport.user.id, req.params.id);
+					var query = [
+						'INSERT INTO pick_up_success',
+						'(post_id, dibber_id, lister_id)',
+						'VALUES ($1, $2, $3) RETURNING *'
+					].join(' ');
+					var values = [
+						req.params.id,
+						req.session.passport.user.id,
+						result1.rows[0].user_id
+					];
+					queryServer(res, query, values, function(result2) {
+						query = [
+							'INSERT INTO conversations',
+							'(post_id, dibber_id, lister_id)',
+							'VALUES ($1, $2, $3) RETURNING *'
+						].join(' ');
+						values = [
+							req.params.id,
+							req.session.passport.user.id,
+							result1.rows[0].user_id
+						];
+						queryServer(res, query, values, function(result3) {
+							res.send({
+								err: null,
+								res: {
+									'res1': result1.rows,
+									'res2': result2.rows,
+									'res3': result3.rows
+								}
+							});
+							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result4) {
+								sendTemplate(
+									result1.rows[0].attended?'dibber-notification-1':'dibber-notification-unattended',
+									'You Dibs\'d an item!',
+									{[(req.session.passport.user.uname)]: req.session.passport.user.email},
+									{
+										'FIRSTNAME' : req.session.passport.user.uname,
+										'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
+										'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
+										'ITEMTITLE':result1.rows[0].title,
+										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
+									}
+								);
+							});
+						});
+					});
+				});
+			} else {
 				db.setEvent(2, '{{user}} dibs\'d {{post}}', req.session.passport.user.id, req.params.id);
 				var query = [
 					'INSERT INTO pick_up_success',
@@ -1001,6 +1003,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 								{[(req.session.passport.user.uname)]: req.session.passport.user.email},
 								{
 									'FIRSTNAME' : req.session.passport.user.uname,
+									'ITEMURL' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
 									'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
 									'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
 									'ITEMTITLE':result1.rows[0].title,
@@ -1010,7 +1013,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 						});
 					});
 				});
-			});
+			}
 		});
 	});
 });
@@ -1025,7 +1028,8 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 		'RETURNING *'
 	].join(' ');
 	queryServer(res, query, [req.session.passport.user.id,req.params.id], function(result1) {
-		db.setEvent(3, '{{user}} picked up {{post}}', req.session.passport.user.id, req.params.id);
+		/*lister*/ db.setEvent(3, 'Dibs complete - you gave {{post}}!', result1.rows[0].user_id, req.params.id);
+		/*dibber*/ db.setEvent(3, 'Dibs complete - you received {{post}}!', result1.rows[0].dibber_id, req.params.id);
 		res.send({
 			err: null,
 			res: {success: (result1.rows.length === 1)}
@@ -1059,8 +1063,8 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 		req.params.id
 	];
 	queryServer(res, query, values, function(result1) {
-		db.setEvent(3, '{{user}}\'s {{post}} was unDibs\'d', req.session.passport.user.id, req.params.id);
-		db.setEvent(3, '{{user}} unDibs\'d your {{post}}', result.rows[0].user_id, req.params.id);
+		db.setEvent(3, 'Your {{post}} was unDibs\'d', result1.rows[0].user_id, req.params.id);
+		db.setEvent(3, 'You unDibs\'d {{post}}', req.session.passport.user.id, req.params.id);
 		var query = [
 			'UPDATE pick_up_success SET undibbed = true, undibbed_date = current_timestamp',
 			'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3',
@@ -1120,8 +1124,8 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 			req.params.id
 		];
 		queryServer(res, query, values, function(result1) {
-			db.setEvent(3, '{{user}} rejected {{post}}', req.session.passport.user.id, req.params.id);
-			db.setEvent(3, '{{user}} rejected your Dibs for {{post}}', result0.rows[0].dibber_id, req.params.id);
+			db.setEvent(3, 'You rejected the Dibs for {{post}}', req.session.passport.user.id, req.params.id);
+			db.setEvent(3, 'Your Dibs for {{post}} was cancelled', result0.rows[0].dibber_id, req.params.id);
 			query = [
 				'UPDATE pick_up_success SET undibbed = true, rejected = true, undibbed_date = current_timestamp, rejection_date = current_timestamp',
 				'WHERE post_id = $1 AND dibber_id = $2 AND lister_id = $3',

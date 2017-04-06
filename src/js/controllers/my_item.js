@@ -130,6 +130,7 @@ function MyItemsController() {
 						'	</div>',
 						'</div>'
 					].join('\n'));
+					console.log($scope.listItem.attended, $scope.listItem.dibbed);
 					$scope.detailsContainer.html([
 						((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
@@ -543,7 +544,7 @@ function MyItemsController() {
 				});
 			};
 			function openUndibsModal() {
-				var undibsBodyTemplate = 'Are you sure you want to unDibs <i>{{title}}</i>?  You will lose your Dibs and the stuff will be relisted.';
+				var undibsBodyTemplate = $scope.listItem.attended?'Are you sure you want to unDibs <i>{{title}}</i>?  You will not be refunded and the stuff will be relisted.':'Are you sure you want to unDibs <i>{{title}}</i>?  You will lose your Dibs and the stuff will be relisted.';
 				$('#undibs-confirm-modal-body').html(undibsBodyTemplate.replace('{{title}}', data.res.title));
 				$('#my-item-undibs-cancel').on('click', undibsCancel);
 				$('#my-item-undibs-confirm').on('click', undibsConfirm);

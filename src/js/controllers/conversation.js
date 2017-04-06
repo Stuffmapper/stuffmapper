@@ -27,19 +27,32 @@ function ConversationController() {
 				});
 				$scope.conversation = data.res.conversation;
 				$scope.conversationInfo = data.res.info;
+				console.log($scope.conversationInfo);
 				$scope.info = data.res.info;
 				$scope.conversation.forEach(function(e,i) {
 					$scope.conversation[i].date_created = dateFormat(new Date(e.date_created), 'h:MMtt – dd mmm yyyy');
 				});
 				requestAnimationFrame(function() {
 					requestAnimationFrame(function() {
-						out.scrollTop = out.scrollHeight - out.clientHeight;
-						var len = $('li.conversation-message-container').length;
-						if(len === 1 && data.res.info.type === 'dibber') {
-							console.log('setting first message!');
-							firstMessage = true;
-							$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
+						if($scope.conversationInfo.type === 'dibber') {
+							var foundFirstOut = false;
+							$('#conversation-messages').children().each(function(i,e) {
+								if(!foundFirstOut && $(e).hasClass('conversation-message-container-out')) {
+									foundFirstOut = true;
+									$('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>Dibs secured! Thanks for initiating communication. We\'ll notify you via email of any new messages sent from lister while you\'re offline. Enjoy your new stuff!</div></div></li>').insertAfter(e);
+								}
+							});
 						}
+						requestAnimationFrame(function() {
+							requestAnimationFrame(function() {
+								out.scrollTop = out.scrollHeight - out.clientHeight;
+								var len = $('li.conversation-message-container').length;
+								if(len === 1 && data.res.info.type === 'dibber') {
+									firstMessage = true;
+									$('#conversation-messages').append('<div class="conversation-message conversation-initial-message sm-full-width">Message the lister within 15 minutes to keep your Dibs!</div>');
+								}
+							});
+						});
 					});
 				});
 				$('#conversation-title').text(data.res.info.title);
@@ -65,7 +78,7 @@ function ConversationController() {
 
 
 				function openUndibsModal2() {
-					var undibsBodyTemplate = 'Are you sure you want to unDibs <i>{{title}}</i>?  You will lose your Dibs and the stuff will be relisted.';
+					var undibsBodyTemplate = $scope.listItem.attended?'Are you sure you want to unDibs <i>{{title}}</i>?  You will not be refunded and the stuff will be relisted.':'Are you sure you want to unDibs <i>{{title}}</i>?  You will lose your Dibs and the stuff will be relisted.';;
 					$('#undibs-confirm-modal-body').html(undibsBodyTemplate.replace('{{title}}', data.res.info.title));
 					$('#my-item-undibs-cancel').on('click', undibsCancel2);
 					$('#my-item-undibs-confirm').on('click', undibsConfirm2);
@@ -185,15 +198,19 @@ function ConversationController() {
 						$('#conversation-input').val('');
 						$('#conversation-input').focus();
 						if(firstMessage) {
-							setTimeout(function() {
-								$('#conversation-messages').append('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>Dibs secured! Thanks for initiating communication. We\'ll notify you via email of any new messages sent from lister while you\'re offline. Enjoy your new stuff!</div></div></li>');
-							}, 750);
+							$('#conversation-messages').append('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>Dibs secured! Thanks for initiating communication. We\'ll notify you via email of any new messages sent from lister while you\'re offline. Enjoy your new stuff!</div></div></li>');
 							firstMessage = false;
 						}
 						calcTextArea();
 					});
 				};
+				$('#conversation-input div textarea').on('focus', function(e) {
+					$('html, body').animate({ scrollTop: $(document).height() }, 250);
+					$('#conversation-messages').animate({ scrollTop: $(document).height() }, 250);
+					console.log('focus');
+				});
 				$scope.$on('$destroy', function() {
+					$('#conversation-input').off('focus');
 					$('#my-stuff-container').removeClass('in-conversation');
 					$('#conversation-undibs'+$scope.info.post_id).off('click', openUndibsModal2);
 					$('#conversation-reject'+$scope.info.post_id).off('click', openRejectModal2);

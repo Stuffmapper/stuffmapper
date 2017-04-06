@@ -24,6 +24,8 @@ function MyStuffController() {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my').success(function(data) {
 				$scope.dibbedItems = [];
 				$scope.givedItems = [];
+				data.res = data.res || [];
+				data.events = data.events || [];
 				data.res.forEach(function(e) {
 					if(e.dibber_id === null || parseInt(e.dibber_id) !== parseInt($userData.getUserId())) $scope.givedItems.push(e);
 					else $scope.dibbedItems.push(e);
@@ -34,9 +36,13 @@ function MyStuffController() {
 				$scope.events.forEach(function(e,i) {
 					$scope.events[i].message = $sce.trustAsHtml($scope.events[i].message);
 				});
-				if(!data.res.length && !data.test.length && !data.events.length) {
+
+				if(!data.res.length && !data.events.length) {
 					$('#loading-get-stuff').addClass('sm-hidden');
 					$('#my-stuff-empty-list').removeClass('sm-hidden');
+				}
+				else if(data.events.length || data.res.length) {
+					$('#loading-get-stuff').addClass('sm-hidden');
 				}
 				initMarkers();
 
