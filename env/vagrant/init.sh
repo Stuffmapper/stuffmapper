@@ -1,8 +1,6 @@
 cd /vagrant/
 sudo apt-get install make redis-server git nodejs nodejs-legacy npm postgresql nginx g++ python -y
 sudo npm i -g ionic bower forever gulp
-git clone https://github.com/Stuffmapper/stuffmapper.git
-git clone https://github.com/Stuffmapper/stuffmapper-styleguide.git
 cd stuffmapper-styleguide
 npm i
 bower i
