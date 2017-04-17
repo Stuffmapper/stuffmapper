@@ -25,8 +25,8 @@ $instanceName	= "project"
 # if your VM is resource intensive or is running slow, and if your PC can afford
 # to give the VM a little more, then you can increase the values below.
 
-$vmMemory	= "2096"
-$vmCpus		= "4"
+$vmMemory	= "2048"
+$vmCpus		= "3"
 
 
 
