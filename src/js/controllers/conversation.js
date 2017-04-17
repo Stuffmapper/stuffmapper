@@ -145,8 +145,8 @@ function ConversationController() {
 					});
 				}
 				function openCompleteModal2() {
-					var completeBodyTemplate = data.res.info.type==='lister'?'Have you given <i>{{dibber}}</i> your item <i>{{title}}</i>?':'Have you received <i>{{title}}</i> from <i>{{lister}}</i>?';
-					$('#complete-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.info.title.trim()).replace('{{dibber}}', data.res.info.users[data.res.info.dibber_id]).replace('{{lister}}', data.res.info.users[data.res.info.lister_id]));
+					var completeBodyTemplate = 'Has <i>{{title}}</i> been picked up?';
+					$('#complete-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.info.title.trim()).replace('{{title}}', data.res.info.users[data.res.info.lister_id]));
 					$('#my-item-complete-cancel').on('click', completeCancel2);
 					$('#my-item-complete-confirm').on('click', completeConfirm2);
 					$u.modal.open('complete-confirm-modal', function() {
