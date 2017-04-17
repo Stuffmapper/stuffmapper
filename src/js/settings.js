@@ -124,7 +124,7 @@ function setDefaultSettings() {
 		},
 		modules : modules,
 		api : {
-			host : 'https://'+subdomain+'.stuffmapper.com',
+			host : subdomain,
 			version : 1
 		},
 		html5 : !!window.history && !!window.history.pushState,

@@ -664,8 +664,8 @@ router.post('/account/register', function(req, res) {
 							{[uname]:b.email},
 							{
 								'FIRSTNAME' : uname,
-								'CONFIRMEMAIL' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
-								'ITEMIMAGE' : 'https://'+config.subdomain+'.stuffmapper.com/img/give-pic-©-01.png'
+								'CONFIRMEMAIL' : config.subdomain+'/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
+								'ITEMIMAGE' : config.subdomain+'/img/give-pic-©-01.png'
 							}
 						);
 					});
@@ -724,7 +724,7 @@ router.post('/account/password/token', function(req,res) {
 				to,
 				{
 					'FIRSTNAME' : row.uname,
-					'CHANGEPASSWORD' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/get?password_reset_token='+row.password_reset_token
+					'CHANGEPASSWORD' : config.subdomain+'/stuff/get?password_reset_token='+row.password_reset_token
 				}
 			);
 			if(result.rows.length >= 1) res.send({err:null});
@@ -1014,9 +1014,9 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 								{[(req.session.passport.user.uname)]: req.session.passport.user.email},
 								{
 									'FIRSTNAME' : req.session.passport.user.uname,
-									'ITEMURL' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
-									'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
-									'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
+									'ITEMURL' : config.subdomain+'/stuff/my/items/'+req.params.id,
+									'CHATLINK' : config.subdomain+'/stuff/my/items/'+req.params.id+'/messages',
+									'MYSTUFFLINK' : config.subdomain+'/stuff/my/items/'+req.params.id,
 									'ITEMTITLE':result1.rows[0].title,
 									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
 								}
@@ -1113,7 +1113,7 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 							{
 								'FIRSTNAME' : result4.rows[0].uname,
 								'USERNAME' : req.session.passport.user.uname,
-								'MYSTUFFLINK' : 'http://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+result1.rows[0].id,
+								'MYSTUFFLINK' : 'http://'+config.subdomain+'/stuff/my/items/'+result1.rows[0].id,
 								'ITEMTITLE':result1.rows[0].title,
 								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url
 							}
@@ -1175,7 +1175,7 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 									'ITEMTITLE':result1.rows[0].title,
 									'ITEMNAME':result1.rows[0].title,
 									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
-									'GETSTUFFLINK':'https://'+config.subdomain+'.stuffmapper.com'
+									'GETSTUFFLINK':config.subdomain
 								}
 							);
 						});
@@ -1242,6 +1242,7 @@ router.post('/messages', isAuthenticated, function(req, res) {
 				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
 					queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
+<<<<<<< Updated upstream
 							queryServer(res, 'SELECT message FROM messages WHERE user_id = $1 AND conversation_id = $2 ORDER BY date_created DESC', [req.session.passport.user.id, parseInt(req.body.conversation_id)], function(result5) {
 								var messages = [];
 								result5.rows.forEach(function(e) {
@@ -1262,6 +1263,20 @@ router.post('/messages', isAuthenticated, function(req, res) {
 									}
 								);
 							});
+=======
+							sendTemplate(
+								'lister-notification',
+								'Your '+result3.rows[0].title + ' has been dibs\'d!',
+								{[result2.rows[0].uname]:result2.rows[0].email},
+								{
+									'FIRSTNAME' : result2.rows[0].uname,
+									'ITEMTITLE':result3.rows[0].title,
+									'ITEMNAME':result3.rows[0].title,
+									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
+									'CHATLINK':config.subdomain+'/stuff/my/items/'+result1.rows[0].post_id+'/messages'
+								}
+							);
+>>>>>>> Stashed changes
 						});
 					});
 				});

@@ -57,7 +57,7 @@ function addToFile(users) {
 			'server {',
 			'    listen 80;',
 			'    server_name '+user[0]+'.stuffmapper.com;',
-			'    return 301 https://'+user[0]+'.stuffmapper.com$request_uri;',
+			'    return 301 '+user[0]+'.stuffmapper.com$request_uri;',
 			'}',
 			'server {',
 			'    listen 443 ssl;',

@@ -33,7 +33,7 @@ function MyItemsController() {
 							$scope.googleMapStaticUrl = [
 								'https://maps.googleapis.com/maps/api/staticmap?',
 								'zoom=13&size=600x300&maptype=roadmap&',
-								'markers=icon:https://'+subdomain+'.stuffmapper.com/img/Marker-all-64x64.png%7C'+e.data.lat+','+e.data.lng+'&',
+								'markers=icon:'+subdomain+'/img/Marker-all-64x64.png%7C'+e.data.lat+','+e.data.lng+'&',
 								'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
 							].join('');
 						}
@@ -41,7 +41,7 @@ function MyItemsController() {
 					$scope.googleMapStaticUrl = [
 						'https://maps.googleapis.com/maps/api/staticmap?',
 						'zoom=13&size=600x300&maptype=roadmap&',
-						data.res.attended?'markers=icon:https://'+subdomain+'.stuffmapper.com/img/Marker-all-64x64.png%7C{lat},{lng}&':'markers=color:red%7C{lat},{lng}&',
+						data.res.attended?'markers=icon:'+subdomain+'/img/Marker-all-64x64.png%7C{lat},{lng}&':'markers=color:red%7C{lat},{lng}&',
 						'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
 					].join('');
 					$scope.container = $('<div id="get-item-single-'+$stateParams.id+'" class="my-item-single-container animate-250 sm-hidden"></div>');

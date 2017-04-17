@@ -36,7 +36,7 @@ passport.use(new LocalStrategy(
 passport.use(new GoogleStrategy({
 	clientID:     GOOGLE_CLIENT_ID,
 	clientSecret: GOOGLE_CLIENT_SECRET,
-	callbackURL: 'https://'+config.subdomain+'.stuffmapper.com/auth/google_oauth2/callback',
+	callbackURL: config.subdomain+'/auth/google_oauth2/callback',
 	passReqToCallback: true
 },
 function(req, accessToken, refreshToken, profile, done) {
@@ -52,7 +52,7 @@ function(req, accessToken, refreshToken, profile, done) {
 passport.use(new FacebookStrategy({
 	clientID:     FACEBOOK_CLIENT_ID,
 	clientSecret: FACEBOOK_CLIENT_SECRET,
-	callbackURL: 'https://'+config.subdomain+'.stuffmapper.com/auth/facebook_oauth2/callback',
+	callbackURL: config.subdomain+'/auth/facebook_oauth2/callback',
 	profileFields: ['id', 'displayName', 'photos', 'email'],
 	passReqToCallback: true
 },

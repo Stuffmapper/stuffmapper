@@ -77,6 +77,7 @@ app.use(methodOverride());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', express.static(path.join(__dirname, 'favicons')));
 app.use('/', express.static(path.join(__dirname, 'web')));
+app.use('/styleguide', express.static(path.join(__dirname, '../stuffmapper-styleguide/www')));
 
 require(path.join(__dirname, '/routes/api/v1/config/passport'));
 
@@ -123,8 +124,8 @@ app.get('/auth/google_oauth2/callback', function(req,res,next) {
 				'			<h2 class="sm-modal-title animate-250">Uh oh!</h2>',
 				'			<div class="sm-modal-error sm-full-width sm-text-l" style="text-align: center;">It looks like you already signed up with a '+capitalizeFirstLetter(err.type)+' account: '+err.email+', not '+capitalizeFirstLetter(err.otherType)+'</div><br><br><br><br><div class="sm-full-width sm-text-m" style="text-align: center;">Sign in with your '+capitalizeFirstLetter(err.type)+' account below:</div>',
 				((err.type==='google')?
-				'			<a style="bottom: 10px;position: absolute;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/google" class="sign-in-up-input social-button google-plus-sign-in"><img src="/img/google-g-logo.svg" class="social-sign-in-icon social-sign-in-icon-google"><span class="social-sign-in-text sm-text-m">Sign in with Google</span></a>':
-				'			<a style="bottom: 10px;position: absolute; color: #fff !important;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/facebook" class="sign-in-up-input social-button facebook-sign-in"><img src="/img/facebook-f-logo.svg" class="social-sign-in-icon social-sign-in-icon-facebook"><span class="social-sign-in-text sm-text-m">Sign in with Facebook</span></a>'),
+				'			<a style="bottom: 10px;position: absolute;" href="'+config.subdomain+'/api/v1/account/login/google" class="sign-in-up-input social-button google-plus-sign-in"><img src="/img/google-g-logo.svg" class="social-sign-in-icon social-sign-in-icon-google"><span class="social-sign-in-text sm-text-m">Sign in with Google</span></a>':
+				'			<a style="bottom: 10px;position: absolute; color: #fff !important;" href="'+config.subdomain+'/api/v1/account/login/facebook" class="sign-in-up-input social-button facebook-sign-in"><img src="/img/facebook-f-logo.svg" class="social-sign-in-icon social-sign-in-icon-facebook"><span class="social-sign-in-text sm-text-m">Sign in with Facebook</span></a>'),
 				'		</div>',
 				'	</div>',
 				'</div>',
@@ -153,8 +154,8 @@ app.get('/auth/facebook_oauth2/callback', function(req,res,next){
 				'			<h2 class="sm-modal-title animate-250">Uh oh!</h2>',
 				'			<div class="sm-modal-error sm-full-width sm-text-l" style="text-align: center;">It looks like you already signed up with a '+err.type+' account: '+err.email+', not '+err.otherType+'</div><br><br><br><br><div class="sm-full-width sm-text-m" style="text-align: center;">Sign in with your '+err.type+' account below:</div>',
 				((err.type==='google')?
-				'			<a style="bottom: 10px;position: absolute;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/google" class="sign-in-up-input social-button google-plus-sign-in"><img src="/img/google-g-logo.svg" class="social-sign-in-icon social-sign-in-icon-google"><span class="social-sign-in-text sm-text-m">Sign in with Google</span></a>':
-				'			<a style="bottom: 10px;position: absolute; color: #fff !important;" href="https://'+config.subdomain+'.stuffmapper.com/api/v1/account/login/facebook" class="sign-in-up-input social-button facebook-sign-in"><img src="/img/facebook-f-logo.svg" class="social-sign-in-icon social-sign-in-icon-facebook"><span class="social-sign-in-text sm-text-m">Sign in with Facebook</span></a>'),
+				'			<a style="bottom: 10px;position: absolute;" href="'+config.subdomain+'/api/v1/account/login/google" class="sign-in-up-input social-button google-plus-sign-in"><img src="/img/google-g-logo.svg" class="social-sign-in-icon social-sign-in-icon-google"><span class="social-sign-in-text sm-text-m">Sign in with Google</span></a>':
+				'			<a style="bottom: 10px;position: absolute; color: #fff !important;" href="'+config.subdomain+'/api/v1/account/login/facebook" class="sign-in-up-input social-button facebook-sign-in"><img src="/img/facebook-f-logo.svg" class="social-sign-in-icon social-sign-in-icon-facebook"><span class="social-sign-in-text sm-text-m">Sign in with Facebook</span></a>'),
 				'		</div>',
 				'	</div>',
 				'</div>',
@@ -174,7 +175,7 @@ io.on('connection', function(socket){
 	socket.on('message', function(data) {
 		if(data.to) {
 			queryServer('SELECT count(messages) FROM messages, conversations WHERE (conversations.lister_id = $1 OR conversations.dibber_id = $1) AND NOT messages.user_id = $1 AND messages.conversation_id = conversations.id AND conversations.archived = false AND messages.archived = false AND messages.read = false', [data.to], function(result) {
-				io.sockets.emit((''+data.to), {
+				io.sockets.emit((data.to), {
 					messages: {
 						message: data.message,
 						from: data.from,
@@ -355,7 +356,7 @@ function undib(post_id, user_id) {
 										'ITEMTITLE':result1.rows[0].title,
 										'ITEMNAME':result1.rows[0].title,
 										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
-										'GETSTUFFLINK':'https://'+config.subdomain+'.stuffmapper.com/stuff/get'
+										'GETSTUFFLINK':config.subdomain+'/stuff/get'
 									}
 								);
 								done();
@@ -387,7 +388,7 @@ function messageUserMessageReminder(user_id, conversation_id, post_id) {
 										'USERNAME' : result6.rows[0].uname,
 										'ITEMTITLE':result3.rows[0].title,
 										'ITEMNAME':result3.rows[0].title,
-										'CHATLINK':'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+post_id+'/messages',
+										'CHATLINK':config.subdomain+'/stuff/my/items/'+post_id+'/messages',
 										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
 										'MESSAGE':test.join('<br>').trim()
 									}

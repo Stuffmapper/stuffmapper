@@ -109,7 +109,6 @@ function MainController() {
 	};
 	$scope.queries = getSearchQueries();
 	var visited = localStorage.getItem('visited');
-	console.log(visited);
 	if(!visited && !$scope.queries.email_verification_token && !$scope.queries.password_reset_token) {
 		// $('#lock-screen').css({
 		// 	'pointer-events': 'all',
@@ -297,7 +296,7 @@ function MainController() {
 		var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
 		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
 		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
-		var w = window.open('https://'+subdomain+'.stuffmapper.com/api/v1/account/login/google', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
+		var w = window.open(subdomain+'/api/v1/account/login/google', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
 		if(config.ionic.isIonic) {
 			w.addEventListener('loadstart', function(event) {
 				if (event.url.match('/redirect')) {
@@ -326,7 +325,7 @@ function MainController() {
 		var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
 		var left = ((width / 2) - (800 / 2)) + dualScreenLeft;
 		var top = ((height / 2) - (600 / 2)) + dualScreenTop;
-		var w = window.open('https://'+subdomain+'.stuffmapper.com/api/v1/account/login/facebook', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
+		var w = window.open(subdomain+'/api/v1/account/login/facebook', '_blank', 'location=no, scrollbars=yes, width=800, height=600, top=' + top + ', left=' + left);
 		if(config.ionic.isIonic) {
 			w.addEventListener('loadstart', function(event) {
 				if (event.url.match('/redirect')) {
@@ -804,8 +803,8 @@ runSMAlert = function(alert, alerts) {
 
 function resetSockets($scope, $state, data) {
 	if($scope.socket) $scope.socket.disconnect();
-	$scope.socket = io('https://'+subdomain+'.stuffmapper.com');
-	$scope.socket.on((''+data.res.user.id), function(data) {
+	$scope.socket = io(subdomain);
+	$scope.socket.on((data.res.user.id), function(data) {
 		console.log(data);
 		if(data.messages && window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
 			SMAlert('New Message for <em>'+data.messages.title+'</em>!', data.messages.message, 'Go to Message', 5000, function() {
@@ -829,7 +828,7 @@ function resetSockets($scope, $state, data) {
 				var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 				$('#conversation-messages').append([
 					'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="fa fa-user user-icon-message"></div><div class="conversation-message conversation-in-message">',
-					''+data.messages.message,
+					data.messages.message,
 					'</div></li>'
 				].join(''));
 				if (isScrolledToBottom) $(out).animate({ scrollTop: out.scrollHeight - out.clientHeight }, 250);
