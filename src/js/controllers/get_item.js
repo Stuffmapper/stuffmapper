@@ -77,7 +77,7 @@ function GetItemController() {
 			'		<input id="dibs-submit-button" class="sm-button sm-button-default sm-text-l sm-button-full-width" type="submit" value="Confirm Dibs! for $1">',
 			'	</form>',
 			'</div>',
-			'<button id="get-single-item-dibs-button'+$stateParams.id+'" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs! for a Dollar</button>',
+			$scope.listItem.attended?'<button id="get-single-item-dibs-button'+$stateParams.id+'" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs! for a Dollar</button>':'<button id="get-single-item-dibs-button-unattended'+$stateParams.id+'" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>',
 			'<div class="">',
 			'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
 			'</div>',
@@ -98,7 +98,6 @@ function GetItemController() {
 					'	'+$scope.listItem.description,
 					'</h3>'
 				].join('\n'));
-				var $el = ($('#get-item-single'+$stateParams.id).append('<button class="get-single-item-dibs-button sm-hidden animate-250">Dibs!</button>'));
 				requestAnimationFrame(function() {
 					$('.get-single-item-description, .get-single-item-dibs-button').removeClass('sm-hidden');
 					$('#get-stuff-back-button-container').removeClass('sm-hidden');
@@ -141,6 +140,7 @@ function GetItemController() {
 	}
 	function initListener() {
 		$('#get-single-item-dibs-button'+$stateParams.id).on('click', dibs);
+		$('#get-single-item-dibs-button-unattended'+$stateParams.id).on('click', dibsItem);
 	}
 	function dibs() {
 		if($userData.isLoggedIn()) {
@@ -160,31 +160,31 @@ function GetItemController() {
 	function dibsItem() {
 		if(!dibbing) {
 			dibbing = true;
-			$('get-single-item-dibs-button'+$stateParams.id).css({
-				'background-color': 'gray'
-			}).html('dibsing...');
+			// $('get-single-item-dibs-button'+$stateParams.id).css({
+			// 	'background-color': 'gray'
+			// }).html('dibsing...');
 			$http.post(config.api.host + '/api/v' + config.api.version + '/dibs/' + $scope.listItem.id, {}, {
 				headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
 				transformRequest: function(data) {return $.param(data);}
 			}).success(function(data) {
 				if(!data.err) {
 					//$('#get-single-item-dibs-button'+$scope.listItem.id).attr('disabled', 'disabled').addClass('sm-button-positive').text('You dibsed it!');
-					$('#post-item-'+$scope.listItem.id).parent().parent().remove();
-					requestAnimationFrame(function(){
-						$('.masonry-grid').isotope({
-							columnWidth: $('.masonry-grid').width()/2,
-							itemSelector: '.masonry-grid-item',
-							getSortData: {
-								number: '.number parseInt'
-							},
-							animationEngine : 'css',
-							sortBy: 'number',
-							isAnimated: false
-						});
-						setTimeout(function() {
+					// $('#post-item-'+$scope.listItem.id).parent().parent().remove();
+					// requestAnimationFrame(function(){
+					// 	$('.masonry-grid').isotope({
+					// 		columnWidth: $('.masonry-grid').width()/2,
+					// 		itemSelector: '.masonry-grid-item',
+					// 		getSortData: {
+					// 			number: '.number parseInt'
+					// 		},
+					// 		animationEngine : 'css',
+					// 		sortBy: 'number',
+					// 		isAnimated: false
+					// 	});
+						// setTimeout(function() {
 							$state.go('stuff.my.items.item',{id:$scope.listItem.id});
-						}, 250);
-					});
+						// }, 250);
+					// });
 				}
 			});
 		}

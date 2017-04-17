@@ -500,6 +500,11 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					//- ng-click="openModal('modal')")
 					i.fa.fa-sign-in
 					span Sign in
+		#fullscreen-images.animate-250(style="display:none;width: 100%; height: 100%;position: absolute;z-index:99999;background-color: rgba(0,0,0,0.7);top:0px;left:0px;")
+			.top-bar
+				#fullscreen-icon-exit.fa.fa-times(style="color: #fff;right: 0px;position: absolute;font-size: 24px;cursor: pointer;height: 32px;width: 32px;text-align: center;line-height: 32px;")
+			.image-container(style="width:calc(100% - 20px); height: calc(100% - 20px);margin:10px;position: absolute;background-size:contain;background-position:50% 50%;background-repeat:no-repeat;")
+			.bottom-bar
 		ul#side-menu.side-menu.sm-hidden.animate-250
 			#close-menu-button.fa.fa-times(ng-click="toggleSideMenu()")
 			li.side-menu-header

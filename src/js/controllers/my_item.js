@@ -130,6 +130,7 @@ function MyItemsController() {
 						'	</div>',
 						'</div>'
 					].join('\n'));
+					console.log($scope.listItem.attended, $scope.listItem.dibbed);
 					$scope.detailsContainer.html([
 						((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
@@ -543,7 +544,7 @@ function MyItemsController() {
 				});
 			};
 			function openUndibsModal() {
-				var undibsBodyTemplate = 'Are you sure you want to unDibs <i>{{title}}</i>?  You will lose your Dibs and the stuff will be relisted.';
+				var undibsBodyTemplate = $scope.listItem.attended?'Are you sure you want to unDibs <i>{{title}}</i>?  You will not be refunded and the stuff will be relisted.':'Are you sure you want to unDibs <i>{{title}}</i>?  You will lose your Dibs and the stuff will be relisted.';
 				$('#undibs-confirm-modal-body').html(undibsBodyTemplate.replace('{{title}}', data.res.title));
 				$('#my-item-undibs-cancel').on('click', undibsCancel);
 				$('#my-item-undibs-confirm').on('click', undibsConfirm);
@@ -609,8 +610,8 @@ function MyItemsController() {
 				});
 			}
 			function openCompleteModal() {
-				var completeBodyTemplate = data.res.type==='lister'?'Have you given <i>{{dibber}}</i> your item <i>{{title}}</i>?':'Have you received <i>{{title}}</i> from <i>{{lister}}</i>?';
-				$('#complete-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.title).replace('{{dibber}}', data.res.users[data.res.dibber_id]).replace('{{lister}}', data.res.users[data.res.user_id]));
+				var completeBodyTemplate = 'Has <i>{{title}}</i> been picked up?';
+				$('#complete-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', data.res.title));
 				$('#my-item-complete-cancel').on('click', completeCancel);
 				$('#my-item-complete-confirm').on('click', completeConfirm);
 				$u.modal.open('complete-confirm-modal', function() {

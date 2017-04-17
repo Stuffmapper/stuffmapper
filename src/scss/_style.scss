@@ -939,7 +939,7 @@ html.ionic.ios {
 .masonry-grid {
 	display: inline-block;
 	list-style-type: none;
-	height: 100%;
+	// height: 100%;
 	width: calc(100% - 14px);
 	padding: 0;
 	margin-top: 0;
@@ -3932,4 +3932,27 @@ html.ionic.ios {
 }
 .swiper-pagination-bullet-active {
 	background-color: #fff;
+}
+
+#fullscreen-icon {
+	z-index: 2;
+	position: absolute;
+	top: 7px;
+	right: 7px;
+	opacity: 0.4;
+	background-color: #000;
+	width: 24px;
+	height: 24px;
+	border-radius: 3px;
+	cursor: pointer;
+	display: none;
+}
+#fullscreen-icon:hover {
+	opacity: 0.8;
+}
+#fullscreen-icon i {
+	color: #fff;
+	text-align: center;
+	width: 100%;
+	line-height: 24px;
 }
