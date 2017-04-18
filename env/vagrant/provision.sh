@@ -19,8 +19,13 @@ echo "Starting Vagrant provisioning process..."
 /vagrant/scripts/install_build_tools.sh
 
 sudo npm i -g npm ionic bower forever gulp cordova ionic
-
 cd /project
+
+# let's get "node_modules" out of the synced folder
+mkdir /home/vagrant/node_modules
+cd /project
+ln -s /home/vagrant/node_modules/ node_modules
+
 npm install
 bower install --allow-root
 sudo su postgres -c "psql -f ./init/db.sql"
