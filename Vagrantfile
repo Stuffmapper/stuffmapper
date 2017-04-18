@@ -37,7 +37,7 @@ $vmCpus		= "3"
 # tell Vagrant about the base image for this Vagrant VM.  You can edit
 # the default settings by changing the variables above.
 
-$lBox	= "ubuntu/xenial64"
+$lBox	= "ubuntu/trusty64"
 
 
 
@@ -107,8 +107,6 @@ Vagrant.configure("2") do |config|
 		config.vm.network :forwarded_port, guest: 3001, host: 3001
 		config.vm.network :forwarded_port, guest: 22, host: 3022
 
-
-
 	# Folder Mappings
 	# ---------------------
 	# Folder mappings allow you to map folders on the Vagrant box to folders
@@ -129,7 +127,7 @@ Vagrant.configure("2") do |config|
 	#   - https://docs.vagrantup.com/v2/provisioning/shell.html
 
 	config.vm.provision "shell" do |s|
-		s.path = "env/vagrant/init.sh"
+		s.path = "env/vagrant/provision.sh"
 	end
 
 	# Vagrant Key

@@ -27,7 +27,7 @@
 		"db" : {
 			"host" : "localhost",
 			"port" : 5432,
-			"pass" : "Password1!"
+			"pass" : "SuperSecretPassword1!"
 		},
 		"auth" : {
 			"facebookAuth" : {

@@ -1242,7 +1242,6 @@ router.post('/messages', isAuthenticated, function(req, res) {
 				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
 					queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
-<<<<<<< Updated upstream
 							queryServer(res, 'SELECT message FROM messages WHERE user_id = $1 AND conversation_id = $2 ORDER BY date_created DESC', [req.session.passport.user.id, parseInt(req.body.conversation_id)], function(result5) {
 								var messages = [];
 								result5.rows.forEach(function(e) {
@@ -1259,24 +1258,10 @@ router.post('/messages', isAuthenticated, function(req, res) {
 										'ITEMTITLE':result3.rows[0].title,
 										'ITEMNAME':result3.rows[0].title,
 										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
-										'CHATLINK':'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+result1.rows[0].post_id+'/messages'
+										'CHATLINK': config.subdomain+'/stuff/my/items/'+result1.rows[0].post_id+'/messages'
 									}
 								);
 							});
-=======
-							sendTemplate(
-								'lister-notification',
-								'Your '+result3.rows[0].title + ' has been dibs\'d!',
-								{[result2.rows[0].uname]:result2.rows[0].email},
-								{
-									'FIRSTNAME' : result2.rows[0].uname,
-									'ITEMTITLE':result3.rows[0].title,
-									'ITEMNAME':result3.rows[0].title,
-									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
-									'CHATLINK':config.subdomain+'/stuff/my/items/'+result1.rows[0].post_id+'/messages'
-								}
-							);
->>>>>>> Stashed changes
 						});
 					});
 				});
