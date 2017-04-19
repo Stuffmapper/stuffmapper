@@ -1,4 +1,4 @@
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var pg = require('pg');
 var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
 
