@@ -176,7 +176,7 @@ router.get('/stuff/id/:id', function(req, res) {
 	var query = [
 		'SELECT posts.id, posts.title, posts.description, posts.attended,',
 		'posts.lat, posts.lng, categories.category, images.image_url,',
-		'posts.date_created',
+		'posts.date_created, posts.date_edited',
 		'FROM posts, images, categories',
 		'WHERE images.post_id = posts.id AND posts.id = $1 AND',
 		'categories.id = posts.category_id AND images.main = true'

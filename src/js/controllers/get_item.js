@@ -12,6 +12,7 @@ function GetItemController() {
 	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function(data) {
 		$scope.listItem = data.res;
 		$scope.listItem.date_created = new Date(data.res.date_created).getTime();
+		$scope.listItem.dateEdited = dateFormat(data.res.date_edited, "ddd, mmm d, h:MM TT");
 		// function openInfoWindow(e) {
 		// 	e.category = 'test-category';
 		// 	var template = $('#templates\\/partial-home-get-item-single-map\\.html').text();
@@ -82,7 +83,8 @@ function GetItemController() {
 			'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
 			'</div>',
 			'<div class="sm-text-s sm-full-width">Location of item is approximated to protect privacy. Dibs will connect you with lister to learn exact location.</div>',
-			'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl+'" />'
+			'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl+'" />',
+			'<div class="sm-text-s sm-full-width">Item last updated on '+ $scope.listItem.dateEdited +'</div>'
 		].join('\n'));
 		$scope.imageContainer.appendTo($scope.container);
 		$scope.detailsContainer.appendTo($scope.container);
