@@ -351,7 +351,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 			].join(' ');
 			var time = Date.now().toString();
 			var buff = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-			var buff2 = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+			var buff2 = new Buffer(req.body.original.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
 			fs.writeFile(__dirname + '/../../../uploads/original/'+time+'.png', buff, function(err) {
 				fs.writeFile(__dirname + '/../../../uploads/original/'+time+'_original.png', buff2, function(err) {
 					fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
