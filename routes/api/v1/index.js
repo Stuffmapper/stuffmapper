@@ -343,7 +343,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 	];
 	queryServer(res, query, values, function(result) {
 		db.setEvent(3,'{{user}} uploaded {{post}}',req.session.passport.user.id, result.rows[0].id);
-		if(req.body.test) {
+		if(req.body.test && req.body.original) {
 			var query = [
 				'INSERT INTO images',
 				'(post_id, image_url, main)',
@@ -358,6 +358,8 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 						fs.readFile(__dirname + '/../../../uploads/original/'+time+'_original.png', function(err, data2) {
 							var key = 'posts/' + time;
 							var key2 = 'posts/' + time + '_original';
+							console.log(data);
+							console.log(data2);
 							s3.upload({
 								Bucket: 'stuffmapper-v2',
 								Key: key,

@@ -25,7 +25,7 @@ $instanceName	= "project"
 # if your VM is resource intensive or is running slow, and if your PC can afford
 # to give the VM a little more, then you can increase the values below.
 
-$vmMemory	= "2048"
+$vmMemory	= "4096"
 $vmCpus		= "3"
 
 
@@ -37,7 +37,7 @@ $vmCpus		= "3"
 # tell Vagrant about the base image for this Vagrant VM.  You can edit
 # the default settings by changing the variables above.
 
-$lBox	= "ubuntu/trusty64"
+$lBox	= "ubuntu/xenial64"
 
 
 
