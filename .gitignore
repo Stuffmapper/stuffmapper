@@ -58,6 +58,7 @@ web
 platforms
 platforms2
 .atomignore
+uploads
 
 .remote-sync.json
 

@@ -176,7 +176,7 @@ router.get('/stuff/id/:id', function(req, res) {
 	var query = [
 		'SELECT posts.id, posts.title, posts.description, posts.attended,',
 		'posts.lat, posts.lng, categories.category, images.image_url,',
-		'posts.date_created',
+		'posts.date_created, posts.date_edited',
 		'FROM posts, images, categories',
 		'WHERE images.post_id = posts.id AND posts.id = $1 AND',
 		'categories.id = posts.category_id AND images.main = true'
@@ -351,7 +351,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 			].join(' ');
 			var time = Date.now().toString();
 			var buff = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-			var buff2 = new Buffer(req.body.original.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+			var buff2 = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
 			fs.writeFile(__dirname + '/../../../uploads/original/'+time+'.png', buff, function(err) {
 				fs.writeFile(__dirname + '/../../../uploads/original/'+time+'_original.png', buff2, function(err) {
 					fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
@@ -369,8 +369,9 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 								ACL: 'public-read'
 							}, function(err, data) {
 								if (err) {
+									console.log('Error uploading data: ', err)
 									res.send('Error uploading data: ', err);
-									return console.log('Error uploading data: ', err);
+									return;
 								}
 								s3.upload({
 									Bucket: 'stuffmapper-v2',
