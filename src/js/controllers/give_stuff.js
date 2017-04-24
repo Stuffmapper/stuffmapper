@@ -81,6 +81,8 @@ function GiveController() {
 							requestAnimationFrame(function() {
 								$('#give-image-verify').css({'background-image': ''});
 								$('#give-image-verify-container').css({'display':'none'});
+								$('#center-marker').css({'display':'none'});
+								$('#center-marker').removeClass('dropped');
 							});
 							var input = $('#give-image-select')[0];
 							try{
