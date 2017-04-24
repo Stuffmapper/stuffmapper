@@ -81,6 +81,8 @@ function GiveController() {
 							requestAnimationFrame(function() {
 								$('#give-image-verify').css({'background-image': ''});
 								$('#give-image-verify-container').css({'display':'none'});
+								$('#center-marker').css({'display':'none'});
+								$('#center-marker').removeClass('dropped');
 							});
 							var input = $('#give-image-select')[0];
 							try{
@@ -151,7 +153,7 @@ function GiveController() {
 							$('#center-marker').removeClass('dropped');
 							$timeout(function() {
 								requestAnimationFrame(function() {
-									$('#center-marker').css({'display':'none'});
+									$('#center-marker').css({'display':''});
 								});
 							}, 250);
 						}
@@ -166,6 +168,7 @@ function GiveController() {
 						$('#tab-content-container').css({'pointer-events':'all'});
 						$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
 						$('#give-image-details').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+
 					};
 
 					var lockUpload = false;
@@ -228,6 +231,8 @@ function GiveController() {
 						}, 250);
 						$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
 						$('#give-finished-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+
+
 						fbq('trackCustom', 'GiveStuffComplete');
 						$u.toast('Your stuff has been mapped! Find it in My Stuff!');
 					};
@@ -279,6 +284,8 @@ function GiveController() {
 						$scope.prevStep();
 						$scope.prevStep();
 						$scope.prevStep();
+						$('#center-marker').css({'display':'none'});
+						$('#center-marker').removeClass('dropped');
 					};
 
 					/* Misc Functions -  END  */

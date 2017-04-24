@@ -358,8 +358,6 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 						fs.readFile(__dirname + '/../../../uploads/original/'+time+'_original.png', function(err, data2) {
 							var key = 'posts/' + time;
 							var key2 = 'posts/' + time + '_original';
-							console.log(data);
-							console.log(data2);
 							s3.upload({
 								Bucket: 'stuffmapper-v2',
 								Key: key,
