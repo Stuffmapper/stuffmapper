@@ -166,8 +166,7 @@ function GiveController() {
 						$('#tab-content-container').css({'pointer-events':'all'});
 						$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
 						$('#give-image-details').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
-						$('#center-marker').css({'display':''});
-						$('#center-marker').removeClass('dropped');
+
 					};
 
 					var lockUpload = false;
@@ -283,6 +282,8 @@ function GiveController() {
 						$scope.prevStep();
 						$scope.prevStep();
 						$scope.prevStep();
+						$('#center-marker').css({'display':'none'});
+						$('#center-marker').removeClass('dropped');
 					};
 
 					/* Misc Functions -  END  */
