@@ -166,6 +166,7 @@ function GiveController() {
 						$('#tab-content-container').css({'pointer-events':'all'});
 						$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
 						$('#give-image-details').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+
 					};
 
 					var lockUpload = false;
@@ -228,6 +229,9 @@ function GiveController() {
 						}, 250);
 						$('#give-finished-map').attr('src', $scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng));
 						$('#give-finished-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+						$('#center-marker').css({'display':'none'});
+						$('#center-marker').removeClass('dropped');
+
 						fbq('trackCustom', 'GiveStuffComplete');
 						$u.toast('Your stuff has been mapped! Find it in My Stuff!');
 					};
@@ -275,9 +279,6 @@ function GiveController() {
 						$scope.giveItem.description = '';
 						$scope.giveItem.outside = false;
 						$scope.category = 7;
-						if($scope.giveMarker) $scope.giveMarker.setMap(null);
-						$('#center-marker').css({'display':''});
-						$('#center-marker').removeClass('dropped');
 						$scope.rejectPhoto();
 						$scope.prevStep();
 						$scope.prevStep();
