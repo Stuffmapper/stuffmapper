@@ -275,6 +275,9 @@ function GiveController() {
 						$scope.giveItem.description = '';
 						$scope.giveItem.outside = false;
 						$scope.category = 7;
+						if($scope.giveMarker) $scope.giveMarker.setMap(null);
+						$('#center-marker').css({'display':''});
+						$('#center-marker').removeClass('dropped');
 						$scope.rejectPhoto();
 						$scope.prevStep();
 						$scope.prevStep();
