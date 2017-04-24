@@ -151,7 +151,7 @@ function GiveController() {
 							$('#center-marker').removeClass('dropped');
 							$timeout(function() {
 								requestAnimationFrame(function() {
-									$('#center-marker').css({'display':'none'});
+									$('#center-marker').css({'display':''});
 								});
 							}, 250);
 						}
@@ -166,7 +166,7 @@ function GiveController() {
 						$('#tab-content-container').css({'pointer-events':'all'});
 						$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
 						$('#give-image-details').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
-						$('#center-marker').css({'display':'none'});
+						$('#center-marker').css({'display':''});
 						$('#center-marker').removeClass('dropped');
 					};
 
