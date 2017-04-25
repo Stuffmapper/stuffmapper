@@ -77,7 +77,6 @@ app.use(methodOverride());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', express.static(path.join(__dirname, 'favicons')));
 app.use('/', express.static(path.join(__dirname, 'web')));
-app.use('/styleguide', express.static(path.join(__dirname, '../stuffmapper-styleguide/www')));
 
 require(path.join(__dirname, '/routes/api/v1/config/passport'));
 
@@ -115,7 +114,7 @@ app.get('/auth/google_oauth2/callback', function(req,res,next) {
 	passport.authenticate('google', function(err, user, info) {
 		if(err && err.message === 'account exists') {
 			return res.send([
-				'<html><head><title>Sign In</title><link rel="stylesheet" href="/js/lib/normalize-css/normalize.css" /><link rel="stylesheet" href="/js/lib/animate.css/animate.min.css" /><link rel="stylesheet" href="/styleguide/css/main.css" /><link rel="stylesheet" href="/css/main.app.min.css" /><link rel="stylesheet" href="/js/lib/bootstrap/dist/css/bootstrap.min.css" /><link rel="stylesheet" href="/css/font-awesome.min.css" /><script src="https://use.typekit.net/lrm3jdv.js"></script><script>try{Typekit.load({ async: true });}catch(e){}</script></head><body style="background-color: #33AEDC;">',
+				'<html><head><title>Sign In</title><link rel="stylesheet" href="/js/lib/normalize-css/normalize.css" /><link rel="stylesheet" href="/js/lib/animate.css/animate.min.css" /><link rel="stylesheet" href="/css/main.css" /><link rel="stylesheet" href="/css/main.app.min.css" /><link rel="stylesheet" href="/js/lib/bootstrap/dist/css/bootstrap.min.css" /><link rel="stylesheet" href="/css/font-awesome.min.css" /><script src="https://use.typekit.net/lrm3jdv.js"></script><script>try{Typekit.load({ async: true });}catch(e){}</script></head><body style="background-color: #33AEDC;">',
 				'<div class="modal-window">',
 				'	<div class="modal-header"></div>',
 				'	<div id="modal-close-button" class="modal-close"><i class="fa fa-close" style="line-height: 48px; height: 100%;"></i></div>',
@@ -145,7 +144,7 @@ app.get('/auth/facebook_oauth2/callback', function(req,res,next){
 	passport.authenticate('facebook', { scope : ['id', 'displayName', 'public_profile', 'email'] }, function(err, user, info) {
 		if(err && err.message === 'account exists') {
 			return res.send([
-				'<html><head><title>Sign In</title><link rel="stylesheet" href="/js/lib/normalize-css/normalize.css" /><link rel="stylesheet" href="/js/lib/animate.css/animate.min.css" /><link rel="stylesheet" href="/styleguide/css/main.css" /><link rel="stylesheet" href="/css/main.app.min.css" /><link rel="stylesheet" href="/js/lib/bootstrap/dist/css/bootstrap.min.css" /><link rel="stylesheet" href="/css/font-awesome.min.css" /><script src="https://use.typekit.net/lrm3jdv.js"></script><script>try{Typekit.load({ async: true });}catch(e){}</script></head><body style="background-color: #33AEDC;">',
+				'<html><head><title>Sign In</title><link rel="stylesheet" href="/js/lib/normalize-css/normalize.css" /><link rel="stylesheet" href="/js/lib/animate.css/animate.min.css" /><link rel="stylesheet" href="/css/main.css" /><link rel="stylesheet" href="/css/main.app.min.css" /><link rel="stylesheet" href="/js/lib/bootstrap/dist/css/bootstrap.min.css" /><link rel="stylesheet" href="/css/font-awesome.min.css" /><script src="https://use.typekit.net/lrm3jdv.js"></script><script>try{Typekit.load({ async: true });}catch(e){}</script></head><body style="background-color: #33AEDC;">',
 				'<div class="modal-window">',
 				'	<div class="modal-header"></div>',
 				'	<div id="modal-close-button" class="modal-close"><i class="fa fa-close" style="line-height: 48px; height: 100%;"></i></div>',

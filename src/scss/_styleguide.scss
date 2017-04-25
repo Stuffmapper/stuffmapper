@@ -1,0 +1,583 @@
+/**************************\
+*                          *
+*  Stuffmapper Stylesheet  *
+*                          *
+*                          *
+*  Table of Contents:      *
+*                          *
+\**************************/
+*:not(pre){
+	font-family: "proxima-nova", helvetica, sans-serif;
+}
+
+/* BUTTONS - START */
+
+.sm-button {
+	display: block;
+	position: relative;
+	border-radius: 4px;
+	border: 0px solid transparent;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: pointer;
+	transition: all 50ms;
+	text-align: center;
+	height: 54px;
+	padding: 15px;
+	margin: 15px 20px;
+}
+.sm-button:hover {
+	border-top-width: 0px;
+	border-bottom-width: 4px;
+}
+.sm-button:active {
+	border-top-width: 4px;
+	border-bottom-width: 0px;
+}
+.sm-button-xl {
+	width: 128px;
+	height: 64px;
+	line-height: 64px;
+}
+.sm-button-l {
+	width: 96px;
+	height: 48px;
+	line-height: 48px;
+}
+.sm-button-m {
+	width:64px;
+	height:32px;
+	line-height: 32px;
+}
+.sm-button-s {
+	width: 60px;
+	height: 24px;
+	line-height: 24px;
+}
+.sm-button-default {
+	background-color: #33AEDC;
+	color: #F5F7FA;
+}
+.sm-button-positive {
+	background-color: $grass;
+}
+.sm-button-negative {
+	background-color: $grapefruit;
+}
+.sm-button-warning {
+	background-color: $sunflower;
+}
+.sm-button-ghost {
+	border: 2px solid $fog-dark;
+	background-color: #fff;
+	color: $charcoal-dark;
+}
+.sm-button-ghost-solid {
+	background-color: #fff;
+}
+.sm-button:hover, .sm-button:active {
+	color: #fff;
+	border-left-width: 0px;
+	border-right-width: 0px;
+}
+.sm-button:hover {
+	border-top-width: 0px;
+}
+.sm-button:active {
+	border-top-width: 4px;
+	border-bottom-width: 0px;
+}
+.sm-button-default:hover {
+	border-color: #109BC6;
+	background-color: #33AEDC;
+}
+.sm-button-default:active {
+	border-color: #48C0EB;
+	background-color: #33AEDC;
+}
+.sm-button-positive:hover {
+	border-color: #8BC34A;
+	background-color: #9FD661;
+}
+.sm-button-positive:active {
+	border-color: #B1E271;
+	background-color: #9FD661;
+}
+.sm-button-negative:hover {
+	border-color: #DC4250;
+	background-color: #ED5565;
+	color: #fff;
+}
+.sm-button-negative:active {
+	border-color: #F2798B;
+	background-color: #ED5565;
+	color: #fff;
+}
+.sm-button-warning:hover {
+	border-color: #F7BC31;
+	background-color: #FFCF47;
+}
+.sm-button-warning:active {
+	border-color: #FFDB80;
+	background-color: #FFCF47;
+}
+.sm-button-xl.sm-button-ghost {
+	width:124px;
+	height:60px;
+	line-height: 58px;
+}
+.sm-button-l.sm-button-ghost {
+	width:92px;
+	height:44px;
+	line-height: 42px;
+}
+.sm-button-m.sm-button-ghost {
+	width:60px;
+	height:28px;
+	line-height: 26px;
+}
+.sm-button-s.sm-button-ghost {
+	width:56px;
+	height:20px;
+	line-height: 18px;
+}
+.sm-button-xl:hover {
+	line-height: 65px;
+}
+.sm-button-l:hover {
+	line-height: 49px;
+}
+.sm-button-m:hover {
+	line-height: 33px;
+}
+.sm-button-s:hover {
+	line-height: 25px;
+}
+.sm-button-full-width {
+	width: calc(100% - 40px);
+	margin: 15px 20px;
+	display: block;
+}
+
+/* BUTTONS -  END  */
+
+/* FORM ELEMENTS - START */
+.sm-text-input::-webkit-input-placeholder, .sm-text-area::-webkit-input-placeholder {
+	color: $charcoal-light;
+}
+.sm-text-input:-moz-placeholder, .sm-text-area:-moz-placeholder {
+	color: $charcoal-light;
+	opacity:  1;
+}
+.sm-text-input::-moz-placeholder, .sm-text-area::-moz-placeholder {
+	color: $charcoal-light;
+	opacity:  1;
+}
+.sm-text-input:-ms-input-placeholder, .sm-text-area::-moz-placeholder {
+	color: $charcoal-light;
+}
+.sm-text-input, .sm-text-area {
+	border-radius: 3px;
+	border: 1px solid $fog-dark;
+	padding: 3px 6px;
+	color: $charcoal-light;
+}
+.sm-text-input-full-width, .sm-text-area-full-width {
+	width: calc(100% - 40px);
+	margin: 15px 20px;
+	display: block;
+}
+.sm-text-input:focus, .sm-text-area:focus {
+	border-radius: 3px;
+	border: 1px solid $silver-light;
+	padding: 3px 6px;
+	color: $charcoal-light;
+	outline: none;
+}
+.sm-text-input::selection, .sm-text-area::selection {
+	background: $fog-dark;
+}
+.sm-text-input::-moz-selection, .sm-text-area::-moz-selection {
+	background: $fog-dark;
+}
+.sm-text-input-xl {
+
+}
+.sm-text-input-l {
+
+}
+.sm-text-input-m {
+
+}
+.sm-text-input-s {
+
+}
+.sm-text-input-group {
+	position: relative;
+	display: block;
+	border: 1px solid $fog-dark;
+	border-radius: 3px;
+}
+.sm-text-input-group.sm-text-input-group-active {
+	border: 1px solid $silver-light;
+}
+
+.sm-text-input-group .sm-text-input-container .sm-text-input {
+	border: none;
+	width: 100%;
+	resize: none;
+}
+.sm-text-input-group-xl {
+	width: calc(100% - 26px);
+	height: 28px;
+}
+.sm-text-input-group-l {
+	width: calc(100% - 26px);
+	height: 28px;
+}
+.sm-text-input-group-m {
+	width: calc(100% - 26px);
+	height: 28px;
+}
+.sm-text-input-group-s {
+	width: calc(100% - 26px);
+	height: 28px;
+}
+.sm-text-input-group-xl .sm-text-input-container {width: calc(100% - 26px);}
+.sm-text-input-group-l .sm-text-input-container {width: calc(100% - 26px);}
+.sm-text-input-group-m .sm-text-input-container {width: calc(100% - 32px);}
+.sm-text-input-group-s .sm-text-input-container {width: calc(100% - 26px);}
+.sm-text-input-container {
+	height: 100%;
+	display: inline-block;
+	float: left;
+	& input {
+		height: 100%;
+	}
+}
+.sm-text-input-group-xl .sm-text-input-button {
+	width: 26px;
+}
+.sm-text-input-group-l .sm-text-input-button {
+	width: 26px;
+}
+.sm-text-input-group-m .sm-text-input-button {
+	width: 32px;
+}
+.sm-text-input-group-s .sm-text-input-button {
+	width: 26px;
+}
+.sm-text-input-button {
+	display: inline-block;
+	position: relative;
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
+	color: $pewter-light;
+	background-color: $fog-light;
+	cursor: default;
+	height: 100%;
+}
+.sm-text-input-button-border {
+	position: absolute;
+	top: 0px;
+	left: -1px;
+	width: 1px;
+	height: 100%;
+	background-color: $fog-dark;
+}
+.sm-text-input-button-icon {
+	text-align: center;
+	width: 100%;
+	top: 50%;
+	position: absolute;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform: translate(0%, -50%);
+	-o-transform: translate(0%, -50%);
+	transform: translate(0%, -50%);
+}
+.sm-text-input-button-active .sm-text-input-button-border {
+	background-color: $aqua-light;
+}
+.sm-text-input-button-active {
+	background-color: #33AEDC;
+	color: #fff;
+	cursor: pointer;
+}
+
+/* FORM ELEMENTS -  END  */
+
+/* TYPOGRAPHY - START */
+.sm-text-xxl {
+	font-size: 30px;
+	line-height: 36px;
+}
+.sm-text-xl {
+	font-size: 24px;
+	line-height: 28px;
+}
+.sm-text-l {
+	font-size: 20px;
+	line-height: 24px;
+}
+.sm-text-m {
+	font-size: 16px;
+	line-height: 22px;
+}
+.sm-text-s {
+	font-size: 12px;
+	line-height: 16px;
+}
+.sm-text-xs {
+	font-size: 10px;
+	line-height: 12px;
+}
+/* TYPOGRAPHY -  END  */
+
+/* CONTAINERS - START */
+
+.sm-tab-container {
+	position: absolute;
+	display: block;
+	top: 40px;
+	left: 0px;
+	height: calc(100% - 40px);
+	width: 100%;
+	z-index: 5;
+	overflow: hidden;
+	pointer-events: none;
+	& > * {
+		pointer-events: all;
+	}
+}
+
+
+
+.sm-background-semi-opaque {
+	position: absolute;
+	display: block;
+	height: 100%;
+	width: 100%;
+	opacity: 0.4;
+	z-index: -1;
+	top: 0px;
+	left:0px;
+	pointer-events: all;
+	&.sm-hidden {
+		pointer-events: none;
+		opacity: 0.0001;
+	}
+}
+
+.sm-background-dark {
+	background-color: $charcoal;
+}
+
+/* CONTAINERS -  END  */
+
+/* FILTER - START */
+
+.filter-content-container {
+	max-height: calc(100% - 46px);
+	overflow-y: scroll;
+	overflow-x: hidden;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	display: block;
+	pointer-events: all;
+	background-color: #fff;
+	transform: translate3d(0px, 0%, 0px);
+	&.sm-hidden {
+		pointer-events: none;
+		transform: translate3d(0px, -100%, 0px);
+	}
+}
+
+
+/* FILTER -  END  */
+
+/* ALERT DIALOGS? - START */
+.sm-alert-dialog {
+	position: relative;
+	display: block;
+	width: calc(100% - 20px);
+	border: 1px solid $grass;
+	border-radius: 3px;
+	margin: 10px;
+}
+.sm-alert-dialog-message {
+	padding: 15px 20px;
+    padding-bottom: 0px;
+    text-align: center;
+}
+/* ALERT DIALOGS? -  END  */
+
+
+
+/* TESTING */
+
+.sm-full-width {
+	margin: 15px 20px;
+	display: block;
+	position: relative;
+	width: calc(100% - 40px);
+}
+
+.sm-select {
+	padding: 0;
+	margin: 0;
+	border: 1px solid $fog-dark;
+	width: 120px;
+	border-radius: 3px;
+	overflow: hidden;
+	background-color: #fff;
+	position: relative;
+}
+
+.sm-select select {
+	padding: 5px 8px;
+	width: 130%;
+	border: none;
+	box-shadow: none;
+	background-color: transparent;
+	background-image: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	color: $pewter-dark;
+	font-family: proxima-nova;
+}
+
+.sm-select::before {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	padding: 5px;
+	pointer-events: none;
+	border-left: 1px solid $fog-dark;
+	color: $charcoal-dark;
+}
+
+.sm-select select:focus {
+	outline: none;
+}
+
+.sm-select-full-width {
+	margin: 15px 20px;
+	width: calc(100% - 40px);
+	display: block;
+}
+
+/* MORE TESTING */
+/* Base for label styling */
+[type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+	position: absolute;
+	left: -9999px;
+}
+[type="checkbox"]:not(:checked) + label,
+[type="checkbox"]:checked + label {
+	position: relative;
+	padding-left: 25px;
+	cursor: pointer;
+	line-height: 22px;
+	font-weight: normal;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* checkbox aspect */
+[type="checkbox"]:not(:checked) + label:before,
+[type="checkbox"]:checked + label:before {
+	content: '';
+	position: absolute;
+	left:0; top: 2px;
+	width: 17px; height: 17px;
+	border: 1px solid $fog-dark;
+	border-radius: 3px;
+}
+/* checked mark aspect */
+[type="checkbox"]:not(:checked) + label:after,
+[type="checkbox"]:checked + label:after {
+	content: '\f00c';
+	font: normal normal normal 14px/1 FontAwesome;
+	border-radius: 3px;
+	background-color: $fog-dark;
+	font-size: inherit;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	position: absolute;
+	left: 0;
+	top: 2px;
+	width: 17px;
+	height: 17px;
+	font-size: 15px;
+	line-height: 1.2;
+	color: #3C3B3D;
+	transition: all .2s;
+	text-align: center;
+}
+/* checked mark aspect changes */
+[type="checkbox"]:not(:checked) + label:after {
+	opacity: 0;
+	transform: scale(0);
+}
+[type="checkbox"]:checked + label:after {
+	opacity: 1;
+	transform: scale(1);
+}
+/* disabled checkbox */
+[type="checkbox"]:disabled:not(:checked) + label:before,
+[type="checkbox"]:disabled:checked + label:before {
+	box-shadow: none;
+	border-color: #bbb;
+	background-color: #ddd;
+}
+[type="checkbox"]:disabled:checked + label:after {
+	color: #999;
+}
+[type="checkbox"]:disabled + label {
+	color: #aaa;
+}
+/* accessibility */
+[type="checkbox"]:checked:focus + label:before,
+[type="checkbox"]:not(:checked):focus + label:before {
+	border: 1px solid $fog-dark;
+}
+
+/* hover style just for information */
+label:hover:before {
+	border: 1px solid $fog-dark !important;
+}
+
+.sm-checkbox-full-width {
+	margin: 15px 20px;
+	width: calc(100% - 40px);
+	display: block;
+}
+
+
+
+
+
+
+
+
+
+@media screen and (max-width: 436px) {
+	.sm-tab-container {
+		top: 74px;
+		height: calc(100% - 74px);
+	}
+}
