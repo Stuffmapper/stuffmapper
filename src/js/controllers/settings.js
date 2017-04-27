@@ -57,7 +57,7 @@ function SettingsController() {
 						return;
 					}
 				}		
-				$scope.users.phone_number = $scope.users.phone_number.replace(/\s+/g, '');
+				$scope.users.phone_number = $scope.users.phone_number.replace(/-|\s+/g,"");
 				$http.put('/api/v1/account/info', $scope.users,{
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
