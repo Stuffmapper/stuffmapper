@@ -213,6 +213,7 @@ function GetStuffController() {
 		}
 	};
 	$scope.setGetStuff = function() {
+		$scope.getLocation();
 		$state.go('stuff.get');
 	};
 	$('#get-location').click($scope.getLocation);
