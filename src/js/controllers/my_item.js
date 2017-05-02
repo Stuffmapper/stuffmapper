@@ -181,7 +181,8 @@ function MyItemsController() {
 								iframe: {
 									scrolling: 'auto',
 									preload: false
-								}
+								},
+								errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>'
 							});
 
 							// $('.get-item-single-image-container').html([
