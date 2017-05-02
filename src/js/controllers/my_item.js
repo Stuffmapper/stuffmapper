@@ -173,18 +173,14 @@ function MyItemsController() {
 						requestAnimationFrame(function() {
 							$('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
 							$('.get-item-single-image-container').attr({'data-fancybox':'images'});
-							// $('.get-item-single-image-container').attr({'data-width':'800'});
-							// $('.get-item-single-image-container').attr({'data-height':'600'});
-							// $('.get-item-single-image-container').attr({'data-fancybox-width':'auto!important'});
-							// $('.get-item-single-image-container').attr({'data-fancybox-theight':'auto!important'});
-							$('.get-item-single-image-container').attr({'href':'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'_original'});
-							// $(".get-item-single-image-container")
+							/*$('.get-item-single-image-container').attr({'data-type':'ajax'});*/
+							$('.get-item-single-image-container').attr({'data-src':'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'_original'});
+							$(".get-item-single-image-container").attr({'href': 'javascript:;'});
 							$("[data-fancybox]").fancybox({
-								iframe : {
-									css : {
-										width : 'auto',
-										hright: 'auto'
-									}
+								closeClickOutside: true,
+								iframe: {
+									scrolling: 'auto',
+									preload: false
 								}
 							});
 
