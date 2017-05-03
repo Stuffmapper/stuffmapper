@@ -168,11 +168,26 @@ function GiveController() {
 						$('#tab-content-container').css({'pointer-events':'all'});
 						$('#give-static-map1-container').css({'background-image': 'url('+$scope.googleMapStaticUrl.replace('{lat}',$scope.lat).replace('{lng}', $scope.lng)+')'});
 						$('#give-image-details').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
-
+						if($('#center-marker').hasClass('dropped')) {
+							$('#center-marker').removeClass('dropped');
+							$timeout(function() {
+								requestAnimationFrame(function() {
+									$('#center-marker').css({'display':''});
+								});
+							}, 250);
+						}
 					};
 
 					var lockUpload = false;
 					$scope.uploadItem = function() {
+						if($('#center-marker').hasClass('dropped')) {
+							$('#center-marker').removeClass('dropped');
+							$timeout(function() {
+								requestAnimationFrame(function() {
+									$('#center-marker').css({'display':''});
+								});
+							}, 250);
+						}
 						$('#give-description-submit').attr('disabled', '');
 						$('#give-description-title').css({border: ''});
 						$('#give-description').css({border: ''});
