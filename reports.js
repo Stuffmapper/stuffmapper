@@ -133,7 +133,8 @@ function allDone() {
 	var mandrill = require('mandrill-api/mandrill');
 	var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
 	var emailTo = [];
-	var to = {'Ryan Farmer' : 'ryan.the.farmer@gmail.com','Benjamin Zuercher' : 'bbzuercher1@gmail.com'};
+	// var to = {'Ryan Farmer' : 'ryan.the.farmer@gmail.com','Benjamin Zuercher' : 'bbzuercher1@gmail.com'};
+	var to = {'Stuffmapper' : 'stuffmapper@gmail.com', 'Delaney Cunningham' : 'delaney.cunningham@gmail.com', 'Christine Day' : 'good4artseattle@gmail.com'};
 	Object.keys(to).forEach(function(e) {
 		emailTo.push({
 			"email" : to[e],
