@@ -43,7 +43,7 @@ else if(stage==='development') {
 
 
 
-setInterval(function() {
+// setInterval(function() {
 	// var client = new pg.Client(conString);
 	// client.connect(function(err) {
 	// 	if(err) return client.end();
@@ -75,7 +75,7 @@ setInterval(function() {
 	// 		});
 	// 	});
 	// });
-}, 1000 );
+// }, 1000 );
 
 
 function isAuthenticated(req, res, next) {
@@ -351,13 +351,13 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 			].join(' ');
 			var time = Date.now().toString();
 			var buff = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-			var buff2 = new Buffer(req.body.original.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+			// var buff2 = new Buffer(req.body.original.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
 			fs.writeFile(__dirname + '/../../../uploads/original/'+time+'.png', buff, function(err) {
-				fs.writeFile(__dirname + '/../../../uploads/original/'+time+'_original.png', buff2, function(err) {
+				// fs.writeFile(__dirname + '/../../../uploads/original/'+time+'_original.png', buff2, function(err) {
 					fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
-						fs.readFile(__dirname + '/../../../uploads/original/'+time+'_original.png', function(err, data2) {
+						// fs.readFile(__dirname + '/../../../uploads/original/'+time+'_original.png', function(err, data2) {
 							var key = 'posts/' + time;
-							var key2 = 'posts/' + time + '_original';
+							// var key2 = 'posts/' + time + '_original';
 							s3.upload({
 								Bucket: 'stuffmapper-v2',
 								Key: key,
@@ -367,22 +367,22 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 								ACL: 'public-read'
 							}, function(err, data) {
 								if (err) {
-									console.log('Error uploading data: ', err)
+									console.log('Error uploading data: ', err);
 									res.send('Error uploading data: ', err);
 									return;
 								}
-								s3.upload({
-									Bucket: 'stuffmapper-v2',
-									Key: key2,
-									Body: data2,
-									ContentEncoding: 'base64',
-									ContentType:'image/png',
-									ACL: 'public-read'
-								}, function(err, data) {});
-								var values = [
-									result.rows[0].id,
-									'/'+key
-								];
+								// s3.upload({
+								// 	Bucket: 'stuffmapper-v2',
+								// 	Key: key2,
+								// 	Body: data2,
+								// 	ContentEncoding: 'base64',
+								// 	ContentType:'image/png',
+								// 	ACL: 'public-read'
+								// }, function(err, data) {});
+								// var values = [
+								// 	result.rows[0].id,
+								// 	'/'+key
+								// ];
 								queryServer(res, query, values, function() {
 									res.send({
 										err : null,
@@ -406,9 +406,9 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 									});
 								});
 							});
-						});
+						// });
 					});
-				});
+				// });
 			});
 		}
 		else {

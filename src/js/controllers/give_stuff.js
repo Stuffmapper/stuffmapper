@@ -191,30 +191,30 @@ function GiveController() {
 								});
 							});
 
-							var original = $('#give-image-select')[0].files[0];
-							var reader = new FileReader();
-							reader.addEventListener('load', function () {
-								var fd = new FormData();
-								fd.append('title', $scope.giveItem.title);
-								fd.append('description', $scope.giveItem.description || ' ');
-								fd.append('attended', !$scope.giveItem.outside);
-								fd.append('lat', $scope.lat);
-								fd.append('lng', $scope.lng);
-								fd.append('test', $('#give-image-canvas-uploader')[0].toDataURL());
-								fd.append('original', reader.result);
-								fd.append('category', ($scope.category==="General"?7:$scope.category));
-								$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
-									transformRequest: angular.identity,
-									headers: {'Content-Type': undefined}
-								}).success(function(data){
-									givePostId = data.res.id;
-									$scope.published = true;
-									fd = null;
-									nextStep();
-									lockUpload = false;
-									$('#give-description-submit').removeAttr('disabled');
-								});
-							}, false);
+							// var original = $('#give-image-select')[0].files[0];
+							// var reader = new FileReader();
+							// reader.addEventListener('load', function () {
+							var fd = new FormData();
+							fd.append('title', $scope.giveItem.title);
+							fd.append('description', $scope.giveItem.description || ' ');
+							fd.append('attended', !$scope.giveItem.outside);
+							fd.append('lat', $scope.lat);
+							fd.append('lng', $scope.lng);
+							fd.append('test', $('#give-image-canvas-uploader')[0].toDataURL());
+							// fd.append('original', reader.result);
+							fd.append('category', ($scope.category==="General"?7:$scope.category));
+							$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
+								transformRequest: angular.identity,
+								headers: {'Content-Type': undefined}
+							}).success(function(data){
+								givePostId = data.res.id;
+								$scope.published = true;
+								fd = null;
+								nextStep();
+								lockUpload = false;
+								$('#give-description-submit').removeAttr('disabled');
+							});
+							// }, false);
 							reader.readAsDataURL(original);
 						}
 					};
