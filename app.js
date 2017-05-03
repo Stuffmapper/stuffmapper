@@ -72,9 +72,9 @@ app.set('view engine', 'jade');
 
 // app.use(favicon(path.join(__dirname, 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
+app.use(bodyParser.json({ limit: '15mb', type: 'application/vnd.api+json' }));
 app.use(methodOverride());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ limit: '15mb', extended: true }));
 app.use('/', express.static(path.join(__dirname, 'favicons')));
 app.use('/', express.static(path.join(__dirname, 'web')));
 
