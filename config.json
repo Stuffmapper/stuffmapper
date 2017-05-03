@@ -1,33 +1,12 @@
 {
 	"global" : {},
 	"test" : {
-		"subdomain" : "https://gophers.stuffmapper.com",
-		"port": 3001,
-		"db" : {
-			"host" : "localhost",
-			"port" : 5432,
-			"pass" : "Password1!"
-		},
-		"auth" : {
-			"facebookAuth" : {
-				"clientID"      : "1497795170480964",
-				"clientSecret"  : "79eb3898f556146e5645f666cbb27f6b",
-				"callbackURL"   : "http://gophers.stuffmapper.com/auth/facebook/callback"
-			},
-			"googleAuth" : {
-				"clientID"      : "11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com",
-				"clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
-				"callbackURL"   : "http://gophers.stuffmapper.com/auth/google/callback"
-			}
-		}
-	},
-	"development" : {
 		"subdomain" : "http://localhost:3000",
 		"port": 3000,
 		"db" : {
 			"host" : "localhost",
 			"port" : 5432,
-			"pass" : "SuperSecretPassword1!"
+			"pass" : "Password1!"
 		},
 		"auth" : {
 			"facebookAuth" : {
@@ -39,6 +18,27 @@
 				"clientID"      : "11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com",
 				"clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
 				"callbackURL"   : "http://localhost:3000/auth/google/callback"
+			}
+		}
+	},
+	"development" : {
+		"subdomain" : "https://gophers.stuffmapper.com",
+		"port": 3000,
+		"db" : {
+			"host" : "localhost",
+			"port" : 5432,
+			"pass" : "SuperSecretPassword1!"
+		},
+		"auth" : {
+			"facebookAuth" : {
+				"clientID"      : "1497795170480964",
+				"clientSecret"  : "79eb3898f556146e5645f666cbb27f6b",
+				"callbackURL"   : "https://gophers.stuffmapper.com/auth/facebook/callback"
+			},
+			"googleAuth" : {
+				"clientID"      : "11148716793-2tm73u6gq8v33085htt27fr0j2ufl1cd.apps.googleusercontent.com",
+				"clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
+				"callbackURL"   : "https://gophers.stuffmapper.com/auth/google/callback"
 			}
 		}
 	},
