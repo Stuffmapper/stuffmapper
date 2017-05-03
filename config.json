@@ -6,7 +6,9 @@
 		"db" : {
 			"host" : "localhost",
 			"port" : 5432,
-			"pass" : "Password1!"
+			"db": "stuffmapper1",
+			"user": "stuffmapper",
+			"pass" : "SuperSecretPassword1!"
 		},
 		"auth" : {
 			"facebookAuth" : {
@@ -19,6 +21,12 @@
 				"clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
 				"callbackURL"   : "http://localhost:3000/auth/google/callback"
 			}
+		},
+		"aws" : {
+			"accessKeyId": "AKIAJQZ2JZJQHGJV7UBQ",
+			"secretAccessKey": "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",
+			"region": "us-west-2",
+			"bucket": "stuffmapper-v2"
 		}
 	},
 	"development" : {
@@ -27,6 +35,8 @@
 		"db" : {
 			"host" : "localhost",
 			"port" : 5432,
+			"db": "stuffmapper1",
+			"user": "stuffmapper",
 			"pass" : "SuperSecretPassword1!"
 		},
 		"auth" : {
@@ -40,6 +50,12 @@
 				"clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
 				"callbackURL"   : "https://gophers.stuffmapper.com/auth/google/callback"
 			}
+		},
+		"aws" : {
+			"accessKeyId": "AKIAJQZ2JZJQHGJV7UBQ",
+			"secretAccessKey": "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",
+			"region": "us-west-2",
+			"bucket": "stuffmapper-v2"
 		}
 	},
 	"production" : {
@@ -48,7 +64,9 @@
 		"db" : {
 			"host" : "localhost",
 			"port" : 5432,
-			"pass" : "Password1!"
+			"db": "stuffmapper1",
+			"user": "stuffmapper",
+			"pass" : "SuperSecretPassword1!"
 		},
 		"auth" : {
 			"facebookAuth" : {
@@ -61,6 +79,12 @@
 				"clientSecret"  : "t7-XA3IXfFZs3q3_5h1hxQwv",
 				"callbackURL"   : "http://www.stuffmapper.com/auth/google/callback"
 			}
+		},
+		"aws" : {
+			"accessKeyId": "AKIAJQZ2JZJQHGJV7UBQ",
+			"secretAccessKey": "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",
+			"region": "us-west-2",
+			"bucket": "stuffmapper-v2"
 		}
 	}
 }

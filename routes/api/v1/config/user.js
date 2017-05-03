@@ -1,6 +1,14 @@
 var bcrypt = require('bcryptjs');
 var pg = require('pg');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
+var path = require('path');
+var stage = process.env.STAGE || 'development';
+var config = require(path.join(__dirname, '/../../../../config'))[stage];
+var pgUser = config.db.user;
+var pgDb = config.db.db;
+var pgPass = config.db.pass;
+var pgHost = config.db.host;
+var pgPort = config.db.port;
+var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':'+pgPort+'/'+pgDb;
 
 var braintree = require("braintree");
 

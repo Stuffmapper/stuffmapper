@@ -21,15 +21,18 @@ var multerS3 = require('multer-s3');
 var braintree = require('braintree');
 var proxy = require('express-http-proxy');
 var pg = require('pg');
-var pgUser = 'stuffmapper';
-var pgDb = 'stuffmapper1';
-var pgPass = 'SuperSecretPassword1!';
-var pgHost = 'localhost';
-var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':5432/'+pgDb;
-AWS.config = new AWS.Config();
-AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
-AWS.config.secretAccessKey = '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';
-var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
+var pgUser = config.db.user;
+var pgDb = config.db.db;
+var pgPass = config.db.pass;
+var pgHost = config.db.host;
+var pgPort = config.db.port;
+var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':'+pgPort+'/'+pgDb;
+AWS.config.update( {
+	accessKeyId     : config.aws.accessKeyId,
+	secretAccessKey : config.aws.secretAccessKey,
+	region          : config.aws.region
+});
+var s3 = new AWS.S3({Bucket: config.aws.bucket});
 var util = require('./util.js');
 var db = new util.db();
 var app = express();

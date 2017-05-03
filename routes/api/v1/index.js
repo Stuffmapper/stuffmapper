@@ -9,22 +9,28 @@ var saltRounds = 10;
 var passport = require('passport');
 var path = require('path');
 var request = require('request');
-var conString = 'postgres://stuffmapper:SuperSecretPassword1!@localhost:5432/stuffmapper1';
-var braintree = require('braintree');
 var stage = process.env.STAGE || 'development';
 var config = require(path.join(__dirname, '/../../../config'))[stage];
+var pgUser = config.db.user;
+var pgDb = config.db.db;
+var pgPass = config.db.pass;
+var pgHost = config.db.host;
+var pgPort = config.db.port;
+var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':'+pgPort+'/'+pgDb;
+var braintree = require('braintree');
 var AWS = require('aws-sdk');
-AWS.config = new AWS.Config();
-AWS.config.accessKeyId = 'AKIAJQZ2JZJQHGJV7UBQ';
-AWS.config.secretAccessKey = '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';
-AWS.config.region = 'us-west-2';
-var s3 = new AWS.S3({Bucket:'stuffmapper-v2',region:'us-west-2'});
+AWS.config.update( {
+	accessKeyId     : config.aws.accessKeyId,
+	secretAccessKey : config.aws.secretAccessKey,
+	region          : config.aws.region
+});
+var s3 = new AWS.S3({Bucket: config.aws.bucket});
 
 var util = require('./../../../util.js');
 var db = new util.db();
 
 
-if(stage==='production' || stage==='test') {
+if(stage==='production' || stage==='development') {
 	var gateway = braintree.connect({
 		environment: braintree.Environment.Production,
 		merchantId: '7t82byzdjdbkwp8m',
@@ -32,7 +38,7 @@ if(stage==='production' || stage==='test') {
 		privateKey: '6f8520869e0dd6bf8eec2956752166d9'
 	});
 }
-else if(stage==='development') {
+else if(stage==='test') {
 	var gateway = braintree.connect({
 		environment: braintree.Environment.Sandbox,
 		merchantId: 'jbp33kzvs7tp3djq',
