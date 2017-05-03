@@ -36,6 +36,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 app.use(multer({
+	limits: { fieldSize: 15000000 },
 	storage: multerS3({
 		s3: s3,
 		bucket: 'stuffmapper-v2',
