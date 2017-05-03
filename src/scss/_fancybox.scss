@@ -1,0 +1,686 @@
+//colors
+$color_woodsmoke_approx: #0f0f11;
+$color_alto_approx: #ddd;
+$color_rangoon_green_70_approx: rgba(30, 30, 30, 0.7);
+$white: #fff;
+$color_tundora_approx: #444;
+$color_suva_gray_approx: #888;
+$color_fuscous_gray_approx: #555;
+$color_gallery_approx: #eee;
+$black_10: rgba(0, 0, 0, 0.1);
+$black_20: rgba(0, 0, 0, 0.2);
+$black_60: rgba(0, 0, 0, 0.6);
+$black_80: rgba(0, 0, 0, 0.8);
+$white_40: rgba(255, 255, 255, 0.4);
+$color_rangoon_green_60_approx: rgba(30, 30, 30, 0.6);
+$color_storm_dust_40_approx: rgba(100, 100, 100, 0.4);
+$white_60: rgba(255, 255, 255, 0.6);
+$color_picton_blue_approx: #4ea7f9;
+
+//fonts
+$font_0: Helvetica Neue;
+$font_1: Helvetica;
+$font_2: Arial;
+$font_3: sans-serif;
+
+//@extend-elements
+//original selectors
+//.fancybox-slider-wrap, .fancybox-slider
+%extend_1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+  z-index: 99993;
+  //Instead of the line below you could use @include backface-visibility($visibility)
+  backface-visibility: hidden;
+}
+
+//original selectors
+//.fancybox-image, .fancybox-spaceball
+%extend_2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: none;
+  max-height: none;
+  background: transparent;
+  background-size: 100% 100%;
+}
+
+//original selectors
+//.fancybox-button::before, .fancybox-button::after
+%extend_3 {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  border-color: $white;
+  background-color: currentColor;
+  color: currentColor;
+  opacity: 0.9;
+  //Instead of the line below you could use @include box-sizing($bs)
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+//original selectors
+//.fancybox-button--close::before, .fancybox-button--close::after
+%extend_4 {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  height: 2px;
+  width: 16px;
+  top: calc(50% - 1px);
+  left: calc(50% - 8px);
+}
+
+
+@charset "UTF-8";
+.fancybox-enabled {
+  overflow: hidden;
+  body {
+    overflow: visible;
+    height: 100%;
+  }
+}
+.fancybox-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99993;
+  //Instead of the line below you could use @include backface-visibility($visibility)
+  backface-visibility: hidden;
+  ~ .fancybox-container {
+    z-index: 99992;
+  }
+}
+.fancybox-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: $color_woodsmoke_approx;
+  opacity: 0;
+  //Instead of the line below you could use @include transition-timing-function($function-1, $function-2, $function-3, $function-4, $function-5, $function-6, $function-7, $function-8, $function-9, $function-10)
+  transition-timing-function: cubic-bezier(0.55, 0.06, 0.68, 0.19);
+  //Instead of the line below you could use @include backface-visibility($visibility)
+  backface-visibility: hidden;
+}
+.fancybox-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  opacity: 0;
+  z-index: 99994;
+  //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+  transition: opacity .2s;
+  pointer-events: none;
+  //Instead of the line below you could use @include backface-visibility($visibility)
+  backface-visibility: hidden;
+  direction: ltr;
+}
+.fancybox-infobar {
+  display: none;
+}
+.fancybox-infobar__body {
+  display: inline-block;
+  width: 70px;
+  line-height: 44px;
+  font-size: 13px;
+  font-family: $font_0, $font_1, $font_2, $font_3;
+  text-align: center;
+  color: $color_alto_approx;
+  background-color: $color_rangoon_green_70_approx;
+  pointer-events: none;
+  //Instead of the line below you could use @include user-select($select)
+  user-select: none;
+  background: $color_rangoon_green_60_approx;
+}
+.fancybox-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: none;
+  pointer-events: all;
+}
+.fancybox-slider-wrap {
+  overflow: hidden;
+  direction: ltr;
+  @extend %extend_1;
+}
+.fancybox-slider {
+  @extend %extend_1;
+}
+.fancybox-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  outline: none;
+  white-space: normal;
+  //Instead of the line below you could use @include box-sizing($bs)
+  box-sizing: border-box;
+  text-align: center;
+  z-index: 99994;
+  > * {
+    display: inline-block;
+    position: relative;
+    padding: 24px;
+    margin: 44px 0 44px;
+    border-width: 0;
+    vertical-align: middle;
+    text-align: left;
+    background-color: $white;
+    overflow: auto;
+    //Instead of the line below you could use @include box-sizing($bs)
+    box-sizing: border-box;
+  }
+}
+.fancybox-slide::before {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+  width: 0;
+}
+.fancybox-slide--image {
+  overflow: hidden;
+}
+.fancybox-slide--image::before {
+  display: none;
+}
+.fancybox-content {
+  display: inline-block;
+  position: relative;
+  margin: 44px auto;
+  padding: 0;
+  border: 0;
+  width: 80%;
+  height: calc(100% - 88px);
+  vertical-align: middle;
+  line-height: normal;
+  text-align: left;
+  white-space: normal;
+  outline: none;
+  font-size: 16px;
+  font-family: $font_2, $font_3;
+  //Instead of the line below you could use @include box-sizing($bs)
+  box-sizing: border-box;
+}
+.fancybox-iframe {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  height: 100%;
+  background: $white;
+}
+.fancybox-slide--video {
+  .fancybox-content {
+    background: transparent;
+  }
+  .fancybox-iframe {
+    background: transparent;
+  }
+  .fancybox-close-small {
+    top: -36px;
+    right: -36px;
+    background: transparent;
+  }
+}
+.fancybox-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  z-index: 99995;
+  background: transparent;
+  cursor: default;
+  overflow: visible;
+  //Instead of the line below you could use @include transform-origin($origin-x, $origin-y, $origin-z, $only3d)
+  transform-origin: top left;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  //Instead of the line below you could use @include backface-visibility($visibility)
+  backface-visibility: hidden;
+}
+.fancybox-image {
+  @extend %extend_2;
+}
+.fancybox-spaceball {
+  @extend %extend_2;
+  z-index: 1;
+}
+.fancybox-tmp {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  visibility: hidden;
+}
+.fancybox-error {
+  position: absolute;
+  margin: 0;
+  padding: 40px;
+  top: 50%;
+  left: 50%;
+  width: 380px;
+  max-width: 100%;
+  //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+  transform: translate(-50%, -50%);
+  background: $white;
+  cursor: default;
+  p {
+    margin: 0;
+    padding: 0;
+    color: $color_tundora_approx;
+    font: 16px/20px $font_0, $font_1, $font_2, $font_3;
+  }
+}
+.fancybox-close-small {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  z-index: 10;
+  cursor: pointer;
+  &:after {
+    content: '×';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    font: 20px/30px $font_2, $font_0, $font_1, $font_3;
+    color: $color_suva_gray_approx;
+    font-weight: 300;
+    text-align: center;
+    //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+    border-radius: 50%;
+    border-width: 0;
+    background: $white;
+    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+    transition: background .2s;
+    //Instead of the line below you could use @include box-sizing($bs)
+    box-sizing: border-box;
+    z-index: 2;
+  }
+  &:focus:after {
+    outline: 1px dotted $color_suva_gray_approx;
+  }
+  &:hover:after {
+    color: $color_fuscous_gray_approx;
+    background: $color_gallery_approx;
+  }
+}
+.fancybox-caption-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 60px 30px 0;
+  z-index: 99998;
+  //Instead of the line below you could use @include backface-visibility($visibility)
+  backface-visibility: hidden;
+  //Instead of the line below you could use @include box-sizing($bs)
+  box-sizing: border-box;
+  background: linear-gradient(to bottom, transparent 0, $black_10 20%, $black_20 40%, $black_60 80%, $black_80 100%);
+  opacity: 0;
+  //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+  transition: opacity .2s;
+  pointer-events: none;
+}
+.fancybox-caption {
+  padding: 30px 0;
+  border-top: 1px solid $white_40;
+  font-size: 14px;
+  font-family: $font_0, $font_1, $font_2, $font_3;
+  color: $white;
+  line-height: 20px;
+  a {
+    pointer-events: all;
+    color: $white;
+    text-decoration: underline;
+  }
+  button {
+    pointer-events: all;
+  }
+}
+.fancybox-button {
+  display: inline-block;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+  border-radius: 0;
+  cursor: pointer;
+  background: transparent;
+  color: $white;
+  //Instead of the line below you could use @include box-sizing($bs)
+  box-sizing: border-box;
+  vertical-align: top;
+  outline: none;
+  background: $color_rangoon_green_60_approx;
+  &:hover {
+    background: $black_80;
+  }
+}
+.fancybox-button--disabled {
+  cursor: default;
+  pointer-events: none;
+}
+.fancybox-button::before {
+  @extend %extend_3;
+}
+.fancybox-button::after {
+  @extend %extend_3;
+}
+.fancybox-button--disabled::before {
+  opacity: 0.5;
+}
+.fancybox-button--disabled::after {
+  opacity: 0.5;
+}
+.fancybox-button--left::after {
+  left: 20px;
+  top: 18px;
+  width: 6px;
+  height: 6px;
+  background: transparent;
+  border-top: solid 2px currentColor;
+  border-right: solid 2px currentColor;
+  //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+  transform: rotate(-135deg);
+}
+.fancybox-button--right::after {
+  right: 20px;
+  top: 18px;
+  width: 6px;
+  height: 6px;
+  background: transparent;
+  border-top: solid 2px currentColor;
+  border-right: solid 2px currentColor;
+  //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+  transform: rotate(45deg);
+}
+.fancybox-button--left {
+  //Instead of the line below you could use @include border-bottom-left-radius($radius)
+  border-bottom-left-radius: 5px;
+}
+.fancybox-button--right {
+  //Instead of the line below you could use @include border-bottom-right-radius($radius)
+  border-bottom-right-radius: 5px;
+}
+.fancybox-button--close {
+  float: right;
+}
+.fancybox-button--close::before {
+  @extend %extend_4;
+  //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+  transform: rotate(45deg);
+}
+.fancybox-button--close::after {
+  @extend %extend_4;
+  //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+  transform: rotate(-45deg);
+}
+.fancybox-loading {
+  border: 6px solid $color_storm_dust_40_approx;
+  border-top: 6px solid $white_60;
+  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  animation: fancybox-rotate .8s infinite linear;
+  background: transparent;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -25px;
+  margin-left: -25px;
+  z-index: 99999;
+}
+@-webkit-keyframes fancybox-rotate {
+  from {
+    //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+    transform: rotate(0deg);
+  }
+  to {
+    //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+    transform: rotate(359deg);
+  }
+}
+@keyframes fancybox-rotate {
+  from {
+    //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+    transform: rotate(0deg);
+  }
+  to {
+    //Instead of the line below you could use @include transform($scale, $rotate, $transx, $transy, $skewx, $skewy, $originx, $originy)
+    transform: rotate(359deg);
+  }
+}
+@media all and(max-width: 800px) {
+  .fancybox-controls {
+    text-align: left;
+  }
+  .fancybox-button--left {
+    display: none !important;
+  }
+  .fancybox-button--right {
+    display: none !important;
+  }
+  .fancybox-caption {
+    padding: 20px 0;
+    margin: 0;
+  }
+  .fancybox-thumbs {
+    display: none !important;
+  }
+  .fancybox-container--thumbs {
+    .fancybox-controls {
+      right: 0;
+    }
+    .fancybox-slider-wrap {
+      right: 0;
+    }
+    .fancybox-caption-wrap {
+      right: 0;
+    }
+  }
+  .fancybox-buttons button:not(.fancybox-button--close) {
+    display: none !important;
+  }
+}
+.fancybox-button--fullscreen::before {
+  width: 15px;
+  height: 11px;
+  left: 15px;
+  top: 16px;
+  border: 2px solid;
+  background: none;
+}
+.fancybox-button--play::before {
+  top: 16px;
+  left: 18px;
+  width: 0;
+  height: 0;
+  border-top: 6px inset transparent;
+  border-bottom: 6px inset transparent;
+  border-left: 10px solid;
+  //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+  border-radius: 1px;
+  background: transparent;
+}
+.fancybox-button--pause::before {
+  top: 16px;
+  left: 18px;
+  width: 7px;
+  height: 11px;
+  border-style: solid;
+  border-width: 0 2px 0 2px;
+  background: transparent;
+}
+.fancybox-button--thumbs::before {
+  top: 20px;
+  left: 21px;
+  width: 3px;
+  height: 3px;
+  //Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
+  box-shadow: 0 -4px 0, -4px -4px 0, 4px -4px 0, 0 0 0 32px inset, -4px 0 0, 4px 0 0, 0 4px 0, -4px 4px 0, 4px 4px 0;
+}
+.fancybox-container--thumbs {
+  .fancybox-controls {
+    right: 220px;
+  }
+  .fancybox-slider-wrap {
+    right: 220px;
+  }
+  .fancybox-caption-wrap {
+    right: 220px;
+  }
+}
+.fancybox-thumbs {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  width: 220px;
+  margin: 0;
+  padding: 5px 5px 0 0;
+  background: $white;
+  z-index: 99993;
+  //Instead of the line below you could use @include word-break($value)
+  word-break: normal;
+  //Instead of the line below you could use @include box-sizing($bs)
+  box-sizing: border-box;
+  > ul {
+    list-style: none;
+    position: absolute;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-size: 0;
+    > li {
+      float: left;
+      overflow: hidden;
+      max-width: 50%;
+      padding: 0;
+      margin: 0;
+      width: 105px;
+      height: 75px;
+      position: relative;
+      cursor: pointer;
+      outline: none;
+      border: 5px solid $white;
+      border-top-width: 0;
+      border-right-width: 0;
+      //Instead of the line below you could use @include backface-visibility($visibility)
+      backface-visibility: hidden;
+      //Instead of the line below you could use @include box-sizing($bs)
+      box-sizing: border-box;
+      > img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 100%;
+        min-height: 100%;
+        max-width: none;
+        max-height: none;
+        //Instead of the line below you could use @include user-select($select)
+        user-select: none;
+      }
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
+        border-radius: 2px;
+        border: 4px solid $color_picton_blue_approx;
+        z-index: 99991;
+        opacity: 0;
+        //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+        transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      &.fancybox-thumbs-active:before {
+        opacity: 1;
+      }
+    }
+  }
+}
+.fancybox-container--ready .fancybox-bg {
+  opacity: 0.87;
+  //Instead of the line below you could use @include transition-timing-function($function-1, $function-2, $function-3, $function-4, $function-5, $function-6, $function-7, $function-8, $function-9, $function-10)
+  transition-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.fancybox-show-controls .fancybox-controls {
+  opacity: 1;
+}
+.fancybox-show-infobar .fancybox-infobar {
+  display: inline-block;
+  pointer-events: all;
+}
+.fancybox-show-buttons .fancybox-buttons {
+  display: block;
+}
+.fancybox-controls--canzoomOut .fancybox-placeholder {
+  cursor: zoom-out;
+}
+.fancybox-controls--canzoomIn .fancybox-placeholder {
+  cursor: zoom-in;
+}
+.fancybox-controls--canGrab .fancybox-placeholder {
+  cursor: grab;
+}
+.fancybox-controls--isGrabbing .fancybox-placeholder {
+  cursor: grabbing;
+}
+.fancybox-show-caption .fancybox-caption-wrap {
+  opacity: 1;
+}
+.fancybox-button--thumbs span {
+  font-size: 23px;
+}
+li.fancybox-thumbs-loading {
+  background: $black_10;
+}

@@ -108,6 +108,7 @@ gulp.task('js', function(done) {
 			'./src/js/lib/isotope/dist/isotope.pkgd.min.js',
 			'./src/js/lib/teljs/dist/scripts/tel.js',
 			'./src/js/lib/teljs/data/metadatalite.js',
+			'./src/js/lib/fancyBox/dist/jquery.fancybox.min.js',
 			'./src/js/lib/angular-ui-router/release/angular-ui-router.min.js',
 			'./src/js/lib/angular-animate/angular-animate.min.js',
 			'./src/js/lib/select2/dist/js/select2.full.min.js',

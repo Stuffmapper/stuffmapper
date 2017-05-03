@@ -55,7 +55,7 @@ function GetItemController() {
 			}
 		});
 		$scope.container = $('<div>', {id:'get-item-single-'+$stateParams.id, class:'get-item-single-container sm-hidden animate-250'});
-		$scope.imageContainer = $('<div>', {class:'get-item-single-image-container animate-250'});
+		$scope.imageContainer = $('<a>', {class:'get-item-single-image-container animate-250'});
 		$scope.detailsContainer = $('<div>', {class:'get-item-single-details-container animate-250'});
 		$scope.detailsContainer.html([
 			((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
@@ -94,6 +94,18 @@ function GetItemController() {
 				initPayment();
 				initListener();
 				$('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
+				$('.get-item-single-image-container').attr({'data-fancybox':'images'});
+				/*$('.get-item-single-image-container').attr({'data-type':'ajax'});*/
+				$('.get-item-single-image-container').attr({'data-src':'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'_original'});
+				$(".get-item-single-image-container").attr({'href': 'javascript:;'});
+				$("[data-fancybox]").fancybox({
+					closeClickOutside: true,
+					iframe: {
+						scrolling: 'auto',
+						preload: false
+					},
+					errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>'
+				});
 				$scope.container.removeClass('sm-hidden');
 				($scope.listItem.description === undefined) && $('#get-item-single-'+$stateParams.id + ' .get-stuff-item-info').addClass('get-single-item-info').append([
 					'<h3 class="get-single-item-description sm-hidden animate-250">',

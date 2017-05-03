@@ -45,7 +45,7 @@ function MyItemsController() {
 						'key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U'
 					].join('');
 					$scope.container = $('<div id="get-item-single-'+$stateParams.id+'" class="my-item-single-container animate-250 sm-hidden"></div>');
-					$scope.imageContainer = $('<div class="get-item-single-image-container animate-250"></div>');
+					$scope.imageContainer = $('<a class="get-item-single-image-container animate-250"></a>');
 					$scope.detailsContainer = $('<div class="get-item-single-details-container animate-250"></div>');
 					$scope.editContainerHeader = $([
 						'<div class="animate-250" style="width: 100%;height: auto;background-color: #fff;display: inline-block;position: absolute;top: 0px;z-index: 2;opacity:0.0001;">',
@@ -172,6 +172,24 @@ function MyItemsController() {
 					requestAnimationFrame(function() {
 						requestAnimationFrame(function() {
 							$('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
+							$('.get-item-single-image-container').attr({'data-fancybox':'images'});
+							/*$('.get-item-single-image-container').attr({'data-type':'ajax'});*/
+							$('.get-item-single-image-container').attr({'data-src':'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'_original'});
+							$(".get-item-single-image-container").attr({'href': 'javascript:;'});
+							$("[data-fancybox]").fancybox({
+								closeClickOutside: true,
+								iframe: {
+									scrolling: 'auto',
+									preload: false
+								},
+								errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>'
+							});
+
+							// $('.get-item-single-image-container').html([
+							// 	'<a href="https://cdn.stuffmapper.com'+$scope.listItem.image_url+'_original" data-fancybox >',
+							// 	'<img src="https://cdn.stuffmapper.com'+$scope.listItem.image_url+'" />',
+							// 	'</a>'
+							// ].join(''));
 							$scope.container.removeClass('sm-hidden');
 							$('#get-item-single-'+$stateParams.id + ' .get-stuff-item-info').addClass('get-single-item-info').append([
 								'<h3 class="sm-text-m sm-full-width sm-hidden animate-250">',
