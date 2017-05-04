@@ -110,21 +110,13 @@ function GiveController() {
 					$scope.initStep1 = function() {
 						if($('#center-marker').hasClass('dropped')) {
 							$('#center-marker').removeClass('dropped');
-							$timeout(function() {
-								requestAnimationFrame(function() {
-									$('#center-marker').css({'display':'none'});
-								});
-							}, 250);
+							$('#center-marker').css({'display':'none'});
 						}
 					};
 					$scope.initStep2 = function() {
 						if($scope.giveMarker) $scope.giveMarker.setMap(null);
-						requestAnimationFrame(function() {
-							$('#center-marker').css({'display':'block'});
-							requestAnimationFrame(function() {
-								$('#center-marker').addClass('dropped');
-							});
-						});
+						$('#center-marker').css({'display':'block'});
+						$('#center-marker').addClass('dropped');
 						$(window).on('resize', watchSize);
 						watchSize();
 					};
@@ -155,7 +147,7 @@ function GiveController() {
 								requestAnimationFrame(function() {
 									$('#center-marker').css({'display':''});
 								});
-							}, 250);
+							}, 25);
 						}
 						nextStep();
 					};
@@ -170,11 +162,7 @@ function GiveController() {
 						$('#give-image-details').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 						if($('#center-marker').hasClass('dropped')) {
 							$('#center-marker').removeClass('dropped');
-							$timeout(function() {
-								requestAnimationFrame(function() {
-									$('#center-marker').css({'display':''});
-								});
-							}, 250);
+							$('#center-marker').css({'display':'none'});
 						}
 					};
 
@@ -182,11 +170,7 @@ function GiveController() {
 					$scope.uploadItem = function() {
 						if($('#center-marker').hasClass('dropped')) {
 							$('#center-marker').removeClass('dropped');
-							$timeout(function() {
-								requestAnimationFrame(function() {
-									$('#center-marker').css({'display':''});
-								});
-							}, 250);
+							$('#center-marker').css({'display':'none'});
 						}
 						$('#give-description-submit').attr('disabled', '');
 						$('#give-description-title').css({border: ''});
@@ -299,8 +283,6 @@ function GiveController() {
 						$scope.prevStep();
 						$scope.prevStep();
 						$scope.prevStep();
-						$('#center-marker').css({'display':'none'});
-						$('#center-marker').removeClass('dropped');
 					};
 
 					/* Misc Functions -  END  */
