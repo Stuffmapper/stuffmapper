@@ -1,3 +1,4 @@
-function UserAgreementController($scope, $userData) {
+stuffMapp.controller('userAgreementController', ['$scope', UserAgreementController]);
+function UserAgreementController($scope) {
 
 }

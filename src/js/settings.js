@@ -94,11 +94,13 @@ function setDefaultSettings() {
 		},
 		faq : {
 			url: '/faq',
-			templateUrl: 'templates/partial-faq.html'
+			templateUrl: 'templates/partial-faq.html',
+			controller: 'faqController'
 		},
 		useragreement : {
 			url: '/useragreement',
-			templateUrl: 'templates/partial-useragreement.html'
+			templateUrl: 'templates/partial-useragreement.html',
+			controller: 'userAgreementController'
 		}
 	};
 	if(isIonic) {
