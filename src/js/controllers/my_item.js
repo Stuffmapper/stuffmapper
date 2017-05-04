@@ -176,13 +176,14 @@ function MyItemsController() {
 							$('.get-item-single-image-container').attr({'data-type':'image'});
 							$('.get-item-single-image-container').attr({'data-src':'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'_original'});
 							$(".get-item-single-image-container").attr({'href': 'javascript:;'});
+							var fallBackImage = $('.get-item-single-image-container').css('background-image').replace(/^url\(["](.+)["]\)/, '$1');
 							$("[data-fancybox]").fancybox({
 								closeClickOutside: true,
 								iframe: {
 									scrolling: 'auto',
 									preload: false
 								},
-								errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>'
+								errorTpl : '<div class="fancybox-error"><img src=\''+ fallBackImage +'\'/></div>'
 							});
 
 							// $('.get-item-single-image-container').html([
