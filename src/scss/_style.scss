@@ -3267,19 +3267,12 @@ html.ionic.ios {
 /* Privacy -START */
 .privacy-container {
 	display: block;
-	height: 98%;
-	// max-width: 1020px;
-	margin-left: auto;
-	margin-right: auto;
+	height: 100%;
+	width: 100%;
 	font-family: Verdana;
 	font-size: 15px;
 	overflow: auto;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 5px;
-	margin-bottom: 5px;
 	background-color: #fff;
-	outline: #E6E9ED solid 1px;
 }
 .privacy-list {
 	padding: 13px;
@@ -3296,21 +3289,13 @@ html.ionic.ios {
 
 /* Useragreement -START */
 .useragreement-container {
-	background-color: $primary-color;
 	display: block;
-	height: 98%;
-	// max-width: 1020px;
-	margin-left: auto;
-	margin-right: auto;
+	height: 100%;
+	width: 100%;
 	font-family: Verdana;
 	font-size: 15px;
 	overflow: auto;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top: 5px;
-	margin-bottom: 5px;
 	background-color: #fff;
-	outline: #E6E9ED solid 1px;
 }
 .useragreement-list {
 	padding: 13px;
