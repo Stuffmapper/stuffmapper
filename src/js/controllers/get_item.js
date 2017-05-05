@@ -105,7 +105,7 @@ function GetItemController() {
 						scrolling: 'auto',
 						preload: false
 					},
-					errorTpl : '<div class="fancybox-error"><img src=\''+ fallBackImage +'\'/></div>'
+					errorTpl : '<div class="fancybox-placeholder" style="transform: translate(-50%, -50%);top: 50%;left: 50%; height: 75%; width: 75%; opacity: 1"><img class="fancybox-image" src=\''+ fallBackImage +'\'/></div>'
 
 				});
 				$scope.container.removeClass('sm-hidden');
