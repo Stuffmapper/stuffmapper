@@ -544,7 +544,7 @@ function MainController() {
 				$u.toast('You\'ve been logged out. See you next time, <i>'+$userData.getUserName()+'</i>!');
 				setTimeout(function() {
 					$('#tab-container .stuff-tabs li a').removeClass('selected');
-					$('#tab-container .stuff-tabs .'+(window.location.pathname.indexOf('/stuff/get')?'get':(window.location.pathname.indexOf('/stuff/my')?'my':(window.location.pathname.indexOf('/stuff/give')?'give':'no')))+'-stuff-tab a').addClass('selected');
+					$('#tab-container .stuff-tabs .'+(window.location.pathname.indexOf('/stuff/get') >= 0 ?'get':(window.location.pathname.indexOf('/stuff/my') >= 0 ?'my':(window.location.pathname.indexOf('/stuff/give') >= 0 ?'give':'no')))+'-stuff-tab a').addClass('selected');
 				},250);
 			}
 		});
