@@ -511,7 +511,7 @@ function MyItemsController() {
 				$state.go('stuff.my.items');
 			};
 			var edit = function() {
-				$('#edit-item-category option[value=\''+$scope.listItem.category_id+'\']').attr('selected','selected');
+				$('#edit-item-category option[value=\''+parseInt($scope.listItem.category_id)+'\']').attr('selected','selected');
 				$('.edit-item-single-details-container').removeClass('sm-hidden');
 				$scope.editContainerHeader.css({
 					'opacity':1,
