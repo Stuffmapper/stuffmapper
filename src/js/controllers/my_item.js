@@ -174,7 +174,7 @@ function MyItemsController() {
 							$('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
 							$('.get-item-single-image-container').attr({'data-fancybox':''});
 							$('.get-item-single-image-container').attr({'data-type':'image'});
-							$('.get-item-single-image-container').attr({'data-src':'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'_original'});
+							$('.get-item-single-image-container').attr({'data-src':'https://cdn.stuffmapper.com'+$scope.listItem.image_url+''});
 							$(".get-item-single-image-container").attr({'href': 'javascript:;'});
 							var fallBackImage = $('.get-item-single-image-container').css('background-image').replace(/^url\(["](.+)["]\)/, '$1');
 							$("[data-fancybox]").fancybox({
@@ -183,7 +183,7 @@ function MyItemsController() {
 									scrolling: 'auto',
 									preload: false
 								},
-								errorTpl : '<div class="fancybox-placeholder" style="transform: translate(-50%, -50%);top: 50%;left: 50%; height: 75%; width: 75%; opacity: 1"><img class="fancybox-image" src=\''+ fallBackImage +'\'/></div>'
+								errorTpl : '<div class="fancybox-placeholder" style="transform: translate(-50%, -50%);top: 50%;left: 50%; height: 50%; width: 50%; opacity: 1"><img class="fancybox-image" src=\''+ fallBackImage +'\'/></div>'
 							});
 
 							// $('.get-item-single-image-container').html([
