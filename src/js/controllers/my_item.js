@@ -78,7 +78,7 @@ function MyItemsController() {
 						// loop through these and select whatever matches or something
 						// '				<option value="'+$scope.listItem.category.trim()+'" selected="selected" class="ng-binding">'+$scope.listItem.category.trim()+'</option>',
 						'				<option label="Arts &amp; Crafts" value="1">Arts &amp; Crafts</option>',
-						'				<option label="Books, Games, Media" value="2">Books, Games, Media</option>',
+						'				<option label="Books, Games, &amp; Media" value="2">Books, Games, & Media</option>',
 						'				<option label="Building &amp; Garden Materials" value="3">Building &amp; Garden Materials</option>',
 						'				<option label="Clothing &amp; Accessories" value="4">Clothing &amp; Accessories</option>',
 						'				<option label="Electronics" value="5">Electronics</option>',
@@ -86,7 +86,7 @@ function MyItemsController() {
 						'				<option label="General" value="7">General</option>',
 						'				<option label="Kids &amp; Babies" value="8">Kids &amp; Babies</option>',
 						'				<option label="Office" value="9">Office</option>',
-						'				<option label="Recreation" value="10">Recreation</option>',
+						'				<option label="Recreation &amp; Sporting Goods" value="10">Recreation & Sporting Goods</option>',
 						'			</select>',
 						'		</div>',
 						'	<div class="sm-button-group" style="width: 100%;display:block;position:relative;">',
@@ -272,7 +272,7 @@ function MyItemsController() {
 							description:$('#edit-item-description').val() || ' ',
 							lat:$scope.lat || $scope.listItem.lat,
 							lng:$scope.lng || $scope.listItem.lng,
-							category:($('#edit-item-category').val()==="General"?7:$('#edit-item-category').val())
+							category:($('#edit-item-category option:selected').text()==="General"?7:$('#edit-item-category option:selected').val())
 						};
 						var fd = new FormData();
 						fd.append('title', values.title);
@@ -511,9 +511,7 @@ function MyItemsController() {
 				$state.go('stuff.my.items');
 			};
 			var edit = function() {
-				// $('#edit-item-category').prop('selectedIndex', 7);
-				$('#edit-item-category option[label=\''+$scope.listItem.category+'\']').attr('selected','selected');
-				// ($('#edit-item-category option:selected').text()==="General"?$('#edit-item-category option[label="General"]').attr('selected','selected'):$('#edit-item-category').val())
+				$('#edit-item-category option[value=\''+$scope.listItem.category_id+'\']').attr('selected','selected');
 				$('.edit-item-single-details-container').removeClass('sm-hidden');
 				$scope.editContainerHeader.css({
 					'opacity':1,
