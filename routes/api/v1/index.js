@@ -1110,22 +1110,28 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 						'res3': result3.rows
 					}
 				});
-				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function(result4){
-					queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result5) {
-						var emailTo = {[result4.rows[0].uname]:result4.rows[0].email};
-						sendTemplate(
-							'notify-undib',
-							'Your item has been unDibs\'d',
-							emailTo,
-							{
-								'FIRSTNAME' : result4.rows[0].uname,
-								'USERNAME' : req.session.passport.user.uname,
-								'MYSTUFFLINK' : 'http://'+config.subdomain+'/stuff/my/items/'+result1.rows[0].id,
-								'ITEMTITLE':result1.rows[0].title,
-								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url
-							}
-						);
-					});
+				queryServer(res, 'select posts.attended from posts where id = $1', [req.params.id], function (result6) {
+					if(result6.rows[0].attended) {
+						queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
+							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function (result5) {
+								var emailTo = {[result4.rows[0].uname]: result4.rows[0].email};
+								sendTemplate(
+									'notify-undib',
+									'Your item has been unDibs\'d',
+									emailTo,
+									{
+										'FIRSTNAME': result4.rows[0].uname,
+										'USERNAME': req.session.passport.user.uname,
+										'MYSTUFFLINK': 'http://' + config.subdomain + '/stuff/my/items/' + result1.rows[0].id,
+										'ITEMTITLE': result1.rows[0].title,
+										'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
+									}
+								);
+							});
+						});
+					} else {
+						res.status(200).end();
+					}
 				});
 			});
 		});
