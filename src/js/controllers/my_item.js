@@ -511,6 +511,7 @@ function MyItemsController() {
 				$state.go('stuff.my.items');
 			};
 			var edit = function() {
+				// $('#edit-item-category').prop('selectedIndex', 7);
 				$('#edit-item-category option[label=\''+$scope.listItem.category+'\']').attr('selected','selected');
 				// ($('#edit-item-category option:selected').text()==="General"?$('#edit-item-category option[label="General"]').attr('selected','selected'):$('#edit-item-category').val())
 				$('.edit-item-single-details-container').removeClass('sm-hidden');
