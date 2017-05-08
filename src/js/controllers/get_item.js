@@ -82,7 +82,7 @@ function GetItemController() {
 			'<div class="">',
 			'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
 			'</div>',
-			'<div class="sm-text-s sm-full-width">Location of item is approximated to protect privacy. Dibs will connect you with lister to learn exact location.</div>',
+			$scope.listItem.attended?'<div class="sm-text-s sm-full-width">Location of item is approximated to protect privacy. Dibs will connect you with lister to learn exact location.</div>':'<div class="sm-text-s sm-full-width">Dibs to learn exact location. This unattended item is on the curb/out-in-the-open and nobody is accountable to it.</div>',
 			'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl+'" />',
 			'<div class="sm-text-s sm-full-width">Item last updated on '+ $scope.listItem.dateEdited +'</div>'
 		].join('\n'));
