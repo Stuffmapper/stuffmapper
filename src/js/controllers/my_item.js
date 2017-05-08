@@ -83,7 +83,7 @@ function MyItemsController() {
 						'				<option label="Clothing &amp; Accessories" value="4">Clothing &amp; Accessories</option>',
 						'				<option label="Electronics" value="5">Electronics</option>',
 						'				<option label="Furniture &amp; Household" value="6">Furniture &amp; Household</option>',
-						'				<option label="General" value="7" selected="selected">General</option>',
+						'				<option label="General" value="7">General</option>',
 						'				<option label="Kids &amp; Babies" value="8">Kids &amp; Babies</option>',
 						'				<option label="Office" value="9">Office</option>',
 						'				<option label="Recreation" value="10">Recreation</option>',
