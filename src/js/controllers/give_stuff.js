@@ -248,6 +248,10 @@ function GiveController() {
 						$('#give-stuff-progress').addClass('step'+(++$scope.currentStep)+'-done');
 						$('#give-step' + ($scope.currentStep - 1)).addClass('completed').removeClass('active');
 						$('#give-step' + $scope.currentStep).addClass('active');
+						if($('#give-step4').hasClass('active')){
+							console.log('$scope.giveItem.outside :'+ $scope.giveItem.outside);
+							$scope.giveItem.outside? $('#give-step4 .dibs-attended-message').hide(): $('#give-step4 .dibs-attended-message').show()
+						}
 						$scope['initStep' + $scope.currentStep]();
 					}
 
