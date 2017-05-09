@@ -115,8 +115,8 @@ function MainController() {
 		// 	opacity: 1
 		// });
 		localStorage.setItem('visited', true);
-		window.location.hash = 'signin';
 		$('#swiper-container').css({display:'block'});
+		window.location.hash = 'signin';
 		var swiperAtEnd = false;
 		var mySwiper = new Swiper ('.swiper-container', {
 	    direction: 'horizontal',
@@ -143,8 +143,9 @@ function MainController() {
 		$('#swiper-button-done, #swiper-button-skip').click(function() {
 			$('#swiper-container').css({'opacity':0.001,'pointer-events':'none'});
 		});
+	} else {
+		$('#lock-screen').css({display:'none'});
 	}
-	else $('#lock-screen').css({display:'none'});
 	$scope.openLockScreen = function() {
 		$('#lock-screen').css({
 			'pointer-events': 'all',
