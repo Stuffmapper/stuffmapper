@@ -156,7 +156,7 @@ function GetItemController() {
 	}
 	function initListener() {
 		$('#get-single-item-dibs-button'+$stateParams.id).on('click', dibs);
-		$('#get-single-item-dibs-button-unattended'+$stateParams.id).on('click', dibsItem);
+		$('#get-single-item-dibs-button-unattended'+$stateParams.id).on('click', openUnAttendedDibsModal);
 	}
 	function dibs() {
 		if($userData.isLoggedIn()) {
@@ -172,6 +172,26 @@ function GetItemController() {
 		}
 		else window.location.hash = 'signin';
 	}
+
+	function openUnAttendedDibsModal() {
+		var unAttendedDibsBodyTemplate = 'Are you sure you want to Dibs this unattended item? You’re taking your chances that the item is still there. It\'s on the curb/out-in-the-open and nobody is accountable to it.';
+		$('#unattended-dibs-confirm-modal-body').html(unAttendedDibsBodyTemplate);
+		$('#unattended-dibs-modal-cancel').on('click', unAttendedDibsCancelModal);
+		$('#unattended-dibs-modal-confirm').on('click', unAttendedDibsConfirmModal);
+		$u.modal.open('unattended-dibs-confirm-modal', function() {
+			$('#unattended-dibs-modal-cancel').off('click', unAttendedDibsCancelModal);
+			$('#unattended-dibs-modal-confirm').off('click', unAttendedDibsConfirmModal);
+		});
+	}
+	function unAttendedDibsCancelModal() {
+		$u.modal.close('unattended-dibs-confirm-modal');
+	}
+	function unAttendedDibsConfirmModal() {
+		$u.modal.close('unattended-dibs-confirm-modal');
+		fbq('trackCustom', 'unAttendedDibsConfirm');
+		dibsItem();
+	}
+
 	var dibbing = false;
 	function dibsItem() {
 		if(!dibbing) {
