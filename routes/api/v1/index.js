@@ -295,23 +295,25 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 		parseInt(req.params.id)
 	];
 	queryServer(res, query, values, function(result) {
-		if(result.rows[0]) result.rows[0].type = (parseInt(result.rows[0].dibber_id) === parseInt(req.session.passport.user.id))?'dibber':'lister';
-		queryServer(res, 'SELECT id FROM conversations WHERE post_id = $1 AND archived = false', [result.rows[0].id], function(result2) {
-			if(result2.rows.length) result.rows[0].conversation_id = result2.rows[0].id;
-			queryServer(res, 'SELECT id, uname FROM users WHERE id = $1 OR id = $2', [result.rows[0].user_id, result.rows[0].dibber_id], function(result3) {
-				if(result3.rows.length) {
-					var tmp = {};
-					result3.rows.forEach(function(e) {
-						tmp[e.id] = e.uname;
+		if (result.rows.length) {
+			if (result.rows[0]) result.rows[0].type = (parseInt(result.rows[0].dibber_id) === parseInt(req.session.passport.user.id)) ? 'dibber' : 'lister';
+			queryServer(res, 'SELECT id FROM conversations WHERE post_id = $1 AND archived = false', [result.rows[0].id], function (result2) {
+				if (result2.rows.length) result.rows[0].conversation_id = result2.rows[0].id;
+				queryServer(res, 'SELECT id, uname FROM users WHERE id = $1 OR id = $2', [result.rows[0].user_id, result.rows[0].dibber_id], function (result3) {
+					if (result3.rows.length) {
+						var tmp = {};
+						result3.rows.forEach(function (e) {
+							tmp[e.id] = e.uname;
+						});
+						result.rows[0].users = tmp;
+					}
+					res.send({
+						err: null,
+						res: result.rows[0]
 					});
-					result.rows[0].users = tmp;
-				}
-				res.send({
-					err: null,
-					res: result.rows[0]
 				});
 			});
-		});
+		}
 	});
 });
 
@@ -1316,49 +1318,51 @@ router.get('/conversation/:post_id', isAuthenticated, function(req, res) {
 		'posts.id = $1 AND images.post_id = $1 AND images.main = true'
 	].join(' ');
 	queryServer(res, query, [req.params.post_id], function(result1) {
-		var query = [
-			'SELECT messages.user_id, messages.message, messages.date_created,',
-			// 'SELECT messages.user_id, messages.message, TO_CHAR(messages.date_created, \'HH:MIam – DD Mon YYYY TZ\') as date_created,',
-			'messages.read FROM messages WHERE messages.conversation_id = $1 AND',
-			'messages.archived = false ORDER BY messages.date_created DESC'
-		].join(' ');
-		queryServer(res, query, [result1.rows[0].id], function(result) {
-			queryServer(res, 'SELECT id, uname FROM users WHERE id = $1 OR id = $2', [result1.rows[0].lister_id, result1.rows[0].dibber_id], function(result3) {
-				if(result3.rows.length) {
-					var tmp = {};
-					result3.rows.forEach(function(e) {
-						tmp[e.id] = e.uname;
-					});
-					var inboundMessenger = parseInt(result1.rows[0].lister_id);
-					if(result1.rows[0].dibber_id !== parseInt(req.session.passport.user.id)) {
-						inboundMessenger = parseInt(result1.rows[0].dibber_id);
-					}
-					result.rows.forEach(function(e, i) {
-						result.rows[i].type = ((parseInt(result.rows[i].user_id) === parseInt(req.session.passport.user.id))?'out':'in');
-					});
-					console.log(result.rows);
-					res.send({
-						err: null,
-						res: {
-							conversation: result.rows,
-							info: {
-								inboundMessenger: inboundMessenger,
-								outboundMessenger: parseInt(req.session.passport.user.id),
-								id: parseInt(result1.rows[0].id),
-								title: result1.rows[0].title,
-								image: result1.rows[0].image_url,
-								description: result1.rows[0].description,
-								type: ((result1.rows[0].dibber_id === parseInt(req.session.passport.user.id))?('dibber'):('lister')),
-								users: tmp,
-								dibber_id: result1.rows[0].dibber_id,
-								lister_id: result1.rows[0].lister_id,
-								post_id: req.params.post_id
-							}
+		if(result1.rows.length) {
+			var query = [
+				'SELECT messages.user_id, messages.message, messages.date_created,',
+				// 'SELECT messages.user_id, messages.message, TO_CHAR(messages.date_created, \'HH:MIam – DD Mon YYYY TZ\') as date_created,',
+				'messages.read FROM messages WHERE messages.conversation_id = $1 AND',
+				'messages.archived = false ORDER BY messages.date_created DESC'
+			].join(' ');
+			queryServer(res, query, [result1.rows[0].id], function (result) {
+				queryServer(res, 'SELECT id, uname FROM users WHERE id = $1 OR id = $2', [result1.rows[0].lister_id, result1.rows[0].dibber_id], function (result3) {
+					if (result3.rows.length) {
+						var tmp = {};
+						result3.rows.forEach(function (e) {
+							tmp[e.id] = e.uname;
+						});
+						var inboundMessenger = parseInt(result1.rows[0].lister_id);
+						if (result1.rows[0].dibber_id !== parseInt(req.session.passport.user.id)) {
+							inboundMessenger = parseInt(result1.rows[0].dibber_id);
 						}
-					});
-				}
+						result.rows.forEach(function (e, i) {
+							result.rows[i].type = ((parseInt(result.rows[i].user_id) === parseInt(req.session.passport.user.id)) ? 'out' : 'in');
+						});
+						console.log(result.rows);
+						res.send({
+							err: null,
+							res: {
+								conversation: result.rows,
+								info: {
+									inboundMessenger: inboundMessenger,
+									outboundMessenger: parseInt(req.session.passport.user.id),
+									id: parseInt(result1.rows[0].id),
+									title: result1.rows[0].title,
+									image: result1.rows[0].image_url,
+									description: result1.rows[0].description,
+									type: ((result1.rows[0].dibber_id === parseInt(req.session.passport.user.id)) ? ('dibber') : ('lister')),
+									users: tmp,
+									dibber_id: result1.rows[0].dibber_id,
+									lister_id: result1.rows[0].lister_id,
+									post_id: req.params.post_id
+								}
+							}
+						});
+					}
+				});
 			});
-		});
+		}
 	});
 });
 
