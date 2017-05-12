@@ -50,37 +50,37 @@ else if(stage==='test') {
 
 
 // setInterval(function() {
-	// var client = new pg.Client(conString);
-	// client.connect(function(err) {
-	// 	if(err) return client.end();
-	// 	var conversations = 0;
-	// 	var viewedConversations = 0;
-	// 	var query = [
-	// 		'select conversations.id from conversations, pick_up_success, posts',
-	// 		'WHERE pick_up_success.post_id = conversations.post_id AND',
-	// 		'pick_up_success.pick_up_success = false AND',
-	// 		'pick_up_success.rejected = false AND pick_up_success.undibbed = false'
-	// 	].join(' ');
-	// 	client.query(query, function(err, result) {
-	// 		if(err) return console.log('mail message error: ', err);
-	// 		result.rows.forEach(function() {
-	// 			query = [
-	// 				'SELECT read FROM messages WHERE conversation_id = $1 AND emailed = false ORDER BY date_created DESC LIMIT(1)'
-	// 			].join(' ');
-	// 			var values = [i];
-	//
-	// 			client.query(query, values, function(err, result1) {
-	// 				if(result1.rows[0]) {
-	//
-	// 					// query = [].join('');
-	// 					// client.query(query, values, function(err, result2) {
-	// 					//
-	// 					// });
-	// 				}
-	// 			});
-	// 		});
-	// 	});
-	// });
+// var client = new pg.Client(conString);
+// client.connect(function(err) {
+// 	if(err) return client.end();
+// 	var conversations = 0;
+// 	var viewedConversations = 0;
+// 	var query = [
+// 		'select conversations.id from conversations, pick_up_success, posts',
+// 		'WHERE pick_up_success.post_id = conversations.post_id AND',
+// 		'pick_up_success.pick_up_success = false AND',
+// 		'pick_up_success.rejected = false AND pick_up_success.undibbed = false'
+// 	].join(' ');
+// 	client.query(query, function(err, result) {
+// 		if(err) return console.log('mail message error: ', err);
+// 		result.rows.forEach(function() {
+// 			query = [
+// 				'SELECT read FROM messages WHERE conversation_id = $1 AND emailed = false ORDER BY date_created DESC LIMIT(1)'
+// 			].join(' ');
+// 			var values = [i];
+//
+// 			client.query(query, values, function(err, result1) {
+// 				if(result1.rows[0]) {
+//
+// 					// query = [].join('');
+// 					// client.query(query, values, function(err, result2) {
+// 					//
+// 					// });
+// 				}
+// 			});
+// 		});
+// 	});
+// });
 // }, 1000 );
 
 
@@ -974,8 +974,8 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 									{[(req.session.passport.user.uname)]: req.session.passport.user.email},
 									{
 										'FIRSTNAME' : req.session.passport.user.uname,
-										'CHATLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
-										'MYSTUFFLINK' : 'https://'+config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
+										'CHATLINK' : config.subdomain+'/stuff/my/items/'+req.params.id+'/messages',
+										'MYSTUFFLINK' : config.subdomain+'/stuff/my/items/'+req.params.id,
 										'ITEMTITLE':result1.rows[0].title,
 										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
 									}
@@ -1253,29 +1253,31 @@ router.post('/messages', isAuthenticated, function(req, res) {
 	queryServer(res, 'INSERT INTO messages(conversation_id, user_id, message) values($1, $2, $3) RETURNING *', values, function(result) {
 		queryServer(res, 'SELECT conversations.lister_id, conversations.dibber_id, messages.user_id, conversations.post_id FROM messages, conversations where conversations.id = $1 and messages.conversation_id = $1 and conversations.dibber_id = messages.user_id', [parseInt(req.body.conversation_id)], function(result1) {
 			console.log(result1.rows);
-			if(result1.rows.length === 1) {
-				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function(result2){
-					queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
-						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
-							queryServer(res, 'SELECT message FROM messages WHERE user_id = $1 AND conversation_id = $2 ORDER BY date_created DESC', [req.session.passport.user.id, parseInt(req.body.conversation_id)], function(result5) {
-								var messages = [];
-								result5.rows.forEach(function(e) {
-									messages.unshift(e.message);
+			if(result1.rows.length === 1 && parseInt(result1.rows[0].lister_id) !== parseInt(req.session.passport.user.id)) {
+				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
+					queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].dibber_id], function(result0){
+						queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
+							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
+								queryServer(res, 'SELECT message FROM messages WHERE user_id = $1 AND conversation_id = $2 ORDER BY date_created DESC', [req.session.passport.user.id, parseInt(req.body.conversation_id)], function(result5) {
+									var messages = [];
+									result5.rows.forEach(function(e) {
+										messages.unshift(e.message);
+									});
+									sendTemplate(
+										'lister-notification',
+										'Your '+result3.rows[0].title + ' has been Dibs\'d!',
+										{[result2.rows[0].uname]:result2.rows[0].email},
+										{
+											'FIRSTNAME' : result2.rows[0].uname,
+											'USERNAME' : result0.rows[0].uname,
+											'MESSAGE' : messages.join('<br>'),
+											'ITEMTITLE' : result3.rows[0].title,
+											'ITEMNAME' : result3.rows[0].title,
+											'ITEMIMAGE' : 'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
+											'CHATLINK' : config.subdomain+'/stuff/my/items/'+result1.rows[0].post_id+'/messages'
+										}
+									);
 								});
-								sendTemplate(
-									'lister-notification',
-									'Your '+result3.rows[0].title + ' has been Dibs\'d!',
-									{[result2.rows[0].uname]:result2.rows[0].email},
-									{
-										'FIRSTNAME' : result2.rows[0].uname,
-										'USERNAME' : result2.rows[0].uname,
-										'MESSAGE' : messages.join('<br>'),
-										'ITEMTITLE' : result3.rows[0].title,
-										'ITEMNAME' : result3.rows[0].title,
-										'ITEMIMAGE' : 'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
-										'CHATLINK' : config.subdomain+'/stuff/my/items/'+result1.rows[0].post_id+'/messages'
-									}
-								);
 							});
 						});
 					});
