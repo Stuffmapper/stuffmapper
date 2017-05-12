@@ -814,7 +814,7 @@ function resetSockets($scope, $state, data) {
 		}
 		else if(data.undibsd) {
 			if(window.location.pathname.indexOf('/items/'+data.undibsd) >= -1) {
-				$state.go('stuff.my.items', {}, { reload: true });
+				$state.go('stuff.get', {}, { reload: true });
 				setTimeout(function() {
 					$u.toast('Dibs lost. Failed to message lister within 15 minutes after Dibsing item.');
 				});
