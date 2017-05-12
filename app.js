@@ -285,7 +285,8 @@ setInterval(function() {
 						if(!dibberMessaged && (e.dibber_id === f.user_id)) dibberMessaged = true;
 					});
 					if((!lastMessage && !dibberMessaged) && convAgeMin >= 15) undib(e.post_id, e.dibber_id);
-					else if(lastMessage && !lastMessage.emailed && messAgeMin >= 24*60) messageUserMessageReminder(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
+					else if(lastMessage && !lastMessage.emailed && messAgeMin === 3) messageUserMessageNotification(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
+					else if(lastMessage && messAgeMin === 24*60) messageUserMessageReminder(((lastMessage.user_id===e.lister_id)?e.dibber_id:e.lister_id), e.id, e.post_id);
 					if(++conversation_counter === conversations) {jobsDone(done);done();}
 				});
 			});
@@ -295,7 +296,7 @@ setInterval(function() {
 	pool.on('error', function(err, client) {
 		console.error('idle client error', err.message, err.stack);
 	});
-}, 1000*60*2);
+}, 1000*60*1); // ms * sec * min
 
 
 
@@ -372,7 +373,7 @@ function undib(post_id, user_id) {
 	});
 }
 
-function messageUserMessageReminder(user_id, conversation_id, post_id) {
+function messageUserMessageNotification(user_id, conversation_id, post_id) {
 	queryServer('SELECT * FROM messages WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false and emailed = false ORDER BY date_created ASC', [user_id, conversation_id], function(result1) {
 		queryServer('SELECT uname, email FROM users WHERE id = $1', [user_id], function(result2){
 			queryServer('UPDATE messages SET emailed = true WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false and emailed = false', [user_id, conversation_id], function(result10) {
@@ -385,6 +386,39 @@ function messageUserMessageReminder(user_id, conversation_id, post_id) {
 								sendTemplate(
 									'message-notification',
 									'You received a message!',
+									{[result2.rows[0].uname]:result2.rows[0].email},
+									{
+										'FIRSTNAME' : result2.rows[0].uname,
+										'USERNAME' : result6.rows[0].uname,
+										'ITEMTITLE':result3.rows[0].title,
+										'ITEMNAME':result3.rows[0].title,
+										'CHATLINK':config.subdomain+'/stuff/my/items/'+post_id+'/messages',
+										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
+										'MESSAGE':test.join('<br>').trim()
+									}
+								);
+							}
+						});
+					});
+				});
+			});
+		});
+	});
+}
+
+function messageUserMessageReminder(user_id, conversation_id, post_id) {
+	queryServer('SELECT * FROM messages WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false ORDER BY date_created ASC', [user_id, conversation_id], function(result1) {
+		queryServer('SELECT uname, email FROM users WHERE id = $1', [user_id], function(result2){
+			queryServer('UPDATE messages SET emailed = true WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false and emailed = false', [user_id, conversation_id], function(result10) {
+				queryServer('SELECT title, id, dibber_id, user_id FROM posts WHERE id = $1', [post_id], function(result3) {
+					queryServer('SELECT image_url FROM images WHERE post_id = $1 AND main = true', [post_id], function(result5) {
+						queryServer('SELECT uname FROM users WHERE (id = $1 OR id = $2) AND NOT id = $3', [result3.rows[0].user_id, result3.rows[0].dibber_id, user_id], function(result6) {
+							var test = [];
+							result1.rows.forEach(function(e){test.push(e.message);});
+							if(test.join('') && test.join('').trim()) {
+								sendTemplate(
+									'message-reminder',
+									'Reminder: You received a message!',
 									{[result2.rows[0].uname]:result2.rows[0].email},
 									{
 										'FIRSTNAME' : result2.rows[0].uname,
