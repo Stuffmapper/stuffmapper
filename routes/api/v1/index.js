@@ -1251,7 +1251,7 @@ router.post('/messages', isAuthenticated, function(req, res) {
 	queryServer(res, 'INSERT INTO messages(conversation_id, user_id, message) values($1, $2, $3) RETURNING *', values, function(result) {
 		queryServer(res, 'SELECT conversations.lister_id, conversations.dibber_id, messages.user_id, conversations.post_id FROM messages, conversations where conversations.id = $1 and messages.conversation_id = $1 and conversations.dibber_id = messages.user_id', [parseInt(req.body.conversation_id)], function(result1) {
 			console.log(result1.rows);
-			if(result1.rows.length === 1) {
+			if(result1.rows.length === 1 && parseInt(result1.rows[0].lister_id) !== parseInt(req.session.passport.user.id)) {
 				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
 					queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].dibber_id], function(result0){
 						queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
