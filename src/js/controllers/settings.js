@@ -37,7 +37,7 @@ function SettingsController() {
 					phone: $('#setting-phone').val()
 				};
 				if(!formSetting.uname) {valid=false;$('#setting-uname').css({border:'1px solid red'});message='please insert a username name';}
-				if(!formSetting.phone) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone name';}
+				if(!formSetting.phone) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: +1 (###) ###-####';}
 				if(!formSetting.email || !emailRe.test(formSetting.email)) {valid=false;$('#setting-email').css({border:'1px solid red'});message='invalid email address';}
 
 				if(!valid) {
