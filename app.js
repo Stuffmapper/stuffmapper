@@ -417,7 +417,11 @@ function messageUserMessageReminder(user_id, conversation_id, post_id) {
 							result1.rows.forEach(function(e){test.push(e.message);});
 							if(test.join('') && test.join('').trim()) {
 								sendTemplate(
-									'message-reminder',
+									'message-notification',
+									// This should be message-reminder, but message-reminder was
+									// never created.  The email template would ideally be the
+									// same, but this is a bit quicker to implement.
+									// ...it's like reusing code?
 									'Reminder: You received a message!',
 									{[result2.rows[0].uname]:result2.rows[0].email},
 									{
