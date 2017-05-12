@@ -9,42 +9,43 @@
 				input#setting-uname.sm-text-input.sm-text-input-full-width(name="uname" type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}' data-ng-required="true")
 			p.sm-text-input-full-width Phone #
 			li
-			input#setting-phone.sm-text-input.sm-text-input-full-width(name="phone" type='tel', international="true", data-ng-model='users.phone_number', placeholder='{{ users.phone_number }}' data-ng-required="true")
+			input#setting-phone.sm-text-input.sm-text-input-full-width(name="phone" type='tel', international="true", default-area-code="1", data-ng-model='users.phone_number', placeholder='{{ users.phone_number ? users.phone_number : "example +1 415 5552671" }}' data-ng-required="true")
 			p.sm-text-input-full-width Email
 			li
 				input#setting-email.sm-text-input.sm-text-input-full-width(name="email" type='email', data-ng-model='users.email', placeholder='{{ users.email }}' data-ng-required="true")
 			#setting-error-warning-container(style="width:100%;display:block;position:relative;")
 			input.sm-button.sm-button-default.sm-button-full-width.sm-text-m(type='submit' value="Update Profile" data-ng-click='update(users); showSuccess()')
-			br
-			p.sm-text-input-full-width First Name
-			li 
-				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
-			p.sm-text-input-full-width Last Name
-			li 
-				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
-			p.sm-text-input-full-width Address
-			li 
-				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
-			p.sm-text-input-full-width City
-			li 
-				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
-			p.sm-text-input-full-width State
-			li
-				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
-			p.sm-text-input-full-width Zipcode
-			li
-				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.zip_code', placeholder='{{ users.zip_code }}')
-			p.sm-text-input-full-width Country
-			li
-				input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
-			li
-				#sm-settings-google.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
-					img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
-					span.social-sign-in-text.sm-text-s Connect to Google
-			li
-				#sm-settings-facebook.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
-					img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
-					span.social-sign-in-text.sm-text-s Connect to Facebook
+			//-
+				br
+				p.sm-text-input-full-width First Name
+				li
+					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
+				p.sm-text-input-full-width Last Name
+				li
+					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
+				p.sm-text-input-full-width Address
+				li
+					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
+				p.sm-text-input-full-width City
+				li
+					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
+				p.sm-text-input-full-width State
+				li
+					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
+				p.sm-text-input-full-width Zipcode
+				li
+					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.zip_code', placeholder='{{ users.zip_code }}')
+				p.sm-text-input-full-width Country
+				li
+					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
+				li
+					#sm-settings-google.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
+						img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
+						span.social-sign-in-text.sm-text-s Connect to Google
+				li
+					#sm-settings-facebook.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
+						img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
+						span.social-sign-in-text.sm-text-s Connect to Facebook
 
 		//- ul.connections 
 		//- 	li 
