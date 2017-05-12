@@ -972,8 +972,8 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 									{[(req.session.passport.user.uname)]: req.session.passport.user.email},
 									{
 										'FIRSTNAME' : req.session.passport.user.uname,
-										'CHATLINK' : config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id+'/messages',
-										'MYSTUFFLINK' : config.subdomain+'.stuffmapper.com/stuff/my/items/'+req.params.id,
+										'CHATLINK' : config.subdomain+'/stuff/my/items/'+req.params.id+'/messages',
+										'MYSTUFFLINK' : config.subdomain+'/stuff/my/items/'+req.params.id,
 										'ITEMTITLE':result1.rows[0].title,
 										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
 									}
