@@ -25,6 +25,8 @@ function ConversationController() {
 				$.post(config.api.host + '/api/v'+config.api.version+'/conversation/read/'+conversationPostId, function(data) {
 					$('#tab-message-badge').html(data.res);
 				});
+				console.log("1 "+data.res.conversation)
+				console.log("2 "+data.res.info)
 				$scope.conversation = data.res.conversation;
 				$scope.conversationInfo = data.res.info;
 				console.log($scope.conversationInfo);
@@ -59,7 +61,7 @@ function ConversationController() {
 				if(data.res.info.type === 'lister') $('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div><em>'+data.res.info.users[data.res.info.dibber_id]+'</em> Dibs\'d your <em>'+data.res.info.title+'</em>. They must send you a message within 15 minutes to keep their Dibs.</div></div></li>');
 				if(data.res.info.type === 'dibber') {
 					firstMessage = true;
-					$('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>You Dibs\'d <em>'+data.res.info.title+'</em> – Message the lister within 15 minutes to keep your Dibs!</div></div></li>');
+					$('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>You Dibs\'d '+data.res.info.users[data.res.info.lister_id]+'\'s <em>'+data.res.info.title+'</em> – Message the lister within 15 minutes to keep your Dibs!</div></div></li>');
 				}
 				$('#conversation-messages').prepend('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><img src="https://cdn.stuffmapper.com'+$scope.conversationInfo.image+'" /><strong>'+$scope.conversationInfo.title+'</strong><div>'+$scope.conversationInfo.description+'</div></div></li>');
 				requestAnimationFrame(function() {
