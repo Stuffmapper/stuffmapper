@@ -200,7 +200,7 @@ router.get('/stuff/id/:id', function(req, res) {
 
 router.get('/stuff/my', isAuthenticated, function(req, res) {
 	if(req.isAuthenticated()) db.setEvent(2,'{{user}} loaded their stuff', req.session.passport.user.id);
-	queryServer(res, 'SELECT posts.title, users.uname, images.image_url, event.message, event.date_created FROM event, posts, users, images WHERE event.user_id1 = $1 AND users.id = event.user_id1 AND images.post_id = event.post_id AND posts.id = event.post_id AND level >= 3 ORDER BY event.date_created DESC LIMIT 10', [req.session.passport.user.id], function(result8) {
+	queryServer(res, 'SELECT posts.title, users.uname, images.image_url, event.message, event.date_created FROM event, posts, users, images WHERE event.user_id1 = $1 AND users.id = event.user_id1 AND images.post_id = event.post_id AND posts.id = event.post_id AND level >= 3 AND event.message NOT LIKE \'%updated%\' ORDER BY event.date_created DESC LIMIT 10', [req.session.passport.user.id], function(result8) {
 		result8.rows.forEach(function(e, i) {
 			result8.rows[i].message = e.message.replace('{{user}}', '<i>'+result8.rows[i].uname+'</i>').replace('{{post}}', '<i>'+result8.rows[i].title+'</i>');
 			result8.rows[i].date_created = new Date(e.date_created).toLocaleTimeString('en-us', {
@@ -434,7 +434,7 @@ router.post('/stuff/:id', isAuthenticated, function(req, res) {
 	db.setEvent(3,'{{user}} updated {{post}}',req.session.passport.user.id, req.params.id);
 	var query = [
 		'UPDATE posts SET title = $2, description = $3, lat = $4, lng = $5,',
-		'category_id = $6 WHERE id = $7 AND user_id = $1',
+		'category_id = $6, date_edited = current_timestamp WHERE id = $7 AND user_id = $1',
 		'RETURNING id'
 	].join(' ');
 	var values = [
