@@ -302,21 +302,21 @@ function MyItemsController() {
 							//$('#get-item-single-'+$stateParams.id+' div a').attr('href', 'https://maps.google.com/maps?q='+values.lat+','+values.lng);
 							$('#get-item-single-'+$stateParams.id+' div a img').attr('src', 'https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C'+values.lat+','+values.lng+'&key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U');
 							$('#get-item-single-'+$stateParams.id+' div .my-item-update').text('Item last updated on '+$scope.listItem.dateEdited);
-							$('.get-item-single-image-container').css('background-image', 'url('+$('#give-image-canvas-uploader')[0].toDataURL()+')');
-							$('.get-item-single-image-container').attr('data-src', $('#give-image-canvas-uploader')[0].toDataURL());
-							$('.fancybox-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
-							fallBackImage = $('#give-image-canvas-uploader')[0].toDataURL();
-							$("[data-fancybox]").fancybox({
-								closeClickOutside: true,
-								iframe: {
-									scrolling: 'auto',
-									preload: false
-								},
-								errorTpl : '<div class="fancybox-placeholder" style="transform: translate(-50%, -50%);top: 50%;left: 50%; height: 50%; width: 50%; opacity: 1"><img class="fancybox-image" src=\''+ fallBackImage +'\'/></div>'
-							});
 							if(imageSet) {
 								$('#my-item-single-container-'+$stateParams.id).attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 								$('#post-item-'+$stateParams.id+' img').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+								$('.get-item-single-image-container').css('background-image', 'url(' + $('#give-image-canvas-uploader')[0].toDataURL() + ')');
+								$('.get-item-single-image-container').attr('data-src', $('#give-image-canvas-uploader')[0].toDataURL());
+								$('.fancybox-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+								fallBackImage = $('#give-image-canvas-uploader')[0].toDataURL();
+								$("[data-fancybox]").fancybox({
+									closeClickOutside: true,
+									iframe: {
+										scrolling: 'auto',
+										preload: false
+									},
+									errorTpl: '<div class="fancybox-placeholder" style="transform: translate(-50%, -50%);top: 50%;left: 50%; height: 50%; width: 50%; opacity: 1"><img class="fancybox-image" src=\'' + fallBackImage + '\'/></div>'
+								});
 							}
 							// exitEdit();
 							cb && cb();
