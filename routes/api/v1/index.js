@@ -285,7 +285,7 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 	db.setEvent(2,'{{user}} loaded {{post}}',req.session.passport.user.id, req.params.id);
 	var query = [
 		'SELECT posts.id, posts.dibbed, posts.user_id, posts.dibber_id, posts.user_id, posts.title, posts.description, posts.attended,',
-		'posts.lat, posts.lng, categories.category, categories.id as category_id, images.image_url',
+		'posts.lat, posts.lng, categories.category, categories.id as category_id, images.image_url, posts.date_edited',
 		'FROM posts, images, categories',
 		'WHERE images.post_id = posts.id AND (posts.user_id = $1 OR posts.dibber_id = $1) AND',
 		'posts.id = $2 AND categories.id = posts.category_id AND images.main = true'

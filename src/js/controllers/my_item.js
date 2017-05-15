@@ -24,6 +24,7 @@ function MyItemsController() {
 					var imageSet = false;
 					data = result;
 					$scope.listItem = data.res;
+					$scope.listItem.dateEdited = dateFormat(data.res.date_edited, "ddd, mmm d, h:MM TT");
 					$scope.markers.forEach(function(e) {
 						if(e.data.id === $scope.listItem.id) {
 							e.data.selected = true;
@@ -142,6 +143,7 @@ function MyItemsController() {
 						// ((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
 						($scope.listItem.type === 'lister' && !$scope.listItem.dibbed && $scope.listItem.attended)?'<div class="sm-text-s sm-full-width">You will be notified by email when someone Dibs your stuff!</div>':'',
 						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />'),
+						'<div class="sm-text-s sm-full-width my-item-update">Item last updated on '+ $scope.listItem.dateEdited +'</div>'
 					].join('\n'));
 					$scope.titleHeader = $([
 						'<div style="width:100%;height:auto;background-color:#fff;display:inline-block;position:relative;">',
@@ -291,13 +293,27 @@ function MyItemsController() {
 								$scope.listItem.lat = values.lat;
 								$scope.listItem.lng = values.lng;
 								$scope.listItem.category = values.category;
+								$scope.listItem.dateEdited = dateFormat(new Date(), "ddd, mmm d, h:MM TT");
 							}
 							$u.toast('Changes have been saved.');
 							$('#my-item-header-text').text(values.title);
 							$('#post-item-'+$stateParams.id+' .get-stuff-item-info div').text(values.title);
 							$('#get-item-single-'+$stateParams.id+' div p').text(values.description);
-							$('#get-item-single-'+$stateParams.id+' div a').attr('href', 'https://maps.google.com/maps?q='+values.lat+','+values.lng);
+							//$('#get-item-single-'+$stateParams.id+' div a').attr('href', 'https://maps.google.com/maps?q='+values.lat+','+values.lng);
 							$('#get-item-single-'+$stateParams.id+' div a img').attr('src', 'https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C'+values.lat+','+values.lng+'&key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U');
+							$('#get-item-single-'+$stateParams.id+' div .my-item-update').text('Item last updated on '+$scope.listItem.dateEdited);
+							$('.get-item-single-image-container').css('background-image', 'url('+$('#give-image-canvas-uploader')[0].toDataURL()+')');
+							$('.get-item-single-image-container').attr('data-src', $('#give-image-canvas-uploader')[0].toDataURL());
+							$('.fancybox-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
+							fallBackImage = $('#give-image-canvas-uploader')[0].toDataURL();
+							$("[data-fancybox]").fancybox({
+								closeClickOutside: true,
+								iframe: {
+									scrolling: 'auto',
+									preload: false
+								},
+								errorTpl : '<div class="fancybox-placeholder" style="transform: translate(-50%, -50%);top: 50%;left: 50%; height: 50%; width: 50%; opacity: 1"><img class="fancybox-image" src=\''+ fallBackImage +'\'/></div>'
+							});
 							if(imageSet) {
 								$('#my-item-single-container-'+$stateParams.id).attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 								$('#post-item-'+$stateParams.id+' img').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
@@ -365,6 +381,7 @@ function MyItemsController() {
 					$scope.acceptPhoto = function() {
 						imageSet = true;
 						$('#edit-item-image').css('background-image', 'url('+$('#give-image-canvas-uploader')[0].toDataURL()+')');
+						$('#edit-item-image').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 						$('#edit-item-image-container').css({
 							'pointer-events':'none'
 						});
