@@ -188,6 +188,7 @@ router.get('/stuff/id/:id', function(req, res) {
 		'categories.id = posts.category_id AND images.main = true'
 	].join(' ');
 	queryServer(res, query, [req.params.id], function(result) {
+		if(!result.rows.length) return res.send({err: true, res: [] });
 		var randVal = 0.0002;
 		result.rows[0].lat += ((Math.random() * randVal) - (randVal / 2));
 		result.rows[0].lng += ((Math.random() * randVal) - (randVal / 2));

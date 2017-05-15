@@ -15,6 +15,9 @@
 		.empty-results-bottom.sm-full-width There doesn't appear to be any stuff in your area. Get started by <a ui-sref="stuff.give">giving stuff</a>!
 	#get-stuff-empty-results.empty-results.sm-hidden(style="background-image:url('img/empty-search.png');z-index: 2;background-color: transparent;")
 		.empty-results-bottom.sm-full-width There isn't any stuff that matches your search right now.
+	#get-item-not-found.empty-results.sm-hidden(style="background-image:url('img/empty-my.png');z-index:1;")
+		.empty-results-bottom.sm-full-width Oops! This stuff isn't here. (The lister deleted it... or it was never here to begin with. )
+			<a ui-sref="stuff.get">Get other stuff</a>, instead!
 	ion-content#masonry-container.animate-250.hide-masonry-container
 		ul.masonry-grid
 			li.masonry-grid-item(ng-repeat="list in listItems | filter:searchStuff:strict" repeat-done="initMasonry(); getDistance()")
