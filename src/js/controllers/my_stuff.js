@@ -115,7 +115,6 @@ function MyStuffController() {
 		var mapSize = (mapZoom*mapZoom*2)/(45/mapZoom);
 		var mapAnchor = mapSize/2;
 		$scope.markers.forEach(function(e) {
-			console.log(e.data);
 			e.setIcon({
 				url: e.data.dibber_id?(e.data.selected?'img/marker-dibsd-selected.png':'img/Marker-dibsd-all.png'):(e.data.selected?'img/marker-selected.png':'img/Marker-all.png'),
 				scaledSize: new google.maps.Size(mapSize, mapSize),

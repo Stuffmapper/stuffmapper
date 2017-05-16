@@ -782,6 +782,27 @@ html.ionic.ios {
 	transform: translate3d(100%, 0px, 0);
 	opacity: 0.0001;
 }
+.get-item-message-dibbed {
+	white-space: pre-wrap;
+	display: block;
+	position: relative;
+	width: 100%;
+	line-height: 30px;
+	text-align: center;
+	background-color: $silver-light;
+	color: white;
+}
+.get-item-message-lister {
+	white-space: pre-wrap;
+	display: block;
+	position: relative;
+	width: 100%;
+	line-height: 30px;
+	text-align: center;
+	background-color: $plum-dark;
+	color: white;
+}
+
 .get-item-single-title {
 	display: inline-block;
 	margin-left: 8px;

@@ -73,8 +73,19 @@
 }
 .sm-button-ghost {
 	border: 2px solid $fog-dark;
-	background-color: #fff;
+	//background-color: #fff;
 	color: $charcoal-dark;
+}
+.sm-button-disbaled {
+	border: 2px solid $fog-dark;
+	//background-color: #fff;
+	color: white;
+	pointer-events: none;
+}
+.sm-button-disbaled:hover, .sm-button-disbaled:active {
+	//color: #fff;
+	border-left-width: 0px;
+	border-right-width: 0px;
 }
 .sm-button-ghost-solid {
 	background-color: #fff;

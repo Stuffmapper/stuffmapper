@@ -100,6 +100,7 @@ gulp.task('js', function(done) {
 	try {
 		gulp.src([
 			'./src/js/lib/jquery/dist/jquery.min.js',
+			'./src/js/lib/lodash/dist/lodash.min.js',
 			'./src/js/util.js',
 			'./src/js/custom/counter_flipper.js',
 			'./src/js/lib/imagesloaded/imagesloaded.pkgd.min.js',

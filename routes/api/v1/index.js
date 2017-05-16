@@ -182,13 +182,13 @@ router.get('/stuff/id/:id', function(req, res) {
 	var query = [
 		'SELECT posts.id, posts.title, posts.description, posts.attended,',
 		'posts.lat, posts.lng, categories.category, images.image_url,',
-		'posts.date_created, posts.date_edited',
+		'posts.date_created, posts.date_edited, posts.dibbed, posts.dibber_id',
 		'FROM posts, images, categories',
 		'WHERE images.post_id = posts.id AND posts.id = $1 AND',
 		'categories.id = posts.category_id AND images.main = true'
 	].join(' ');
-	queryServer(res, query, [req.params.id], function(result) {
-		if(!result.rows.length) return res.send({err: true, res: [] });
+	queryServer(res, query, [req.params.id], function (result) {
+		if (!result.rows.length) return res.send({err: true, res: []});
 		var randVal = 0.0002;
 		result.rows[0].lat += ((Math.random() * randVal) - (randVal / 2));
 		result.rows[0].lng += ((Math.random() * randVal) - (randVal / 2));
@@ -196,6 +196,7 @@ router.get('/stuff/id/:id', function(req, res) {
 			err: null,
 			res: result.rows[0]
 		});
+
 	});
 });
 
@@ -285,7 +286,7 @@ router.get('/stuff/my', isAuthenticated, function(req, res) {
 router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 	db.setEvent(2,'{{user}} loaded {{post}}',req.session.passport.user.id, req.params.id);
 	var query = [
-		'SELECT posts.id, posts.dibbed, posts.user_id, posts.dibber_id, posts.user_id, posts.title, posts.description, posts.attended,',
+		'SELECT posts.id, posts.dibbed, posts.user_id, posts.dibber_id, posts.dibbed, posts.user_id, posts.title, posts.description, posts.attended,',
 		'posts.lat, posts.lng, categories.category, categories.id as category_id, images.image_url, posts.date_edited',
 		'FROM posts, images, categories',
 		'WHERE images.post_id = posts.id AND (posts.user_id = $1 OR posts.dibber_id = $1) AND',
@@ -313,6 +314,11 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 						res: result.rows[0]
 					});
 				});
+			});
+		} else {
+			res.send({
+				err: true,
+				res: []
 			});
 		}
 	});

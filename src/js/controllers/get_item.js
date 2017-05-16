@@ -16,19 +16,6 @@ function GetItemController() {
 				id: 'get-item-single-undefined',
 				class: 'get-item-single-container animate-250'
 			});
-			// $scope.detailsContainer = $('<div>', {
-			// 	class: 'empty-results animate-250',
-			// 	css: {
-			// 		"background": "url('img/empty-my.png')"
-			// 		"z-index": 1
-			// 	}
-			// });
-			// $scope.detailsContainer.html([
-			// 				'<div class="empty-results-bottom sm-full-width">Oops! This stuff isnt here. (The lister deleted it... or it was never here to begin with. ) <a ui-sref="stuff.get">Get other stuff</a>, instead! </div>'
-			// ].join('\n'));
-			// $scope.detailsContainer.appendTo($scope.container);
-			// $scope.container.appendTo('#get-stuff-container');
-
 			$('#masonry-container').css({'visibility': 'hidden'});
 			$('#loading-get-stuff').addClass('sm-hidden');
 			$('#get-item-not-found').removeClass('sm-hidden');
@@ -71,6 +58,26 @@ function GetItemController() {
 				return results;
 			}
 
+			var pickUpInit =false;
+			var listerInit = false;
+			if ($userData.isLoggedIn()) {
+				if (($userData.getUserId() == $scope.listItem.dibber_id) && $scope.listItem.dibbed) {
+					listerInit = true;
+					pickUpInit = true;
+					$scope.pickUpMessage = $('<div>', {
+						class: 'get-item-message-lister',
+						text: "You Dibs'd this item"
+					});
+					$scope.pickUpMessage.appendTo($scope.container);
+				} else if ($scope.listItem.dibbed) {
+					pickUpInit = true;
+					$scope.pickUpMessage = $('<div>', {
+						class: 'get-item-message-dibbed',
+						text: "This item has been Dibs'd by someone else. :("
+					});
+				}
+			}
+
 			/* jshint ignore:end */
 			// openInfoWindow(data.res);
 			$scope.markers.forEach(function (e) {
@@ -91,6 +98,26 @@ function GetItemController() {
 				id: 'get-item-single-' + $stateParams.id,
 				class: 'get-item-single-container sm-hidden animate-250'
 			});
+			if(pickUpInit)	$scope.pickUpMessage.appendTo($scope.container);
+
+
+			var attachedItem = "";
+			if($scope.listItem.attended && !$userData.isLoggedIn()){
+				attachedItem = '<button id="get-single-item-dibs-button' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs! for a Dollar</button>';
+			} else if(!$scope.listItem.attended && !$userData.isLoggedIn()){
+				attachedItem = '<button id="get-single-item-dibs-button-unattended' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>';
+			} else if($scope.listItem.attended && listerInit && $userData.isLoggedIn()){
+				attachedItem = '<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>';
+			} else if(!$scope.listItem.attended && listerInit && $userData.isLoggedIn()){
+				attachedItem = '<button id="get-item-complete-body'+$stateParams.id+'" class="sm-button sm-text-l sm-button-positive sm-button-full-width" style="color:#fff;">Mark as Picked Up</button>';
+			} else if(!listerInit && pickUpInit && $userData.isLoggedIn()){
+				attachedItem = '<button class="sm-button sm-button-disbaled sm-text-l sm-button-full-width">Dibs! is unavailable!</button>';
+			} else if($scope.listItem.attended && $userData.isLoggedIn()){
+				attachedItem = '<button id="get-single-item-dibs-button' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs! for a Dollar</button>';
+			} else if(!$scope.listItem.attended && $userData.isLoggedIn()){
+				attachedItem = '<button id="get-single-item-dibs-button-unattended' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>';
+			}
+
 			$scope.imageContainer = $('<a>', {class: 'get-item-single-image-container animate-250'});
 			$scope.detailsContainer = $('<div>', {class: 'get-item-single-details-container animate-250'});
 			$scope.detailsContainer.html([
@@ -114,7 +141,7 @@ function GetItemController() {
 				'		<input id="dibs-submit-button" class="sm-button sm-button-default sm-text-l sm-button-full-width" type="submit" value="Confirm Dibs! for $1">',
 				'	</form>',
 				'</div>',
-				$scope.listItem.attended ? '<button id="get-single-item-dibs-button' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs! for a Dollar</button>' : '<button id="get-single-item-dibs-button-unattended' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>',
+				attachedItem,
 				'<div class="">',
 				'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
 				'</div>',
@@ -194,6 +221,8 @@ function GetItemController() {
 	function initListener() {
 		$('#get-single-item-dibs-button'+$stateParams.id).on('click', dibs);
 		$('#get-single-item-dibs-button-unattended'+$stateParams.id).on('click', openUnAttendedDibsModal);
+		$('#get-single-item-conversation-button'+$stateParams.id + ', #get-single-item-conversation-popup'+$stateParams.id).on('click', goToConversation);
+		$('#get-item-complete'+$stateParams.id+', #get-item-complete-body'+$stateParams.id).on('click', openCompleteModal);
 	}
 	function dibs() {
 		if($userData.isLoggedIn()) {
@@ -324,6 +353,60 @@ function GetItemController() {
 
 		//}
 	}
+	var goToConversation = function() {
+		$state.go('stuff.my.items.item.conversation', {id: $scope.listItem.id}, { reload: true });
+	};
+
+	function openCompleteModal() {
+		var completeBodyTemplate = 'Has <i>{{title}}</i> been picked up?';
+		$('#complete-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', $scope.listItem.title));
+		$('#my-item-complete-cancel').on('click', completeCancel);
+		$('#my-item-complete-confirm').on('click', completeConfirm);
+		$u.modal.open('complete-confirm-modal', function() {
+			$('#my-item-complete-cancel').off('click', completeCancel);
+			$('#my-item-complete-confirm').off('click', completeConfirm);
+		});
+	}
+	function completeCancel() {
+		$u.modal.close('complete-confirm-modal');
+	}
+	function completeConfirm() {
+		$u.modal.close('complete-confirm-modal');
+		console.log("completeConfirm  "+$scope.listItem.id)
+		$u.api.completeStuffById($scope.listItem.id, function() {
+			$('#post-item-'+$scope.listItem.id).parent().parent().remove();
+			$u.toast('Dibs for <i>'+$scope.listItem.title+'</i> has been completed!');
+			fbq('trackCustom', 'CompleteDibs');
+			requestAnimationFrame(function(){$(window).resize();});
+			$state.go('stuff.my.items',{},{ reload: true });
+			setTimeout(function(){$state.reload('stuff.my.items');}, 250);
+		});
+	}
+	function openCompleteUnattendedModal() {
+		var completeBodyTemplate = 'Have you picked up <i>{{title}}</i>?';
+		$('#complete-unattended-confirm-modal-body').html(completeBodyTemplate.replace('{{title}}', $scope.listItem.title).replace('{{dibber}}', data.res.users[data.res.dibber_id]).replace('{{lister}}', data.res.users[data.res.user_id]));
+		$('#my-item-complete-unattended-cancel').on('click', completeUnattendedCancel);
+		$('#my-item-complete-unattended-confirm').on('click', completeUnattendedConfirm);
+		$u.modal.open('complete-unattended-confirm-modal', function() {
+			$('#my-item-complete-unattended-cancel').off('click', completeUnattendedCancel);
+			$('#my-item-complete-unattended-confirm').off('click', completeUnattendedConfirm);
+		});
+	}
+	function completeUnattendedCancel() {
+		$u.modal.close('complete-unattended-confirm-modal');
+	}
+	function completeUnattendedConfirm() {
+		$u.modal.close('complete-unattended-confirm-modal');
+		$u.api.completeStuffById(data.res.id, function() {
+			$('#post-item-'+data.res.id).parent().parent().remove();
+			$u.toast('Dibs for <i>'+data.res.title+'</i> has been completed!');
+			fbq('trackCustom', 'CompleteDibs');
+			requestAnimationFrame(function(){$(window).resize();});
+			$state.go('stuff.my.items');
+			setTimeout(function(){$state.reload('stuff.my.items');}, 250);
+		});
+	}
+
 	$scope.$on('$destroy', function() {
 		$('#map-view').off('mousedown', backToGetStuff);
 		if(singleItemTemplateMap) {
@@ -341,6 +424,8 @@ function GetItemController() {
 		$('.get-stuff-back-button').addClass('sm-hidden');
 		$('#get-stuff-item-title').addClass('sm-hidden');
 		$('#get-single-item-dibs-button'+$stateParams.id).off('click', dibs);
+		$('#get-single-item-conversation-button' + $scope.listItem.id).off('click', goToConversation);
+		$('#get-item-complete'+$scope.listItem.id+', #get-item-complete-body'+$scope.listItem.id).off('click', openCompleteModal);
 		if($scope.listItem) {
 			$scope.markers.forEach(function (e) {
 				if (e.data.id === $scope.listItem.id) {
