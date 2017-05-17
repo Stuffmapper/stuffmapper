@@ -23,7 +23,7 @@ function MyItemsController() {
 				if(result.err) {
 					$state.go('stuff.my.items', {}, { reload: true });
 					setTimeout(function() {
-						$u.toast('Item not valid or doesn\'t below to your account');
+						$u.toast('Item not valid or doesn\'t belong to your account');
 					});
 				} else {
 					var imageSet = false;
