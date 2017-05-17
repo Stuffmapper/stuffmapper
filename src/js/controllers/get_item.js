@@ -120,15 +120,8 @@ function GetItemController() {
 
 			$scope.imageContainer = $('<a>', {class: 'get-item-single-image-container animate-250'});
 			$scope.imageCategory = $('<div>', {
-				class: 'stuff-item-category-distance-owner ng-binding',
-				text: $scope.listItem.category || "General",
-				css: {
-					"float": "left",
-					"font-size": "16px",
-					"line-height": "30px",
-					"max-width": "100%",
-					"color": "#3C3B3D"
-				}
+				class: 'stuff-single-item-category',
+				text: $scope.listItem.category
 			});
 			$scope.detailsContainer = $('<div>', {class: 'get-item-single-details-container animate-250'});
 			$scope.detailsContainer.html([
@@ -161,7 +154,7 @@ function GetItemController() {
 				'<div class="sm-text-s sm-full-width">Item last updated on ' + $scope.listItem.dateEdited + '</div>'
 			].join('\n'));
 			$scope.imageContainer.appendTo($scope.container);
-			$scope.imageCategory.appendTo($scope.container);
+			$scope.imageCategory.appendTo($scope.imageContainer);
 			$scope.detailsContainer.appendTo($scope.container);
 			$scope.container.appendTo('#get-stuff-container');
 			requestAnimationFrame(function () {

@@ -78,6 +78,10 @@ function MyItemsController() {
 					].join('');
 					$scope.container = $('<div id="get-item-single-'+$stateParams.id+'" class="my-item-single-container animate-250 sm-hidden"></div>');
 					$scope.imageContainer = $('<a class="get-item-single-image-container animate-250"></a>');
+					$scope.imageCategory = $('<div>', {
+						class: 'stuff-single-item-category ng-binding',
+						text: $scope.listItem.category
+					});
 					$scope.detailsContainer = $('<div class="get-item-single-details-container animate-250"></div>');
 					$scope.editContainerHeader = $([
 						'<div class="animate-250" style="width: 100%;height: auto;background-color: #fff;display: inline-block;position: absolute;top: 0px;z-index: 2;opacity:0.0001;">',
@@ -198,6 +202,7 @@ function MyItemsController() {
 					var containerContainer = $('<div class="get-item-single-item-container-container"></div>');
 					if(pickUpInit)	$scope.pickUpMessage.appendTo(containerContainer);
 					$scope.imageContainer.appendTo(containerContainer);
+					$scope.imageCategory.appendTo($scope.imageContainer);
 					$scope.detailsContainer.appendTo(containerContainer);
 					$scope.editContainer.appendTo(containerContainer);
 					$scope.editContainerHeader.appendTo(containerContainer);
@@ -324,13 +329,15 @@ function MyItemsController() {
 								$scope.listItem.description = values.description;
 								$scope.listItem.lat = values.lat;
 								$scope.listItem.lng = values.lng;
-								$scope.listItem.category = values.category;
+								$scope.listItem.category_id = values.category;
+								$scope.listItem.category = $('#edit-item-category option:selected').text();
 								$scope.listItem.dateEdited = dateFormat(new Date(), "ddd, mmm d, h:MM TT");
 							}
 							$u.toast('Changes have been saved.');
 							$('#my-item-header-text').text(values.title);
 							$('#post-item-'+$stateParams.id+' .get-stuff-item-info div').text(values.title);
 							$('#get-item-single-'+$stateParams.id+' div p').text(values.description);
+							$('#get-item-single-'+$stateParams.id+' div.stuff-single-item-category').text($scope.listItem.category);
 							//$('#get-item-single-'+$stateParams.id+' div a').attr('href', 'https://maps.google.com/maps?q='+values.lat+','+values.lng);
 							$('#get-item-single-'+$stateParams.id+' div a img').attr('src', 'https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C'+values.lat+','+values.lng+'&key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U');
 							$('#get-item-single-'+$stateParams.id+' div .my-item-update').text('Item last updated on '+$scope.listItem.dateEdited);
@@ -558,12 +565,13 @@ function MyItemsController() {
 			};
 			var backToMyStuff = function() {
 				$state.go('stuff.my.items');
+				/*$state.go('stuff.my.items', {}, {reload: true});*/
 			};
 			var edit = function() {
 				$("#edit-item-category option:selected").each(function () {
 					$(this).removeAttr('selected');
 				});
-				$('#edit-item-category option[value=\''+parseInt($scope.listItem.category_id)+'\']').attr('selected','selected');
+				$('#edit-item-category').val($scope.listItem.category_id);
 				$('.edit-item-single-details-container').removeClass('sm-hidden');
 				$scope.editContainerHeader.css({
 					'opacity':1,
