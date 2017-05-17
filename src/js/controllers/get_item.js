@@ -127,7 +127,7 @@ function GetItemController() {
 					"font-size": "16px",
 					"line-height": "30px",
 					"max-width": "100%",
-					"color": "#F5F7FA"
+					"color": "#3C3B3D"
 				}
 			});
 			$scope.detailsContainer = $('<div>', {class: 'get-item-single-details-container animate-250'});
