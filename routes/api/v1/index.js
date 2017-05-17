@@ -290,7 +290,7 @@ router.get('/stuff/my/id/:id', isAuthenticated, function(req, res) {
 		'posts.lat, posts.lng, categories.category, categories.id as category_id, images.image_url, posts.date_edited',
 		'FROM posts, images, categories',
 		'WHERE images.post_id = posts.id AND (posts.user_id = $1 OR posts.dibber_id = $1) AND',
-		'posts.id = $2 AND categories.id = posts.category_id AND images.main = true'
+		'posts.id = $2 AND categories.id = posts.category_id AND images.main = true AND posts.archived =false'
 	].join(' ');
 	var values = [
 		parseInt(req.session.passport.user.id),

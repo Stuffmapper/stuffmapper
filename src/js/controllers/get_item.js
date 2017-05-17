@@ -119,6 +119,17 @@ function GetItemController() {
 			}
 
 			$scope.imageContainer = $('<a>', {class: 'get-item-single-image-container animate-250'});
+			$scope.imageCategory = $('<div>', {
+				class: 'stuff-item-category-distance-owner ng-binding',
+				text: $scope.listItem.category || "General",
+				css: {
+					"float": "left",
+					"font-size": "16px",
+					"line-height": "30px",
+					"max-width": "100%",
+					"color": "#F5F7FA"
+				}
+			});
 			$scope.detailsContainer = $('<div>', {class: 'get-item-single-details-container animate-250'});
 			$scope.detailsContainer.html([
 				((!data.res.attended) ? '<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>' : ''),
@@ -150,6 +161,7 @@ function GetItemController() {
 				'<div class="sm-text-s sm-full-width">Item last updated on ' + $scope.listItem.dateEdited + '</div>'
 			].join('\n'));
 			$scope.imageContainer.appendTo($scope.container);
+			$scope.imageCategory.appendTo($scope.container);
 			$scope.detailsContainer.appendTo($scope.container);
 			$scope.container.appendTo('#get-stuff-container');
 			requestAnimationFrame(function () {
