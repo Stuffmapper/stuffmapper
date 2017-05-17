@@ -185,7 +185,7 @@ router.get('/stuff/id/:id', function(req, res) {
 		'posts.date_created, posts.date_edited, posts.dibbed, posts.dibber_id',
 		'FROM posts, images, categories',
 		'WHERE images.post_id = posts.id AND posts.id = $1 AND',
-		'categories.id = posts.category_id AND images.main = true'
+		'categories.id = posts.category_id AND images.main = true AND posts.archived = false'
 	].join(' ');
 	queryServer(res, query, [req.params.id], function (result) {
 		if (!result.rows.length) return res.send({err: true, res: []});

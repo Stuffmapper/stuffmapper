@@ -23,7 +23,7 @@ function MyItemsController() {
 				if(result.err) {
 					$state.go('stuff.my.items', {}, { reload: true });
 					setTimeout(function() {
-						$u.toast('You have no item with entered item id');
+						$u.toast('Item not valid or doesn\'t below to your account');
 					});
 				} else {
 					var imageSet = false;
