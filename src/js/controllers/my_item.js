@@ -337,7 +337,7 @@ function MyItemsController() {
 							$('#my-item-header-text').text(values.title);
 							$('#post-item-'+$stateParams.id+' .get-stuff-item-info div').text(values.title);
 							$('#get-item-single-'+$stateParams.id+' div p').text(values.description);
-							$('#get-item-single-'+$stateParams.id+' div.stuff-single-item-category').text($scope.listItem.category);
+							$('#get-item-single-'+$stateParams.id+' div a div.stuff-single-item-category').text($scope.listItem.category);
 							//$('#get-item-single-'+$stateParams.id+' div a').attr('href', 'https://maps.google.com/maps?q='+values.lat+','+values.lng);
 							$('#get-item-single-'+$stateParams.id+' div a img').attr('src', 'https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C'+values.lat+','+values.lng+'&key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U');
 							$('#get-item-single-'+$stateParams.id+' div .my-item-update').text('Item last updated on '+$scope.listItem.dateEdited);
