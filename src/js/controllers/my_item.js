@@ -54,7 +54,7 @@ function MyItemsController() {
 					} else if (($userData.getUserId() == $scope.listItem.user_id) && $scope.listItem.dibbed) {
 						pickUpInit = true;
 						$scope.pickUpMessage = $('<div>', {
-							class: 'get-item-message-dibbed',
+							class: 'get-item-message-lister',
 							text: "This item has been Dibs'd!"
 						});
 					} else if (($userData.getUserId() != $scope.listItem.user_id)
@@ -211,6 +211,7 @@ function MyItemsController() {
 					requestAnimationFrame(function() {
 						requestAnimationFrame(function() {
 							$('.get-item-single-image-container').css({'background-image':'url(\'https://cdn.stuffmapper.com'+$scope.listItem.image_url+'\')'});
+							$('.get-item-single-image-container').css({'background-position':'50% 0%'});
 							$('.get-item-single-image-container').attr({'data-fancybox':''});
 							$('.get-item-single-image-container').attr({'data-type':'image'});
 							$('.get-item-single-image-container').attr({'data-src':'https://cdn.stuffmapper.com'+$scope.listItem.image_url+''});

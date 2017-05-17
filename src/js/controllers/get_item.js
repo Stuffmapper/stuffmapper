@@ -162,6 +162,7 @@ function GetItemController() {
 					initPayment();
 					initListener();
 					$('.get-item-single-image-container').css({'background-image': 'url(\'https://cdn.stuffmapper.com' + $scope.listItem.image_url + '\')'});
+                    $('.get-item-single-image-container').css({'background-position':'50% 0%'});
 					$('.get-item-single-image-container').attr({'data-fancybox': ''});
 					$('.get-item-single-image-container').attr({'data-type': 'image'});
 					$('.get-item-single-image-container').attr({'data-src': 'https://cdn.stuffmapper.com' + $scope.listItem.image_url + ''});
