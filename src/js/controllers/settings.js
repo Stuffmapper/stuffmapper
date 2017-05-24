@@ -11,6 +11,8 @@ function SettingsController() {
 		utilsScript: $.fn.intlTelInput.loadUtils("js/lib/intl-tel-input/build/js/utils.js")
 	});
 	$("#setting-phone").intlTelInput("setCountry", "us");
+	$('.intl-tel-input .flag-container').css({"width": "300px"});
+	$('.intl-tel-input .flag-container').css({"max-width": "300px"});
 
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
