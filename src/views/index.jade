@@ -302,27 +302,31 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				.sm-modal-content
 					.modal-steps
 						#sign-in-step.modal-step.animate-250.hidden-modal
-							h2.sm-modal-title.animate-250 Sign In
-							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInUpNewStep()") Don't have an account ?
+							h2.sm-modal-title.animate-250 Sign in
+							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInUpNewStep()") Don't have an account? >
 							.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
 								img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
 								span.social-sign-in-text.sm-text-m Sign in with Google
 							.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
 								img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
 								span.social-sign-in-text.sm-text-m Sign in with Facebook
-							.sm-full-width.sm-text-s
-								p(style="text-align: center;")
-									| By clicking "Sign In", you agree to the
-									a(href="/privacy" target="_blank" style="margin-left: 3px;margin-right:3px;") Privacy
-									| and
-									a(href="/useragreement" target="_blank" style="margin-left: 3px;") Terms
-							span.sign-in-local-text — or use your email —
-							input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="email address")
-							input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password")
-							#sign-in-password-eye.fa.fa-eye(style="position:absolute;top:268px;right:20px;height:20px;width:20px;cursor: pointer;")
+							span.sm-full-width
+								hr
+							//.sm-full-width.sm-text-s
+							//	p(style="text-align: center;")
+							//		| By clicking "Sign In", you agree to the
+							//		a(href="/privacy" target="_blank" style="margin-left: 3px;margin-right:3px;") Privacy
+							//		| and
+							//		a(href="/useragreement" target="_blank" style="margin-left: 3px;") Terms
+							span.sm-full-width.sm-text-m(style="text-align: center;") Or sign in with email:
+							label.sm-full-width.sm-text-m(for='sign-in-email', style="padding-bottom: 0;margin: 15px 22px 0px;") email address
+							input#sign-in-email.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="mapper@stuufmapper.com", style="margin: 0px 20px;")
+							label.sm-full-width.sm-text-m(for='sign-in-password', style="padding-bottom: 0;margin: 15px 22px 0px;") password
+							input#sign-in-password.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="......", style="margin: 0px 20px;")
+							//- #sign-in-password-eye.fa.fa-eye(style="position:absolute;top:268px;right:20px;height:20px;width:20px;cursor: pointer;")
 							#sign-in-error-warning-container(style="width:100%;display:block;position:relative;")
 							.sm-full-width(style="height: 20px;")
-								#sign-in-forgot-password.sm-text-s(style="float: right;" ng-click="forgotPassword()") Forgot your password?
+								#sign-in-forgot-password.sm-text-s(style="float: right;" ng-click="forgotPassword()") forgot password?
 							input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign in" ng-click="login()")
 							//.sm-button-group(style="width: 100%;display:block;margin-top: -20px;")
 							//	.sm-button-group-2.sm-button-group-left(style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;")
@@ -333,6 +337,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							h2.sm-modal-title.animate-250 Sign in / Sign up
 							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInOldFirstStep()") Did you sign up without a phone number? >
 							div.sm-full-width
+								label.sm-full-width.sm-text-m(for='sign-in-up-phone-number', style="padding-bottom: 0;margin: 15px 2px 0px;") phone number
 								input#sign-in-up-phone-number.sm-text-input.sm-text-input-full-width(type="text", data-initial-country="us", ng-intl-tel-input)
 							div.sm-full-width.sm-text-s
 								span(class="fa fa-info-circle",aria-hidden="true", style="color:blue")
@@ -343,19 +348,26 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 						#sign-up-phone-confirm-step.modal-step.animate-250.hidden-modal
 							h2.sm-modal-title.animate-250 Confirm account
 							.modal-back-button(ng-click="signUpPhoneBack()")
-							input#sign-up-phone-confirm-code.sm-text-input.sm-text-input-full-width(type="text" placeholder="######")
+							//input#sign-up-phone-confirm-code.sm-text-input.sm-text-input-full-width(type="text" placeholder="######")
+							label.sm-full-width.sm-text-m(for='sign-up-phone-confirm-code', style="padding-bottom: 0;margin: 15px 22px 0px;") confirmation code:
+							input#sign-up-phone-confirm-code.sm-text-input.sm-text-input-full-width(type="text" placeholder="######", style="margin: 0px 20px;")
 							div.sm-full-width.sm-text-s
 								span(class="fa fa-info-circle",aria-hidden="true", style="color:blue")
 								i
 									| &nbsp; Check your SMS messages for the confirmation code to verify your account.
 								hr
-								sm-checkbox(id="sign-up-phone-confirm-terms", name="signUpPhoneConfirmTerms", full-width="true", ng-model="main.termsAgreement", ng-init="termsAgreement = true") I agree to terms & conditions.
+							//sm-checkbox#sign-up-phone-confirm-terms(name="signUpPhoneConfirmTerms", full-width="true", ng-model="main.termsAgreement", ng-init="termsAgreement = true") I agree to <a href="/useragreement" target="_blank">terms & conditions</a>.
+							.sm-checkbox.sm-checkbox-full-width#sign-up-phone-confirm-terms
+								input(type='checkbox', checked="checked")
+								label I agree to <a href="/useragreement" target="_blank">terms & conditions</a>.
 							#sign-up-phone-confirm-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#sm-sign-up-phone-confirm-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign up" ng-click="signUpPhoneConfirm()")
 						#sign-in-phone-confirm-step.modal-step.animate-250.hidden-modal
-							h2.sm-modal-title.animate-250 Complete Sign in
+							h2.sm-modal-title.animate-250 Complete sign in
 							.modal-back-button(ng-click="signInPhoneBack()")
-							input#sign-in-phone-confirm-code.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="######")
+							//input#sign-in-phone-confirm-code.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="######")
+							label.sm-full-width.sm-text-m(for='sign-in-phone-confirm-code', style="padding-bottom: 0;margin: 15px 22px 0px;") confirmation code:
+							input#sign-in-phone-confirm-code.sm-text-input.sm-text-input-full-width(type="text" placeholder="######", style="margin: 0px 20px;")
 							div.sm-full-width.sm-text-s
 								span(class="fa fa-info-circle",aria-hidden="true", style="color:blue")
 								i
@@ -369,7 +381,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							input#sign-up-password1.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="password" placeholder="password *")
 							input#sign-up-fname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="first name *")
 							input#sign-up-lname.sm-sign-up-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="last name *")
-							#toggle-password-visibility.fa.fa-eye(ng-click="toggleVisibility()")
+							//#toggle-password-visibility.fa.fa-eye(ng-click="toggleVisibility()")
 							.sm-text-s.sm-full-width(style="margin-bottom: 0px") *required field
 							#sign-up-error-warning-container(style="width:100%;display:block;position:relative;")
 							.privacy-and-terms-container
@@ -388,7 +400,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								.sm-text-l.sm-full-width.confirmation-text-bottom(style="bottom: 0px;text-align: center;position: absolute;") to verify your account
 							input#sm-sign-up-ok-fine-button.sm-button.sm-button-default.sm-button-full-width(type="button" value="Ok" ng-click="hideModal('sign-in-up-modal')")
 						#sign-up-forgot-password-step.modal-step.animate-250.hidden-modal
-							h2.sm-modal-title Reset
+							h2.sm-modal-title Password reset
 							.modal-back-button(ng-click="signUpBack()")
 							.confirmation-container
 								.sm-text-m.sm-full-width.confirmation-text Enter your email to reset your password
@@ -436,6 +448,29 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							i.fa.fa-times-circle.sm-email-verification-icon.sm-hidden.animate-250
 							#email-verification-message.sm-text-m.sm-full-width(style="text-align: center;position: absolute;bottom: calc(48px + 10%);") Invalid password reset token!
 							input#password-reset-confirmation-failure-button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="hideModal('password-reset-failure-modal');")
+			#phone-update-modal.modal-window.modal-window-hidden.animate-500
+				.modal-header
+				//- .modal-close(ng-click="hideModal('phone-update-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#phone-update-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Update account
+							div.update-phone-number
+								p(style="margin: 10px 0 10px")
+									b Signing into Stuffmapper just got better!
+								| What are benefits?
+								ul
+									li You'll get timely alerts from messaging
+									li It's an easier and more secure way to log in.
+									li Verifies identity, making Stuffmapper safer for every one.
+
+							b.sm-text-m.sm-full-width Enter your phone number to continue.
+							div.sm-full-width
+								label.sm-full-width.sm-text-m(for='phone-update-modal-field', style="padding-bottom: 0;margin: 15px 2px 0px;") phone number
+								input#phone-update-modal-field.sm-text-input.sm-text-input-full-width(type="text", data-initial-country="us", ng-intl-tel-input)
+							#phone-update-modal-error-warning-container(style="width:100%;display:block;position:relative;")
+							input#phone-update-modal-update-button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="updatePhone();")
 			#undibs-confirm-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
 				.sm-modal-content

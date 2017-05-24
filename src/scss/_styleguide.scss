@@ -196,6 +196,7 @@
 	border: 1px solid $fog-dark;
 	padding: 3px 6px;
 	color: $charcoal-light;
+	line-height: 30px;
 }
 .sm-text-input-full-width, .sm-text-area-full-width {
 	width: calc(100% - 40px);
@@ -578,7 +579,9 @@ label:hover:before {
 	display: block;
 }
 
-
+hr {
+	border-color: $fog-light;
+}
 
 
 

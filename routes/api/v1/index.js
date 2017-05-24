@@ -732,10 +732,10 @@ router.post('/account/register/phone', function(req, res) {
 								already_registered: false
 							}
 						});
-						sendCode(
-							result.rows[0].phone_number,
-							result.rows[0].verify_phone_token +' is your Stuffmapper confirmation code.'
-							);
+						// sendCode(
+						// 	result.rows[0].phone_number,
+						// 	result.rows[0].verify_phone_token +' is your Stuffmapper confirmation code.'
+						// 	);
 					});
 
 			});
@@ -746,10 +746,10 @@ router.post('/account/register/phone', function(req, res) {
 					already_registered: true
 				}
 			});
-			sendCode(
-				result1.rows[0].phone_number,
-				result1.rows[0].verify_phone_token+ ' is your Stuffmapper verification code!'
-			);
+			// sendCode(
+			// 	result1.rows[0].phone_number,
+			// 	result1.rows[0].verify_phone_token+ ' is your Stuffmapper verification code!'
+			// );
 
 		}
 	});
@@ -963,6 +963,33 @@ router.post('/account/login', function(req, res, next) {
 			});
 		});
 	})(req, res, next);
+});
+
+router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
+	var query = [
+		'UPDATE users SET phone_number = $1, verified_phone = true',
+		'WHERE email = $2',
+		'RETURNING *'
+	].join(' ');
+	queryServer(res, query, [req.body.phone_number, req.body.email], function (result) {
+		if (result.rows.length == 0) {
+			return res.send({
+				err: null,
+				res: {
+					inserted: false
+				}
+			});
+		} else if (result.rows.length >= 1) {
+			return res.send({
+				err: null,
+				res: {
+					inserted: true
+				}
+			});
+
+		}
+	});
+
 });
 
 router.post('/account/logout', isAuthenticated, function(req, res) {
