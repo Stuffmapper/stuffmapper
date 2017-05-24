@@ -24,7 +24,7 @@ function MainController() {
 		getNumberType: "MOBILE",
 		utilsScript: $.fn.intlTelInput.loadUtils("js/lib/intl-tel-input/build/js/utils.js")
 	})
-	$("#sign-in-up-phone-number").intlTelInput("setCountry", "pk");
+	$("#sign-in-up-phone-number").intlTelInput("setCountry", "us");
 
 	setTimeout(function() {
 		$('#tab-container .stuff-tabs li a').removeClass('selected');
@@ -736,7 +736,7 @@ function MainController() {
 			phone_number: $('#sign-in-up-phone-number').intlTelInput("getNumber")
 		};
 		$('#sign-in-up-phone-number').css({border:''});
-		if(!$('#sign-in-up-phone-number').intlTelInput("isValidNumber")) {valid=false;$('#sign-in-up-phone-number').css({border:'1px solid red'});message='please insert a valid phone';}
+		if(!$('#sign-in-up-phone-number').intlTelInput("isValidNumber")) {valid=false;$('#sign-in-up-phone-number').css({border:'1px solid red'});message='please insert a valid phone #';}
 
 		if(!valid) {
 			signingUp = false;
