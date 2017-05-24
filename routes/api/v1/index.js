@@ -25,6 +25,10 @@ AWS.config.update( {
 	region          : config.aws.region
 });
 var s3 = new AWS.S3({Bucket: config.aws.bucket});
+var twilio = require('twilio');
+var accountSid = config.twilio.sid;
+var authToken = config.twilio.token;
+var twilioClinet = require('twilio')(accountSid, authToken);
 
 var util = require('./../../../util.js');
 var db = new util.db();
@@ -695,6 +699,62 @@ router.post('/account/register', function(req, res) {
 	});
 });
 
+router.post('/account/register/phone', function(req, res) {
+	var phone_number = req.body.phone_number;
+	queryServer(res, 'SELECT * FROM users WHERE phone_number = $1', [phone_number], function(result1) {
+		if(!result1.rows[0]) {
+			gateway.clientToken.generate({}, function (err, response) {
+				// console.log(err, response);
+
+					var adjectives = ['friendly','amicable','emotional','strategic','informational','formative','formal','sweet','spicy','sour','bitter','determined','committed','wide','narrow','deep','profound','amusing','sunny','cloudy','windy','breezy','organic','incomparable','healthy','understanding','reasonable','rational','lazy','energetic','exceptional','sleepy','relaxing','delicious','fragrant','fun','marvelous','enchanted','magical','hot','cold','rough','smooth','wet','dry','super','polite','cheerful','exuberant','spectacular','intelligent','witty','soaked','beautiful','handsome','oldschool','metallic','enlightened','lucky','historic','grand','polished','speedy','realistic','inspirational','dusty','happy','fuzzy','crunchy'];
+					var nouns = ['toaster','couch','sofa','chair','shirt','microwave','fridge','iron','pants','jacket','skis','snowboard','spoon','plate','bowl','television','monitor','wood','bricks','silverware','desk','bicycle','book','broom','mop','dustpan','painting','videogame','fan','baseball','basketball','soccerball','football','tile','pillow','blanket','towel','belt','shoes','socks','hat','rug','doormat','tires','metal','rocks','oven','washer','dryer','sunglasses','textbooks','fishbowl'];
+					var number = Math.floor(Math.random() * 9999) + 1;
+					function capitalizeFirstLetter(string) {
+						return string.charAt(0).toUpperCase() + string.slice(1);
+					}
+					var uname = capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number;
+					var query = [
+						'INSERT INTO users ',
+						'(uname, phone_number, braintree_token)',
+						'VALUES ($1, $2, $3)',
+						'RETURNING *'
+					].join(' ');
+					var values = [
+						uname,
+						phone_number,
+						response.clientToken
+					];
+					queryServer(res, query, values, function(result) {
+						db.setEvent(1,'{{user}} joined Stuffmapper!',result.rows[0].id);
+						res.send({
+							err : null,
+							res : {
+								already_registered: false
+							}
+						});
+						sendCode(
+							result.rows[0].phone_number,
+							result.rows[0].verify_phone_token +' is your Stuffmapper confirmation code.'
+							);
+					});
+
+			});
+		} else {
+			res.send({
+				err : null,
+				res : {
+					already_registered: true
+				}
+			});
+			sendCode(
+				result1.rows[0].phone_number,
+				result1.rows[0].verify_phone_token+ ' is your Stuffmapper verification code!'
+			);
+
+		}
+	});
+});
+
 router.post('/account/verify', function(req,res) {
 	if(req.body.emailVerificationToken === 'testtoken') {
 		res.send({
@@ -719,6 +779,40 @@ router.post('/account/verify', function(req,res) {
 			else res.send({err:'invalid token',res:null});
 		});
 	}
+});
+
+router.post('/account/verify/phone', function(req,res) {
+		var query = [
+			'UPDATE users SET verify_phone_token = floor(random() * (1000000)::int)::text, verified_phone = true',
+			'WHERE verify_phone_token = $1',
+			'RETURNING *'
+		].join(' ');
+		var values = [
+			req.body.phone_token
+		];
+		queryServer(res, query, values, function(result) {
+			if(result.rows.length >= 1) {
+				db.setEvent(1,'{{user}} verified their account',result.rows[0].id);
+				req.logIn(result.rows[0], function(err) {
+					if (err) {
+						return res.send({
+							err: err,
+							res: {
+								isValid: false
+							}
+						});
+					}
+					return res.send({
+						err: null,
+						res:{
+							user: result.rows[0],
+							isValid: true
+						}
+					});
+				});
+			}
+			else res.send({err:'invalid code',res:null});
+		});
 });
 
 router.post('/account/password/token', function(req,res) {
@@ -792,6 +886,44 @@ router.post('/account/confirmation', function(req, res) {
 			else res.send({err:'There was an issue confirming your email address.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.'});
 		});
 	}
+});
+
+router.post('/account/confirmation/phone', function(req, res) {
+		var query = [
+			'UPDATE users SET verify_phone_token = floor(random() * (1000000)::int)::text',
+			'WHERE verify_phone_token = $1',
+			'RETURNING *'
+		].join(' ');
+		queryServer(res, query, [req.body.phone_token], function(result) {
+			if (result.rows.length == 0) {
+				return res.send({
+					err: true,
+					res: {
+						isValid: false
+					}
+				});
+			} else if(result.rows.length >= 1){
+				req.logIn(result.rows[0], function(err) {
+					if (err) {
+						return res.send({
+							err: err,
+							res: {
+								isValid: false
+							}
+						});
+					}
+					return res.send({
+						err: null,
+						res:{
+							user: result.rows[0],
+							isValid: true
+						}
+					});
+				});
+			}
+			//else res.send({err:'There was an issue confirming your phone number.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.'});
+		});
+
 });
 
 router.post('/account/login', function(req, res, next) {
@@ -1628,6 +1760,25 @@ function sendTemplate(template, subject, to, args) {
 	}, function(e) {
 		console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
 	});
+}
+
+function sendCode(to, msg, cb) {
+
+	twilioClinet.messages.create({
+		body: msg,
+		to: to,
+		from: config.twilio.phone
+	}, function(error, message) {
+		if (!error) {
+			console.log('Message sent on: '+message.dateCreated);
+			//cb(null, message.status);
+		} else {
+			console.error('Oops! There was an error during sending message ' +error);
+			console.error('Failed! '+msg);
+			//cb(error, message.status);
+		}
+	});
+
 }
 
 module.exports = router;
