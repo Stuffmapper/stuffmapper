@@ -770,10 +770,10 @@ router.post('/account/register/phone', function(req, res) {
 							already_registered: false
 						}
 					});
-					// sendCode(
-					// 	result1.rows[0].phone_number,
-					// 	result1.rows[0].verify_phone_token + ' is your Stuffmapper verification code!'
-					// );
+					sendCode(
+						result1.rows[0].phone_number,
+						result1.rows[0].verify_phone_token + ' is your Stuffmapper verification code!'
+					);
 				}
 			});
 		}
