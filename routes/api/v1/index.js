@@ -734,10 +734,10 @@ router.post('/account/register/phone', function(req, res) {
 								already_registered: false
 							}
 						});
-						// sendCode(
-						// 	result.rows[0].phone_number,
-						// 	result.rows[0].verify_phone_token +' is your Stuffmapper confirmation code.'
-						// 	);
+						sendCode(
+							result.rows[0].phone_number,
+							result.rows[0].verify_phone_token +' is your Stuffmapper confirmation code.'
+							);
 					});
 
 			});
@@ -759,10 +759,10 @@ router.post('/account/register/phone', function(req, res) {
 							already_registered: true
 						}
 					});
-					// sendCode(
-					// 	result1.rows[0].phone_number,
-					// 	result1.rows[0].verify_phone_token + ' is your Stuffmapper confirmation code!'
-					// );
+					sendCode(
+						result1.rows[0].phone_number,
+						result1.rows[0].verify_phone_token + ' is your Stuffmapper confirmation code!'
+					);
 				} else {
 					res.send({
 						err: null,
