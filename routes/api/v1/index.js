@@ -9,6 +9,7 @@ var saltRounds = 10;
 var passport = require('passport');
 var path = require('path');
 var request = require('request');
+var randomize = require('randomatic');
 var stage = process.env.STAGE || 'development';
 var config = require(path.join(__dirname, '/../../../config'))[stage];
 var pgUser = config.db.user;
@@ -715,13 +716,14 @@ router.post('/account/register/phone', function(req, res) {
 					var uname = capitalizeFirstLetter(adjectives[Math.floor(Math.random() * adjectives.length)]) + capitalizeFirstLetter(nouns[Math.floor(Math.random() * nouns.length)]) + number;
 					var query = [
 						'INSERT INTO users ',
-						'(uname, phone_number, braintree_token)',
+						'(uname, phone_number, verify_phone_token, braintree_token)',
 						'VALUES ($1, $2, $3)',
 						'RETURNING *'
 					].join(' ');
 					var values = [
 						uname,
 						phone_number,
+						randomize('0', 6),
 						response.clientToken
 					];
 					queryServer(res, query, values, function(result) {
@@ -732,24 +734,48 @@ router.post('/account/register/phone', function(req, res) {
 								already_registered: false
 							}
 						});
-						sendCode(
-							result.rows[0].phone_number,
-							result.rows[0].verify_phone_token +' is your Stuffmapper confirmation code.'
-							);
+						// sendCode(
+						// 	result.rows[0].phone_number,
+						// 	result.rows[0].verify_phone_token +' is your Stuffmapper confirmation code.'
+						// 	);
 					});
 
 			});
 		} else {
-			res.send({
-				err : null,
-				res : {
-					already_registered: true
+			var query = [
+				'UPDATE users SET verify_phone_token = $1',
+				'WHERE phone_number = $2',
+				'RETURNING *'
+			].join(' ');
+			var values = [
+				randomize('0', 6),
+				phone_number
+			];
+			queryServer(res, query, values, function (result1) {
+				if(result1.rows[0].verified_phone){
+					res.send({
+						err: null,
+						res: {
+							already_registered: true
+						}
+					});
+					// sendCode(
+					// 	result1.rows[0].phone_number,
+					// 	result1.rows[0].verify_phone_token + ' is your Stuffmapper confirmation code!'
+					// );
+				} else {
+					res.send({
+						err: null,
+						res: {
+							already_registered: false
+						}
+					});
+					// sendCode(
+					// 	result1.rows[0].phone_number,
+					// 	result1.rows[0].verify_phone_token + ' is your Stuffmapper verification code!'
+					// );
 				}
 			});
-			sendCode(
-				result1.rows[0].phone_number,
-				result1.rows[0].verify_phone_token+ ' is your Stuffmapper verification code!'
-			);
 		}
 	});
 });
@@ -782,12 +808,14 @@ router.post('/account/verify', function(req,res) {
 
 router.post('/account/verify/phone', function(req,res) {
 		var query = [
-			'UPDATE users SET verify_phone_token = floor(random() * (1000000)::int)::text, verified_phone = true',
-			'WHERE verify_phone_token = $1',
+			'UPDATE users SET verify_phone_token = $1, verified_phone = true',
+			'WHERE verify_phone_token = $2 AND phone_number = $3',
 			'RETURNING *'
 		].join(' ');
 		var values = [
-			req.body.phone_token
+			randomize('0', 6),
+			req.body.phone_token,
+			req.body.phone_number
 		];
 		queryServer(res, query, values, function(result) {
 			if(result.rows.length >= 1) {
@@ -888,40 +916,45 @@ router.post('/account/confirmation', function(req, res) {
 });
 
 router.post('/account/confirmation/phone', function(req, res) {
-		var query = [
-			'UPDATE users SET verify_phone_token = floor(random() * (1000000)::int)::text',
-			'WHERE verify_phone_token = $1',
-			'RETURNING *'
-		].join(' ');
-		queryServer(res, query, [req.body.phone_token], function(result) {
-			if (result.rows.length == 0) {
-				return res.send({
-					err: true,
-					res: {
-						isValid: false
-					}
-				});
-			} else if(result.rows.length >= 1){
-				req.logIn(result.rows[0], function(err) {
-					if (err) {
-						return res.send({
-							err: err,
-							res: {
-								isValid: false
-							}
-						});
-					}
+	var query = [
+		'UPDATE users SET verify_phone_token = $1',
+		'WHERE verify_phone_token = $2 AND phone_number = $3',
+		'RETURNING *'
+	].join(' ');
+	var values = [
+		randomize('0', 6),
+		req.body.phone_token,
+		req.body.phone_number
+	];
+	queryServer(res, query, values, function (result) {
+		if (result.rows.length == 0) {
+			return res.send({
+				err: null,
+				res: {
+					isValid: false
+				}
+			});
+		} else if (result.rows.length >= 1) {
+			req.logIn(result.rows[0], function (err) {
+				if (err) {
 					return res.send({
-						err: null,
-						res:{
-							user: result.rows[0],
-							isValid: true
+						err: err,
+						res: {
+							isValid: false
 						}
 					});
+				}
+				return res.send({
+					err: null,
+					res: {
+						user: result.rows[0],
+						isValid: true
+					}
 				});
-			}
-			//else res.send({err:'There was an issue confirming your phone number.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.'});
-		});
+			});
+		}
+		//else res.send({err:'There was an issue confirming your phone number.  Please contact us at <a href="mailto:hello@stuffmapper.com">hello@stuffmapper.com</a> if this issue persists.'});
+	});
 
 });
 

@@ -114,6 +114,7 @@ gulp.task('js', function(done) {
 			// './src/js/lib/ng-intl-tel-input/dist/ng-intl-tel-input.min.js',
 			'./src/js/lib/fancyBox/dist/jquery.fancybox.min.js',
 			'./src/js/lib/angular-ui-router/release/angular-ui-router.min.js',
+			'./src/js/lib/angular-ui-utils/ui-utils.min.js',
 			'./src/js/lib/angular-animate/angular-animate.min.js',
 			'./src/js/lib/select2/dist/js/select2.full.min.js',
 			'./src/js/lib/javascript-load-image/js/load-image.all.min.js',

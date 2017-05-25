@@ -76,6 +76,10 @@
 	//background-color: #fff;
 	color: $charcoal-dark;
 }
+.sm-button-ghost-light {
+	border: 0 solid $fog-dark;
+	color: $fog-light;
+}
 .sm-button-disbaled {
 	border: 2px solid $fog-dark;
 	//background-color: #fff;
@@ -89,6 +93,9 @@
 }
 .sm-button-ghost-solid {
 	background-color: #fff;
+}
+.sm-button-ghost-light-solid {
+	background-color: $pewter-light;
 }
 .sm-button:hover, .sm-button:active {
 	color: #fff;
