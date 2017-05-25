@@ -301,7 +301,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					i.fa.fa-close
 				.sm-modal-content
 					.modal-steps
-						#sign-in-step.modal-step.animate-250.active
+						#sign-in-step.modal-step.animate-250.hidden-modal
 							h2.sm-modal-title.animate-250 Sign in
 							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInUpNewStep()") Don't have an account? >
 							.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
@@ -333,7 +333,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							//		input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign In" ng-click="login()" style="margin:20px 10px;width:calc(100% - 10px);")
 							//	.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
 							//		input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign Up" ng-click="signUpStep()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
-						#sign-in-up-phone-step.modal-step.animate-250.hidden-modal
+						#sign-in-up-phone-step.modal-step.animate-250.active
 							h2.sm-modal-title.animate-250 Sign in / Sign up
 							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInOldFirstStep()") Did you sign up without a phone number? >
 							div.sm-full-width

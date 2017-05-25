@@ -754,14 +754,17 @@ function MainController() {
 	
 	$scope.signInOldFirstStep = function () {
 		$('#sign-in-up-phone-step').addClass('hidden-modal').removeClass('active');
-		$('#sign-in-step').addClass('active').removeClass('hidden-modal');
 		$('#sign-in-up-phone-error-warning-container').children().remove();
+		$('#sign-in-up-phone-number').css({border:''});
+		$('#sign-in-step').addClass('active').removeClass('hidden-modal');
 	}
 
 	$scope.signInUpNewStep = function () {
 		$('#sign-in-step').addClass('hidden-modal').removeClass('active');
-		$('#sign-in-up-phone-step').addClass('active').removeClass('hidden-modal');
 		$('#sign-in-error-warning-container').children().remove();
+		$('#sign-in-email').css({border:''});
+		$('#sign-in-password').css({border:''});
+		$('#sign-in-up-phone-step').addClass('active').removeClass('hidden-modal');
 	}
 
 	var signingUp = false;
