@@ -1008,7 +1008,7 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 				'UPDATE users SET phone_number = $1',
 				'WHERE email = $2',
 				'RETURNING *'
-			].join(' ')
+			].join(' ');
 			queryServer(res, query, [req.body.phone_number, req.body.email], function (result) {
 				if (result.rows.length == 0) {
 					return res.send({
