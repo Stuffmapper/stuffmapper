@@ -303,7 +303,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					.modal-steps
 						#sign-in-step.modal-step.animate-250.hidden-modal
 							h2.sm-modal-title.animate-250 Sign in
-							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInUpNewStep()") Don't have an account? >
+							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInUpNewStep()", style="color: #fff;") Don't have an account? >
 							.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
 								img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
 								span.social-sign-in-text.sm-text-m Sign in with Google
@@ -335,7 +335,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							//		input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign Up" ng-click="signUpStep()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
 						#sign-in-up-phone-step.modal-step.animate-250.active
 							h2.sm-modal-title.animate-250 Sign in / Sign up
-							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInOldFirstStep()") Did you sign up without a phone number? >
+							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInOldFirstStep()", style="color: #fff;") Did you sign up without a phone number? >
 							div.sm-full-width
 								label.sm-full-width.sm-text-m(for='sign-in-up-phone-number', style="padding-bottom: 0;margin: 15px 2px 0px;") phone number
 								input#sign-in-up-phone-number.sm-text-input.sm-text-input-full-width(type="text", data-initial-country="us", ng-intl-tel-input, ui-keypress="{enter:'signInUpPhone()'}")
