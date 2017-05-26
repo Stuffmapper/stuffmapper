@@ -45,7 +45,7 @@ gulp.task('sass', function(done) {
 		gulp.dest('./www/fonts'),
 		gulp.dest('./electron/fonts')
 	));
-	gulp.src('./src/js/lib/bootstrap/dist/fonts/*', {base: './src/js/lib/bootstrap/dist//fonts/'})
+	gulp.src('./src/js/lib/bootstrap/dist/fonts/*', {base: './src/js/lib/bootstrap/dist/fonts/'})
 		.pipe(multistream(
 			gulp.dest('./web/fonts'),
 			gulp.dest('./www/fonts'),
