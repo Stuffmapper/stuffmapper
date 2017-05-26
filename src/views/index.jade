@@ -333,7 +333,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							//		input#sign-in-sign-in-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign In" ng-click="login()" style="margin:20px 10px;width:calc(100% - 10px);")
 							//	.sm-button-group-2.sm-button-group-right(style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;")
 							//		input#sign-in-sign-up-button.sm-button.sm-button-default.sm-text-m(type="button" value="Sign Up" ng-click="signUpStep()" style="margin:20px 10px;width:calc(100% - 10px);float: left;")
-						#sign-in-up-phone-step.modal-step.animate-250.hidden-modal
+						#sign-in-up-phone-step.modal-step.animate-250.active
 							h2.sm-modal-title.animate-250 Sign in / Sign up
 							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInOldFirstStep()") Did you sign up without a phone number? >
 							div.sm-full-width
@@ -345,7 +345,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									| &nbsp; You'll verify your account and receive notifications through SMS.
 							#sign-in-up-phone-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#sm-sign-in-up-phone-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Continue" ng-click="signInUpPhone()")
-						#sign-up-phone-confirm-step.modal-step.animate-250.active
+						#sign-up-phone-confirm-step.modal-step.animate-250.hidden-modal
 							h2.sm-modal-title Confirm account
 							.modal-back-button(ng-click="signUpPhoneBack()")
 							label.sm-full-width.sm-text-m(for='sign-up-phone-confirm-code', style="padding-bottom: 0;margin: 15px 22px 0px;") confirmation code:
