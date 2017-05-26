@@ -464,14 +464,18 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								ul
 									li You'll get timely alerts from messaging
 									li It's an easier and more secure way to log in.
-									li Verifies identity, making Stuffmapper safer for every one.
+									li Verifies identity, making Stuffmapper safer for everyone.
 
 							b.sm-text-m.sm-full-width Enter your phone number to continue.
 							div.sm-full-width
 								label.sm-full-width.sm-text-m(for='phone-update-modal-field', style="padding-bottom: 0;margin: 15px 2px 0px;") phone number
-								input#phone-update-modal-field.sm-text-input.sm-text-input-full-width(type="text", data-initial-country="us", ng-intl-tel-input)
+								input#phone-update-modal-field.sm-text-input.sm-text-input-full-width(type="text", data-initial-country="us", ng-intl-tel-input, , ui-keypress="{enter:'updatePhone()'}")
+							div.sm-full-width.sm-text-s
+								span(class="fa fa-info-circle",aria-hidden="true", style="color:blue")
+								i
+									| &nbsp; You'll verify your account and receive notifications through SMS..
 							#phone-update-modal-error-warning-container(style="width:100%;display:block;position:relative;")
-							input#phone-update-modal-update-button.sm-button.sm-button-default.sm-button-full-width.sm-text-m(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="updatePhone();")
+							input#phone-update-modal-update-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-ghost-light-solid.sm-button-full-width(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="updatePhone();")
 			#undibs-confirm-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
 				.sm-modal-content
