@@ -384,6 +384,7 @@ function MainController() {
 			initUserData(data);
 			$scope.hideModal('sign-in-up-modal');
 			$('html').addClass('loggedIn');
+			$userData.setEmail(data.res.user.email);
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setUserName(data.res.user.uname);
