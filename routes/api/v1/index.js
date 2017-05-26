@@ -717,7 +717,7 @@ router.post('/account/register/phone', function(req, res) {
 					var query = [
 						'INSERT INTO users ',
 						'(uname, phone_number, verify_phone_token, braintree_token)',
-						'VALUES ($1, $2, $3)',
+						'VALUES ($1, $2, $3, $4)',
 						'RETURNING *'
 					].join(' ');
 					var values = [
