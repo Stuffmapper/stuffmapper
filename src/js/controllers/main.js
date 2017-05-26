@@ -603,7 +603,7 @@ function MainController() {
 						$u.toast('Phone # updated successfully!');
 						$u.modal.close('phone-update-modal');
 					} else if (!data.res.inserted) {
-						$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">There is problem with updating your phone number. Please try again.</div>');
+						$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">This phone # is already associated with an other account.</div>');
 					}
 				});
 		}

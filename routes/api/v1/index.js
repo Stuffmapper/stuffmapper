@@ -999,29 +999,42 @@ router.post('/account/login', function(req, res, next) {
 
 router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 	var query = [
-		'UPDATE users SET phone_number = $1, verified_phone = true',
-		'WHERE email = $2',
-		'RETURNING *'
+		'select * from users',
+		'WHERE phone_number = $1'
 	].join(' ');
-	queryServer(res, query, [req.body.phone_number, req.body.email], function (result) {
+	queryServer(res, query, [req.body.phone_number], function (result) {
 		if (result.rows.length == 0) {
-			return res.send({
-				err: null,
-				res: {
-					inserted: false
+			query = [
+				'UPDATE users SET phone_number = $1',
+				'WHERE email = $2',
+				'RETURNING *'
+			].join(' ')
+			queryServer(res, query, [req.body.phone_number, req.body.email], function (result) {
+				if (result.rows.length == 0) {
+					return res.send({
+						err: null,
+						res: {
+							inserted: false
+						}
+					});
+				} else if (result.rows.length >= 1) {
+					return res.send({
+						err: null,
+						res: {
+							inserted: true
+						}
+					});
 				}
 			});
 		} else if (result.rows.length >= 1) {
 			return res.send({
 				err: null,
 				res: {
-					inserted: true
+					inserted: false
 				}
 			});
-
 		}
 	});
-
 });
 
 router.post('/account/logout', isAuthenticated, function(req, res) {
