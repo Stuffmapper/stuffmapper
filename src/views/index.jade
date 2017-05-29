@@ -338,7 +338,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							a.get-item-message-lister(href="javascript:void(0)" ng-click="signInOldFirstStep()", style="color: #fff;") Did you sign up without a phone number? >
 							div.sm-full-width
 								label.sm-full-width.sm-text-m(for='sign-in-up-phone-number', style="padding-bottom: 0;margin: 15px 2px 0px;") phone number
-								input#sign-in-up-phone-number.sm-text-input.sm-text-input-full-width(type="text", data-initial-country="us", ng-intl-tel-input, ui-keypress="{enter:'signInUpPhone()'}")
+								input#sign-in-up-phone-number.sm-text-input.sm-text-input-full-width(type="text", data-initial-country="us", ng-intl-tel-input, ui-keypress="{enter:'signInUpPhone()'}", pattern="[0-9]*")
 							div.sm-full-width.sm-text-s
 								span(class="fa fa-info-circle",aria-hidden="true", style="color:blue")
 								i
@@ -349,7 +349,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							h2.sm-modal-title Confirm account
 							.modal-back-button(ng-click="signUpPhoneBack()")
 							label.sm-full-width.sm-text-m(for='sign-up-phone-confirm-code', style="padding-bottom: 0;margin: 15px 22px 0px;") confirmation code:
-							input#sign-up-phone-confirm-code.sm-text-input.sm-text-input-full-width(type="text" placeholder="######", style="margin: 0px 20px;", , ui-keypress="{enter:'signUpPhoneConfirm()'}")
+							input#sign-up-phone-confirm-code.sm-text-input.sm-text-input-full-width(type="text" placeholder="######", style="margin: 0px 20px;", , ui-keypress="{enter:'signUpPhoneConfirm()'}", pattern="[0-9]*")
 							div.sm-full-width.sm-text-s
 								span(class="fa fa-info-circle",aria-hidden="true", style="color:blue")
 								i
@@ -373,7 +373,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							.modal-back-button(ng-click="signInPhoneBack()")
 							//input#sign-in-phone-confirm-code.sm-sign-in-text-inputs.sm-text-input.sm-text-input-full-width(type="text" placeholder="######")
 							label.sm-full-width.sm-text-m(for='sign-in-phone-confirm-code', style="padding-bottom: 0;margin: 15px 22px 0px;") confirmation code:
-							input#sign-in-phone-confirm-code.sm-text-input.sm-text-input-full-width(type="text" placeholder="######", style="margin: 0px 20px;", ui-keypress="{enter:'signInPhoneConfirm()'}")
+							input#sign-in-phone-confirm-code.sm-text-input.sm-text-input-full-width(type="text" placeholder="######", style="margin: 0px 20px;", ui-keypress="{enter:'signInPhoneConfirm()'}", pattern="[0-9]*")
 							div.sm-full-width.sm-text-s
 								span(class="fa fa-info-circle",aria-hidden="true", style="color:blue")
 								i
