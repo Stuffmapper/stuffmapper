@@ -187,7 +187,7 @@ function GetStuffController() {
 					lng: position.coords.longitude
 				};
 				$scope.map.setCenter($scope.geoLocation);
-				if(callback) {
+				if (typeof callback === "function") {
 					callback({
 						lat: position.coords.latitude,
 						lng: position.coords.longitude

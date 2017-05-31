@@ -25,8 +25,6 @@ function ConversationController() {
 				$.post(config.api.host + '/api/v'+config.api.version+'/conversation/read/'+conversationPostId, function(data) {
 					$('#tab-message-badge').html(data.res);
 				});
-				console.log("1 "+data.res.conversation)
-				console.log("2 "+data.res.info)
 				$scope.conversation = data.res.conversation;
 				$scope.conversationInfo = data.res.info;
 				console.log($scope.conversationInfo);

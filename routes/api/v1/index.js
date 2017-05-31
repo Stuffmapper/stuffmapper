@@ -10,6 +10,8 @@ var passport = require('passport');
 var path = require('path');
 var request = require('request');
 var randomize = require('randomatic');
+var emoji = require('node-emoji');
+var _ = require('lodash');
 var stage = process.env.STAGE || 'development';
 var config = require(path.join(__dirname, '/../../../config'))[stage];
 var pgUser = config.db.user;
@@ -26,10 +28,7 @@ AWS.config.update( {
 	region          : config.aws.region
 });
 var s3 = new AWS.S3({Bucket: config.aws.bucket});
-var twilio = require('twilio');
-var accountSid = config.twilio.sid;
-var authToken = config.twilio.token;
-var twilioClinet = require('twilio')(accountSid, authToken);
+var sms = require('./config/sms');
 
 var util = require('./../../../util.js');
 var db = new util.db();
@@ -411,7 +410,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 										}
 									});
 									queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function(result5) {
-										queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
+										queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
 											sendTemplate(
 												'item-listed',
 												'Your '+req.body.title+' has been mapped!',
@@ -422,6 +421,10 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 													'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url
 												}
 											);
+											var emoji_message = emoji.get(':star2:') +""+ emoji.get(':rainbow:')+""+emoji.get(':sparkles:');
+											var sms_message = emoji_message+"\nYour "+req.body.title+" has been mapped! We will notify you via text when someone Dibs your item.";
+											var phone_number = result0.rows[0].phone_number;
+											sms.sendSMS(phone_number, sms_message);
 										});
 									});
 								});
@@ -734,10 +737,10 @@ router.post('/account/register/phone', function(req, res) {
 								already_registered: false
 							}
 						});
-						sendCode(
+						sms.sendSMS(
 							result.rows[0].phone_number,
-							result.rows[0].verify_phone_token +' is your Stuffmapper confirmation code.'
-							);
+							result.rows[0].verify_phone_token + ' is your Stuffmapper confirmation code.'
+						);
 					});
 
 			});
@@ -759,7 +762,7 @@ router.post('/account/register/phone', function(req, res) {
 							already_registered: true
 						}
 					});
-					sendCode(
+					sms.sendSMS(
 						result1.rows[0].phone_number,
 						result1.rows[0].verify_phone_token + ' is your Stuffmapper confirmation code!'
 					);
@@ -770,7 +773,7 @@ router.post('/account/register/phone', function(req, res) {
 							already_registered: false
 						}
 					});
-					sendCode(
+					sms.sendSMS(
 						result1.rows[0].phone_number,
 						result1.rows[0].verify_phone_token + ' is your Stuffmapper verification code!'
 					);
@@ -1131,7 +1134,7 @@ router.delete('/account', isAuthenticated, function(req, res) {
 
 router.post('/dibs/:id', isAuthenticated, function(req, res) {
 	queryServer(res, 'UPDATE posts SET dibber_id = $1, dibbed = true WHERE dibbed = false AND id = $2 RETURNING *', [req.session.passport.user.id,req.params.id], function(result1) {
-		queryServer(res, 'SELECT email FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
+		queryServer(res, 'SELECT email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
 			if(result1.rows[0].attended) {
 
 				var nonceFromTheClient = req.body.payment_method_nonce;
@@ -1143,7 +1146,8 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 						submitForSettlement: true
 					},
 					customer :{
-						email: result0.rows[0].email
+						email: result0.rows[0].email || "",
+                        phone: result0.rows[0].phone_number || ""
 					}
 				}, function (err, result) {
 					if(err) return res.send('failure');
@@ -1180,7 +1184,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 							});
 							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result4) {
 								sendTemplate(
-									result1.rows[0].attended?'dibber-notification-1':'dibber-notification-unattended',
+									'dibber-notification-1',
 									'You Dibs\'d an item!',
 									{[(req.session.passport.user.uname)]: req.session.passport.user.email},
 									{
@@ -1191,6 +1195,10 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
 									}
 								);
+                                var dibber_phone = result0.rows[0].phone_number;
+								var sms_message = "Dibs! Clock is ticking! Message lister within the next 15 minutes (or Dibs will expire)!\n"+ config.subdomain+'/stuff/my/items/'+req.params.id+'/messages';
+                                sms.sendSMS(dibber_phone, sms_message);
+
 							});
 						});
 					});
@@ -1229,7 +1237,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 						});
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result4) {
 							sendTemplate(
-								result1.rows[0].attended?'dibber-notification-1':'dibber-notification-unattended',
+								'dibber-notification-unattended',
 								'You Dibs\'d an item!',
 								{[(req.session.passport.user.uname)]: req.session.passport.user.email},
 								{
@@ -1241,6 +1249,9 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result4.rows[0].image_url
 								}
 							);
+							var dibber_phone = result0.rows[0].phone_number;
+							var sms_message = "Dibs! Find the location of "+result1.rows[0].title.trim() +", get moving, and pick it up!\n"+config.subdomain+'/stuff/my/items/'+req.params.id;
+							sms.sendSMS(dibber_phone, sms_message);
 						});
 					});
 				});
@@ -1268,7 +1279,7 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 			});
 			queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result2) {
 				[result1.rows[0].dibber_id, result1.rows[0].user_id].forEach(function(e){
-					queryServer(res, 'SELECT email, uname FROM users WHERE id = $1', [e], function(result3) {
+					queryServer(res, 'SELECT email, uname, phone_number FROM users WHERE id = $1', [e], function(result3) {
 						sendTemplate(
 							'dibs-complete',
 							'Dibs for '+result1.rows[0].title+' is complete!',
@@ -1278,10 +1289,65 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result2.rows[0].image_url
 							}
 						);
+						var sms_message = result1.rows[0].title+" has been marked as picked up. "+emoji.get(':100:')+" Thanks for using Stuffmapper!";
+						var phone_number = result3.rows[0].phone_number;
+						sms.sendSMS(phone_number, sms_message);
 					});
 				});
 			});
 		});
+	});
+});
+
+router.post('/twilio/message/dibs/complete/', function(req, res) {
+
+	var post_id = req.body.post_id;
+	var query = [
+		'SELECT * from posts where post_id = $1',
+		'AND dibbed = true LIMIT 1'
+	].join(' ');
+
+	queryServer(res, query, [post_id], function (result0) {
+		if (result0.rows[0].length) {
+			query = [
+				'UPDATE pick_up_success SET pick_up_success = true',
+				'FROM posts p2 WHERE p2.dibbed = true AND',
+				'pick_up_success.pick_up_success = false AND',
+				'pick_up_success.post_id = p2.id AND p2.id = $2 AND',
+				'(p2.user_id = $1 OR p2.dibber_id = $1)',
+				'RETURNING *'
+			].join(' ');
+			queryServer(res, query, [result0.rows[0].user_id, post_id], function (result1) {
+				queryServer(res, 'UPDATE posts SET archived = true WHERE id = $1', [post_id], function (result0) {
+					/*lister*/
+					db.setEvent(3, 'Dibs complete - you gave {{post}}!', result1.rows[0].user_id, post_id);
+					/*dibber*/
+					db.setEvent(3, 'Dibs complete - you received {{post}}!', result1.rows[0].dibber_id, post_id);
+					res.send({
+						err: null,
+						res: {success: (result1.rows.length === 1)}
+					});
+					queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [post_id], function (result2) {
+						[result1.rows[0].dibber_id, result1.rows[0].user_id].forEach(function (e) {
+							queryServer(res, 'SELECT email, uname, phone_number FROM users WHERE id = $1', [e], function (result3) {
+								sendTemplate(
+									'dibs-complete',
+									'Dibs for ' + result1.rows[0].title + ' is complete!',
+									{[result3.rows[0].uname]: result3.rows[0].email},
+									{
+										'ITEMTITLE': result1.rows[0].title,
+										'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result2.rows[0].image_url
+									}
+								);
+								var sms_message = result1.rows[0].title + " has been marked as picked up. " + emoji.get(':100:') + " Thanks for using Stuffmapper!";
+								var phone_number = result3.rows[0].phone_number;
+								sms.sendSMS(phone_number, sms_message);
+							});
+						});
+					});
+				});
+			});
+		}
 	});
 });
 
@@ -1325,21 +1391,27 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 				});
 				queryServer(res, 'select posts.attended from posts where id = $1', [req.params.id], function (result6) {
 					if(result6.rows[0].attended) {
-						queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
-							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function (result5) {
-								var emailTo = {[result4.rows[0].uname]: result4.rows[0].email};
-								sendTemplate(
-									'notify-undib',
-									'Your item has been unDibs\'d',
-									emailTo,
-									{
-										'FIRSTNAME': result4.rows[0].uname,
-										'USERNAME': req.session.passport.user.uname,
-										'MYSTUFFLINK': 'http://' + config.subdomain + '/stuff/my/items/' + result1.rows[0].id,
-										'ITEMTITLE': result1.rows[0].title,
-										'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
-									}
-								);
+						queryServer(res, 'SELECT phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result7) {
+							queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
+								queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function (result5) {
+									var emailTo = {[result4.rows[0].uname]: result4.rows[0].email};
+									sendTemplate(
+										'notify-undib',
+										'Your item has been unDibs\'d',
+										emailTo,
+										{
+											'FIRSTNAME': result4.rows[0].uname,
+											'USERNAME': req.session.passport.user.uname,
+											'MYSTUFFLINK': 'http://' + config.subdomain + '/stuff/my/items/' + result1.rows[0].id,
+											'ITEMTITLE': result1.rows[0].title,
+											'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
+										}
+									);
+									var sms_message = result1.rows[0].title.trim() + " has been unDibs\'d "+emoji.get(':neutral_face:')+" But no worries! It will be relisted so someone else can give it a new home! "+emoji.get(':heart_eyes:')+" "+emoji.get(':house_with_garden:');
+									var dibber_phone = result7.rows[0].phone_number;
+									sms.sendSMS(dibber_phone, sms_message);
+
+								});
 							});
 						});
 					} else {
@@ -1390,7 +1462,7 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 							'res3': result3.rows
 						}
 					});
-					queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result0.rows[0].dibber_id], function(result4) {
+					queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result0.rows[0].dibber_id], function(result4) {
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result5) {
 							sendTemplate(
 								'dibs-declined',
@@ -1404,6 +1476,9 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 									'GETSTUFFLINK':config.subdomain
 								}
 							);
+                            var sms_message = "Lister of "+result1.rows[0].title.trim()+" has cancelled your Dibs. "+emoji.get(':neutral_face:')+" You will be automatically refunded within 2 business days.";
+                            var dibber_phone = result4.rows[0].phone_number;
+                            sms.sendSMS(dibber_phone, sms_message);
 						});
 					});
 				});
@@ -1465,7 +1540,7 @@ router.post('/messages', isAuthenticated, function(req, res) {
 		queryServer(res, 'SELECT conversations.lister_id, conversations.dibber_id, messages.user_id, conversations.post_id FROM messages, conversations where conversations.id = $1 and messages.conversation_id = $1 and conversations.dibber_id = messages.user_id', [parseInt(req.body.conversation_id)], function(result1) {
 			console.log(result1.rows);
 			if(result1.rows.length === 1 && parseInt(result1.rows[0].lister_id) !== parseInt(req.session.passport.user.id)) {
-				queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
+				queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
 					queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].dibber_id], function(result0){
 						queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
 							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
@@ -1488,6 +1563,11 @@ router.post('/messages', isAuthenticated, function(req, res) {
 											'CHATLINK' : config.subdomain+'/stuff/my/items/'+result1.rows[0].post_id+'/messages'
 										}
 									);
+									if(result3.rows[0].attended) {
+										var sms_message = emoji.get(':balloon:') + " Someone Dibs\’d your " + result3.rows[0].title.trim() + "!" + emoji.get(':balloon:') + " Reply now!:\n" + messages.join('\n') + '\n' + config.subdomain + '/stuff/my/items/' + result1.rows[0].post_id + '/messages';
+										var lister_phone = result2.rows[0].phone_number;
+										sms.sendSMS(lister_phone, sms_message);
+									}
 								});
 							});
 						});
@@ -1834,23 +1914,6 @@ function sendTemplate(template, subject, to, args) {
 	});
 }
 
-function sendCode(to, msg, cb) {
 
-	twilioClinet.messages.create({
-		body: msg,
-		to: to,
-		from: config.twilio.phone
-	}, function(error, message) {
-		if (!error) {
-			console.log('Message sent on: '+message.dateCreated);
-			//cb(null, message.status);
-		} else {
-			console.error('Oops! There was an error during sending message ' +error);
-			console.error('Failed! '+msg);
-			//cb(error, message.status);
-		}
-	});
-
-}
 
 module.exports = router;
