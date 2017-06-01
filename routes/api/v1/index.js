@@ -409,24 +409,28 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 											id: result.rows[0].id
 										}
 									});
-									queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function(result5) {
-										queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
-											sendTemplate(
-												'item-listed',
-												'Your '+req.body.title+' has been mapped!',
-												{[result0.rows[0].uname]:result0.rows[0].email},
-												{
-													'FIRSTNAME' : result0.rows[0].uname,
-													'ITEMTITLE' : req.body.title,
-													'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url
-												}
-											);
-											var emoji_message = emoji.get(':star2:') +""+ emoji.get(':rainbow:')+""+emoji.get(':sparkles:');
-											var sms_message = emoji_message+"\nYour "+req.body.title+" has been mapped! We will notify you via text when someone Dibs your item.";
-											var phone_number = result0.rows[0].phone_number;
-											sms.sendSMS(phone_number, sms_message);
+									if(req.body.attended) {
+										queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function (result5) {
+											queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
+												sendTemplate(
+													'item-listed',
+													'Your ' + req.body.title + ' has been mapped!',
+													{[result0.rows[0].uname]: result0.rows[0].email},
+													{
+														'FIRSTNAME': result0.rows[0].uname,
+														'ITEMTITLE': req.body.title,
+														'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
+													}
+												);
+
+												var emoji_message = emoji.get(':star2:') + "" + emoji.get(':rainbow:') + "" + emoji.get(':sparkles:');
+												var sms_message = emoji_message + "\nYour " + req.body.title + " has been mapped! We will notify you via text when someone Dibs your item.";
+												var phone_number = result0.rows[0].phone_number;
+												sms.sendSMS(phone_number, sms_message);
+
+											});
 										});
-									});
+									}
 								});
 							});
 						});
