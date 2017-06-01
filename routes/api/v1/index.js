@@ -370,13 +370,13 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 			].join(' ');
 			var time = Date.now().toString();
 			var buff = new Buffer(req.body.test.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
-			var buff2 = new Buffer(req.body.original.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
+			//var buff2 = new Buffer(req.body.original.replace(/^data:image\/(png|gif|jpeg);base64,/,''), 'base64');
 			fs.writeFile(__dirname + '/../../../uploads/original/'+time+'.png', buff, function(err) {
-				fs.writeFile(__dirname + '/../../../uploads/original/'+time+'_original.png', buff2, function(err) {
+				//fs.writeFile(__dirname + '/../../../uploads/original/'+time+'_original.png', buff2, function(err) {
 					fs.readFile(__dirname + '/../../../uploads/original/'+time+'.png', function(err, data) {
-						fs.readFile(__dirname + '/../../../uploads/original/'+time+'_original.png', function(err, data2) {
+						//fs.readFile(__dirname + '/../../../uploads/original/'+time+'_original.png', function(err, data2) {
 							var key = 'posts/' + time;
-							var key2 = 'posts/' + time + '_original';
+							//var key2 = 'posts/' + time + '_original';
 							s3.upload({
 								Bucket: 'stuffmapper-v2',
 								Key: key,
@@ -390,14 +390,14 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 									res.send('Error uploading data: ', err);
 									return;
 								}
-								s3.upload({
+								/*s3.upload({
 									Bucket: 'stuffmapper-v2',
 									Key: key2,
 									Body: data2,
 									ContentEncoding: 'base64',
 									ContentType:'image/png',
 									ACL: 'public-read'
-								}, function(err, data) {});
+								}, function(err, data) {});*/
 								var values = [
 									result.rows[0].id,
 									'/'+key
@@ -433,9 +433,9 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 									}
 								});
 							});
-						});
+						//});
 					});
-				});
+				//});
 			});
 		}
 		else {
