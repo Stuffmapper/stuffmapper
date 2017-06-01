@@ -45,8 +45,8 @@ function SettingsController() {
 				var formSetting = {
 					email: $('#setting-email').val().toLowerCase(),
 					uname: $('#setting-uname').val(),
-					phone: $('#phone-update-modal-field').intlTelInput("getNumber"),
-					phone_valid: $('#phone-update-modal-field').intlTelInput("isValidNumber")
+					phone: $('#setting-phone').intlTelInput("getNumber"),
+					phone_valid: $('#setting-phone').intlTelInput("isValidNumber")
 				};
 				if(!formSetting.uname) {valid=false;$('#setting-uname').css({border:'1px solid red'});message='please insert a username name';}
 				if(!formSetting.phone) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: (###) ###-####';}

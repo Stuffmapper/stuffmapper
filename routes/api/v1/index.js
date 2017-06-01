@@ -354,7 +354,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 	var values = [
 		req.session.passport.user.id,
 		req.body.title,
-		req.body.description,
+		req.body.description || " ",
 		req.body.lat,
 		req.body.lng,
 		req.body.attended,
@@ -362,7 +362,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 	];
 	queryServer(res, query, values, function(result) {
 		db.setEvent(3,'{{user}} uploaded {{post}}',req.session.passport.user.id, result.rows[0].id);
-		if(req.body.test && req.body.original) {
+		if(req.body.test) { //&& req.body.original
 			var query = [
 				'INSERT INTO images',
 				'(post_id, image_url, main)',
@@ -409,7 +409,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 											id: result.rows[0].id
 										}
 									});
-									if(req.body.attended) {
+									if(!_.isEmpty(req.body.attended) && req.body.attended) {
 										queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function (result5) {
 											queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
 												sendTemplate(
