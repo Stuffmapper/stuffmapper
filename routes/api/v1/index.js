@@ -409,7 +409,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 											id: result.rows[0].id
 										}
 									});
-									if(req.body.attended) {
+									if(req.body.attended  == true) {
 										queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function (result5) {
 											queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
 												sendTemplate(
