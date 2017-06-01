@@ -277,7 +277,7 @@ setInterval(function() {
 			var conversation_counter = 0;
 			result1.rows.forEach(function(e, i) {
 				client.query('SELECT * FROM messages WHERE conversation_id = $1 AND archived = false ORDER BY date_created DESC LIMIT 1 ', [e.id], function(err,result2) {
-					if(result2.rows[0]) {
+
 						var lastMessage = result2.rows[0];
 						var convTime = new Date(e.date_created).getTime();
 						var messTime = lastMessage ? new Date(lastMessage.date_created).getTime() : 0;
@@ -291,12 +291,11 @@ setInterval(function() {
 						if ((!lastMessage && !dibberMessaged) && convAgeMin >= 15) undib(e.post_id, e.dibber_id);
 						else if (lastMessage && !lastMessage.emailed && messAgeMin === 3) messageUserMessageNotification(((lastMessage.user_id === e.lister_id) ? e.dibber_id : e.lister_id), e.id, e.post_id);
 						else if (lastMessage && messAgeMin === 24*60) messageUserMessageReminder(((lastMessage.user_id === e.lister_id) ? e.dibber_id : e.lister_id), e.id, e.post_id);
-						//else if (lastMessage && messAgeMin === 24 * 60 * 5) messageUserItemPickedUp(e.post_id);
 						if (++conversation_counter === conversations) {
 							jobsDone(done);
 							done();
 						}
-					}
+
 				});
 
 			});
@@ -308,9 +307,62 @@ setInterval(function() {
 	});
 }, 1000*60*1); // ms * sec * min
 
+setInterval(function () {
+	var pgconfig = {
+		user: pgUser,
+		database: pgDb,
+		password: pgPass,
+		host: pgHost,
+		port: 5432,
+		max: 5,
+		idleTimeoutMillis: 1000
+	};
+	var pool = new pg.Pool(pgconfig);
+	pool.connect(function (err, client, done) {
+		if (err) return console.error('error fetching client from pool', err);
+		client.query(['SELECT p.id, p.title, p.user_id as lister_id, p.dibber_id ',
+			'FROM posts p INNER JOIN pick_up_success ps ON p.id = ps.post_id ',
+			'AND ps.undibbed = false AND ps.pick_up_init > (current_date - interval \'5\' day) ',
+			'AND p.dibbed = true AND p.archived = false AND ps.pick_up_sms = false'].join(' '), [], function (err, result1) {
+			if (err) {
+				done();
+				console.error('error running query', err);
+				return;
+			}
+			if (!result1.rows && !result1.rows.length) {
+				done();
+				console.error('No Data for pick up sms '+new Date());
+				return;
+			}
 
+			result1.rows.forEach(function (post) {
+				client.query('UPDATE pick_up_success set pick_up_sms = true where pick_up_success = false AND undibbed = false AND post_id = $1 AND dibber_id = $2 AND lister_id = $3', [post.id, post.dibber_id, post.lister_id], function (err, result0) {
+					if (err) {
+						done();
+						console.error('error running query', err);
+						return;
+					}
+					console.log("Updated Pick UP post_id:lister_id:dibber_id: " + post.id, post.lister_id, post.dibber_id)
+					client.query('SELECT phone_number FROM users WHERE (id = $1 OR id = $2)', [post.lister_id, post.dibber_id], function (err, result2) {
+						result2.rows.forEach(function (e) {
+							console.log('sms to: ' + post.id + " - " + e.phone_number);
+							var sms_message = 'Stuffmapper asks, has ' + post.title + ' been picked up? If not yet, no reply is necessary. If yes, please mark item as picked up by responding with "Y".';
+							var phone_number = e.phone_number;
+							sms.sendSMS(phone_number, sms_message);
+						});
+					});
+				});
+			});
+		});
+	});
+
+	pool.on('error', function (err, client) {
+		console.error('idle client error', err.message, err.stack);
+	});
+}, 1000 * 60 * 60); // ms * sec * min
 
 function undib(post_id, user_id) {
+	console.log("undib: post_id="+post_id+" user_id="+user_id);
 	var pgconfig = {
 		user: pgUser,
 		database: pgDb,
@@ -388,10 +440,14 @@ function undib(post_id, user_id) {
 }
 
 function messageUserMessageNotification(user_id, conversation_id, post_id) {
+	console.log("messageUserMessageNotification: post_id="+post_id+" user_id="+user_id+" conversation_id="+conversation_id);
 	queryServer('SELECT * FROM messages WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false and emailed = false ORDER BY date_created ASC', [user_id, conversation_id], function(result1) {
 		queryServer('SELECT uname, email, phone_number FROM users WHERE id = $1', [user_id], function(result2){
 			queryServer('UPDATE messages SET emailed = true WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false and emailed = false', [user_id, conversation_id], function(result10) {
-				queryServer('SELECT title, id, dibber_id, user_id FROM posts WHERE id = $1', [post_id], function(result3) {
+				queryServer('SELECT title, id, dibber_id, user_id FROM posts WHERE id = $1 AND dibbed =true and archived = false', [post_id], function(result3) {
+					if(!result3.rows.length){
+						return;
+					}
 					queryServer('SELECT image_url FROM images WHERE post_id = $1 AND main = true', [post_id], function(result5) {
 						queryServer('SELECT uname, phone_number FROM users WHERE (id = $1 OR id = $2) AND NOT id = $3', [result3.rows[0].user_id, result3.rows[0].dibber_id, user_id], function(result6) {
 							var test = [];
@@ -427,10 +483,14 @@ function messageUserMessageNotification(user_id, conversation_id, post_id) {
 }
 
 function messageUserMessageReminder(user_id, conversation_id, post_id) {
+	console.log("messageUserMessageReminder: post_id="+post_id+" user_id="+user_id+" conversation_id="+conversation_id);
 	queryServer('SELECT * FROM messages WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false ORDER BY date_created ASC', [user_id, conversation_id], function(result1) {
 		queryServer('SELECT uname, email, phone_number FROM users WHERE id = $1', [user_id], function(result2){
 			queryServer('UPDATE messages SET emailed = true WHERE conversation_id = $2 AND read = false and not user_id = $1 and archived = false and emailed = false', [user_id, conversation_id], function(result10) {
-				queryServer('SELECT title, id, dibber_id, user_id FROM posts WHERE id = $1', [post_id], function(result3) {
+				queryServer('SELECT title, id, dibber_id, user_id FROM posts WHERE id = $1 AND dibbed =true and archived = false', [post_id], function(result3) {
+					if(!result3.rows.length){
+						return;
+					}
 					queryServer('SELECT image_url FROM images WHERE post_id = $1 AND main = true', [post_id], function(result5) {
 						queryServer('SELECT uname, phone_number FROM users WHERE (id = $1 OR id = $2) AND NOT id = $3', [result3.rows[0].user_id, result3.rows[0].dibber_id, user_id], function(result6) {
 							var test = [];
@@ -467,20 +527,6 @@ function messageUserMessageReminder(user_id, conversation_id, post_id) {
 			});
 		});
 	});
-}
-
-function messageUserItemPickedUp(post_id) {
-
-	queryServer('SELECT * FROM posts WHERE post_id = $1 AND dibbed = true AND archived = false', [post_id], function (result1) {
-		queryServer('SELECT uname, email, phone_number FROM users WHERE id = $1 OR id = $2', [result1.rows[0].user_id, result1.rows[0].dibber_id], function (result2) {
-			result2.rows.forEach(function (e) {
-				var sms_message = 'Stuffmapper asks, has '+result1.rows[0].title+' been picked up? If not yet, no reply is necessary. If yes, please mark item as picked up by responding with "Y".';
-				var phone_number = e.phone_number;
-				sms.sendSMS(phone_number, sms_message);
-			});
-		});
-	});
-
 }
 
 function jobsDone() {

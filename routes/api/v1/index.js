@@ -1196,7 +1196,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 									}
 								);
                                 var dibber_phone = result0.rows[0].phone_number;
-								var sms_message = "Dibs! Clock is ticking! Message lister within the next 15 minutes (or Dibs will expire)!\n"+ config.subdomain+'/stuff/my/items/'+req.params.id+'/messages';
+								var sms_message = "Dibs! Clock is ticking! "+emoji.get(':alarm_clock:')+" Message lister within the next 15 minutes (or Dibs will expire)!\n"+ config.subdomain+'/stuff/my/items/'+req.params.id+'/messages';
                                 sms.sendSMS(dibber_phone, sms_message);
 
 							});
@@ -1250,7 +1250,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 								}
 							);
 							var dibber_phone = result0.rows[0].phone_number;
-							var sms_message = "Dibs! Find the location of "+result1.rows[0].title.trim() +", get moving, and pick it up!\n"+config.subdomain+'/stuff/my/items/'+req.params.id;
+							var sms_message = "Dibs! Find the location of "+result1.rows[0].title.trim() +", get moving, and pick it up! "+emoji.get(':leopard:') +" "+emoji.get(':cat2:')+" "+emoji.get(':tiger2:')+"\n"+config.subdomain+'/stuff/my/items/'+req.params.id;
 							sms.sendSMS(dibber_phone, sms_message);
 						});
 					});
@@ -1289,7 +1289,7 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result2.rows[0].image_url
 							}
 						);
-						var sms_message = result1.rows[0].title+" has been marked as picked up. "+emoji.get(':100:')+" Thanks for using Stuffmapper!";
+						var sms_message = result1.rows[0].title+" has been marked as picked up. "+emoji.get(':100:')+""+emoji.get(':evergreen_tree:')+"\nThanks for using Stuffmapper!";
 						var phone_number = result3.rows[0].phone_number;
 						sms.sendSMS(phone_number, sms_message);
 					});
