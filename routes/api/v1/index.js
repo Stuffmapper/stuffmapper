@@ -1317,7 +1317,7 @@ router.post('/twilio/message/dibs/complete/', function(req, res) {
 		'AND dibbed = true AND archived = false'
 	].join(' ');
 	queryServer(res, query, [post_id], function (result8) {
-		if(result8.rows[0].length) {
+		if(result8.rows) {
 			query = [
 				'SELECT p.id as post_id, u.id as user_id, u.phone_number as phone_number from posts p',
 				'INNER JOIN users u ON p.user_id = u.id',
@@ -1327,7 +1327,7 @@ router.post('/twilio/message/dibs/complete/', function(req, res) {
 				'AND u.phone_number=$2'
 			].join(' ');
 			queryServer(res, query, [post_id, phone_number], function (result9) {
-				if(result9.rows[0].length) {
+				if(result9.rows) {
 					query = [
 						'UPDATE pick_up_success SET pick_up_success = true',
 						'FROM posts p2 WHERE p2.dibbed = true AND',
