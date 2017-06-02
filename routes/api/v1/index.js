@@ -1293,7 +1293,8 @@ router.post('/dibs/complete/:id', isAuthenticated, function(req, res) {
 								'ITEMIMAGE':'https://cdn.stuffmapper.com'+result2.rows[0].image_url
 							}
 						);
-						var sms_message = result1.rows[0].title+" has been marked as picked up. "+emoji.get(':100:')+""+emoji.get(':evergreen_tree:')+"\nThanks for using Stuffmapper!";
+						var _smsemoji = emoji.get(':zap:')+" Stuffmapper asks:\n";
+						var sms_message = _smsemoji + result1.rows[0].title+" has been marked as picked up. "+emoji.get(':100:')+""+emoji.get(':evergreen_tree:')+"\nThanks for using Stuffmapper!";
 						var phone_number = result3.rows[0].phone_number;
 						sms.sendSMS(phone_number, sms_message);
 					});
@@ -1314,62 +1315,67 @@ router.post('/twilio/message/dibs/complete/', function(req, res) {
 
 	var query = [
 		'SELECT * from posts where id = $1',
-		'AND dibbed = true AND archived = false'
+		'AND dibbed = true'
 	].join(' ');
 	queryServer(res, query, [post_id], function (result8) {
-		if(result8.rows) {
-			query = [
-				'SELECT p.id as post_id, u.id as user_id, u.phone_number as phone_number from posts p',
-				'INNER JOIN users u ON p.user_id = u.id',
-				'INNER JOIN pick_up_success ps ON p.id = ps.post_id',
-				'where p.id = $1 AND p.dibbed = true',
-				'AND ps.pick_up_init > (current_date - interval \'5\' day)',
-				'AND u.phone_number=$2'
-			].join(' ');
-			queryServer(res, query, [post_id, phone_number], function (result9) {
-				if(result9.rows) {
-					query = [
-						'UPDATE pick_up_success SET pick_up_success = true',
-						'FROM posts p2 WHERE p2.dibbed = true AND',
-						'pick_up_success.pick_up_success = false AND',
-						'pick_up_success.post_id = p2.id AND p2.id = $2 AND',
-						'(p2.user_id = $1 OR p2.dibber_id = $1)',
-						'RETURNING *'
-					].join(' ');
-					queryServer(res, query, [result9.rows[0].user_id, post_id], function (result1) {
-						queryServer(res, 'UPDATE posts SET archived = true WHERE id = $1', [post_id], function (result0) {
-							/!*lister*!/
-							db.setEvent(3, 'Dibs complete - you gave {{post}}!', result1.rows[0].user_id, post_id);
-							/!*dibber*!/
-							db.setEvent(3, 'Dibs complete - you received {{post}}!', result1.rows[0].dibber_id, post_id);
+		if (result8.rows.length > 0) {
+			if (!result8.rows[0].archived) {
+				query = [
+					'SELECT p.id as post_id, u.id as user_id, p.dibber_id, p.title from posts p',
+					'INNER JOIN users u ON p.user_id = u.id',
+					'INNER JOIN pick_up_success ps ON p.id = ps.post_id',
+					'where p.id = $1 AND p.dibbed = true',
+					'AND ps.pick_up_init < (current_date - interval \'5\' day)',
+					'AND u.phone_number=$2'
+				].join(' ');
+				queryServer(res, query, [post_id, phone_number], function (result9) {
+					if (result9.rows.length > 0) {
+						query = [
+							'UPDATE pick_up_success SET pick_up_success = true',
+							'FROM posts p2 WHERE p2.dibbed = true AND',
+							'pick_up_success.pick_up_success = false AND',
+							'pick_up_success.post_id = p2.id AND p2.id = $2 AND',
+							'(p2.user_id = $1 OR p2.dibber_id = $1)',
+							'RETURNING *'
+						].join(' ');
+						queryServer(res, query, [result9.rows[0].user_id, post_id], function (result1) {
+							queryServer(res, 'UPDATE posts SET archived = true WHERE id = $1', [post_id], function (result0) {
+								/!*lister*!/
+								db.setEvent(3, 'Dibs complete - you gave {{post}}!', result9.rows[0].user_id, post_id);
+								/!*dibber*!/
+								db.setEvent(3, 'Dibs complete - you received {{post}}!', result9.rows[0].dibber_id, post_id);
 
-							res.status(200).end();
+								res.status(200).end();
 
-							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [post_id], function (result2) {
-								[result1.rows[0].dibber_id, result1.rows[0].user_id].forEach(function (e) {
-									queryServer(res, 'SELECT email, uname, phone_number FROM users WHERE id = $1', [e], function (result3) {
-										sendTemplate(
-											'dibs-complete',
-											'Dibs for ' + result1.rows[0].title + ' is complete!',
-											{[result3.rows[0].uname]: result3.rows[0].email},
-											{
-												'ITEMTITLE': result1.rows[0].title,
-												'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result2.rows[0].image_url
-											}
-										);
-										//res.send("<Response><Message>"+result1.rows[0].title + " has been marked as picked up. " + emoji.get(':100:') + " Thanks for using Stuffmapper!"+"</Message></Response>");
-										var sms_message = result1.rows[0].title + " has been marked as picked up. " + emoji.get(':100:') + " Thanks for using Stuffmapper!";
-										var phone_number = result3.rows[0].phone_number;
-										sms.sendSMS(phone_number, sms_message);
+								queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [post_id], function (result2) {
+									[result9.rows[0].dibber_id, result9.rows[0].user_id].forEach(function (e) {
+										queryServer(res, 'SELECT email, uname, phone_number FROM users WHERE id = $1', [e], function (result3) {
+											sendTemplate(
+												'dibs-complete',
+												'Dibs for ' + result9.rows[0].title + ' is complete!',
+												{[result3.rows[0].uname]: result3.rows[0].email},
+												{
+													'ITEMTITLE': result9.rows[0].title,
+													'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result2.rows[0].image_url
+												}
+											);
+											//res.send("<Response><Message>"+result1.rows[0].title + " has been marked as picked up. " + emoji.get(':100:') + " Thanks for using Stuffmapper!"+"</Message></Response>");
+											var _smsemoji = emoji.get(':zap:') + " Stuffmapper asks: \n";
+											var sms_message = _smsemoji + result9.rows[0].title + " Has been marked as picked up. " + emoji.get(':100:') + " Thanks for using Stuffmapper!";
+											var phone_number = result3.rows[0].phone_number;
+											sms.sendSMS(phone_number, sms_message);
+										});
 									});
 								});
 							});
 						});
-					});
-				} else {
-					return res.send("<Response><Message>This post does not belong to you. Can\'t mark it as picked up.</Message></Response>")
-				}
-		});
+					} else {
+						return res.send("<Response><Message>This post does not belong to you. Can\'t mark it as picked up.</Message></Response>")
+					}
+				});
+			} else {
+				return res.send("<Response><Message>Post is already marked as picked up</Message></Response>")
+			}
 		} else {
 			return res.send("<Response><Message>No such post exist. Can\'t mark it as picked up.</Message></Response>")
 		}
