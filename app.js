@@ -307,6 +307,9 @@ setInterval(function() {
 	});
 }, 1000*60*1); // ms * sec * min
 
+var post_reminder_jobs = 1;
+var post_reminder_completeJobs = 0;
+
 setInterval(function () {
 	var pgconfig = {
 		user: pgUser,
@@ -334,24 +337,29 @@ setInterval(function () {
 				console.error('No Data for pick up sms '+new Date());
 				return;
 			}
-
+			var total_post = result1.rows.length;
+			var post_counter = 0;
 			result1.rows.forEach(function (post) {
-				client.query('UPDATE pick_up_success set pick_up_sms = true where pick_up_success = false AND undibbed = false AND post_id = $1 AND dibber_id = $2 AND lister_id = $3', [post.id, post.dibber_id, post.lister_id], function (err, result0) {
+				client.query('UPDATE pick_up_success set pick_up_sms = true, pick_up_sms_init = current_timestamp where pick_up_success = false AND undibbed = false AND post_id = $1 AND dibber_id = $2 AND lister_id = $3', [post.id, post.dibber_id, post.lister_id], function (err, result0) {
 					if (err) {
 						done();
 						console.error('error running query', err);
 						return;
 					}
-					console.log("Updated Pick UP post_id:lister_id:dibber_id: " + post.id, post.lister_id, post.dibber_id)
+					console.log("Updated Pick UP post_id:lister_id:dibber_id: " + post.id, post.lister_id, post.dibber_id);
 					client.query('SELECT phone_number FROM users WHERE (id = $1 OR id = $2)', [post.lister_id, post.dibber_id], function (err, result2) {
 						result2.rows.forEach(function (e) {
 							console.log('sms to: ' + post.id + " - " + e.phone_number);
-							var sms_message = 'Stuffmapper asks, has ' + post.title + ' been picked up? If not yet, no reply is necessary. If yes, please mark item as picked up by responding with "Y".';
+							var sms_message = 'Stuffmapper asks, has ' + post.title + ' been picked up? If not yet, no reply is necessary. If yes, please mark item as picked up by responding with"'+post.id +'".';
 							var phone_number = e.phone_number;
 							sms.sendSMS(phone_number, sms_message);
 						});
 					});
 				});
+				if (++post_counter === total_post) {
+					findingPostsMarkUpDone(done);
+					done();
+				}
 			});
 		});
 	});
@@ -529,6 +537,16 @@ function messageUserMessageReminder(user_id, conversation_id, post_id) {
 	});
 }
 
+function findingPostsMarkUpDone() {
+	if(++post_reminder_completeJobs === post_reminder_jobs) {
+		if(arguments) {
+			for(var i = 0; i < Object.keys(arguments).length; i++) {
+				if(typeof arguments[i] === 'function') process.nextTick(arguments[i]);
+			}
+		}
+	}
+}
+
 function jobsDone() {
 	if(++completeJobs === jobs) {
 		if(arguments) {
@@ -552,12 +570,18 @@ function sendTemplate(template, subject, to, args) {
 	});
 	var emailTo = [];
 	Object.keys(to).forEach(function(e) {
-		emailTo.push({
-			'email': to[e],
-			'name': e,
-			'type': 'to'
-		});
+		if(!_.isEmpty(to[e])) {
+			emailTo.push({
+				'email': to[e],
+				'name': e,
+				'type': 'to'
+			});
+		}
 	});
+	if(!emailTo.length){
+		console.log('Can\'t send email, No email is defined');
+		return;
+	}
 	var message = {
 		'subject': subject,
 		'from_email': 'support@stuffmapper.com',
