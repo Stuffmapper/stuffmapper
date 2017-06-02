@@ -1323,7 +1323,7 @@ router.post('/twilio/message/dibs/complete/', function(req, res) {
 				'INNER JOIN users u ON p.user_id = u.id',
 				'INNER JOIN pick_up_success ps ON p.id = ps.post_id',
 				'where p.id = $1 AND p.dibbed = true',
-				'AND ps.pick_up_init > (current_date - interval \'5\' day)',
+				'AND ps.pick_up_init < (current_date - interval \'5\' day)',
 				'AND u.phone_number=$2'
 			].join(' ');
 			queryServer(res, query, [post_id, phone_number], function (result9) {

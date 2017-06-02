@@ -325,7 +325,7 @@ setInterval(function () {
 		if (err) return console.error('error fetching client from pool', err);
 		client.query(['SELECT p.id, p.title, p.user_id as lister_id, p.dibber_id ',
 			'FROM posts p INNER JOIN pick_up_success ps ON p.id = ps.post_id ',
-			'AND ps.undibbed = false AND ps.pick_up_init > (current_date - interval \'5\' day) ',
+			'AND ps.undibbed = false AND ps.pick_up_init < (current_date - interval \'5\' day) ',
 			'AND p.dibbed = true AND p.archived = false AND ps.pick_up_sms = false'].join(' '), [], function (err, result1) {
 			if (err) {
 				done();
