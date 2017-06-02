@@ -409,7 +409,8 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 											id: result.rows[0].id
 										}
 									});
-									if(!_.isEmpty(req.body.attended) && req.body.attended) {
+
+									if(req.body.attended === 'true') {
 										queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function (result5) {
 											queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
 												sendTemplate(
@@ -427,7 +428,6 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 												var sms_message = emoji_message + "\nYour " + req.body.title + " has been mapped! We will notify you via text when someone Dibs your item.";
 												var phone_number = result0.rows[0].phone_number;
 												sms.sendSMS(phone_number, sms_message);
-
 											});
 										});
 									}

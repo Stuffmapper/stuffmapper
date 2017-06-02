@@ -367,7 +367,7 @@ setInterval(function () {
 	pool.on('error', function (err, client) {
 		console.error('idle client error', err.message, err.stack);
 	});
-}, 1000 * 60 * 2); // ms * sec * min
+}, 1000 * 60 * 60); // ms * sec * min
 
 function undib(post_id, user_id) {
 	console.log("undib: post_id="+post_id+" user_id="+user_id);
