@@ -1313,7 +1313,7 @@ router.post('/twilio/message/dibs/complete/', function(req, res) {
 	var phone_number = req.body.From;
 
 	var query = [
-		'SELECT * from posts where post_id = $1',
+		'SELECT * from posts where id = $1',
 		'AND dibbed = true AND archived = false'
 	].join(' ');
 	queryServer(res, query, [post_id], function (result8) {
