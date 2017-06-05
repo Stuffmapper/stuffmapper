@@ -30,17 +30,6 @@ var pgPass = config.db.pass;
 var pgHost = config.db.host;
 var pgPort = config.db.port;
 var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':'+pgPort+'/'+pgDb;
-var pgconfig = {
-    user: pgUser,
-    database: pgDb,
-    password: pgPass,
-    host: pgHost,
-    port: pgPort,
-    max: 10,
-    min: 3,
-    idleTimeoutMillis: 1000
-};
-var pool = new pg.Pool(pgconfig);
 AWS.config.update( {
 	accessKeyId     : config.aws.accessKeyId,
 	secretAccessKey : config.aws.secretAccessKey,
