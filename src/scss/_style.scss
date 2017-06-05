@@ -2012,7 +2012,7 @@ html.ionic.ios {
 .modal-window {
   background-color: #efefef;
   width: 400px;
-  height: 500px;
+  height: 550px;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -2157,6 +2157,10 @@ html.ionic.ios {
   padding: 0;
   font-size: 14px;
   cursor: pointer;
+}
+
+.sign-in-sm-text {
+  font-size: 18px;
 }
 
 .social-button {
@@ -4179,7 +4183,7 @@ html.ionic.ios {
   position: relative;
   width: 100%;
   text-align: left;
-  padding: 15px 20px 0px;
+  padding: 10px 20px 10px;
   background-color: $sunflower-light;
   color: $charcoal-dark;
 }
@@ -4264,4 +4268,11 @@ html.ionic.ios {
   opacity: .5;
 }
 
+.info-icon {
+  color: $aqua;
+}
+
+.input-label {
+  color: $silver;
+}
 

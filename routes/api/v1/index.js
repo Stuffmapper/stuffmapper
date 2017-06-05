@@ -1361,7 +1361,7 @@ router.post('/twilio/message/dibs/complete/', function(req, res) {
 											);
 											//res.send("<Response><Message>"+result1.rows[0].title + " has been marked as picked up. " + emoji.get(':100:') + " Thanks for using Stuffmapper!"+"</Message></Response>");
 											var _smsemoji = emoji.get(':zap:') + " Stuffmapper asks: \n";
-											var sms_message = _smsemoji + result9.rows[0].title + " Has been marked as picked up. " + emoji.get(':100:') + " Thanks for using Stuffmapper!";
+											var sms_message = _smsemoji + result9.rows[0].title.trim() + " Has been marked as picked up. " + emoji.get(':100:') + " Thanks for using Stuffmapper!";
 											var phone_number = result3.rows[0].phone_number;
 											sms.sendSMS(phone_number, sms_message);
 										});

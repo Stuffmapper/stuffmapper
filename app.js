@@ -21,6 +21,7 @@ var multer = require('multer');
 var multerS3 = require('multer-s3');
 var braintree = require('braintree');
 var proxy = require('express-http-proxy');
+var _ = require('lodash');
 var sms = require('./routes/api/v1/config/sms');
 var pg = require('pg');
 var pgUser = config.db.user;
@@ -29,6 +30,17 @@ var pgPass = config.db.pass;
 var pgHost = config.db.host;
 var pgPort = config.db.port;
 var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':'+pgPort+'/'+pgDb;
+var pgconfig = {
+    user: pgUser,
+    database: pgDb,
+    password: pgPass,
+    host: pgHost,
+    port: pgPort,
+    max: 10,
+    min: 3,
+    idleTimeoutMillis: 1000
+};
+var pool = new pg.Pool(pgconfig);
 AWS.config.update( {
 	accessKeyId     : config.aws.accessKeyId,
 	secretAccessKey : config.aws.secretAccessKey,
@@ -234,7 +246,7 @@ process.on('SIGINT', function() {
 	setTimeout(function() {
 		console.error('Could not close connections in time, forcefully shutting down');
 		process.exit(1);
-	}, 2000);
+	}, 1000);
 });
 function capitalizeFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
@@ -255,118 +267,124 @@ function queryServer(query, values, cb) {
 var jobs = 1;
 var completeJobs = 0;
 
-setInterval(function() {
-	var pgconfig = {
-		user: pgUser,
-		database: pgDb,
-		password: pgPass,
-		host: pgHost,
-		port: 5432,
-		max: 10,
-		idleTimeoutMillis: 1000
-	};
-	var pool = new pg.Pool(pgconfig);
-	pool.connect(function(err, client, done) {
-		if(err) return console.error('error fetching client from pool', err);
-		client.query('SELECT * FROM conversations WHERE archived = false', [], function(err, result1) {
-			if(err) {
-				done();
-				return console.error('error running query', err);
-			}
-			var conversations = result1.rows.length;
-			var conversation_counter = 0;
-			result1.rows.forEach(function(e, i) {
-				client.query('SELECT * FROM messages WHERE conversation_id = $1 AND archived = false ORDER BY date_created DESC LIMIT 1 ', [e.id], function(err,result2) {
+setInterval(function () {
 
-						var lastMessage = result2.rows[0];
-						var convTime = new Date(e.date_created).getTime();
-						var messTime = lastMessage ? new Date(lastMessage.date_created).getTime() : 0;
-						var currTime = new Date().getTime();
-						var convAgeMin = new Date(currTime - convTime).getUTCMinutes();
-						var messAgeMin = new Date(currTime - messTime).getUTCMinutes();
-						var dibberMessaged = false;
-						result2.rows.forEach(function (f) {
-							if (!dibberMessaged && (e.dibber_id === f.user_id)) dibberMessaged = true;
-						});
-						if ((!lastMessage && !dibberMessaged) && convAgeMin >= 15) undib(e.post_id, e.dibber_id);
-						else if (lastMessage && !lastMessage.emailed && messAgeMin === 3) messageUserMessageNotification(((lastMessage.user_id === e.lister_id) ? e.dibber_id : e.lister_id), e.id, e.post_id);
-						else if (lastMessage && messAgeMin === 24*60) messageUserMessageReminder(((lastMessage.user_id === e.lister_id) ? e.dibber_id : e.lister_id), e.id, e.post_id);
-						if (++conversation_counter === conversations) {
-							jobsDone(done);
-							done();
+    queryServer('SELECT * FROM conversations WHERE archived = false', [], function (result1) {
+       if (result1.rows.length === 0) {
+            console.log("No active conversation found");
+            return;
+        }
+        var conversations = result1.rows.length;
+        var conversation_counter = 0;
+
+        var conversationIds = [];
+        result1.rows.forEach(function (e, i) {
+            console.log("conv_id:post_id:lister_id:dibber_id " + e.id, e.post_id, e.lister_id, e.dibber_id);
+            conversationIds.push(e.id);
+        });
+
+
+        queryServer('SELECT * FROM messages WHERE conversation_id = ANY($1::int[]) AND archived = false', [conversationIds], function (result2) {
+            if (result2.rows.length === 0) {
+                console.log("No active messages found related to conversation");
+                return;
+            }
+            var conversation = [];
+            var groupByConversationId = _.groupBy(result2.rows, "conversation_id");
+            _.forEach(groupByConversationId, function (singleConvArr, conversation_id) {
+                var message = _.orderBy(singleConvArr, ['date_created'], ['desc'])[0];
+                conversation.push(message);
+            });
+
+            result1.rows.forEach(function (e, i) {
+                var lastMessage = _.find(conversation, {'conversation_id': parseInt(e.id)});
+                var convTime = new Date(e.date_created).getTime();
+                var messTime = lastMessage ? new Date(lastMessage.date_created).getTime() : 0;
+                var currTime = new Date().getTime();
+                var convAgeMin = new Date(currTime - convTime).getUTCMinutes();
+                var messAgeMin = new Date(currTime - messTime).getUTCMinutes();
+                if (lastMessage) {
+                    var dibberMessaged = false;
+					_.forEach(groupByConversationId[parseInt(e.id)], function (singleConvRecord) {
+						if (e.dibber_id === singleConvRecord.user_id){
+							dibberMessaged = true;
 						}
+					});
+                    if (!dibberMessaged && convAgeMin >= 15) {
+                        undib(e.post_id, e.dibber_id);
+                    }
+                    else if (!lastMessage.emailed && messAgeMin === 3) messageUserMessageNotification(((lastMessage.user_id === e.lister_id) ? e.dibber_id : e.lister_id), e.id, e.post_id);
+                    else if (messAgeMin === 24 * 60) messageUserMessageReminder(((lastMessage.user_id === e.lister_id) ? e.dibber_id : e.lister_id), e.id, e.post_id);
+                } else {
+                    if (convAgeMin >= 15) {
+                        undib(e.post_id, e.dibber_id);
+                    }
+                }
+                if (++conversation_counter === conversations) {
+                    jobsDone();
+                }
+            });
+        });
+    });
 
-				});
-
-			});
-		});
-	});
-
-	pool.on('error', function(err, client) {
-		console.error('idle client error', err.message, err.stack);
-	});
-}, 1000*60*1); // ms * sec * min
+}, 1000 * 60 * 1); // ms * sec * min
 
 var post_reminder_jobs = 1;
 var post_reminder_completeJobs = 0;
 
 setInterval(function () {
-	var pgconfig = {
-		user: pgUser,
-		database: pgDb,
-		password: pgPass,
-		host: pgHost,
-		port: 5432,
-		max: 5,
-		idleTimeoutMillis: 1000
-	};
-	var pool = new pg.Pool(pgconfig);
-	pool.connect(function (err, client, done) {
-		if (err) return console.error('error fetching client from pool', err);
-		client.query(['SELECT p.id, p.title, p.user_id as lister_id, p.dibber_id ',
-			'FROM posts p INNER JOIN pick_up_success ps ON p.id = ps.post_id ',
-			'AND ps.undibbed = false AND ps.pick_up_init < (current_date - interval \'5\' day) ',
-			'AND p.dibbed = true AND p.archived = false AND ps.pick_up_sms = false'].join(' '), [], function (err, result1) {
-			if (err) {
-				done();
-				console.error('error running query', err);
-				return;
-			}
-			if (!result1.rows && !result1.rows.length) {
-				done();
-				console.error('No Data for pick up sms '+new Date());
-				return;
-			}
-			var total_post = result1.rows.length;
-			var post_counter = 0;
-			result1.rows.forEach(function (post) {
-				client.query('UPDATE pick_up_success set pick_up_sms = true, pick_up_sms_init = current_timestamp where pick_up_success = false AND undibbed = false AND post_id = $1 AND dibber_id = $2 AND lister_id = $3', [post.id, post.dibber_id, post.lister_id], function (err, result0) {
-					if (err) {
-						done();
-						console.error('error running query', err);
-						return;
-					}
-					console.log("Updated Pick UP post_id:lister_id:dibber_id: " + post.id, post.lister_id, post.dibber_id);
-					client.query('SELECT phone_number FROM users WHERE (id = $1 OR id = $2)', [post.lister_id, post.dibber_id], function (err, result2) {
-						result2.rows.forEach(function (e) {
-							console.log('sms to: ' + post.id + " - " + e.phone_number);
-							var sms_message = 'Stuffmapper asks, has ' + post.title + ' been picked up? If not yet, no reply is necessary. If yes, please mark item as picked up by responding with"'+post.id +'".';
-							var phone_number = e.phone_number;
-							sms.sendSMS(phone_number, sms_message);
-						});
-					});
-				});
-				if (++post_counter === total_post) {
-					findingPostsMarkUpDone(done);
-					done();
-				}
-			});
-		});
-	});
 
-	pool.on('error', function (err, client) {
-		console.error('idle client error', err.message, err.stack);
-	});
+    queryServer(['SELECT p.id, p.title, p.user_id as lister_id, p.dibber_id ',
+        'FROM posts p INNER JOIN pick_up_success ps ON p.id = ps.post_id ',
+        'AND ps.undibbed = false AND ps.pick_up_init < (current_date - interval \'5\' day) ',
+        'AND p.dibbed = true AND p.archived = false AND ps.pick_up_sms = false'].join(' '), [], function (result1) {
+        if (result1.rows.length === 0) {
+            console.error('No Data for pick up sms ' + new Date());
+            return;
+        }
+        console.error('Data for pick up sms ' + new Date(), _.size(result1.rows))
+        var total_post = result1.rows.length;
+        var post_counter = 0;
+
+        pool.connect(function (err, client, done) {
+            if (err) {
+                console.error('error fetching client from pool', err);
+                return;
+            }
+            result1.rows.forEach(function (post) {
+                client.query('UPDATE pick_up_success set pick_up_sms = true, pick_up_sms_init = current_timestamp where pick_up_success = false AND undibbed = false AND post_id = $1 AND dibber_id = $2 AND lister_id = $3 RETURNING *', [post.id, post.dibber_id, post.lister_id], function (err, result0) {
+                    if (err) {
+                        done(err);
+                        console.error('error running query2', err);
+                        return;
+                    }
+                    if (!result0.rows && !result0.rows.length) {
+                        done();
+                        console.error('No Data for update pick_up_sms ' + new Date());
+                        return;
+                    }
+                    console.log("Updated Pick UP post_id:lister_id:dibber_id: " + post.id, post.lister_id, post.dibber_id);
+                    client.query('SELECT phone_number FROM users WHERE (id = $1 OR id = $2)', [post.lister_id, post.dibber_id], function (err, result2) {
+                        result2.rows.forEach(function (e) {
+                            console.log('sms to: ' + post.id + " - " + e.phone_number);
+                            var sms_message = 'Stuffmapper asks, has ' + post.title + ' been picked up? If not yet, no reply is necessary. If yes, please mark item as picked up by responding with"' + post.id + '".';
+                            var phone_number = e.phone_number;
+                            sms.sendSMS(phone_number, sms_message);
+                        });
+                    });
+                });
+                if (++post_counter === total_post) {
+                    findingPostsMarkUpDone(done);
+                    done();
+                }
+            });
+
+            pool.on('error', function (err, client) {
+                console.error('idle client error', err.message, err.stack);
+            });
+
+        });
+    });
 }, 1000 * 60 * 60 * 1); // ms * sec * min * hour
 
 function undib(post_id, user_id) {
