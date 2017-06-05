@@ -345,7 +345,16 @@ setInterval(function () {
         console.error('Data for pick up sms ' + new Date(), _.size(result1.rows))
         var total_post = result1.rows.length;
         var post_counter = 0;
-
+		var pgconfig = {
+			user: pgUser,
+			database: pgDb,
+			password: pgPass,
+			host: pgHost,
+			port: 5432,
+			max: 10,
+			idleTimeoutMillis: 1000
+		};
+		var pool = new pg.Pool(pgconfig);
         pool.connect(function (err, client, done) {
             if (err) {
                 console.error('error fetching client from pool', err);
