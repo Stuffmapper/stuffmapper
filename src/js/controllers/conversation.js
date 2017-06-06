@@ -39,7 +39,7 @@ function ConversationController() {
 							$('#conversation-messages').children().each(function(i,e) {
 								if(!foundFirstOut && $(e).hasClass('conversation-message-container-out')) {
 									foundFirstOut = true;
-									$('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>Dibs secured! Thanks for initiating communication. We\'ll notify you via email of any new messages sent from lister while you\'re offline. Enjoy your new stuff!</div></div></li>').insertAfter(e);
+									$('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>Dibs secured! Thanks for initiating communication. We\'ll notify you of any new messages sent from lister while you\'re offline. Enjoy your new stuff!</div></div></li>').insertAfter(e);
 								}
 							});
 						}
@@ -198,7 +198,7 @@ function ConversationController() {
 						$('#conversation-input').val('');
 						$('#conversation-input').focus();
 						if(firstMessage) {
-							$('#conversation-messages').append('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>Dibs secured! Thanks for initiating communication. We\'ll notify you via email of any new messages sent from lister while you\'re offline. Enjoy your new stuff!</div></div></li>');
+							$('#conversation-messages').append('<li class="conversation-message-container conversation-message-container-in"><div class="user-icon-message-stuffmapper"></div><div class="conversation-message conversation-in-message conversation-stuffmapper-message"><div>Dibs secured! Thanks for initiating communication. We\'ll notify you of any new messages sent from lister while you\'re offline. Enjoy your new stuff!</div></div></li>');
 							firstMessage = false;
 						}
 						calcTextArea();

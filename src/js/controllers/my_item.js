@@ -176,7 +176,7 @@ function MyItemsController() {
 						($scope.listItem.dibbed && data.res.attended && $scope.listItem.type === 'lister')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the Dibber.</div>':'',
 						($scope.listItem.dibbed || !data.res.attended)?'<button id="my-item-complete-body'+$stateParams.id+'" class="sm-button sm-text-l sm-button-positive sm-button-full-width" style="color:#fff;">Mark as Picked Up</button>':'',
 						// ((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
-						($scope.listItem.type === 'lister' && !$scope.listItem.dibbed && $scope.listItem.attended)?'<div class="sm-text-s sm-full-width">You will be notified by email when someone Dibs your stuff!</div>':'',
+						($scope.listItem.type === 'lister' && !$scope.listItem.dibbed && $scope.listItem.attended)?'<div class="sm-text-s sm-full-width">You will be notified when someone Dibs your stuff!</div>':'',
 						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />'),
 						'<div class="sm-text-s sm-full-width my-item-update">Item last updated on '+ $scope.listItem.dateEdited +'</div>'
 					].join('\n'));
