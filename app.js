@@ -29,6 +29,16 @@ var pgDb = config.db.db;
 var pgPass = config.db.pass;
 var pgHost = config.db.host;
 var pgPort = config.db.port;
+var pgconfig = {
+	user: pgUser,
+	database: pgDb,
+	password: pgPass,
+	host: pgHost,
+	port: 5432,
+	max: 12,
+	idleTimeoutMillis: 1000
+};
+var pool = new pg.Pool(pgconfig);
 var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':'+pgPort+'/'+pgDb;
 AWS.config.update( {
 	accessKeyId     : config.aws.accessKeyId,
@@ -334,16 +344,16 @@ setInterval(function () {
         console.error('Data for pick up sms ' + new Date(), _.size(result1.rows))
         var total_post = result1.rows.length;
         var post_counter = 0;
-		var pgconfig = {
-			user: pgUser,
-			database: pgDb,
-			password: pgPass,
-			host: pgHost,
-			port: 5432,
-			max: 10,
-			idleTimeoutMillis: 1000
-		};
-		var pool = new pg.Pool(pgconfig);
+		// var pgconfig = {
+		// 	user: pgUser,
+		// 	database: pgDb,
+		// 	password: pgPass,
+		// 	host: pgHost,
+		// 	port: 5432,
+		// 	max: 10,
+		// 	idleTimeoutMillis: 1000
+		// };
+		// var pool = new pg.Pool(pgconfig);
         pool.connect(function (err, client, done) {
             if (err) {
                 console.error('error fetching client from pool', err);
@@ -387,16 +397,16 @@ setInterval(function () {
 
 function undib(post_id, user_id) {
 	console.log("undib: post_id="+post_id+" user_id="+user_id);
-	var pgconfig = {
-		user: pgUser,
-		database: pgDb,
-		password: pgPass,
-		host: pgHost,
-		port: 5432,
-		max: 10,
-		idleTimeoutMillis: 1000
-	};
-	var pool = new pg.Pool(pgconfig);
+	// var pgconfig = {
+	// 	user: pgUser,
+	// 	database: pgDb,
+	// 	password: pgPass,
+	// 	host: pgHost,
+	// 	port: 5432,
+	// 	max: 10,
+	// 	idleTimeoutMillis: 1000
+	// };
+	// var pool = new pg.Pool(pgconfig);
 	pool.connect(function(err, client, done) {
 			var query = [
 				'UPDATE posts SET dibber_id = NULL, dibbed = false',
