@@ -269,15 +269,19 @@ function MainController() {
 			$('#sign-in-step .sm-modal-title').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').removeClass('visible');
 			$('#sign-in-step').addClass('hidden-modal').removeClass('active');
+			$('#sign-in-sign-in-button').addClass('sm-button-ghost-light-solid');
 
 			$('#sign-in-up-phone-step').css({'transform':''});
 			$('#sign-in-up-phone-step .sm-modal-title').css({'transform':''});
 			$('#sign-in-up-phone-step .sm-modal-title').removeClass('visible');
 			$('#sign-in-up-phone-step').addClass('active').removeClass('hidden-modal');
 			$('#sign-in-up-phone-step .sm-modal-title').text('Sign in / Sign up');
+			$('#sm-sign-in-up-phone-button').addClass('sm-button-ghost-light-solid');
 
 			$('#sign-up-phone-confirm-step').addClass('hidden-modal').removeClass('active');
+			$('#sm-sign-up-phone-confirm-button').addClass('sm-button-ghost-light-solid');
 			$('#sign-in-phone-confirm-step').addClass('hidden-modal').removeClass('active');
+			$('#sm-sign-in-phone-confirm-button').addClass('sm-button-ghost-light-solid');
 
 			$('#sign-up-step').addClass('hidden-modal').removeClass('active');
 
@@ -290,12 +294,14 @@ function MainController() {
 			$('#sign-up-forgot-password-step').addClass('hidden-modal').removeClass('active');
 			$('#sign-up-forgot-password-step').css({'transform': ''});
 			$('#sign-up-forgot-password-step .sm-modal-title').css({'transform': ''});
+			$('#sm-sign-up-reset-password-button1').addClass('sm-button-ghost-light-solid');
 
+			$('#sign-up-forgot-password-success-step').addClass('hidden-modal').removeClass('active');
 			$('#sign-up-forgot-password-success-step').css({'transform': ''});
 			$('#sign-up-forgot-password-success-step .sm-modal-title').css({'transform': '',});
 
 			$('#sign-up-forgot-password-step .sm-modal-title').removeClass('visible');
-			$('#sign-up-forgot-password-success-step').addClass('hidden-modal');
+
 
 			$('#password-confirmation-step-icon').addClass('sm-hidden');
 
@@ -852,6 +858,14 @@ function MainController() {
 			'transform': ''
 		});
 		$('#sign-up-forgot-password-step .sm-modal-title').css({
+			'transform': ''
+		});
+		$('#sm-sign-up-reset-password-button1').addClass('sm-button-ghost-light-solid');
+		$('#sign-up-forgot-password-success-step').addClass('hidden-modal').removeClass('active');
+		$('#sign-up-forgot-password-success-step').css({
+			'transform': ''
+		});
+		$('#sign-up-forgot-password-success-step .sm-modal-title').css({
 			'transform': ''
 		});
 		signingUp = false;

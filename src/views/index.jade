@@ -408,7 +408,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								.sm-text-m.sm-full-width.confirmation-text Enter your email to reset your password
 								input#sign-up-password-reset-email-input.sm-text-input.sm-text-m.sm-text-input-full-width(type="text" placeholder="email address",ng-keyup="passwordConfirmationStepKeyUp()", ui-keypress="{enter:'passwordConfirmationStep()'}")
 								#sign-up-password-reset-errors
-							input#sm-sign-up-reset-password-button1.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-ghost-light-solid.sm-button-full-width(type="button" value="Submit" ng-click="passwordConfirmationStep()" style="position: absolute; bottom:0px;")
+							input#sm-sign-up-reset-password-button1.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-full-width(type="button" value="Submit" ng-click="passwordConfirmationStep()" style="position: absolute; bottom:0px;")
 						#sign-up-forgot-password-success-step.modal-step.animate-250.hidden-modal
 							h2.sm-modal-title Reset
 							.modal-back-button(ng-click="signUpBack()")
@@ -416,7 +416,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								.sm-text-l.sm-full-width.confirmation-text-top(style="text-align: center;") Please check your email for instructions
 								#password-confirmation-step-icon.fa.fa-envelope.sm-hidden
 								.sm-text-l.sm-full-width.confirmation-text-bottom(style="bottom: 0px;text-align: center;position: absolute;") on resetting your password
-							input#sm-sign-up-reset-password-button2-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-ghost-light-solid.sm-button-full-width(type="button" value="Ok" ng-click="hideModal('sign-in-up-modal')")
+							input#sm-sign-up-reset-password-button2-button.sm-button.sm-button-default.sm-text-l.sm-button-full-width(type="button" value="Ok" ng-click="hideModal('sign-in-up-modal')")
 			#email-verification-modal.modal-window.modal-window-hidden.animate-500
 				.modal-header
 				.modal-close(ng-click="hideModal('email-verification-modal')")
