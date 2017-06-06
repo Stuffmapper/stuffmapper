@@ -127,7 +127,7 @@ function MyItemsController() {
 						'		</div>',
 						'	<div class="sm-button-group" style="width: 100%;display:block;position:relative;">',
 						'		<div class="sm-button-group-2 sm-button-group-left" style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;">',
-						'			<input id="my-item-edit-cancel" class="sm-button sm-button-ghost sm-text-m animate-250" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);" />',
+						'			<input id="my-item-edit-cancel" class="sm-button sm-button-cancel sm-text-m animate-250" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);" />',
 						'		</div>',
 						'		<div class="sm-button-group-2 sm-button-group-right" style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;">',
 						'			<input id="my-item-edit-save" class="sm-button sm-button-default sm-text-m" type="button" value="Save" style="margin:20px 10px;width:calc(100% - 10px);float:left;" />',

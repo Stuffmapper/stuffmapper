@@ -75,11 +75,16 @@
 	background-color: $sunflower;
 }
 .sm-button-ghost {
+	border: 2px solid $fog-dark;
+	//background-color: #fff;
+	color: $charcoal-dark;
+}
+.sm-button-cancel {
 	//border: 2px solid $fog-dark;
 	//background-color: #fff;
 	color: $charcoal-dark;
 }
-.sm-button-ghost:hover {
+.sm-button-cancel:hover {
 	border: 4px solid $grapefruit-dark;
 	background-color: $grapefruit;
 }
@@ -88,7 +93,7 @@
 	color: $fog-light;
 }
 .sm-button-disbaled {
-	border: 4px solid $fog-dark;
+	border: 2px solid $fog-dark;
 	//background-color: #fff;
 	color: white;
 	pointer-events: none;
