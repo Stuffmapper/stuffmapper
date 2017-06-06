@@ -76,6 +76,21 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 						r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
 						a.appendChild(r);
 					})(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
+
+				//- Chatra {literal}
+				script.
+					(function(d, w, c) {
+						w.ChatraID = '5oMzBM7byxDdNPuMf';
+						var s = d.createElement('script');
+						w[c] = w[c] || function() {
+									(w[c].q = w[c].q || []).push(arguments);
+								};
+						s.async = true;
+						s.src = (d.location.protocol === 'https:' ? 'https:': 'http:')
+								+ '//call.chatra.io/chatra.js';
+						if (d.head) d.head.appendChild(s);
+					})(document, window, 'Chatra');
+
 		link(href="js/lib/normalize-css/normalize.css" rel="stylesheet")
 		link(href="js/lib/swiper/dist/css/swiper.min.css" rel="stylesheet")
 		//- link(href="js/lib/intl-tel-input/build/css/intlTelInput.css" rel="stylesheet")
