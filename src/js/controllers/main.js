@@ -264,7 +264,7 @@ function MainController() {
 		$scope.popUpOpen = false;
 		$u.modal.close(modalToClose);
 		$scope.popUpTimeout = setTimeout(function() {
-			$('#sign-in-up-modal').css({'height': '550px'});
+			// $('#sign-in-up-modal').css({'height': '550px'});
 			$('#sign-in-step').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').removeClass('visible');
@@ -899,7 +899,7 @@ function MainController() {
 		$('#sign-in-up-phone-step').addClass('hidden-modal').removeClass('active');
 		$('#sign-in-up-phone-error-warning-container').children().remove();
 		$('#sign-in-up-phone-number').css({border:''});
-		$( "#sign-in-up-modal" ).css({'height': '600px'});
+		// $( "#sign-in-up-modal" ).css({'height': '600px'});
 		$('#sign-in-step').addClass('active').removeClass('hidden-modal');
 	}
 
@@ -908,7 +908,7 @@ function MainController() {
 		$('#sign-in-error-warning-container').children().remove();
 		$('#sign-in-email').css({border:''});
 		$('#sign-in-password').css({border:''});
-		$( "#sign-in-up-modal" ).css({'height': '550px'});
+		// $( "#sign-in-up-modal" ).css({'height': '550px'});
 		$('#sign-in-up-phone-step').addClass('active').removeClass('hidden-modal');
 	}
 

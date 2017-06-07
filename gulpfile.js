@@ -98,6 +98,12 @@ gulp.task('images', function(done){
 		gulp.dest('./web/img'),
 		gulp.dest('./www/img'),
 		gulp.dest('./electron/img')
+	));
+	gulp.src('./src/js/lib/intl-tel-input/build/img/*', {base: './src/js/lib/intl-tel-input/build/img'})
+		.pipe(multistream(
+			gulp.dest('./web/img'),
+			gulp.dest('./www/img'),
+			gulp.dest('./electron/img')
 	))
 	.on('end', done);
 });

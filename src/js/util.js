@@ -4,7 +4,7 @@
 		var $u = {};
 		$u.modal = function() {
 			var bgCloseCallback;
-			document.addEventListener('DOMContentLoaded', function() {
+/*			document.addEventListener('DOMContentLoaded', function() {
 				document.getElementById('modal-bg').addEventListener('click', function(){
 					if(bgCloseCallback) {
 						requestAnimationFrame(function() {
@@ -17,7 +17,7 @@
 						document.getElementById(modals[i].id).className += ' modal-window-hidden';
 					}
 				}, false);
-			});
+			});*/
 			return {
 				open : function(id, callback) {
 					bgCloseCallback = callback || undefined;
