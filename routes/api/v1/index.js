@@ -1140,7 +1140,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 	queryServer(res, 'UPDATE posts SET dibber_id = $1, dibbed = true WHERE dibbed = false AND id = $2 RETURNING *', [req.session.passport.user.id,req.params.id], function(result1) {
 		queryServer(res, 'SELECT email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function(result0) {
 			if(result1.rows[0].attended) {
-
+				/*
 				var nonceFromTheClient = req.body.payment_method_nonce;
 				if(!nonceFromTheClient) return res.send('failure');
 				gateway.transaction.sale({
@@ -1154,7 +1154,8 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
                         phone: result0.rows[0].phone_number || ""
 					}
 				}, function (err, result) {
-					if(err) return res.send('failure');
+				 if(err) return res.send('failure');
+				*/
 					db.setEvent(2, '{{user}} dibs\'d {{post}}', req.session.passport.user.id, req.params.id);
 					var query = [
 						'INSERT INTO pick_up_success',
@@ -1206,7 +1207,7 @@ router.post('/dibs/:id', isAuthenticated, function(req, res) {
 							});
 						});
 					});
-				});
+				//});
 			} else {
 				db.setEvent(2, '{{user}} dibs\'d {{post}}', req.session.passport.user.id, req.params.id);
 				var query = [
