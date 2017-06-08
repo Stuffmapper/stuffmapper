@@ -1573,7 +1573,7 @@ router.post('/messages', isAuthenticated, function(req, res) {
 			console.log(result1.rows);
 			if(result1.rows.length === 1 && parseInt(result1.rows[0].lister_id) !== parseInt(req.session.passport.user.id)) {
 				queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
-					queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].dibber_id], function(result0){
+					queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result1.rows[0].dibber_id], function(result0){
 						queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
 							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
 								queryServer(res, 'SELECT message FROM messages WHERE user_id = $1 AND conversation_id = $2 ORDER BY date_created DESC', [req.session.passport.user.id, parseInt(req.body.conversation_id)], function(result5) {

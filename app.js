@@ -503,10 +503,8 @@ function messageUserMessageNotification(user_id, conversation_id, post_id) {
 								);
 								var emoji_message = emoji.get(':trumpet:') +""+ emoji.get(':musical_note:')+""+emoji.get(':trumpet:');
 								var sms_message = emoji_message+"\nMessage from "+result6.rows[0].uname+" about "+result3.rows[0].title.trim()+": "+test.join('\n').trim()+"\n"+config.subdomain+'/stuff/my/items/'+post_id+'/messages';
-								var lister_number = result2.rows[0].phone_number;
-								var dibber_number = result6.rows[0].phone_number;
-								sms.sendSMS(dibber_number, sms_message);
-								sms.sendSMS(lister_number, sms_message);
+								var phone_number = result2.rows[0].phone_number;
+								sms.sendSMS(phone_number, sms_message);
 							}
 						});
 					});
@@ -550,10 +548,8 @@ function messageUserMessageReminder(user_id, conversation_id, post_id) {
 								);
 								var emoji_message = emoji.get(':trumpet:') +""+ emoji.get(':musical_note:')+""+emoji.get(':trumpet:');
 								var sms_message = emoji_message+"\nReminder:\nMessage from "+result6.rows[0].uname+" about "+result3.rows[0].title.trim()+": "+test.join('\n').trim()+"\n"+config.subdomain+'/stuff/my/items/'+post_id+'/messages';
-								var lister_number = result2.rows[0].phone_number;
-								var dibber_number = result6.rows[0].phone_number;
-								sms.sendSMS(dibber_number, sms_message);
-								sms.sendSMS(lister_number, sms_message);
+								var phone_number = result2.rows[0].phone_number;
+								sms.sendSMS(phone_number, sms_message);
 							}
 						});
 					});

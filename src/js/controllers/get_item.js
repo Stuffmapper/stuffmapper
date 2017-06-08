@@ -145,6 +145,7 @@ function GetItemController() {
 				'		<input id="dibs-submit-button" class="sm-button sm-button-default sm-text-l sm-button-full-width" type="submit" value="Confirm Dibs! for $1">',
 				'	</form>',
 				'</div>',
+				'<div class="sm-text-s sm-full-width">All stuff is free!</div>',
 				attachedItem,
 				'<div class="">',
 				'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
@@ -459,6 +460,7 @@ function GetItemController() {
 		$('#masonry-container').css({'visibility': 'visible'});
 		$('#get-item-not-found').addClass('sm-hidden');
 		$('#loading-get-stuff').removeClass('sm-hidden');
+		// $('#loading-get-stuff').addClass('sm-hidden');
 		$('#get-item-stuff-empty').addClass('sm-hidden');
 		$('#get-stuff-back-button-container').addClass('sm-hidden');
 		$('.get-stuff-back-button').addClass('sm-hidden');

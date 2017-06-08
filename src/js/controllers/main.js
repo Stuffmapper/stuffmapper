@@ -556,7 +556,6 @@ function MainController() {
 		}
 
 		if (!valid) {
-			console.log('not valid')
 			$('#sign-in-sign-in-button').addClass('sm-button-ghost-light-solid');
 			//$('#sign-in-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
 		} else {
@@ -1387,7 +1386,6 @@ function resetSockets($scope, $state, data) {
 	if($scope.socket) $scope.socket.disconnect();
 	$scope.socket = io(subdomain);
 	$scope.socket.on((data.res.user.id), function(data) {
-		console.log("resetSockets:  -> "+data);
 		if(data.messages && window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
 			SMAlert('New Message for <em>'+data.messages.title+'</em>!', data.messages.message, 'Go to Message', 5000, function() {
 				$state.go('stuff.my.items.item.conversation', {id: data.messages.conversation});
