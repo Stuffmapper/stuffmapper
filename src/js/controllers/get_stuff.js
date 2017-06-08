@@ -31,19 +31,40 @@ function GetStuffController() {
         $('#confirmStuff').click(function (e) {
             $u.modal.close('undibs-confirm-modal');
         });
+
         if (!data.res || !data.res.length) {
             $('#loading-get-stuff').addClass('sm-hidden');
             $('#get-stuff-empty-list').removeClass('sm-hidden');
         }
 
         $scope.listItems = data.res;
-        if ($scope.listItems) {
-            $scope.refresh = function () {
-                //console.log('refresh');
-            };
-            $scope.initMasonry = function () {
-                $('.masonry-grid').imagesLoaded(function () {
-                    $('#loading-get-stuff').addClass('sm-hidden');
+        //if ($scope.listItems) {
+        $scope.refresh = function () {
+            //console.log('refresh');
+        };
+        $scope.initMasonry = function () {
+            $('.masonry-grid').imagesLoaded(function () {
+                $('#loading-get-stuff').addClass('sm-hidden');
+                $('.masonry-grid').isotope({
+                    columnWidth: $('.masonry-grid').width() / 2,
+                    itemSelector: '.masonry-grid-item',
+                    getSortData: {
+                        number: '.number parseInt'
+                    },
+                    sortBy: 'number',
+                    isAnimated: false,
+                    layoutMode: 'masonry',
+                    transitionDuration: 0,
+                    animationOptions: {
+                        duration: 0,
+                        queue: false
+                    }
+                });
+                $('.masonry-grid').addClass('isotope');
+            });
+            if (!initResize) {
+                initResize = true;
+                $(window).resize(function () {
                     $('.masonry-grid').isotope({
                         columnWidth: $('.masonry-grid').width() / 2,
                         itemSelector: '.masonry-grid-item',
@@ -59,35 +80,16 @@ function GetStuffController() {
                             queue: false
                         }
                     });
-                    $('.masonry-grid').addClass('isotope');
                 });
-                if (!initResize) {
-                    initResize = true;
-                    $(window).resize(function () {
-                        $('.masonry-grid').isotope({
-                            columnWidth: $('.masonry-grid').width() / 2,
-                            itemSelector: '.masonry-grid-item',
-                            getSortData: {
-                                number: '.number parseInt'
-                            },
-                            sortBy: 'number',
-                            isAnimated: false,
-                            layoutMode: 'masonry',
-                            transitionDuration: 0,
-                            animationOptions: {
-                                duration: 0,
-                                queue: false
-                            }
-                        });
-                    });
-                }
-            };
-            var tempSearchText = '';
-            var searchTextTimeout;
-            var lastSearch;
-            initMarkers();
+            }
+        };
+        var tempSearchText = '';
+        var searchTextTimeout;
+        var lastSearch;
+        initMarkers();
 
-        }
+        // }
+
         google.maps.event.addListener($scope.map, 'idle', function () {
             var c = this.getCenter();
             $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/' + c.lat() + '/' + c.lng() + '/').success(function (data) {
@@ -99,7 +101,6 @@ function GetStuffController() {
                     $('#loading-get-stuff').addClass('sm-hidden');
                     $('#get-stuff-empty-list').addClass('sm-hidden');
                 }
-                requestAnimationFrame(function () {
                     $scope.listItems = data.res;
                     if ($('.masonry-grid').hasClass('isotope')) {
                         $('.masonry-grid').isotope('reloadItems');
@@ -120,7 +121,6 @@ function GetStuffController() {
                         });
                     }
                     initMarkers();
-                });
             });
         });
     });
@@ -138,7 +138,7 @@ function GetStuffController() {
         var mapZoom = $scope.map.getZoom();
         var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
         var mapAnchor = mapSize / 2;
-        $scope.listItems.forEach(function (e) {
+        $scope.listItems.forEach(function (e, i) {
             $scope.markers.push(new google.maps.Marker({
                 position: {
                     lat: e.lat,
@@ -152,7 +152,7 @@ function GetStuffController() {
                 map: $scope.map,
                 data: e
             }));
-            $scope.markers[$scope.markers.length - 1].addListener('click', function (event) {
+            $scope.markers[i].addListener('click', function (event) {
                 $state.go('stuff.get.item', {id: this.data.id});
             });
         });
@@ -322,10 +322,10 @@ function GetStuffController() {
                 var mapZoom = $scope.map.getZoom();
                 var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
                 var mapAnchor = mapSize / 2;
-                $scope.markers.forEach(function (e,i) {
-                    e.setMap(null);
+
+                $scope.markers.forEach(function (m, i) {
+                    m.setVisible(false);
                 });
-                $scope.markers = [];
 
                 $scope.listItems.forEach(function (e) {
                     var radius = google.maps.geometry.spherical.computeDistanceBetween(
@@ -348,21 +348,10 @@ function GetStuffController() {
                             ((e.attended && attended) || (!e.attended && unattended) || both))) {
                             $('#post-item-' + e.id).parent().parent().css({'display': ''});
                             matchCount++;
-                            $scope.markers.push(new google.maps.Marker({
-                                position: {
-                                    lat: e.lat,
-                                    lng: e.lng
-                                },
-                                icon: {
-                                    url: 'img/Marker-all.png',
-                                    scaledSize: new google.maps.Size(mapSize, mapSize),
-                                    anchor: new google.maps.Point(mapAnchor, mapAnchor)
-                                },
-                                map: $scope.map,
-                                data: e
-                            }));
-                            $scope.markers[$scope.markers.length - 1].addListener('click', function (event) {
-                                $state.go('stuff.get.item', {id: this.data.id});
+                            $scope.markers.forEach(function (m,i) {
+                                if (m.data.id === e.id) {
+                                    m.setVisible(true);
+                                }
                             });
                         } else {
                             $('#post-item-' + e.id).parent().parent().css({'display': 'none'});
@@ -439,7 +428,9 @@ function GetStuffController() {
             });
         }
         $('#get-stuff-empty-results').addClass('sm-hidden');
-        initMarkers();
+        $scope.markers.forEach(function (m, i) {
+            m.setVisible(true);
+        });
     };
     $scope.clearSelectDeselect = function () {
         $('#select-all .fa.fa-check').removeClass('select-deselect-checked');

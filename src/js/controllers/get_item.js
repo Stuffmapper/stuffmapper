@@ -459,8 +459,8 @@ function GetItemController() {
 		}
 		$('#masonry-container').css({'visibility': 'visible'});
 		$('#get-item-not-found').addClass('sm-hidden');
-		$('#loading-get-stuff').removeClass('sm-hidden');
-		// $('#loading-get-stuff').addClass('sm-hidden');
+		// $('#loading-get-stuff').removeClass('sm-hidden');
+		$('#loading-get-stuff').addClass('sm-hidden');
 		$('#get-item-stuff-empty').addClass('sm-hidden');
 		$('#get-stuff-back-button-container').addClass('sm-hidden');
 		$('.get-stuff-back-button').addClass('sm-hidden');
