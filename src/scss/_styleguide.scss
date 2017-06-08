@@ -71,10 +71,26 @@
 .sm-button-warning {
 	background-color: $sunflower;
 }
+.sm-button-warning:hover {
+	background-color: $sunflower;
+}
 .sm-button-ghost {
 	border: 2px solid $fog-dark;
 	//background-color: #fff;
 	color: $charcoal-dark;
+}
+.sm-button-cancel {
+	//border: 2px solid $fog-dark;
+	//background-color: #fff;
+	color: $charcoal-dark;
+}
+.sm-button-cancel:hover {
+	border: 4px solid $grapefruit-dark;
+	background-color: $grapefruit;
+}
+.sm-button-ghost-light {
+	border: 0 solid $fog-dark;
+	color: $fog-light;
 }
 .sm-button-disbaled {
 	border: 2px solid $fog-dark;
@@ -89,6 +105,11 @@
 }
 .sm-button-ghost-solid {
 	background-color: #fff;
+}
+.sm-button-ghost-light-solid {
+	background-color: $pewter-light;
+	color: white;
+	pointer-events: none;
 }
 .sm-button:hover, .sm-button:active {
 	color: #fff;
@@ -178,24 +199,25 @@
 
 /* FORM ELEMENTS - START */
 .sm-text-input::-webkit-input-placeholder, .sm-text-area::-webkit-input-placeholder {
-	color: $charcoal-light;
+	color: $silver-light;
 }
 .sm-text-input:-moz-placeholder, .sm-text-area:-moz-placeholder {
-	color: $charcoal-light;
+	color: $silver-light;
 	opacity:  1;
 }
 .sm-text-input::-moz-placeholder, .sm-text-area::-moz-placeholder {
-	color: $charcoal-light;
+	color: $silver-light;
 	opacity:  1;
 }
 .sm-text-input:-ms-input-placeholder, .sm-text-area::-moz-placeholder {
-	color: $charcoal-light;
+	color: $silver-light;
 }
 .sm-text-input, .sm-text-area {
 	border-radius: 3px;
 	border: 1px solid $fog-dark;
 	padding: 3px 6px;
-	color: $charcoal-light;
+	color: $charcoal;
+	line-height: 30px;
 }
 .sm-text-input-full-width, .sm-text-area-full-width {
 	width: calc(100% - 40px);
@@ -206,7 +228,7 @@
 	border-radius: 3px;
 	border: 1px solid $silver-light;
 	padding: 3px 6px;
-	color: $charcoal-light;
+	color: $charcoal;
 	outline: none;
 }
 .sm-text-input::selection, .sm-text-area::selection {
@@ -337,7 +359,7 @@
 }
 .sm-text-m {
 	font-size: 16px;
-	line-height: 22px;
+	line-height: 30px;
 }
 .sm-text-s {
 	font-size: 12px;
@@ -490,7 +512,7 @@
 [type="checkbox"]:not(:checked),
 [type="checkbox"]:checked {
 	position: absolute;
-	left: -9999px;
+	/*left: -9999px;*/
 }
 [type="checkbox"]:not(:checked) + label,
 [type="checkbox"]:checked + label {
@@ -578,7 +600,9 @@ label:hover:before {
 	display: block;
 }
 
-
+hr {
+	border-color: $fog-dark;
+}
 
 
 

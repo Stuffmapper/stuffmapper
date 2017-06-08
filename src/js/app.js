@@ -3,7 +3,7 @@ var db;
 var stuffMapp = angular
 .module('stuffMapp', config.modules)
 .factory('$userData', function() {
-	var data = { loggedIn: $('html').hasClass('loggedIn'), braintreeToken: '', FirstName: '', LastName: '', email: '', userId: 0, userName: '' };
+	var data = { loggedIn: $('html').hasClass('loggedIn'), braintreeToken: '', FirstName: '', LastName: '', email: '', userId: 0, userName: '', phoneNumber: '' };
 	return {
 		isLoggedIn: function () { return data.loggedIn; },
 		setLoggedIn: function (loggedIn) { data.loggedIn = loggedIn; },
@@ -17,10 +17,12 @@ var stuffMapp = angular
 		setUserId: function (userId) { data.UserId = userId; },
 		getEmail: function () { return data.Email; },
 		setEmail: function (email) { data.Email = email; },
+		getPhone: function () { return data.phoneNumber; },
+		setPhone: function (phone) { data.phoneNumber = phone; },
 		getBraintreeToken: function () { return data.braintreeToken; },
 		setBraintreeToken: function (braintreeToken) { data.braintreeToken = braintreeToken; },
 		clearData: function () {
-			data = { FirstName: '', LastName: '', email: '', userId: 0, braintreeToken: '', userName: '' };
+			data = { FirstName: '', LastName: '', email: '', userId: 0, braintreeToken: '', userName: '', phoneNumber: '' };
 		}
 	};
 })

@@ -14,10 +14,12 @@ CREATE TABLE users (
 	fname varchar(32),
 	lname varchar(32),
 	uname varchar(32) UNIQUE NOT NULL,
-	email varchar(64) UNIQUE NOT NULL,
+	email varchar(64) UNIQUE,
 	password text,
 	password_reset_token text UNIQUE,
-	phone_number varchar(10),
+	phone_number varchar(15),
+    verify_phone_token varchar(6) DEFAULT floor((random() * 1000000)::text),
+    verified_phone boolean DEFAULT false,
 	verify_email_token varchar(32) UNIQUE DEFAULT md5(random()::text),
 	verified_email boolean DEFAULT false,
 	admin boolean DEFAULT false,
@@ -100,7 +102,9 @@ CREATE TABLE pick_up_success (
 	omw_lat FLOAT,
 	omw_lng FLOAT,
 	dib_lat FLOAT,
-	dib_lng FLOAT
+	dib_lng FLOAT,
+	pick_up_sms boolean DEFAULT false,
+	pick_up_sms_init timestamp DEFAULT current_timestamp
 );
 
 CREATE TABLE images (
@@ -189,6 +193,17 @@ CREATE TABLE event (
 	date_created timestamp DEFAULT current_timestamp,
 	message text,
 	level integer
+);
+
+CREATE TABLE pick_up_sms (
+	id BIGSERIAL PRIMARY KEY,
+	lister_id integer REFERENCES users(id),
+	dibber_id integer REFERENCES users(id),
+	post_id integer REFERENCES posts(id),
+	sms_init timestamp DEFAULT current_timestamp,
+	lister_phone_number varchar(15),
+	dibber_phone_number varchar(15),
+	pick_up_success boolean DEFAULT FALSE
 );
 
 -- CREATE TABLE event_message (

@@ -4,7 +4,7 @@
 		"subdomain" : "http://localhost:3000",
 		"port": 3000,
 		"db" : {
-			"host" : "localhost",
+			"host" : "127.0.0.1",
 			"port" : 5432,
 			"db": "stuffmapper1",
 			"user": "stuffmapper",
@@ -27,6 +27,11 @@
 			"secretAccessKey": "Q5HrlblKu05Bizi7wF4CToJeEiZ2kT1sgQ7ezsPB",
 			"region": "us-west-2",
 			"bucket": "stuffmapper-v2"
+		},
+		"twilio" : {
+			"sid": "ACe3d0e72c15bb1616a84d078ce537a005",
+			"token": "8f6d6d3a99cfd3c34cdebdffccb0cb98",
+			"phone": "+19253954823"
 		}
 	},
 	"development" : {
@@ -56,6 +61,11 @@
 			"secretAccessKey": "Q5HrlblKu05Bizi7wF4CToJeEiZ2kT1sgQ7ezsPB",
 			"region": "us-west-2",
 			"bucket": "stuffmapper-v2"
+		},
+		"twilio" : {
+			"sid": "ACe3d0e72c15bb1616a84d078ce537a005",
+			"token": "8f6d6d3a99cfd3c34cdebdffccb0cb98",
+			"phone": "+19253954823"
 		}
 	},
 	"production" : {
@@ -85,6 +95,11 @@
 			"secretAccessKey": "Q5HrlblKu05Bizi7wF4CToJeEiZ2kT1sgQ7ezsPB",
 			"region": "us-west-2",
 			"bucket": "stuffmapper-v2"
+		},
+		"twilio" : {
+			"sid": "ACe3d0e72c15bb1616a84d078ce537a005",
+			"token": "8f6d6d3a99cfd3c34cdebdffccb0cb98",
+			"phone": "+19253954823"
 		}
 	}
 }

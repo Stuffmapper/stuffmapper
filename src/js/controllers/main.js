@@ -19,7 +19,16 @@ function MainController() {
 	// var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
 	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[10] : undefined;
 	// var $cordovaPush = (typeof arguments[10] !== 'function') ? arguments[12] : undefined;
+	var vm = this;
+
 	$scope.delaySignIn = delaySignIn;
+	$("#sign-in-up-phone-number, #phone-update-modal-field").intlTelInput({
+		getNumberType: "MOBILE",
+		utilsScript: $.fn.intlTelInput.loadUtils("js/lib/intl-tel-input/build/js/utils.js"),
+		preferredCountries: ["us", "ca"]
+		// separateDialCode: true
+		// autoHideDialCode: false
+	});
 
 	setTimeout(function() {
 		$('#tab-container .stuff-tabs li a').removeClass('selected');
@@ -34,6 +43,7 @@ function MainController() {
 		if(modal==='modal') {
 			if (config.html5) location.hash = 'signin';
 			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
+			$('#sign-in-up-phone-error-warning-container, #sign-up-phone-confirm-error-warning-container', '#sign-in-phone-confirm-error-warning-container').children().remove();
 			$u.modal.open('sign-in-up-modal', function() {
 				window.location.hash = '';
 			});
@@ -254,21 +264,47 @@ function MainController() {
 		$scope.popUpOpen = false;
 		$u.modal.close(modalToClose);
 		$scope.popUpTimeout = setTimeout(function() {
+			// $('#sign-in-up-modal').css({'height': '550px'});
 			$('#sign-in-step').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').css({'transform':''});
 			$('#sign-in-step .sm-modal-title').removeClass('visible');
+			$('#sign-in-step').addClass('hidden-modal').removeClass('active');
+			$('#sign-in-sign-in-button').addClass('sm-button-ghost-light-solid');
+
+			$('#sign-in-up-phone-step').css({'transform':''});
+			$('#sign-in-up-phone-step .sm-modal-title').css({'transform':''});
+			$('#sign-in-up-phone-step .sm-modal-title').removeClass('visible');
+			$('#sign-in-up-phone-step').addClass('active').removeClass('hidden-modal');
+			$('#sign-in-up-phone-step .sm-modal-title').text('Sign in / Sign up');
+			$('#sm-sign-in-up-phone-button').addClass('sm-button-ghost-light-solid');
+
+			$('#sign-up-phone-confirm-step').addClass('hidden-modal').removeClass('active');
+			$('#sm-sign-up-phone-confirm-button').addClass('sm-button-ghost-light-solid');
+			$('#sign-in-phone-confirm-step').addClass('hidden-modal').removeClass('active');
+			$('#sm-sign-in-phone-confirm-button').addClass('sm-button-ghost-light-solid');
+
 			$('#sign-up-step').addClass('hidden-modal').removeClass('active');
+
 			$('#confirmation-step').addClass('hidden-modal').removeClass('active');
 			$('#confirmation-step-icon').addClass('sm-hidden');
+
 			$('#sign-in-error-warning-container, #sign-up-error-warning-container').children().remove();
+			$('#sign-in-up-phone-error-warning-container, #sign-up-phone-confirm-error-warning-container', '#sign-in-phone-confirm-error-warning-container').children().remove();
+
 			$('#sign-up-forgot-password-step').addClass('hidden-modal').removeClass('active');
 			$('#sign-up-forgot-password-step').css({'transform': ''});
 			$('#sign-up-forgot-password-step .sm-modal-title').css({'transform': ''});
+			$('#sm-sign-up-reset-password-button1').addClass('sm-button-ghost-light-solid');
+
+			$('#sign-up-forgot-password-success-step').addClass('hidden-modal').removeClass('active');
 			$('#sign-up-forgot-password-success-step').css({'transform': ''});
 			$('#sign-up-forgot-password-success-step .sm-modal-title').css({'transform': '',});
+
 			$('#sign-up-forgot-password-step .sm-modal-title').removeClass('visible');
-			$('#sign-up-forgot-password-success-step').addClass('hidden-modal');
+
+
 			$('#password-confirmation-step-icon').addClass('sm-hidden');
+
 		}, 550);
 		resetAllInputsIn('#modal-windows');
 	};
@@ -358,10 +394,12 @@ function MainController() {
 			initUserData(data);
 			$scope.hideModal('sign-in-up-modal');
 			$('html').addClass('loggedIn');
+			$userData.setEmail(data.res.user.email);
 			$userData.setUserId(data.res.user.id);
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setUserName(data.res.user.uname);
 			$userData.setLoggedIn(true);
+			$userData.setPhone(data.res.user.phone_number);
 			if(window.location.pathname.indexOf('/login-setup1') > -1) $scope.redirectState = 'stuff.get';
 			if(!$scope.redirectState) $state.reload();
 			else {
@@ -369,6 +407,9 @@ function MainController() {
 				$scope.redirectState = '';
 			}
 			$u.toast('Welcome!');
+			if(!data.res.user.phone_number){
+				$u.modal.open('phone-update-modal');
+			}
 			// 	if(config.ionic.isIonic) {
 			// 		// $ionicPlatform.ready(function () {
 			// 		var push = $cordovaPush.init({
@@ -488,52 +529,189 @@ function MainController() {
 		}
 		passwordVisible = !passwordVisible;
 	};
-	$scope.login = function() {
-		$http.post(config.api.host + '/api/v' + config.api.version + '/account/login', {
-			username: $('#sign-in-email').val(),
+
+	$scope.loginKeyUp = function () {
+
+		$('#sign-in-error-warning-container').children().remove();
+		$('#sign-in-email, #sign-in-password1').css({border:''});
+
+		var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+		var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
+
+		var valid = true;
+		var message = '';
+		var fd = {
+			email: $('#sign-in-email').val(),
 			password: $('#sign-in-password').val()
-		}, {
-			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest: function(data) {return $.param(data);}
-		}).success(function(data) {
-			if (data.err || !data.res.isValid) return $('#sign-in-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
-			location.hash = '';
-			resetAllInputsIn('#modal-windows');
-			$('html').addClass('loggedIn');
-			$userData.setUserId(data.res.user.id);
-			$userData.setBraintreeToken(data.res.user.braintree_token);
-			$userData.setUserName(data.res.user.uname);
-			$userData.setLoggedIn(true);
-			$scope.hideModal('sign-in-up-modal');
-			location.hash = '';
-			if(!$scope.redirectState) $state.reload();
-			else {
-				$state.go($scope.redirectState);
-				$scope.redirectState = '';
-			}
-			$u.toast('Welcome!');
-			if(config.ionic.isIonic) {
-				$ionicPlatform.ready(function () {
-					// $cordovaPush.register({
-					// 	badge: true,
-					// 	sound: true,
-					// 	alert: true
-					// }).then(function (result) {
-					// 	UserService.registerDevice({
-					// 		user: user,
-					// 		token: result
-					// 	}).then(function () {
-					// 		$ionicLoading.hide();
-					// 		$state.go('tab.news');
-					// 	}, function (err) {
-					// 		console.log(err);
-					// 	});
-					// }, function (err) {
-					// 	console.log('reg device error', err);
-					// });
-				});
-			}
-		});
+		};
+
+		if (!fd.email || !emailRe.test(fd.email)) {
+			valid = false;
+			// $('#sign-i-email').css({border: '1px solid red'});
+			message = 'invalid email address';
+		}else if (!fd.password || !passRe.test(fd.password)) {
+			valid = false;
+			// $('#sign-in-password1').css({border: '1px solid red'});
+			message = 'password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';
+		}
+
+		if (!valid) {
+			$('#sign-in-sign-in-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-in-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sign-in-sign-in-button').removeClass('sm-button-ghost-light-solid');
+		}
 	};
+
+	$scope.login = function() {
+		$('#sign-in-error-warning-container').children().remove();
+		$('#sign-in-email, #sign-in-password1').css({border:''});
+		var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+		var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
+		var valid = true;
+		var message = '';
+		var fd = {
+			email: $('#sign-in-email').val(),
+			password: $('#sign-in-password').val()
+		};
+
+		if (!fd.password || !passRe.test(fd.password)) {
+			valid = false;
+			// $('#sign-in-password1').css({border: '1px solid red'});
+			message = 'password must be at least 8 characters long, no spaces, and contain each of the following: an uppercase letter, a lowercase letter, a number, and a symbol';
+		} else if (!fd.email || !emailRe.test(fd.email)) {
+			valid = false;
+			// $('#sign-i-email').css({border: '1px solid red'});
+			message = 'invalid email address';
+		}
+
+		if (!valid) {
+			$('#sign-in-sign-in-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-in-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sign-in-sign-in-button').removeClass('sm-button-ghost-light-solid');
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/login', {
+				username: $('#sign-in-email').val(),
+				password: $('#sign-in-password').val()
+			}, {
+				headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+				transformRequest: function (data) {
+					return $.param(data);
+				}
+			}).success(function (data) {
+				if (data.err || !data.res.isValid) return $('#sign-in-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err + '</div>');
+				location.hash = '';
+				resetAllInputsIn('#modal-windows');
+				$('html').addClass('loggedIn');
+				$userData.setUserId(data.res.user.id);
+				$userData.setBraintreeToken(data.res.user.braintree_token);
+				$userData.setUserName(data.res.user.uname);
+				$userData.setLoggedIn(true);
+				$userData.setEmail(data.res.user.email);
+				$userData.setPhone(data.res.user.phone_number);
+				$scope.hideModal('sign-in-up-modal');
+				location.hash = '';
+				if (!$scope.redirectState) $state.reload();
+				else {
+					$state.go($scope.redirectState);
+					$scope.redirectState = '';
+				}
+				$u.toast('Welcome!');
+				if (config.ionic.isIonic) {
+					$ionicPlatform.ready(function () {
+						// $cordovaPush.register({
+						// 	badge: true,
+						// 	sound: true,
+						// 	alert: true
+						// }).then(function (result) {
+						// 	UserService.registerDevice({
+						// 		user: user,
+						// 		token: result
+						// 	}).then(function () {
+						// 		$ionicLoading.hide();
+						// 		$state.go('tab.news');
+						// 	}, function (err) {
+						// 		console.log(err);
+						// 	});
+						// }, function (err) {
+						// 	console.log('reg device error', err);
+						// });
+					});
+				}
+				if (!data.res.user.phone_number) {
+					$u.modal.open('phone-update-modal');
+				}
+			});
+		}
+	};
+
+	$scope.updatePhoneKeyUp = function () {
+		$('#phone-update-modal-error-warning-container').html('');
+		// $('#phone-update-modal-field').css({border:''});
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_number: $('#phone-update-modal-field').intlTelInput("getNumber")
+		};
+
+		if (!$('#phone-update-modal-field').intlTelInput("isValidNumber")) {
+			valid = false;
+			// $('#phone-update-modal-field').css({border: '1px solid red'});
+			message = 'please insert a valid phone #';
+		}
+
+		if (!valid) {
+			$('#phone-update-modal-update-button').addClass('sm-button-ghost-light-solid');
+			//$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#phone-update-modal-update-button').removeClass('sm-button-ghost-light-solid');
+		}
+	};
+
+	$scope.updatePhone = function () {
+		var useremail = $userData.getEmail();
+
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_number: $('#phone-update-modal-field').intlTelInput("getNumber"),
+			email: useremail
+		};
+
+		if (!$('#phone-update-modal-field').intlTelInput("isValidNumber")) {
+			valid = false;
+			// $('#phone-update-modal-field').css({border: '1px solid red'});
+			message = 'please insert a valid phone #';
+		}
+
+		if (!valid) {
+			$('#phone-update-modal-update-button').addClass('sm-button-ghost-light-solid');
+			//$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#phone-update-modal-update-button').removeClass('sm-button-ghost-light-solid');
+
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/login/phone/update', fd,
+				{
+					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+					transformRequest: function (data) {
+						return $.param(data);
+					}
+				})
+				.success(function (data) {
+
+					$('#phone-update-modal-field').removeAttr('disabled');
+					if (data.err) return $('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err + '</div>');
+					else if (data.res.inserted) {
+						$userData.setPhone(fd.phone_number);
+						$u.toast('Phone # updated successfully!');
+						$u.modal.close('phone-update-modal');
+					} else if (!data.res.inserted) {
+						$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">This phone # is already associated with an other account.</div>');
+					}
+				});
+		}
+	}
+	
 	$scope.logout = function() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/logout')
 		.success(function(data) {
@@ -575,19 +753,47 @@ function MainController() {
 		$('#sign-in-step .sm-modal-title').addClass('visible');
 		$('#sign-up-forgot-password-step').removeClass('hidden-modal').addClass('active');
 	};
-	$scope.passwordConfirmationStep = function() {
+
+	$scope.passwordConfirmationStepKeyUp = function () {
+		$('#sign-up-password-reset-errors').children().remove();
+		$('#sign-up-password-reset-email-input').css({border:''});
 		var emailInput = $('#sign-up-password-reset-email-input').val();
 		var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 		var valid = true;
 		var message = '';
 		if(!emailInput || !emailRe.test(emailInput)) {
 			valid = false;
-			$('#sign-up-password-reset-email-input').css({border:'1px solid red'});
+			// $('#sign-up-password-reset-email-input').css({border:'1px solid red'});
 			message = 'invalid email address';
-			if (data.err || !data.res.isValid) return $('#sm-password-confirmation-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
 		}
-		if(!valid) return $('#sign-up-password-reset-errors').text('invalid email address');
-		else {
+
+		if (!valid) {
+			$('#sm-sign-up-reset-password-button1').addClass('sm-button-ghost-light-solid');
+			//$('#sign-up-password-reset-errors').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-up-reset-password-button1').removeClass('sm-button-ghost-light-solid');
+		}
+	};
+
+	$scope.passwordConfirmationStep = function() {
+		var emailInput = $('#sign-up-password-reset-email-input').val();
+		$('#sign-up-password-reset-email-input').css({border:''});
+
+		var emailInput = $('#sign-up-password-reset-email-input').val();
+		var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+		var valid = true;
+		var message = '';
+		if(!emailInput || !emailRe.test(emailInput)) {
+			valid = false;
+			// $('#sign-up-password-reset-email-input').css({border:'1px solid red'});
+			message = 'invalid email address';
+		}
+
+		if (!valid) {
+			$('#sm-sign-up-reset-password-button1').addClass('sm-button-ghost-light-solid');
+			//$('#sign-up-password-reset-errors').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-up-reset-password-button1').removeClass('sm-button-ghost-light-solid');
 			$.post(config.api.host + '/api/v' + config.api.version + '/account/password/token', {
 				email: emailInput
 			}, function(data) {
@@ -613,6 +819,7 @@ function MainController() {
 			});
 		}
 	};
+
 	$scope.signUpStep = function() {
 		$('#sign-in-step').css({
 			'transform': 'translate3d(-100%, 0%, 0)'
@@ -652,9 +859,382 @@ function MainController() {
 		$('#sign-up-forgot-password-step .sm-modal-title').css({
 			'transform': ''
 		});
+		$('#sm-sign-up-reset-password-button1').addClass('sm-button-ghost-light-solid');
+		$('#sign-up-forgot-password-success-step').addClass('hidden-modal').removeClass('active');
+		$('#sign-up-forgot-password-success-step').css({
+			'transform': ''
+		});
+		$('#sign-up-forgot-password-success-step .sm-modal-title').css({
+			'transform': ''
+		});
 		signingUp = false;
 	};
+
+	$scope.signInPhoneBack = function() {
+		$('#sign-in-phone-confirm-error-warning-container').children().remove();
+		$('#sign-in-phone-confirm-code').css({border:''});
+		$('#sign-in-up-phone-step').css({'transform':''});
+		$('#sign-in-up-phone-step .sm-modal-title').css({'transform':''});
+		$('#sign-in-up-phone-step .sm-modal-title').removeClass('visible');
+		$('#sign-in-up-phone-step .sm-modal-title').text('Sign in / Sign up');
+		$('#sign-in-phone-confirm-step').addClass('hidden-modal').removeClass('active');
+		$('#sign-in-phone-confirm-step').css({'transform':''});
+	};
+
+	$scope.signUpPhoneBack = function() {
+		$('#sign-up-phone-confirm-error-warning-container').children().remove();
+		$('#sign-up-phone-confirm-code').css({border:''});
+		$('#sign-up-phone-confirm-terms').css({border:''});
+		$('#sign-in-up-phone-step').css({'transform':''});
+		$('#sign-in-up-phone-step .sm-modal-title').css({'transform':''});
+		$('#sign-in-up-phone-step .sm-modal-title').removeClass('visible');
+		$('#sign-in-up-phone-step .sm-modal-title').text('Sign in / Sign up');
+		$('#sign-up-phone-confirm-step').addClass('hidden-modal').removeClass('active');
+		$('#sign-up-phone-confirm-step').css({'transform':''});
+		signingUp = false;
+	};
+	
+	$scope.signInOldFirstStep = function () {
+		$('#sign-in-up-phone-step').addClass('hidden-modal').removeClass('active');
+		$('#sign-in-up-phone-error-warning-container').children().remove();
+		$('#sign-in-up-phone-number').css({border:''});
+		// $( "#sign-in-up-modal" ).css({'height': '600px'});
+		$('#sign-in-step').addClass('active').removeClass('hidden-modal');
+	}
+
+	$scope.signInUpNewStep = function () {
+		$('#sign-in-step').addClass('hidden-modal').removeClass('active');
+		$('#sign-in-error-warning-container').children().remove();
+		$('#sign-in-email').css({border:''});
+		$('#sign-in-password').css({border:''});
+		// $( "#sign-in-up-modal" ).css({'height': '550px'});
+		$('#sign-in-up-phone-step').addClass('active').removeClass('hidden-modal');
+	}
+
 	var signingUp = false;
+
+	$scope.signInUpPhoneKeyUp = function () {
+		//$('#sign-in-up-phone-number').css({border: ''});
+		$('#sign-in-up-phone-error-warning-container').html('');
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_number: $('#sign-in-up-phone-number').intlTelInput("getNumber")
+		};
+		if (!$('#sign-in-up-phone-number').intlTelInput("isValidNumber")) {
+			valid = false;
+			//$('#sign-in-up-phone-number').css({border: '1px solid red'});
+			message = 'please insert a valid phone #';
+		}
+
+		if (!valid) {
+			signingUp = false;
+			$('#sm-sign-in-up-phone-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-in-up-phone-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-in-up-phone-button').removeClass('sm-button-ghost-light-solid');
+		}
+	};
+
+	$scope.signInUpPhone = function () {
+		$('#sign-in-up-phone-error-warning-container').html('');
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_number: $('#sign-in-up-phone-number').intlTelInput("getNumber")
+		};
+		if (!$('#sign-in-up-phone-number').intlTelInput("isValidNumber")) {
+			valid = false;
+			//$('#sign-in-up-phone-number').css({border: '1px solid red'});
+			message = 'please insert a valid phone #';
+		}
+
+		if (!valid) {
+			signingUp = false;
+			$('#sm-sign-in-up-phone-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-in-up-phone-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-in-up-phone-button').removeClass('sm-button-ghost-light-solid');
+			fbq('trackCustom', 'SignedInUpWithPhone');
+			var fd = {
+				phone_number: $('#sign-in-up-phone-number').intlTelInput("getNumber")
+			};
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/register/phone', fd,
+				{
+					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+					transformRequest: function (data) {
+						return $.param(data);
+					}
+				})
+				.success(function (data) {
+
+					$('#sm-sign-in-up-phone-button').removeAttr('disabled');
+					if (data.err) return $('#sign-in-up-phone-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err + '</div>');
+					else if (data.res.already_registered) {
+						$userData.setPhone(fd.phone_number);
+						$('#sign-in-up-phone-error-warning-container').children().remove();
+						$('#sign-in-up-phone-number').css({border: ''});
+						$('#sign-in-up-phone-step').css({
+							'transform': 'translate3d(-100%, 0%, 0)'
+						});
+						$('#sign-in-up-phone-step .sm-modal-title').css({
+							'transform': 'translate3d(55%, 0%, 0) scale3d(0.75, 0.75, 1)'
+						});
+						$('#sign-in-up-phone-step .sm-modal-title').text('<');
+
+						$('#sign-in-up-phone-step .sm-modal-title').addClass('visible');
+						$('#sign-in-up-phone-number').css({border: ''});
+						$('#sign-in-phone-confirm-step').removeClass('hidden-modal').addClass('active');
+					} else if (!data.res.already_registered) {
+						$userData.setPhone(fd.phone_number);
+						$('#sign-in-up-phone-error-warning-container').children().remove();
+						$('#sign-in-up-phone-number').css({border: ''});
+						$('#sign-in-up-phone-step').css({
+							'transform': 'translate3d(-100%, 0%, 0)'
+						});
+						$('#sign-in-up-phone-step .sm-modal-title').css({
+							'transform': 'translate3d(55%, 0%, 0) scale3d(0.75, 0.75, 1)'
+						});
+						$('#sign-in-up-phone-step .sm-modal-title').text('<');
+						$('#sign-in-up-phone-step .sm-modal-title').addClass('visible');
+						$('#sign-in-up-phone-number').css({border: ''});
+						$('#sign-up-phone-confirm-step').removeClass('hidden-modal').addClass('active');
+					}
+				});
+		}
+	};
+
+	$scope.signUpPhoneConfirmKeyUp = function () {
+		$('#sign-up-phone-confirm-error-warning-container').children().remove();
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_token: $('#sign-up-phone-confirm-code').val(),
+			phone_number: $userData.getPhone()
+		};
+		$('#sign-up-phone-confirm-code').css({border:''});
+		$('#sign-up-phone-confirm-terms').css({border:''});
+		if (!fd.phone_token) {
+			valid = false;
+			// $('#sign-up-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		else if (fd.phone_token.length > 6) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		} else if (fd.phone_token.length < 6) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		} else if (!$('#sign-up-phone-confirm-terms input[type="checkbox"]').prop('checked')) {
+			valid = false;
+			// $('#sign-up-phone-confirm-terms').css({border: '1px solid red'});
+			message = 'please check terms & conditions';
+		}
+		if (!valid) {
+			signingUp = false;
+			$('#sm-sign-up-phone-confirm-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-up-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-up-phone-confirm-button').removeClass('sm-button-ghost-light-solid');
+		}
+	};
+
+	$scope.signUpPhoneConfirmTermsKeyUp = function () {
+
+		$('#sign-up-phone-confirm-error-warning-container').children().remove();
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_token: $('#sign-up-phone-confirm-code').val(),
+			phone_number: $userData.getPhone()
+		};
+		$('#sign-up-phone-confirm-code').css({border:''});
+		$('#sign-up-phone-confirm-terms').css({border:''});
+		if (!fd.phone_token) {
+			valid = false;
+			// $('#sign-up-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		else if (fd.phone_token.length > 6) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		} else if (fd.phone_token.length < 6) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		} else if (!$('#sign-up-phone-confirm-terms input[type="checkbox"]').prop('checked')) {
+			valid = false;
+			// $('#sign-up-phone-confirm-terms').css({border: '1px solid red'});
+			message = 'please check terms & conditions';
+		}
+		if (!valid) {
+			signingUp = false;
+			$('#sm-sign-up-phone-confirm-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-up-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-up-phone-confirm-button').removeClass('sm-button-ghost-light-solid');
+		}
+	};
+
+	$scope.signUpPhoneConfirm = function () {
+		$('#sign-up-phone-confirm-error-warning-container').children().remove();
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_token: $('#sign-up-phone-confirm-code').val(),
+			phone_number: $userData.getPhone()
+		};
+		$('#sign-up-phone-confirm-code').css({border:''});
+		$('#sign-up-phone-confirm-terms').css({border:''});
+		if (!fd.phone_token) {
+			valid = false;
+			// $('#sign-up-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		else if (fd.phone_token.length > 6) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		} else if (fd.phone_token.length < 6) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		} else if (!$('#sign-up-phone-confirm-terms input[type="checkbox"]').prop('checked')) {
+			valid = false;
+			// $('#sign-up-phone-confirm-terms').css({border: '1px solid red'});
+			message = 'please check terms & conditions';
+		}
+		if (!valid) {
+			signingUp = false;
+			$('#sm-sign-up-phone-confirm-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-up-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-up-phone-confirm-button').removeClass('sm-button-ghost-light-solid');
+			fbq('trackCustom', 'SignedUpWithPhone');
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/verify/phone', fd,
+				{
+					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+					transformRequest: function (data) {
+						return $.param(data);
+					}
+				})
+				.success(function (data) {
+					$('#sm-sign-up-phone-confirm-button').removeAttr('disabled');
+					if (data.err) return $('#sign-up-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err + '</div>');
+					else {
+						location.hash = '';
+						resetAllInputsIn('#modal-windows');
+						$('html').addClass('loggedIn');
+						$userData.setUserId(data.res.user.id);
+						$userData.setBraintreeToken(data.res.user.braintree_token);
+						$userData.setUserName(data.res.user.uname);
+						$userData.setLoggedIn(true);
+						$scope.hideModal('sign-in-up-modal');
+						location.hash = '';
+						if (!$scope.redirectState) $state.reload();
+						else {
+							$state.go($scope.redirectState);
+							$scope.redirectState = '';
+						}
+						$u.toast('Welcome!');
+					}
+
+				});
+		}
+	}
+
+	$scope.signInPhoneConfirmKeyUp = function () {
+		$('#sign-in-phone-confirm-error-warning-container').children().remove();
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_token: $('#sign-in-phone-confirm-code').val(),
+			phone_number: $userData.getPhone()
+		};
+		$('#sign-in-phone-confirm-code').css({border: ''});
+		if (!fd.phone_token) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		else if (fd.phone_token.length > 6 || fd.phone_token.length < 6) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+
+		if (!valid) {
+			$('#sm-sign-in-phone-confirm-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-in-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-in-phone-confirm-button').removeClass('sm-button-ghost-light-solid');
+		}
+	};
+
+	$scope.signInPhoneConfirm = function () {
+		$('#sign-in-phone-confirm-error-warning-container').children().remove();
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_token: $('#sign-in-phone-confirm-code').val(),
+			phone_number: $userData.getPhone()
+		};
+		$('#sign-in-phone-confirm-code').css({border: ''});
+		if (!fd.phone_token) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		else if (fd.phone_token.length > 6 || fd.phone_token.length < 6) {
+			valid = false;
+			// $('#sign-in-phone-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+
+		if (!valid) {
+			$('#sm-sign-in-phone-confirm-button').addClass('sm-button-ghost-light-solid');
+			//$('#sign-in-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#sm-sign-in-phone-confirm-button').removeClass('sm-button-ghost-light-solid');
+			fbq('trackCustom', 'SignedInWithPhone');
+
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/confirmation/phone', fd,
+				{
+					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+					transformRequest: function (data) {
+						return $.param(data);
+					}
+				})
+				.success(function (data) {
+					$('#sm-sign-in-phone-confirm-button').removeAttr('disabled');
+					if (data.err) return $('#sign-in-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + 'Some wrong occur on server' + '</div>');
+					else if (!data.res.isValid) return $('#sign-in-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + 'please insert correct 6-digit confirmation code' + '</div>');
+					else {
+						location.hash = '';
+						resetAllInputsIn('#modal-windows');
+						$('html').addClass('loggedIn');
+						$userData.setUserId(data.res.user.id);
+						$userData.setBraintreeToken(data.res.user.braintree_token);
+						$userData.setUserName(data.res.user.uname);
+						$userData.setLoggedIn(true);
+						$scope.hideModal('sign-in-up-modal');
+						location.hash = '';
+						if (!$scope.redirectState) $state.reload();
+						else {
+							$state.go($scope.redirectState);
+							$scope.redirectState = '';
+						}
+						$u.toast('Welcome!');
+					}
+
+				});
+		}
+	}
+	
+
 	var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 	var passRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,32}/;
 	$scope.signUp = function() {
@@ -806,7 +1386,6 @@ function resetSockets($scope, $state, data) {
 	if($scope.socket) $scope.socket.disconnect();
 	$scope.socket = io(subdomain);
 	$scope.socket.on((data.res.user.id), function(data) {
-		console.log("resetSockets:  -> "+data);
 		if(data.messages && window.location.pathname.indexOf('/items/'+data.messages.conversation+'/messages') <= -1) {
 			SMAlert('New Message for <em>'+data.messages.title+'</em>!', data.messages.message, 'Go to Message', 5000, function() {
 				$state.go('stuff.my.items.item.conversation', {id: data.messages.conversation});

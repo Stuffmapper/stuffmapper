@@ -45,6 +45,12 @@ gulp.task('sass', function(done) {
 		gulp.dest('./www/fonts'),
 		gulp.dest('./electron/fonts')
 	));
+	gulp.src('./src/js/lib/bootstrap/dist/fonts/*', {base: './src/js/lib/bootstrap/dist/fonts/'})
+		.pipe(multistream(
+			gulp.dest('./web/fonts'),
+			gulp.dest('./www/fonts'),
+			gulp.dest('./electron/fonts')
+		));
 });
 gulp.task('jade', function(done) {
 	gulp.src('./src/views/index.jade')
@@ -92,6 +98,12 @@ gulp.task('images', function(done){
 		gulp.dest('./web/img'),
 		gulp.dest('./www/img'),
 		gulp.dest('./electron/img')
+	));
+	gulp.src('./src/js/lib/intl-tel-input/build/img/*', {base: './src/js/lib/intl-tel-input/build/img'})
+		.pipe(multistream(
+			gulp.dest('./web/img'),
+			gulp.dest('./www/img'),
+			gulp.dest('./electron/img')
 	))
 	.on('end', done);
 });
@@ -107,10 +119,14 @@ gulp.task('js', function(done) {
 			'./src/js/lib/masonry/dist/masonry.pkgd.js',
 			'./src/js/lib/swiper/dist/js/swiper.min.js',
 			'./src/js/lib/isotope/dist/isotope.pkgd.min.js',
-			'./src/js/lib/teljs/dist/scripts/tel.js',
-			'./src/js/lib/teljs/data/metadatalite.js',
+			// './src/js/lib/teljs/dist/scripts/tel.js',
+			// './src/js/lib/teljs/data/metadatalite.js',
+			'./src/js/lib/intl-tel-input/build/js/utils.js',
+			'./src/js/lib/intl-tel-input/build/js/intlTelInput.min.js',
+			// './src/js/lib/ng-intl-tel-input/dist/ng-intl-tel-input.min.js',
 			'./src/js/lib/fancyBox/dist/jquery.fancybox.min.js',
 			'./src/js/lib/angular-ui-router/release/angular-ui-router.min.js',
+			'./src/js/lib/angular-ui-utils/ui-utils.min.js',
 			'./src/js/lib/angular-animate/angular-animate.min.js',
 			'./src/js/lib/select2/dist/js/select2.full.min.js',
 			'./src/js/lib/javascript-load-image/js/load-image.all.min.js',

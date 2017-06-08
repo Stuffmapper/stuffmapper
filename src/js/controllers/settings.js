@@ -6,6 +6,14 @@ function SettingsController() {
 	var authenticator = arguments[2];
 	var $state = arguments[3];
 
+	$("#setting-phone").intlTelInput({
+		getNumberType: "MOBILE",
+		utilsScript: $.fn.intlTelInput.loadUtils("js/lib/intl-tel-input/build/js/utils.js")
+	});
+	$("#setting-phone").intlTelInput("setCountry", "us");
+	$('.intl-tel-input .flag-container').css({"width": "300px"});
+	$('.intl-tel-input .flag-container').css({"max-width": "300px"});
+
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});
@@ -14,6 +22,9 @@ function SettingsController() {
 			$http.get(config.api.host + '/api/v' + config.api.version + '/account/info').success(function(data){
 				if(data.err) return console.log(data.err);
 				$scope.users = data.res;
+				if(data.res.phone_number){
+					$("#setting-phone").intlTelInput("setNumber", data.res.phone_number);
+				}
 				if($scope.users.google_id) {
 					$('#sm-settings-google').css({'pointer-events':'none','opacity':'0.7'});
 					$('#sm-settings-google span').text('Connected to Google');
@@ -34,10 +45,12 @@ function SettingsController() {
 				var formSetting = {
 					email: $('#setting-email').val().toLowerCase(),
 					uname: $('#setting-uname').val(),
-					phone: $('#setting-phone').val()
+					phone: $('#setting-phone').intlTelInput("getNumber"),
+					phone_valid: $('#setting-phone').intlTelInput("isValidNumber")
 				};
 				if(!formSetting.uname) {valid=false;$('#setting-uname').css({border:'1px solid red'});message='please insert a username name';}
-				if(!formSetting.phone) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: +1 (###) ###-####';}
+				if(!formSetting.phone) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: (###) ###-####';}
+				if(!formSetting.phone_valid) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: (###) ###-####';}
 				if(!formSetting.email || !emailRe.test(formSetting.email)) {valid=false;$('#setting-email').css({border:'1px solid red'});message='invalid email address';}
 
 				if(!valid) {

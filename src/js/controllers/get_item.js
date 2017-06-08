@@ -103,7 +103,7 @@ function GetItemController() {
 
 			var attachedItem = "";
 			if($scope.listItem.attended && !$userData.isLoggedIn()){
-				attachedItem = '<button id="get-single-item-dibs-button' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs! for a Dollar</button>';
+				attachedItem = '<button id="get-single-item-dibs-button' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>';
 			} else if(!$scope.listItem.attended && !$userData.isLoggedIn()){
 				attachedItem = '<button id="get-single-item-dibs-button-unattended' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>';
 			} else if($scope.listItem.attended && listerInit && $userData.isLoggedIn()){
@@ -113,7 +113,7 @@ function GetItemController() {
 			} else if(!listerInit && pickUpInit && $userData.isLoggedIn()){
 				attachedItem = '<button class="sm-button sm-button-disbaled sm-text-l sm-button-full-width">Dibs! is unavailable!</button>';
 			} else if($scope.listItem.attended && $userData.isLoggedIn()){
-				attachedItem = '<button id="get-single-item-dibs-button' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs! for a Dollar</button>';
+				attachedItem = '<button id="get-single-item-dibs-button' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>';
 			} else if(!$scope.listItem.attended && $userData.isLoggedIn()){
 				attachedItem = '<button id="get-single-item-dibs-button-unattended' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>';
 			}
@@ -145,6 +145,7 @@ function GetItemController() {
 				'		<input id="dibs-submit-button" class="sm-button sm-button-default sm-text-l sm-button-full-width" type="submit" value="Confirm Dibs! for $1">',
 				'	</form>',
 				'</div>',
+				'<div class="sm-text-s sm-full-width">All stuff is free!</div>',
 				attachedItem,
 				'<div class="">',
 				'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
@@ -159,7 +160,7 @@ function GetItemController() {
 			$scope.container.appendTo('#get-stuff-container');
 			requestAnimationFrame(function () {
 				requestAnimationFrame(function () {
-					initPayment();
+					// initPayment();
 					initListener();
 					$('.get-item-single-image-container').css({'background-image': 'url(\'https://cdn.stuffmapper.com' + $scope.listItem.image_url + '\')'});
                     $('.get-item-single-image-container').css({'background-position':'50% 0%'});
@@ -236,13 +237,47 @@ function GetItemController() {
 			// if(currentTime - $scope.listItem.date_created < 900000) earlyDibs();
 			// else if(currentTime - $scope.listItem.date_created < 5400000) paidDibs();
 			// else dibsItem();
-			$('#get-single-item-dibs-button'+$stateParams.id).remove();
-			$('#get-single-item-dibs-button'+$stateParams.id).remove();
-			$('#get-item-single-'+$stateParams.id+' .get-item-single-details-container .get-item-single-payment-modal').removeClass('sm-hidden');
-			$('#get-single-item-dibs-button'+$stateParams.id).attr('disabled', '');
+
+			//$('#get-single-item-dibs-button'+$stateParams.id).remove();
+			//$('#get-item-single-'+$stateParams.id+' .get-item-single-details-container .get-item-single-payment-modal').removeClass('sm-hidden');
+			//$('#get-single-item-dibs-button'+$stateParams.id).attr('disabled', '');
+
 			//paidDibsItem();
+			openAttendedDibsModalWithoutPay();
 		}
 		else window.location.hash = 'signin';
+	}
+
+	function openAttendedDibsModalWithoutPay() {
+		var attendedDibsBodyTemplate = 'After clicking \"Confirm Dibs\" be sure to message the lister within 15 minutes to prove you\'re for real or your Dibs will expire.';
+		$('#attended-dibs-confirm-modal-body').html(attendedDibsBodyTemplate);
+		$('#attended-dibs-modal-cancel').on('click', attendedDibsCancelModal);
+		$('#attended-dibs-modal-confirm').on('click', attendedDibsConfirmModal);
+		$u.modal.open('attended-dibs-without-payment-confirm-modal', function() {
+			$('#attended-dibs-modal-cancel').off('click', attendedDibsCancelModal);
+			$('#attended-dibs-modal-confirm').off('click', attendedDibsConfirmModal);
+		});
+	}
+	function attendedDibsCancelModal() {
+		$u.modal.close('attended-dibs-without-payment-confirm-modal');
+	}
+	function attendedDibsConfirmModal() {
+		$u.modal.close('attended-dibs-without-payment-confirm-modal');
+		fbq('trackCustom', 'AttendedDibsConfirm');
+		withOutPaidDibsItem();
+	}
+
+	function withOutPaidDibsItem() {
+		$.post('/api/v1/dibs/'+$stateParams.id, {}, function(data, textStatus, xhr) {
+			if(data.err) {
+				$('#loading-get-item').addClass('sm-hidden');
+				fbq('trackCustom', 'UnsuccessfulDibs');
+				return console.log('Payment Failed');
+			}
+			fbq('trackCustom', 'SuccessfulDibs');
+			if(data.res.res1[0].attended) $state.go('stuff.my.items.item.conversation', {id: data.res.res1[0].id});
+			else $state.go('stuff.my.items.item', {id: data.res.res1[0].id});
+		});
 	}
 
 	function openUnAttendedDibsModal() {
@@ -424,7 +459,8 @@ function GetItemController() {
 		}
 		$('#masonry-container').css({'visibility': 'visible'});
 		$('#get-item-not-found').addClass('sm-hidden');
-		$('#loading-get-stuff').removeClass('sm-hidden');
+		// $('#loading-get-stuff').removeClass('sm-hidden');
+		$('#loading-get-stuff').addClass('sm-hidden');
 		$('#get-item-stuff-empty').addClass('sm-hidden');
 		$('#get-stuff-back-button-container').addClass('sm-hidden');
 		$('.get-stuff-back-button').addClass('sm-hidden');

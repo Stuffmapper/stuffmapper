@@ -127,7 +127,7 @@ function MyItemsController() {
 						'		</div>',
 						'	<div class="sm-button-group" style="width: 100%;display:block;position:relative;">',
 						'		<div class="sm-button-group-2 sm-button-group-left" style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;">',
-						'			<input id="my-item-edit-cancel" class="sm-button sm-button-ghost sm-button-negative sm-text-m animate-250" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);" />',
+						'			<input id="my-item-edit-cancel" class="sm-button sm-button-cancel sm-text-m animate-250" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);" />',
 						'		</div>',
 						'		<div class="sm-button-group-2 sm-button-group-right" style="width:calc(50% - 20px);display:inline-block;float:left;margin:0px 10px;">',
 						'			<input id="my-item-edit-save" class="sm-button sm-button-default sm-text-m" type="button" value="Save" style="margin:20px 10px;width:calc(100% - 10px);float:left;" />',
@@ -176,7 +176,7 @@ function MyItemsController() {
 						($scope.listItem.dibbed && data.res.attended && $scope.listItem.type === 'lister')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the Dibber.</div>':'',
 						($scope.listItem.dibbed || !data.res.attended)?'<button id="my-item-complete-body'+$stateParams.id+'" class="sm-button sm-text-l sm-button-positive sm-button-full-width" style="color:#fff;">Mark as Picked Up</button>':'',
 						// ((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
-						($scope.listItem.type === 'lister' && !$scope.listItem.dibbed && $scope.listItem.attended)?'<div class="sm-text-s sm-full-width">You will be notified by email when someone Dibs your stuff!</div>':'',
+						($scope.listItem.type === 'lister' && !$scope.listItem.dibbed && $scope.listItem.attended)?'<div class="sm-text-s sm-full-width">You will be notified when someone Dibs your stuff!</div>':'',
 						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />'),
 						'<div class="sm-text-s sm-full-width my-item-update">Item last updated on '+ $scope.listItem.dateEdited +'</div>'
 					].join('\n'));
