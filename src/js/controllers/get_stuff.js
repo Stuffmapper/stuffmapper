@@ -90,7 +90,7 @@ function GetStuffController() {
 
         // }
 
-        google.maps.event.addListener($scope.map, 'idle', function () {
+        google.maps.event.addListener($scope.map, 'dragend', function () {
             var c = this.getCenter();
             $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/' + c.lat() + '/' + c.lng() + '/').success(function (data) {
                 if (!data.res || !data.res.length) {
