@@ -91,7 +91,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 						if (d.head) d.head.appendChild(s);
 					})(document, window, 'Chatra');
 
-		link(href="js/lib/normalize-css/normalize.css" rel="stylesheet")
+		//link(href="js/lib/normalize-css/normalize.css" rel="stylesheet")
 		link(href="js/lib/swiper/dist/css/swiper.min.css" rel="stylesheet")
 		//- link(href="js/lib/intl-tel-input/build/css/intlTelInput.css" rel="stylesheet")
 		//- link(href="js/lib/animate.css/animate.min.css" rel="stylesheet")
@@ -370,12 +370,15 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								i.input-help-text
 									| &nbsp; Check your SMS messages for the confirmation code to verify your account.
 								hr
-							.checkbox#sign-up-phone-confirm-terms
+							div.sm-full-width.checkbox.checkbox-info#sign-up-phone-confirm-terms
+								input(type='checkbox', value='', ng-click="signUpPhoneConfirmTermsKeyUp()")
 								label
-									input(type='checkbox', value='', ng-click="signUpPhoneConfirmTermsKeyUp()")
-									span.cr
-										i.cr-icon.glyphicon.glyphicon-ok
-									|             <span style="cursor: text;">I agree to </span><a href="/useragreement" target="_blank">terms & conditions</a>.
+									|	<span style="cursor: text;">I agree to </span><a href="/useragreement" target="_blank">terms & conditions</a>.
+								//label
+								//	input(type='checkbox', value='', ng-click="signUpPhoneConfirmTermsKeyUp()")
+								//	span.cr
+								//		i.cr-icon.glyphicon.glyphicon-ok
+								//	|             <span style="cursor: text;">I agree to </span><a href="/useragreement" target="_blank">terms & conditions</a>.
 							#sign-up-phone-confirm-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#sm-sign-up-phone-confirm-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign up" ng-click="signUpPhoneConfirm()")
 							//input#sm-sign-up-phone-confirm-button(ng-class="{'sm-button-ghost-light-solid' : signUpPhoneConfirmForm.phone_number.$invalid, 'sm-button-default' : signUpPhoneConfirmForm.phone_number.$valid}").sm-button.sm-text-l.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign up" ng-click="signUpPhoneConfirm()")
@@ -485,7 +488,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							b.sm-text-m.sm-full-width Enter your phone number to continue.
 							div.sm-full-width
 								label.input-label.sm-full-width.sm-text-m(for='phone-update-modal-field', style="padding-bottom: 0;margin: 15px 2px 0px;") phone number
-								input#phone-update-modal-field.sm-text-input.sm-text-m.sm-text-input-full-width(ng-keyup="updatePhoneKeyUp()",type="text", data-initial-country="us", ng-intl-tel-input, , ui-keypress="{enter:'updatePhone()'}")
+								input#phone-update-modal-field.sm-text-input.sm-text-m.sm-text-input-full-width(ng-keyup="updatePhoneKeyUp()",type="text", data-initial-country="us", ng-intl-tel-input, pattern="[0-9]*", placeholder="(###) ###-####", ui-keypress="{enter:'updatePhone()'}")
 							div.sm-full-width.sm-text-s
 								span(class="fa fa-info-circle info-icon",aria-hidden="true")
 								i.input-help-text
