@@ -29,13 +29,10 @@ function SettingsController() {
 	$scope.settings = { };
 	$scope.settings.notification = 1;
 	$scope.emailPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-	// $scope.settings = {
-	// 	phone_valid : $('#setting-phone').intlTelInput("isValidNumber"),
-	// 	phone_empty: ''
-	// }
+	$scope.errorHtml = '';
 	
 	$scope.hasValidPhone = function () {
-		$('#setting-error-warning-container').html('');
+		//$scope.errorHtml = '';
 		if($scope.settings.phone_number == '' || !$('#setting-phone').intlTelInput("isValidNumber")) {
 			$scope.settings.phone_number = '';
 			$('#setting-phone').css({border:'1px solid red'})
@@ -53,7 +50,7 @@ function SettingsController() {
 		}
 	}
 	$scope.checkValidPhone = function () {
-		$('#setting-error-warning-container').html('');
+		//$scope.errorHtml = '';
 		if(!$('#setting-phone').intlTelInput("isValidNumber")) {
 			$scope.settings.phone_number = '';
 			$scope.settings.verified_phone = false;
@@ -61,8 +58,9 @@ function SettingsController() {
 		} else {
 			$scope.settings.phone_number = $('#setting-phone').intlTelInput("getNumber");
 			$('#setting-phone').css({border:''});
-			if($scope.settings.phone_number == $userData.getPhone()){
-				console.log($userData.getPhone(), 2)
+			var user_org_phone = $userData.getPhone().trim();
+			var user_chng_phone = $scope.settings.phone_number.trim();
+			if(user_chng_phone === user_org_phone) {
 				$scope.settings.verified_phone = true;
 			} else {
 				$scope.settings.verified_phone = false;
@@ -71,7 +69,7 @@ function SettingsController() {
 	}
 	
 	$scope.notificationChange = function () {
-		$('#setting-error-warning-container').html('');
+		//$scope.errorHtml = '';
 		if($scope.settings.notification_id == '1' || $scope.settings.notification_id == '2' || $scope.settings.notification_id == '3'){
 			$scope.settings.chat_message_notify = $scope.settings.notification_id;
 			$scope.settings.item_listed_notify = $scope.settings.notification_id;
@@ -88,7 +86,7 @@ function SettingsController() {
 	}
 
 	$scope.checkValidEmail = function () {
-		$('#setting-error-warning-container').html('');
+		//$scope.errorHtml = '';
 		var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 		if(!emailRe.test($('#setting-email').val())) {
 			$scope.settings.verified_email = false;
@@ -138,92 +136,7 @@ function SettingsController() {
 				}
 			});
 			// Editing user data
-			$scope.update = function(users) {
-
-				var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-				$('#setting-phone, #setting-uname, #setting-email').css({border:''});
-				$('#setting-error-warning-container').html('');
-				var valid = true;
-				var message = '';
-				var formSetting = {
-					email: $('#setting-email').val().toLowerCase(),
-					uname: $('#setting-uname').val(),
-					phone: $('#setting-phone').intlTelInput("getNumber"),
-					phone_valid: $('#setting-phone').intlTelInput("isValidNumber")
-				};
-				if(!formSetting.uname) {valid=false;$('#setting-uname').css({border:'1px solid red'});message='please insert a username name';}
-				if(!formSetting.phone) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: (###) ###-####';}
-				if(!formSetting.phone_valid) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: (###) ###-####';}
-				if(!formSetting.email || !emailRe.test(formSetting.email)) {valid=false;$('#setting-email').css({border:'1px solid red'});message='invalid email address';}
-
-				if(!valid) {
-					$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
-					return;
-				} else {
-					if(!$scope.settings.uname.$valid){
-						$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">Uname is not valid</div>');
-						return;
-					}
-					if(!$scope.settings.phone_number.$valid){
-						$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">Phone # is not valid</div>');
-						return;
-					}
-					if(!$scope.settings.email.$valid){
-						$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">Email is not valid</div>');
-						return;
-					}
-				}		
-				$scope.settings.phone_number = $scope.settings.phone_number.replace(/-|\s+/g,"");
-				$http.put('/api/v1/account/info', $scope.users,{
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-					},
-					transformRequest: function(data){
-						return $.param(data);
-					}
-				}).success(function(data) {
-					//console.log(data);
-					$u.toast('Changes have been saved.');
-				});
-			};
-
 			$scope.updateUser = function() {
-				/*
-				var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-				$('#setting-phone, #setting-uname, #setting-email').css({border:''});
-				$('#setting-error-warning-container').html('');
-				var valid = true;
-				var message = '';
-				var formSetting = {
-					email: $('#setting-email').val().toLowerCase(),
-					uname: $('#setting-uname').val(),
-					phone: $('#setting-phone').intlTelInput("getNumber"),
-					phone_valid: $('#setting-phone').intlTelInput("isValidNumber")
-				};
-				if(!formSetting.uname) {valid=false;$('#setting-uname').css({border:'1px solid red'});message='please insert a username name';}
-				else if(!formSetting.phone) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: (###) ###-####';}
-				else if(!formSetting.phone_valid) {valid=false;$('#setting-phone').css({border:'1px solid red'});message='please insert a phone # using correct format: (###) ###-####';}
-				else if(!formSetting.email || !emailRe.test(formSetting.email)) {valid=false;$('#setting-email').css({border:'1px solid red'});message='invalid email address';}
-
-				if(!valid) {
-					$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
-					return;
-				} else {
-					if(!$scope.settings.uname.$valid){
-						$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">Uname is not valid</div>');
-						return;
-					}
-					if(!$scope.settings.phone_number.$valid){
-						$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">Phone # is not valid</div>');
-						return;
-					}
-					if(!$scope.settings.email.$valid){
-						$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">Email is not valid</div>');
-						return;
-					}
-				}
-				*/
-				//$scope.settings.phone_number = $scope.settings.phone_number.replace(/-|\s+/g,"");
 				$http.put('/api/v1/account/info', $scope.settings,{
 					headers: {
 						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -232,15 +145,15 @@ function SettingsController() {
 						return $.param(data);
 					}
 				}).success(function(data) {
+
 					if(data.err){
-						$('#setting-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.message+'</div>');
-						return;
+						$scope.errorHtml = '<div class="sm-full-width sm-negative-warning">'+(data.message || 'Error occured' || '')+'</div>';
+					} else {
+						$userData.setUserName(data.res.uname);
+						$userData.setEmail(data.res.email);
+						$userData.setPhone(data.res.phone_number);
+						$u.toast('Changes have been saved.');
 					}
-					console.log(data);
-					$userData.setUserName($scope.settings.uname);
-					$userData.setEmail($scope.settings.email);
-					$userData.setPhone($scope.settings.phone_number);
-					$u.toast('Changes have been saved.');
 				});
 			};
 

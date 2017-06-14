@@ -412,7 +412,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 
 									if(req.body.attended === 'true') {
 										queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function (result5) {
-											queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
+											queryServer(res, 'SELECT uname, email, phone_number, item_listed_notify FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
 												sendTemplate(
 													'item-listed',
 													'Your ' + req.body.title + ' has been mapped!',
@@ -421,13 +421,14 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 														'FIRSTNAME': result0.rows[0].uname,
 														'ITEMTITLE': req.body.title,
 														'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
-													}
+													},
+													result0.rows[0].item_listed_notify
 												);
 
 												var emoji_message = emoji.get(':star2:') + "" + emoji.get(':rainbow:') + "" + emoji.get(':sparkles:');
 												var sms_message = emoji_message + "\nYour " + req.body.title + " has been mapped! We will notify you via text when someone Dibs your item.";
 												var phone_number = result0.rows[0].phone_number;
-												sms.sendSMS(phone_number, sms_message);
+												sms.sendSMS(phone_number, sms_message, result0.rows[0].item_listed_notify);
 											});
 										});
 									}
@@ -1103,7 +1104,7 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 							console.log('email duplicate');
 							res.send({
 								err: true,
-								message: 'Please use unique email address'
+								message: 'Please use another email address'
 							});
 						}
 					});
@@ -1111,19 +1112,29 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 					console.log('uname duplicate');
 					res.send({
 						err: true,
-						message: 'Please use unique username'
+						message: 'Please use another unique username'
 					});
 				}
 			});
 		} else {
+			var addInupdateQuery = [];
+			if(req.body.verified_email == 'false'){
+				addInupdateQuery.push('verify_email_token = md5((random())::text), verified_email = false, ');
+			}
+			if(req.body.verified_phone == 'false'){
+				addInupdateQuery.push('verify_phone_token = ((floor((random() * (1000000)::double precision)))::text), verified_phone = false, ');
+			}
+
 			query = [
 				'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
 				'phone_number = $5, email = $6, address = $7, city = $8, ',
 				'state = $9, zip_code = $10, country = $11, ',
 				'notification_id = $12, chat_message_notify = $13, item_listed_notify = $14, ',
+				addInupdateQuery.join(''),
 				'dibs_cancel_notify = $15, dibs_reject_notify = $16, dibs_expire_notify = $17, ',
-				'verified_email = $18, verified_phone = $19 ',
-				'WHERE id = $1'
+				'news_letter = $18 ',
+				'WHERE id = $1 ',
+				'RETURNING *'
 			].join('');
 			values = [
 				req.session.passport.user.id,
@@ -1143,13 +1154,41 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 				parseInt(req.body.dibs_cancel_notify),
 				parseInt(req.body.dibs_reject_notify),
 				parseInt(req.body.dibs_expire_notify),
-				req.body.verified_email == 'true' ? true : false,
-				req.body.verified_phone == 'true' ? true : false
+				req.body.news_letter == 'true' ? true : false
 			];
 			queryServer(res, query, values, function (result) {
+
+				if(result.rows.length > 0){
+					if (req.body.verified_email == 'false') {
+						sendTemplate(
+							'email-verification',
+							'Stuffmapper needs your confirmation!',
+							{[req.body.uname]: req.body.email},
+							{
+								'FIRSTNAME': req.body.uname,
+								'CONFIRMEMAIL': config.subdomain + '/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
+								'ITEMIMAGE': config.subdomain + '/img/give-pic-©-01.png'
+							}
+						);
+					}
+					if(req.body.verified_phone == 'false'){
+						var phone_number = req.body.phone_number;
+						var sms_message = 'Your Stuffmapper\'s phone number is changed. You need to verify it on next login.'
+						sms.sendSMS(phone_number, sms_message);
+					}
+				}
+
+				delete result.rows[0].password;
+				delete result.rows[0].password_reset_token;
+				delete result.rows[0].verify_email_token;
+				delete result.rows[0].admin;
+				delete result.rows[0].google_id;
+				delete result.rows[0].facebook_id;
+				delete result.rows[0].verify_phone_token;
+
 				res.send({
 					err: null,
-					res: result
+					res: result.rows[0]
 				});
 			});
 		}
@@ -1475,7 +1514,7 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 				queryServer(res, 'select posts.attended from posts where id = $1', [req.params.id], function (result6) {
 					if(result6.rows[0].attended) {
 						queryServer(res, 'SELECT phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result7) {
-							queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
+							queryServer(res, 'SELECT uname, email, dibs_cancel_notify FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
 								queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function (result5) {
 									var emailTo = {[result4.rows[0].uname]: result4.rows[0].email};
 									sendTemplate(
@@ -1488,7 +1527,8 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 											'MYSTUFFLINK': 'http://' + config.subdomain + '/stuff/my/items/' + result1.rows[0].id,
 											'ITEMTITLE': result1.rows[0].title,
 											'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
-										}
+										},
+										result4.rows[0].dibs_cancel_notify
 									);
 									var sms_message = result1.rows[0].title.trim() + " has been unDibs\'d "+emoji.get(':neutral_face:')+" But no worries! It will be relisted so someone else can give it a new home! "+emoji.get(':heart_eyes:')+" "+emoji.get(':house_with_garden:');
 									var dibber_phone = result7.rows[0].phone_number;
@@ -1545,7 +1585,7 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 							'res3': result3.rows
 						}
 					});
-					queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result0.rows[0].dibber_id], function(result4) {
+					queryServer(res, 'SELECT uname, email, phone_number, dibs_reject_notify FROM users WHERE id = $1', [result0.rows[0].dibber_id], function(result4) {
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result5) {
 							sendTemplate(
 								'dibs-declined',
@@ -1557,7 +1597,8 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 									'ITEMNAME':result1.rows[0].title,
 									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
 									'GETSTUFFLINK':config.subdomain
-								}
+								},
+								result4.rows[0].dibs_reject_notify
 							);
                             var sms_message = "Lister of "+result1.rows[0].title.trim()+" has cancelled your Dibs. "+emoji.get(':neutral_face:')+" You will be automatically refunded within 2 business days.";
                             var dibber_phone = result4.rows[0].phone_number;
@@ -1623,7 +1664,7 @@ router.post('/messages', isAuthenticated, function(req, res) {
 		queryServer(res, 'SELECT conversations.lister_id, conversations.dibber_id, messages.user_id, conversations.post_id FROM messages, conversations where conversations.id = $1 and messages.conversation_id = $1 and conversations.dibber_id = messages.user_id', [parseInt(req.body.conversation_id)], function(result1) {
 			console.log(result1.rows);
 			if(result1.rows.length === 1 && parseInt(result1.rows[0].lister_id) !== parseInt(req.session.passport.user.id)) {
-				queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
+				queryServer(res, 'SELECT uname, email, phone_number, chat_message_notify FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
 					queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result1.rows[0].dibber_id], function(result0){
 						queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
 							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
@@ -1644,12 +1685,13 @@ router.post('/messages', isAuthenticated, function(req, res) {
 											'ITEMNAME' : result3.rows[0].title,
 											'ITEMIMAGE' : 'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
 											'CHATLINK' : config.subdomain+'/stuff/my/items/'+result1.rows[0].post_id+'/messages'
-										}
+										},
+										result2.rows[0].chat_message_notify
 									);
 									if(result3.rows[0].attended) {
 										var sms_message = emoji.get(':balloon:') + " Someone Dibs\’d your " + result3.rows[0].title.trim() + "!" + emoji.get(':balloon:') + " Reply now!:\n" + messages.join('\n') + '\n' + config.subdomain + '/stuff/my/items/' + result1.rows[0].post_id + '/messages';
 										var lister_phone = result2.rows[0].phone_number;
-										sms.sendSMS(lister_phone, sms_message);
+										sms.sendSMS(lister_phone, sms_message, result2.rows[0].chat_message_notify);
 									}
 								});
 							});
@@ -1959,48 +2001,65 @@ function queryServer(res, query, values, cb) {
 	});
 }
 
-
-
-function sendTemplate(template, subject, to, args) {
-	var mandrill = require('mandrill-api/mandrill');
-	var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
-	var template_name = template;
-	var template_content = [];
-	Object.keys(args).forEach(function(e) {
-		template_content.push({
-			'name' : e,
-			'content' : args[e]
-		});
-	});
-	var emailTo = [];
-	Object.keys(to).forEach(function(e) {
-		if(!_.isEmpty(to[e])) {
-			emailTo.push({
-				'email': to[e],
-				'name': e,
-				'type': 'to'
-			});
-		}
-	});
-	if(!emailTo.length){
-		console.log('Can\'t send email, No email is defined');
-		return;
+function emailPermission(code) {
+	if(code == undefined || code == null){
+		return false;
+	} else if(code == 2 || code == 3){
+		return true;
+	} else {
+		return false;
 	}
-	var message = {
-		'subject': subject,
-		'from_email': 'support@stuffmapper.com',
-		'from_name': 'Stuffmapper Support',
-		'to': emailTo,
-		'headers': { 'Reply-To': 'no_reply@stuffmapper.com' },
-		'merge': true,
-		'merge_language': 'mailchimp',
-		'global_merge_vars': template_content
-	};
-	mandrill_client.messages.sendTemplate({'template_name': template_name, 'template_content': template_content, 'message': message, 'async': false, 'ip_pool': 'Main Pool'}, function(result) {
-		console.log(result);
-	}, function(e) {
-		console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
-	});
+}
+
+function sendTemplate(template, subject, to, args, sendingCode) {
+
+	if(emailPermission(sendingCode)) {
+		var mandrill = require('mandrill-api/mandrill');
+		var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
+		var template_name = template;
+		var template_content = [];
+		Object.keys(args).forEach(function (e) {
+			template_content.push({
+				'name': e,
+				'content': args[e]
+			});
+		});
+		var emailTo = [];
+		Object.keys(to).forEach(function (e) {
+			if (!_.isEmpty(to[e])) {
+				emailTo.push({
+					'email': to[e],
+					'name': e,
+					'type': 'to'
+				});
+			}
+		});
+		if (!emailTo.length) {
+			console.log('Can\'t send email, No email is defined');
+			return;
+		}
+		var message = {
+			'subject': subject,
+			'from_email': 'support@stuffmapper.com',
+			'from_name': 'Stuffmapper Support',
+			'to': emailTo,
+			'headers': {'Reply-To': 'no_reply@stuffmapper.com'},
+			'merge': true,
+			'merge_language': 'mailchimp',
+			'global_merge_vars': template_content
+		};
+		mandrill_client.messages.sendTemplate({
+			'template_name': template_name,
+			'template_content': template_content,
+			'message': message,
+			'async': false,
+			'ip_pool': 'Main Pool'
+		}, function (result) {
+			console.log(result);
+		}, function (e) {
+			console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
+		});
+	}
 }
 
 

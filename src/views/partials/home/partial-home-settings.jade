@@ -19,15 +19,15 @@
 					span.asteriskField
 						| *
 				input#setting-phone.form-control.sm-text-input.sm-text-m(ng-model="settings.phone_number", name="phone" placeholder='(###) ###-####',ng-keyup="checkValidPhone(settings.phone_number)", type='tel', required)
-				span#setting-phone-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="hasValidPhone(settings.phone_number)")
+				span#setting-phone-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settingForm.phone.$error.required")
 					i.input-help
-						| &nbsp; You must enter a phone #.
-				span#setting-phone-progress(class="fa fa-info-circle info-icon help-block",aria-hidden="true",ng-hide="settings.verified_phone")
-					i.input-help
-						| &nbsp; You will need to verify any changes made to your phone number via sms.
+						| &nbsp; You must enter a valid phone #.
 				span#setting-phone-verified(class="fa fa-check-circle success-icon help-block",aria-hidden="true",ng-show="settings.verified_phone")
 					i.input-help
 						| &nbsp; Your mobile phone number has been verified
+				span#setting-phone-progress(class="fa fa-info-circle info-icon help-block",aria-hidden="true",ng-hide="settings.verified_phone")
+					i.input-help
+						| &nbsp; You will need to verify any changes made to your phone number via sms.
 			.form-group
 				label.control-label.input-label.requiredField(for='setting-email')
 					| Email address
@@ -40,7 +40,7 @@
 				span#setting-email-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settingForm.email.$error.required")
 					i.input-help
 						| &nbsp; Email address is required.
-				span#setting-email-progress(class="fa fa-info-circle warning-icon help-block",aria-hidden="true",ng-hide="settings.verified_email")
+				span#setting-email-progress(class="fa fa-info-circle warning-icon help-block",aria-hidden="true",ng-show="!settings.verified_email")
 					i.input-help
 						| &nbsp; You still need to verify that this is your email address. Check your email for verification link.
 				span#setting-email-verifiied(class="fa fa-check-circle success-icon help-block",aria-hidden="true",ng-show="settings.verified_email")
@@ -50,6 +50,17 @@
 				input#setting-news.styled(type='checkbox', checked='',ng-model="settings.news_letter")
 				label(for='setting-news')
 					| Receive news and announcement from Stuffmapper
+			.form-group
+				.btn-toolbar.center-block
+					button.btn.btn-lg.btn-fb(type='button', ng-click="googleOAuth()")
+						i.fa.fa-google
+						|  Google
+					button.btn.btn-lg.btn-fb(type='button', ng-click="facebookOAuth()")
+						i.fa.fa-facebook
+						|  Facebook
+				span#social-button-help-text(class="fa fa-info-circle info-icon help-block",aria-hidden="true")
+					i.input-help
+						| &nbsp; Lets you sign in with other services
 			.form-group
 				label.control-label.input-label(for='setting-notification')
 					| Notification settings
@@ -72,20 +83,18 @@
 					select#setting-notification-message.select.form-control.sm-select-full-width(ng-model="settings.chat_message_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
-						option(value='2')
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
-						option(value='3')
-							| Email Only
 				.form-group
 					label.control-label.input-label(for='setting-notification-item-listed')
 						| When my item has been listed
 					select#setting-notification-item-listed.select.form-control.sm-select-full-width(ng-model="settings.item_listed_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
-						option(value='2')
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
-						option(value='3')
-							| Email only
+						option(value='3', ng-show="settings.verified_email")
+							| Email Only
 						option(value='4')
 							| No notification
 				.form-group
@@ -94,32 +103,32 @@
 					select#setting-notification-dib-cancel.select.form-control.sm-select-full-width(ng-model="settings.dibs_cancel_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
-						option(value='2')
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
-						option(value='3')
-							| Email only
+						option(value='3', ng-show="settings.verified_email")
+							| Email Only
 				.form-group
 					label.control-label.input-label(for='setting-notification-dib-reject')
 						| If my Dibs is rejected
 					select#setting-notification-dib-reject.select.form-control.sm-select-full-width(ng-model="settings.dibs_reject_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
-						option(value='2')
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
-						option(value='3')
-							| Email only
+						option(value='3', ng-show="settings.verified_email")
+							| Email Only
 				.form-group
 					label.control-label.input-label(for='setting-notification-dib-expire')
 						| If my Dibs expires
 					select#setting-notification-dib-expire.select.form-control.sm-select-full-width(ng-model="settings.dibs_expire_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
-						option(value='2')
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
-						option(value='3')
-							| Email only
+						option(value='3', ng-show="settings.verified_email")
+							| Email Only
 			.form-group
-				div#setting-error-warning-container(style="width:100%;display:block;position:relative;")
+				div#setting-error-warning-container(ng-bind-html="errorHtml")
 			.form-group
 				div
 					input.sm-button.sm-button-default.sm-button-full-width.sm-text-m(type='submit',value="Update Profile",data-ng-click='updateUser();')

@@ -436,7 +436,7 @@ function undib(post_id, user_id) {
 					].join(' ');
 					client.query(query, [post_id], function(err, result3) {
 						if(err) return done();
-						var query = 'SELECT uname, email, phone_number FROM users WHERE id = $1';
+						var query = 'SELECT uname, email, phone_number, dibs_expire_notify FROM users WHERE id = $1';
 						var values = [user_id];
 						client.query(query, values, function(err, result4){
 							if(err) return done();
@@ -457,11 +457,12 @@ function undib(post_id, user_id) {
 										'ITEMNAME':result1.rows[0].title,
 										'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
 										'GETSTUFFLINK':config.subdomain+'/stuff/get'
-									}
+									},
+									result4.rows[0].dibs_expire_notify
 								);
 								var sms_message = "Dibs expired for "+result1.rows[0].title.trim()+". You didn't message the lister within 15 minutes of Dibsing it. "+emoji.get(':snail:');
 								var phone_number = result4.rows[0].phone_number;
-								sms.sendSMS(phone_number, sms_message);
+								sms.sendSMS(phone_number, sms_message, result4.rows[0].dibs_expire_notify);
 
 								done();
 								return client.end();
@@ -579,44 +580,62 @@ function jobsDone() {
 	}
 }
 
-function sendTemplate(template, subject, to, args) {
-	var mandrill = require('mandrill-api/mandrill');
-	var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
-	var template_name = template;
-	var template_content = [];
-	Object.keys(args).forEach(function(e) {
-		template_content.push({
-			'name' : e,
-			'content' : args[e]
-		});
-	});
-	var emailTo = [];
-	Object.keys(to).forEach(function(e) {
-		if(!_.isEmpty(to[e])) {
-			emailTo.push({
-				'email': to[e],
-				'name': e,
-				'type': 'to'
-			});
-		}
-	});
-	if(!emailTo.length){
-		console.log('Can\'t send email, No email is defined');
-		return;
+function emailPermission(code) {
+	if(code == undefined || code == null){
+		return true;
+	} else if(code == 2 || code == 3){
+		return true;
+	} else {
+		return false;
 	}
-	var message = {
-		'subject': subject,
-		'from_email': 'support@stuffmapper.com',
-		'from_name': 'Stuffmapper Support',
-		'to': emailTo,
-		'headers': { 'Reply-To': 'no_reply@stuffmapper.com' },
-		'merge': true,
-		'merge_language': 'mailchimp',
-		'global_merge_vars': template_content
-	};
-	mandrill_client.messages.sendTemplate({'template_name': template_name, 'template_content': template_content, 'message': message, 'async': false, 'ip_pool': 'Main Pool'}, function(result) {
-		console.log(result);
-	}, function(e) {
-		console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
-	});
+}
+
+function sendTemplate(template, subject, to, args, sendingCode) {
+	if(emailPermission(sendingCode)) {
+		var mandrill = require('mandrill-api/mandrill');
+		var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
+		var template_name = template;
+		var template_content = [];
+		Object.keys(args).forEach(function (e) {
+			template_content.push({
+				'name': e,
+				'content': args[e]
+			});
+		});
+		var emailTo = [];
+		Object.keys(to).forEach(function (e) {
+			if (!_.isEmpty(to[e])) {
+				emailTo.push({
+					'email': to[e],
+					'name': e,
+					'type': 'to'
+				});
+			}
+		});
+		if (!emailTo.length) {
+			console.log('Can\'t send email, No email is defined');
+			return;
+		}
+		var message = {
+			'subject': subject,
+			'from_email': 'support@stuffmapper.com',
+			'from_name': 'Stuffmapper Support',
+			'to': emailTo,
+			'headers': {'Reply-To': 'no_reply@stuffmapper.com'},
+			'merge': true,
+			'merge_language': 'mailchimp',
+			'global_merge_vars': template_content
+		};
+		mandrill_client.messages.sendTemplate({
+			'template_name': template_name,
+			'template_content': template_content,
+			'message': message,
+			'async': false,
+			'ip_pool': 'Main Pool'
+		}, function (result) {
+			console.log(result);
+		}, function (e) {
+			console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
+		});
+	}
 }
