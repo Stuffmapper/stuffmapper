@@ -54,10 +54,10 @@
 				label.control-label.input-label.requiredField(for='setting-phone')
 					| Connected Accounts
 				.btn-toolbar.center-block
-					button.btn.btn-lg.btn-fb(type='button', ng-click="googleOAuth()")
+					button.btn.btn-lg.pull-left(type='button', ng-click="googleOAuth()")
 						i.fa.fa-google
 						|  Google
-					button.btn.btn-lg.btn-fb(type='button', ng-click="facebookOAuth()")
+					button.btn.btn-lg.pull-right(type='button', ng-click="facebookOAuth()")
 						i.fa.fa-facebook
 						|  Facebook
 				span#social-button-help-text(class="fa fa-info-circle info-icon help-block",aria-hidden="true")
