@@ -1306,8 +1306,19 @@ function MainController() {
 	$scope.toggleSideMenu = function() {
 		$('#side-menu, #side-menu-background').toggleClass('sm-hidden');
 	};
-
 }
+
+function dibsInfoModal() {
+	$('#dibs-info-modal-button').on('click', dibsInfoModalOk);
+	$u.modal.open('dibs-info-modal', function() {
+		$('#dibs-info-modal-button').off('click', dibsInfoModalOk);
+	});
+
+	function dibsInfoModalOk() {
+		$u.modal.close('dibs-info-modal');
+	}
+}
+
 
 function onResize() {
 	var sideMenuHeight = 0;

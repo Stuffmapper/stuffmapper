@@ -145,7 +145,7 @@ function GetItemController() {
 				'		<input id="dibs-submit-button" class="sm-button sm-button-default sm-text-l sm-button-full-width" type="submit" value="Confirm Dibs! for $1">',
 				'	</form>',
 				'</div>',
-				'<div class="sm-text-s sm-full-width">All stuff is free!</div>',
+				'<div class="sm-text-s sm-full-width">All stuff is free!&nbsp;<span style="cursor: pointer" onclick="dibsInfoModal()">?</span></div>',
 				attachedItem,
 				'<div class="">',
 				'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
@@ -200,6 +200,18 @@ function GetItemController() {
 			});
 		}
 	});
+
+	// $scope.dibsInfoModal = function() {
+	// 	$('#dibs-info-modal-button').on('click', dibsInfoModalOk);
+	// 	$u.modal.open('dibs-info-modal', function() {
+	// 		$('#dibs-info-modal-button').off('click', dibsInfoModalOk);
+	// 	});
+    //
+	// 	function dibsInfoModalOk() {
+	// 		$u.modal.close('dibs-info-modal');
+	// 	}
+	// }
+
 	function initPayment() {
 		var clientToken = $userData.getBraintreeToken();
 		if(clientToken) {
