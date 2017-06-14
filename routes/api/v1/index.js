@@ -1078,30 +1078,81 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 });
 
 router.put('/account/info', isAuthenticated, function(req, res) {
-	var query = [
-		'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
-		'phone_number = $5, email = $6, address = $7, city = $8, ',
-		'state = $9, zip_code = $10, country = $11 ',
-		'WHERE id = $1'
-	].join('');
-	var values = [
-		req.session.passport.user.id,
-		req.body.uname,
-		req.body.fname,
-		req.body.lname,
-		req.body.phone_number,
-		req.body.email,
-		req.body.address,
-		req.body.city,
-		req.body.state,
-		req.body.zip_code,
-		req.body.country
-	];
-	queryServer(res, query, values, function(result) {
-		res.send({
-			err: null,
-			res: result
-		});
+	var query = "select * from users where (uname = $1 OR email = $2 OR phone_number = $3) AND not id = $4";
+	var values = [req.body.uname, req.body.email, req.body.phone_number, req.session.passport.user.id];
+	queryServer(res, query, values, function (dupresult) {
+		if (dupresult.rows.length > 0) {
+			var query1 = "select * from users where (uname = $1) AND not id = $2";
+			var values1 = [req.body.uname, req.session.passport.user.id];
+			queryServer(res, query1, values1, function (dupresult) {
+				if (dupresult.rows.length == 0) {
+					var query2 = "select * from users where (email = $1) AND not id = $2";
+					var values2 = [req.body.email, req.session.passport.user.id];
+					queryServer(res, query2, values2, function (dupresult) {
+						if (dupresult.rows.length == 0) {
+							var query3 = "select * from users where (phone_number = $1) AND not id = $2";
+							var values3 = [req.body.phone_number, req.session.passport.user.id];
+							queryServer(res, query3, values3, function (dupresult) {
+								console.log('phone duplicate');
+								res.send({
+									err: true,
+									message: 'Please use another phone number'
+								});
+							});
+						} else {
+							console.log('email duplicate');
+							res.send({
+								err: true,
+								message: 'Please use unique email address'
+							});
+						}
+					});
+				} else {
+					console.log('uname duplicate');
+					res.send({
+						err: true,
+						message: 'Please use unique username'
+					});
+				}
+			});
+		} else {
+			query = [
+				'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
+				'phone_number = $5, email = $6, address = $7, city = $8, ',
+				'state = $9, zip_code = $10, country = $11, ',
+				'notification_id = $12, chat_message_notify = $13, item_listed_notify = $14, ',
+				'dibs_cancel_notify = $15, dibs_reject_notify = $16, dibs_expire_notify = $17, ',
+				'verified_email = $18, verified_phone = $19 ',
+				'WHERE id = $1'
+			].join('');
+			values = [
+				req.session.passport.user.id,
+				req.body.uname,
+				req.body.fname,
+				req.body.lname,
+				req.body.phone_number,
+				req.body.email,
+				req.body.address,
+				req.body.city,
+				req.body.state,
+				req.body.zip_code,
+				req.body.country,
+				parseInt(req.body.notification_id),
+				parseInt(req.body.chat_message_notify),
+				parseInt(req.body.item_listed_notify),
+				parseInt(req.body.dibs_cancel_notify),
+				parseInt(req.body.dibs_reject_notify),
+				parseInt(req.body.dibs_expire_notify),
+				req.body.verified_email == 'true' ? true : false,
+				req.body.verified_phone == 'true' ? true : false
+			];
+			queryServer(res, query, values, function (result) {
+				res.send({
+					err: null,
+					res: result
+				});
+			});
+		}
 	});
 });
 
@@ -1836,7 +1887,7 @@ router.delete('/watchlist/:id', isAuthenticated, function(req, res) {
 /* WATCHLIST MANAGEMENT -  END  */
 
 /* SETTINGS - START */
-router.get('/account/info', isAuthenticated, function(req, res) {
+router.get('old/account/info', isAuthenticated, function(req, res) {
 	var query = [
 		'SELECT * FROM users WHERE id = $1'
 	].join('');
@@ -1851,7 +1902,7 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-router.put('/account/info', isAuthenticated, function(req, res) {
+router.put('old/account/info', isAuthenticated, function(req, res) {
 	var query = [
 		'UPDATE users SET uname = $2, fname = $3, lname = $4,',
 		'phone_number = $5, email = $6, address = $7, city = $8,',
@@ -1879,7 +1930,7 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-router.delete('/account/info', isAuthenticated, function(req, res) {
+router.delete('old/account/info', isAuthenticated, function(req, res) {
 	// ARCHIVE DO NOT DELETE
 	var id = req.session.passport.user.id;
 
