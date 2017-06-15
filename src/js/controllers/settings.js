@@ -30,25 +30,7 @@ function SettingsController() {
 	$scope.settings.notification = 1;
 	$scope.emailPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 	$scope.errorHtml = '';
-	
-	$scope.hasValidPhone = function () {
-		//$scope.errorHtml = '';
-		if($scope.settings.phone_number == '' || !$('#setting-phone').intlTelInput("isValidNumber")) {
-			$scope.settings.phone_number = '';
-			$('#setting-phone').css({border:'1px solid red'})
-			$scope.settings.verified_phone = false;
-			return true;
-		} else {
-			$scope.settings.phone_number = $('#setting-phone').intlTelInput("getNumber");
-			$('#setting-phone').css({border:''});
-			if($scope.settings.phone_number == $userData.getPhone()){
-				$scope.settings.verified_phone = true;
-			} else {
-				$scope.settings.verified_phone = false;
-			}
-			return false;
-		}
-	}
+
 	$scope.checkValidPhone = function () {
 		//$scope.errorHtml = '';
 		if(!$('#setting-phone').intlTelInput("isValidNumber")) {
@@ -98,6 +80,40 @@ function SettingsController() {
 			}
 		}
 	}
+
+	$scope.keyUp = function () {
+		var valid = true;
+		var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+		var email = $('#setting-email').val();
+		var username = $('#setting-uname').val();
+		var phone_number = $('#setting-phone').intlTelInput("getNumber");
+
+		if (!username.length) {
+			valid = false;
+		}
+
+		if(!$('#setting-phone').intlTelInput("isValidNumber")){
+			valid = false;
+		}
+
+		if (email.length && !emailRe.test(email)) {
+			valid = false;
+		}
+
+		// if(email != $userData.getEmail()){
+		// 	valid = false;
+		// }
+        //
+		// if(phone_number != $userData.getPhone()){
+		// 	valid = false;
+		// }
+
+		if (!valid) {
+			$('#setting-button').addClass('sm-button-ghost-light-solid');
+		} else {
+			$('#setting-button').removeClass('sm-button-ghost-light-solid');
+		}
+	};
 
 
 

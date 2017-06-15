@@ -4646,6 +4646,6 @@ input[type="radio"] .styled:checked + label::after {
 }
 
 .settings input.ng-valid {
-  //border: '';
+  border: 1px solid green;
 }
 

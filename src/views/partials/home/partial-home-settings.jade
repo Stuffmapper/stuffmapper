@@ -31,16 +31,14 @@
 			.form-group
 				label.control-label.input-label.requiredField(for='setting-email')
 					| Email address
-					span.asteriskField
-						| *
 				input#setting-email.form-control.sm-text-input.sm-text-m(ng-model="settings.email",name="email" placeholder='example@stuffmapper.com', type='text',ng-pattern="emailPattern",ng-keyup="checkValidEmail(settings.email)", required)
 				span#setting-email-required(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settingForm.email.$error.pattern")
 					i.input-help
 						| &nbsp; Email address is invalid.
-				span#setting-email-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settingForm.email.$error.required")
+				span#setting-email-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="!settings.email.length")
 					i.input-help
-						| &nbsp; Email address is required.
-				span#setting-email-progress(class="fa fa-info-circle warning-icon help-block",aria-hidden="true",ng-show="!settings.verified_email")
+						| &nbsp; Email address is empty (optional).
+				span#setting-email-progress(class="fa fa-info-circle warning-icon help-block",aria-hidden="true",ng-show="!settings.verified_email && settings.email.length")
 					i.input-help
 						| &nbsp; You still need to verify that this is your email address. Check your email for verification link.
 				span#setting-email-verifiied(class="fa fa-check-circle success-icon help-block",aria-hidden="true",ng-show="settings.verified_email")
@@ -54,12 +52,12 @@
 				label.control-label.input-label.requiredField(for='setting-phone')
 					| Connected Accounts
 				.btn-toolbar.center-block
-					button.btn.btn-lg.pull-left(type='button', ng-click="googleOAuth()")
-						i.fa.fa-google
-						|  Google
-					button.btn.btn-lg.pull-right(type='button', ng-click="facebookOAuth()")
-						i.fa.fa-facebook
-						|  Facebook
+					button.btn.btn-lg.pull-left(type='button', ng-click="googleOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%;")
+						i.fa.fa-google-plus-square(style="color: white")
+						|  <span style="color: white">&nbsp;Google</span>
+					button.btn.btn-lg.pull-right(type='button', ng-click="facebookOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%;")
+						i.fa.fa-facebook-square(style="color: white")
+						|  <span style="color: white">&nbsp;Facebook</span>
 				span#social-button-help-text(class="fa fa-info-circle info-icon help-block",aria-hidden="true")
 					i.input-help
 						| &nbsp; Lets you sign in with other services
@@ -71,8 +69,6 @@
 						| SMS only
 					option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 						| SMS and email
-					option(value='3', ng-show="settings.verified_email")
-						| Email Only
 					option(value='5')
 						| Custom settings
 				span.hidden#setting-notification-info(class="fa fa-info-circle info-icon help-block",aria-hidden="true")
@@ -96,7 +92,7 @@
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
 						option(value='3', ng-show="settings.verified_email")
-							| Email Only
+							| Email only
 						option(value='4')
 							| No notification
 				.form-group
@@ -108,7 +104,7 @@
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
 						option(value='3', ng-show="settings.verified_email")
-							| Email Only
+							| Email only
 				.form-group
 					label.control-label.input-label(for='setting-notification-dib-reject')
 						| If my Dibs is rejected
@@ -118,7 +114,7 @@
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
 						option(value='3', ng-show="settings.verified_email")
-							| Email Only
+							| Email only
 				.form-group
 					label.control-label.input-label(for='setting-notification-dib-expire')
 						| If my Dibs expires
@@ -128,12 +124,13 @@
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
 							| SMS and email
 						option(value='3', ng-show="settings.verified_email")
-							| Email Only
+							| Email only
 			.form-group
 				div#setting-error-warning-container(ng-bind-html="errorHtml")
 			.form-group
 				div
-					input.sm-button.sm-button-default.sm-button-full-width.sm-text-m(type='submit',value="Update Profile",data-ng-click='updateUser();')
+					input#setting-button.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-class="(settingForm.$pristine || !settings.uname.length || !settings.phone_number.length || (settingForm.email.$error.pattern?true:false))?'sm-button-ghost-light-solid': ''")
+					//input#setting-button2.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-show="!settingForm.$pristine && settings.uname.length && (settingForm.email.$error.pattern?false:true) && settings.phone_number.length")
 					//button.btn.btn-primary(name='submit', type='submit', value='Update Profile', data-ng-click='update(users); showSuccess()')
 						| Submit
 				//.form-group

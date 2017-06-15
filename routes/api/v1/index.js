@@ -837,6 +837,15 @@ router.post('/account/verify/phone', function(req,res) {
 							}
 						});
 					}
+
+					delete result.rows[0].password;
+					delete result.rows[0].password_reset_token;
+					delete result.rows[0].verify_email_token;
+					delete result.rows[0].admin;
+					delete result.rows[0].google_id;
+					delete result.rows[0].facebook_id;
+					delete result.rows[0].verify_phone_token;
+
 					return res.send({
 						err: null,
 						res:{
@@ -994,6 +1003,14 @@ router.post('/account/login', function(req, res, next) {
 					}
 				});
 			}
+			delete user.password;
+			delete user.password_reset_token;
+			delete user.verify_email_token;
+			delete user.admin;
+			delete user.google_id;
+			delete user.facebook_id;
+			delete user.verify_phone_token;
+
 			return res.send({
 				err:err,
 				res:{
@@ -1087,32 +1104,29 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 			var values1 = [req.body.uname, req.session.passport.user.id];
 			queryServer(res, query1, values1, function (dupresult) {
 				if (dupresult.rows.length == 0) {
-					var query2 = "select * from users where (email = $1) AND not id = $2";
-					var values2 = [req.body.email, req.session.passport.user.id];
+					var query2 = "select * from users where (phone_number = $1) AND not id = $2";
+					var values2 = [req.body.phone_number, req.session.passport.user.id];
 					queryServer(res, query2, values2, function (dupresult) {
 						if (dupresult.rows.length == 0) {
-							var query3 = "select * from users where (phone_number = $1) AND not id = $2";
-							var values3 = [req.body.phone_number, req.session.passport.user.id];
+							var query3 = "select * from users where (email = $1) AND not id = $2";
+							var values3 = [req.body.email, req.session.passport.user.id];
 							queryServer(res, query3, values3, function (dupresult) {
-								console.log('phone duplicate');
 								res.send({
 									err: true,
-									message: 'Please use another phone number'
+									message: 'Email already belongs to another account'
 								});
 							});
 						} else {
-							console.log('email duplicate');
 							res.send({
 								err: true,
-								message: 'Please use another email address'
+								message: 'Phone # already belongs to another account'
 							});
 						}
 					});
 				} else {
-					console.log('uname duplicate');
 					res.send({
 						err: true,
-						message: 'Please use another unique username'
+						message: 'Username already belongs to another account'
 					});
 				}
 			});
@@ -1159,7 +1173,7 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 			queryServer(res, query, values, function (result) {
 
 				if(result.rows.length > 0){
-					if (req.body.verified_email == 'false') {
+					if (req.body.verified_email == 'false' && !_.isNil(req.body.email)) {
 						sendTemplate(
 							'email-verification',
 							'Stuffmapper needs your confirmation!',
@@ -1171,7 +1185,7 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 							}
 						);
 					}
-					if(req.body.verified_phone == 'false'){
+					if(req.body.verified_phone == 'false'  && !_.isNil(req.body.phone_number)){
 						var phone_number = req.body.phone_number;
 						var sms_message = 'Your Stuffmapper\'s phone number is changed. You need to verify it on next login.'
 						sms.sendSMS(phone_number, sms_message);
