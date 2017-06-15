@@ -30,9 +30,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		//- link(rel="icon" sizes="192x192" href="nice-highres.png")
 		script var subdomain = "#{config.subdomain}";
 		title Stuffmapper
-		meta(name='description', content='Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
-		meta(property='og:title', content='Stuffmapper')
-		meta(name='og:description', content='Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
 		//- Facebook Pixel Code
 		script.
 			!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -69,6 +66,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		else
 			base(href="/")
 			if config.subdomain == 'https://www.stuffmapper.com'
+				meta(name='description', content='Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
+				meta(property='og:title', content='Stuffmapper')
+				meta(name='og:description', content='Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
 				//- Hotjar Tracking Code for www.stuffmapper.com
 				script.
 					(function(h,o,t,j,a,r){
