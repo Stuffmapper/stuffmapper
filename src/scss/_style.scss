@@ -3125,7 +3125,12 @@ html.ionic.ios {
   border-bottom: 1px solid #F5F7FA;
 }
 
-.settings-form li input, select {
+.settings-form li input {
+  margin: 0px 20px 10px;
+  font-size: 16px;
+}
+
+.settings-form li select {
   margin: 0px 20px 10px;
   font-size: 16px;
 }

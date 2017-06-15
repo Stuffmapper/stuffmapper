@@ -64,7 +64,7 @@
 			.form-group
 				label.control-label.input-label(for='setting-notification')
 					| Notification settings
-				select#setting-notification.select.form-control.sm-select-full-width(ng-model="settings.notification_id",ng-change="notificationChange()" style="margin:0px;width:100%;height: 38px; font-size: 16px;")
+				select#setting-notification.select.form-control(ng-model="settings.notification_id",ng-change="notificationChange()" style="width:100%;height: 38px; font-size: 16px;")
 					option(value='1')
 						| SMS only
 					option(value='2', ng-show="settings.verified_email && settings.verified_phone")
@@ -78,7 +78,7 @@
 				.form-group
 					label.control-label.input-label(for='setting-notification-message')
 						| When I receive a chat message
-					select#setting-notification-message.select.form-control.sm-select-full-width(ng-model="settings.chat_message_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
+					select#setting-notification-message.select.form-control(ng-model="settings.chat_message_notify", style="width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
@@ -86,7 +86,7 @@
 				.form-group
 					label.control-label.input-label(for='setting-notification-item-listed')
 						| When my item has been listed
-					select#setting-notification-item-listed.select.form-control.sm-select-full-width(ng-model="settings.item_listed_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
+					select#setting-notification-item-listed.select.form-control(ng-model="settings.item_listed_notify", style="width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
@@ -98,7 +98,7 @@
 				.form-group
 					label.control-label.input-label(for='setting-notification-dib-cancel')
 						| If a Dibber cancels their Dibs on my item
-					select#setting-notification-dib-cancel.select.form-control.sm-select-full-width(ng-model="settings.dibs_cancel_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
+					select#setting-notification-dib-cancel.select.form-control(ng-model="settings.dibs_cancel_notify", style="width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
@@ -108,7 +108,7 @@
 				.form-group
 					label.control-label.input-label(for='setting-notification-dib-reject')
 						| If my Dibs is rejected
-					select#setting-notification-dib-reject.select.form-control.sm-select-full-width(ng-model="settings.dibs_reject_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
+					select#setting-notification-dib-reject.select.form-control(ng-model="settings.dibs_reject_notify", style="width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
@@ -118,7 +118,7 @@
 				.form-group
 					label.control-label.input-label(for='setting-notification-dib-expire')
 						| If my Dibs expires
-					select#setting-notification-dib-expire.select.form-control.sm-select-full-width(ng-model="settings.dibs_expire_notify", style="margin:0px;width:100%;height: 38px; font-size: 16px;")
+					select#setting-notification-dib-expire.select.form-control(ng-model="settings.dibs_expire_notify", style="width:100%;height: 38px; font-size: 16px;")
 						option(value='1')
 							| SMS only
 						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
