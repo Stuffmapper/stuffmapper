@@ -1030,11 +1030,11 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 	queryServer(res, query, [req.body.phone_number], function (result) {
 		if (result.rows.length == 0) {
 			query = [
-				'UPDATE users SET phone_number = $1',
-				'WHERE email = $2',
+				'UPDATE users SET phone_number = $1, verify_phone_token = $2',
+				'WHERE email = $3',
 				'RETURNING *'
 			].join(' ');
-			queryServer(res, query, [req.body.phone_number, req.body.email], function (result) {
+			queryServer(res, query, [req.body.phone_number, randomize('0', 6), req.body.email], function (result) {
 				if (result.rows.length == 0) {
 					return res.send({
 						err: null,
@@ -1043,12 +1043,16 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 						}
 					});
 				} else if (result.rows.length >= 1) {
-					return res.send({
+					res.send({
 						err: null,
 						res: {
 							inserted: true
 						}
 					});
+					sms.sendSMS(
+						result.rows[0].phone_number,
+						result.rows[0].verify_phone_token + ' is your Stuffmapper verification code!'
+					);
 				}
 			});
 		} else if (result.rows.length >= 1) {
@@ -1056,6 +1060,49 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 				err: null,
 				res: {
 					inserted: false
+				}
+			});
+		}
+	});
+});
+
+router.post('/account/login/phone/update/code',isAuthenticated, function (req, res) {
+
+	console.log(JSON.stringify(req.body));
+
+	var query = [
+		'select * from users',
+		'WHERE phone_number = $1 AND email = $2 AND verify_phone_token = $3'
+	].join(' ');
+	queryServer(res, query, [req.body.phone_number, req.body.email, req.body.phone_token], function (result) {
+		if (result.rows.length >= 1) {
+			query = [
+				'UPDATE users SET verified_phone = true, verify_phone_token = $4',
+				'WHERE phone_number = $1 AND email = $2 AND verify_phone_token = $3',
+				'RETURNING *'
+			].join(' ');
+			queryServer(res, query, [req.body.phone_number, req.body.email, req.body.phone_token, randomize('0', 6)], function (result) {
+				if (result.rows.length == 0) {
+					return res.send({
+						err: null,
+						res: {
+							verified_phone: false
+						}
+					});
+				} else if (result.rows.length >= 1) {
+					return res.send({
+						err: null,
+						res: {
+							verified_phone: true
+						}
+					});
+				}
+			});
+		} else if (result.rows.length == 0) {
+			return res.send({
+				err: null,
+				res: {
+					verified_phone: false
 				}
 			});
 		}
