@@ -388,8 +388,10 @@ function MainController() {
 			if (data.err || !data.res.user) {
 				// $('#tab-container .stuff-tabs li a').removeClass('selected');
 				// $('#tab-container .stuff-tabs .get-stuff-tab a').addClass('selected');
-				return console.log(data.err);
+				console.log(data.err)
+				return;
 			}
+
 			location.hash = '';
 			initUserData(data);
 			$scope.hideModal('sign-in-up-modal');
@@ -401,15 +403,18 @@ function MainController() {
 			$userData.setLoggedIn(true);
 			$userData.setPhone(data.res.user.phone_number);
 			if(window.location.pathname.indexOf('/login-setup1') > -1) $scope.redirectState = 'stuff.get';
-			if(!$scope.redirectState) $state.reload();
+			if(!$scope.redirectState){
+				$state.reload();
+				if(!data.res.user.phone_number){
+					$u.modal.open('phone-update-modal');
+				}
+			}
 			else {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
 			}
 			$u.toast('Welcome!');
-			if(!data.res.user.phone_number){
-				$u.modal.open('phone-update-modal');
-			}
+
 			// 	if(config.ionic.isIonic) {
 			// 		// $ionicPlatform.ready(function () {
 			// 		var push = $cordovaPush.init({
@@ -850,6 +855,8 @@ function MainController() {
 						$userData.setPhone(fd.phone_number);
 						$u.toast('Phone # verified successfully!');
 						$u.modal.close('phone-update-modal');
+						$('#phone-update-confirm-modal-step').addClass('hidden-modal').removeClass('active');
+						$('#phone-update-step').addClass('hidden-modal').removeClass('active');
 
 					} else if (!data.res.verified_phone) {
 						$('#phone-update-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">This phone # can not verified. Either confirm code or phone # is incorrect. Pleae try again.</div>');

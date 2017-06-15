@@ -828,6 +828,15 @@ router.post('/account/verify/phone', function(req,res) {
 		queryServer(res, query, values, function(result) {
 			if(result.rows.length >= 1) {
 				db.setEvent(1,'{{user}} verified their account',result.rows[0].id);
+
+				delete result.rows[0].password;
+				delete result.rows[0].password_reset_token;
+				delete result.rows[0].verify_email_token;
+				delete result.rows[0].admin;
+				delete result.rows[0].google_id;
+				delete result.rows[0].facebook_id;
+				delete result.rows[0].verify_phone_token;
+
 				req.logIn(result.rows[0], function(err) {
 					if (err) {
 						return res.send({
@@ -837,14 +846,6 @@ router.post('/account/verify/phone', function(req,res) {
 							}
 						});
 					}
-
-					delete result.rows[0].password;
-					delete result.rows[0].password_reset_token;
-					delete result.rows[0].verify_email_token;
-					delete result.rows[0].admin;
-					delete result.rows[0].google_id;
-					delete result.rows[0].facebook_id;
-					delete result.rows[0].verify_phone_token;
 
 					return res.send({
 						err: null,
@@ -952,6 +953,15 @@ router.post('/account/confirmation/phone', function(req, res) {
 				}
 			});
 		} else if (result.rows.length >= 1) {
+
+			delete result.rows[0].password;
+			delete result.rows[0].password_reset_token;
+			delete result.rows[0].verify_email_token;
+			delete result.rows[0].admin;
+			delete result.rows[0].google_id;
+			delete result.rows[0].facebook_id;
+			delete result.rows[0].verify_phone_token;
+
 			req.logIn(result.rows[0], function (err) {
 				if (err) {
 					return res.send({
@@ -994,6 +1004,14 @@ router.post('/account/login', function(req, res, next) {
 				}
 			});
 		}
+		delete user.password;
+		delete user.password_reset_token;
+		delete user.verify_email_token;
+		delete user.admin;
+		delete user.google_id;
+		delete user.facebook_id;
+		delete user.verify_phone_token;
+
 		req.logIn(user, function(err) {
 			if (err) {
 				return res.send({
@@ -1003,13 +1021,6 @@ router.post('/account/login', function(req, res, next) {
 					}
 				});
 			}
-			delete user.password;
-			delete user.password_reset_token;
-			delete user.verify_email_token;
-			delete user.admin;
-			delete user.google_id;
-			delete user.facebook_id;
-			delete user.verify_phone_token;
 
 			return res.send({
 				err:err,
