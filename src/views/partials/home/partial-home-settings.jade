@@ -3,13 +3,13 @@
 	.settings-header
 		h1.input-label Profile &amp; Settings
 	.container-fluid
-		form(name="settingForm", novalidate)
+		span(ng-form="settingForm", novalidate)
 			.form-group
 				label.control-label.input-label.requiredField(for='setting-uname')
 					| Username
 					span.asteriskField
-						| *
-				input#setting-uname.form-control.sm-text-input.sm-text-m(ng-model="settings.uname", name="username", type='text', required)
+						| &nbsp;*
+				input#setting-uname.form-control.sm-text-input.sm-text-m(ng-model="settings.uname", name="uname", type='text', required)
 				span#setting-uname-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="!settings.uname")
 					i.input-help
 						| &nbsp; You must enter a username.
@@ -17,7 +17,7 @@
 				label.control-label.input-label.requiredField(for='setting-phone')
 					| Phone #
 					span.asteriskField
-						| *
+						| &nbsp;*
 				input#setting-phone.form-control.sm-text-input.sm-text-m(ng-model="settings.phone_number", name="phone" placeholder='(###) ###-####',ng-keyup="checkValidPhone(settings.phone_number)", type='tel', required)
 				span#setting-phone-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settingForm.phone.$error.required")
 					i.input-help
@@ -27,12 +27,13 @@
 						| &nbsp; Your mobile phone number has been verified
 				span#setting-phone-progress(class="fa fa-info-circle info-icon help-block",aria-hidden="true",ng-hide="settings.verified_phone")
 					i.input-help
-						| &nbsp; You will need to verify any changes made to your phone number via sms.
+						| &nbsp; You will need to verify any changes made to your phone number via SMS.
 			.form-group
 				label.control-label.input-label.requiredField(for='setting-email')
 					| Email address
 				input#setting-email.form-control.sm-text-input.sm-text-m(ng-model="settings.email",name="email" placeholder='example@stuffmapper.com', type='text',ng-pattern="emailPattern",ng-keyup="checkValidEmail(settings.email)", required)
-				span#setting-email-required(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settingForm.email.$error.pattern")
+				span#settings-email-count(class="help-block pull-right", ng-show="settings.email.length != 31") <span>{{31 - settings.email.length}}/31 characters remaining</span>
+				span#setting-email-required(class="fa fa-times-circle-o danger-icon help-block", aria-hidden="true",ng-show="settingForm.email.$error.pattern")
 					i.input-help
 						| &nbsp; Email address is invalid.
 				span#setting-email-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="!settings.email.length")
@@ -129,8 +130,10 @@
 				div#setting-error-warning-container(ng-bind-html="errorHtml")
 			.form-group
 				div
-					input#setting-button.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-class="(settingForm.$pristine || !settings.uname.length || !settings.phone_number.length || (settingForm.email.$error.pattern?true:false))?'sm-button-ghost-light-solid': ''")
-					//input#setting-button2.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-show="!settingForm.$pristine && settings.uname.length && (settingForm.email.$error.pattern?false:true) && settings.phone_number.length")
+					input#setting-button1.sm-button.sm-button-default.sm-text-l.btn-block.sm-button-ghost-light-solid(type='button', style="margin: 0px;", value="Update Profile", data-ng-click='updateUser();', ng-if="!settingForm.$dirty")
+					input#setting-button2.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-if="settingForm.$dirty && (settingForm.uname.$error.required?false:true && (settings.phone_number == null)?false:settings.phone_number.length && (settings.email == null)?false:settingForm.email.$valid)")
+					input#setting-button3.sm-button.sm-button-default.sm-text-l.btn-block.sm-button-ghost-light-solid(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-if="settingForm.$dirty && !(settingForm.uname.$error.required?false:true && (settings.phone_number == null)?false:settings.phone_number.length && (settings.email == null)?false:settingForm.email.$valid)")
+					//input#setting-button4.sm-button.sm-button-default.sm-text-l.btn-block.sm-button-ghost-light-solid(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-class="{'sm-button-ghost-light-solid': settingForm.$dirty && !(settingForm.uname.$error.required?false:true && (settings.phone_number == null)?false:settings.phone_number.length && (settings.email == null)?false:settingForm.email.$valid)}")
 					//button.btn.btn-primary(name='submit', type='submit', value='Update Profile', data-ng-click='update(users); showSuccess()')
 						| Submit
 				//.form-group

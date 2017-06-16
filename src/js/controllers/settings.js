@@ -27,14 +27,13 @@ function SettingsController() {
 	// 	{ val: '2', value: 'SMS and email' }
 	// ];
 	$scope.settings = { };
-	$scope.settings.notification = 1;
 	$scope.emailPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 	$scope.errorHtml = '';
 
 	$scope.checkValidPhone = function () {
 		//$scope.errorHtml = '';
 		if(!$('#setting-phone').intlTelInput("isValidNumber")) {
-			$scope.settings.phone_number = '';
+			$scope.settings.phone_number = null;
 			$scope.settings.verified_phone = false;
 			$('#setting-phone').css({border:'1px solid red'})
 		} else {
@@ -151,6 +150,7 @@ function SettingsController() {
 					$('#sm-settings-facebook span').text('Connected to Facebook');
 				}
 			});
+
 			// Editing user data
 			$scope.updateUser = function() {
 				$http.put('/api/v1/account/info', $scope.settings,{

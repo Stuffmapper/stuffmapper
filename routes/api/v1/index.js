@@ -1171,20 +1171,20 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 							queryServer(res, query3, values3, function (dupresult) {
 								res.send({
 									err: true,
-									message: 'Email already belongs to another account'
+									message: 'Email already belongs to another account. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
 								});
 							});
 						} else {
 							res.send({
 								err: true,
-								message: 'Phone # already belongs to another account'
+								message: 'Phone # already belongs to another account. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
 							});
 						}
 					});
 				} else {
 					res.send({
 						err: true,
-						message: 'Username already belongs to another account'
+						message: 'Username already belongs to another account. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
 					});
 				}
 			});
