@@ -494,7 +494,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							#phone-update-modal-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#phone-update-modal-update-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-ghost-light-solid.sm-button-full-width(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="updatePhone();")
 						#phone-update-confirm-modal-step.modal-step.animate-250.hidden-modal
-							h2.sm-modal-title Confirm account
+							h2.sm-modal-title Complete sign in
 							.modal-back-button(ng-click="phoneUpdateModalBack()")
 							label.input-label.sm-full-width.sm-text-m(for='sign-up-phone-confirm-code', style="padding-bottom: 0;margin: 15px 22px 0px;") confirmation code:
 							input#phone-update-confirm-code.sm-text-input.sm-text-m.sm-text-input-full-width(ng-keyup="updatePhoneVerificationKeyUp()",type="text" placeholder="######", style="margin: 0px 20px;", minlength="6", maxlength="6", ui-keypress="{enter:'updatePhoneVerification()'}", pattern="[0-9]*")

@@ -35,7 +35,8 @@
 					img#give-image-details
 				.form-group
 					input#give-description-title.form-control.sm-text-input.sm-text-m(ng-model="giveItem.title",placeholder="Title", type='text', maxlength="31")
-					span#setting-email-verifiied(class="help-block pull-right") <span>{{31 - giveItem.title.length}} left</span>
+					span#give-description-title-count(class="help-block pull-right", ng-show="giveItem.title.length != 31") <span>{{31 - giveItem.title.length}}/31 characters remaining</span>
+					span#give-description-title-full(class="help-block pull-right", style="color: #ED5565" ng-show="giveItem.title.length == 31") <span>{{31 - giveItem.title.length}}/31 characters remaining</span>
 				.form-group
 					select#give-category-selector.select.form-control(ng-model="category",ng-options="v.value as v.name for v in categories track by v.value", style="width:100%;height: 38px; font-size: 16px;")
 						option(value='') Choose a category...
