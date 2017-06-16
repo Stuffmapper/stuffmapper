@@ -31,12 +31,11 @@
 			.form-group
 				label.control-label.input-label.requiredField(for='setting-email')
 					| Email address
-				input#setting-email.form-control.sm-text-input.sm-text-m(ng-model="settings.email",name="email" placeholder='example@stuffmapper.com', type='text',ng-pattern="emailPattern",ng-keyup="checkValidEmail(settings.email)", required)
-				span#settings-email-count(class="help-block pull-right", ng-show="settings.email.length != 31") <span>{{31 - settings.email.length}}/31 characters remaining</span>
+				input#setting-email.form-control.sm-text-input.sm-text-m(ng-model="settings.email",name="email" placeholder='example@stuffmapper.com', type='text',ng-pattern="emailPattern",ng-keyup="checkValidEmail(settings.email)")
 				span#setting-email-required(class="fa fa-times-circle-o danger-icon help-block", aria-hidden="true",ng-show="settingForm.email.$error.pattern")
 					i.input-help
 						| &nbsp; Email address is invalid.
-				span#setting-email-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="!settings.email.length")
+				span#setting-email-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settings.email.length == 0")
 					i.input-help
 						| &nbsp; Email address is empty (optional).
 				span#setting-email-progress(class="fa fa-info-circle warning-icon help-block",aria-hidden="true",ng-show="!settings.verified_email && settings.email.length")

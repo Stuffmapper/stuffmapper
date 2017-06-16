@@ -1229,9 +1229,8 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 				req.body.news_letter == 'true' ? true : false
 			];
 			queryServer(res, query, values, function (result) {
-
 				if(result.rows.length > 0){
-					if (req.body.verified_email == 'false' && !_.isNil(req.body.email)) {
+					if (req.body.verified_email == 'false') {
 						sendTemplate(
 							'email-verification',
 							'Stuffmapper needs your confirmation!',
@@ -1243,25 +1242,31 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 							}
 						);
 					}
-					if(req.body.verified_phone == 'false'  && !_.isNil(req.body.phone_number)){
+					if(req.body.verified_phone == 'false'){
 						var phone_number = req.body.phone_number;
 						var sms_message = 'Your Stuffmapper\'s phone number is changed. You need to verify it on next login.'
 						sms.sendSMS(phone_number, sms_message);
 					}
+					delete result.rows[0].password;
+					delete result.rows[0].password_reset_token;
+					delete result.rows[0].verify_email_token;
+					delete result.rows[0].admin;
+					delete result.rows[0].google_id;
+					delete result.rows[0].facebook_id;
+					delete result.rows[0].verify_phone_token;
+
+					req.logIn(result.rows[0], function(err) { });
+
+					res.send({
+						err: null,
+						res: result.rows[0]
+					});
+				} else {
+					res.send({
+						err: true,
+						message: "User is not updated"
+					});
 				}
-
-				delete result.rows[0].password;
-				delete result.rows[0].password_reset_token;
-				delete result.rows[0].verify_email_token;
-				delete result.rows[0].admin;
-				delete result.rows[0].google_id;
-				delete result.rows[0].facebook_id;
-				delete result.rows[0].verify_phone_token;
-
-				res.send({
-					err: null,
-					res: result.rows[0]
-				});
 			});
 		}
 	});
@@ -2075,7 +2080,7 @@ function queryServer(res, query, values, cb) {
 
 function emailPermission(code) {
 	if(code == undefined || code == null){
-		return false;
+		return true;
 	} else if(code == 2 || code == 3){
 		return true;
 	} else {
