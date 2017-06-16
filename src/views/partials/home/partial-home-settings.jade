@@ -38,7 +38,7 @@
 				span#setting-email-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settings.email.length == 0")
 					i.input-help
 						| &nbsp; Email address is empty (optional).
-				span#setting-email-progress(class="fa fa-info-circle warning-icon help-block",aria-hidden="true",ng-show="!settings.verified_email && settings.email.length")
+				span#setting-email-progress(class="fa fa-exclamation-circle warning-icon help-block",aria-hidden="true",ng-show="!settings.verified_email && settings.email.length")
 					i.input-help
 						| &nbsp; You still need to verify that this is your email address. Check your email for verification link.
 				span#setting-email-verifiied(class="fa fa-check-circle success-icon help-block",aria-hidden="true",ng-show="settings.verified_email")
