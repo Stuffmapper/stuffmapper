@@ -375,7 +375,7 @@ setInterval(function () {
                     client.query('SELECT phone_number FROM users WHERE (id = $1 OR id = $2)', [post.lister_id, post.dibber_id], function (err, result2) {
                         result2.rows.forEach(function (e) {
                             console.log('sms to: ' + post.id + " - " + e.phone_number);
-                            var sms_message = 'Stuffmapper asks, has ' + post.title + ' been picked up? If not yet, no reply is necessary. If yes, please mark item as picked up by responding with"' + post.id + '".';
+                            var sms_message = 'Stuffmapper asks, has ' + post.title.trim() + ' been picked up? If not yet, no reply is necessary. If yes, please mark item as picked up by responding with "' + post.id + '".';
                             var phone_number = e.phone_number;
                             sms.sendSMS(phone_number, sms_message);
                         });
