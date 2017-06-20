@@ -223,7 +223,7 @@ app.use(function(req, res, next) {
 });
 
 http.listen(port, function() {
-	console.log('Listening on port ' + port);
+	console.log('Listening on port ' + port +"in "+stage +" environment" );
 });
 process.on('SIGTERM', function() {
 	http.close(function() {

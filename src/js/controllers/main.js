@@ -708,7 +708,7 @@ function MainController() {
 					if (data.err) return $('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err + '</div>');
 					else if (data.res.inserted) {
 						$userData.setPhone(fd.phone_number);
-						$u.toast('Phone # updated successfully!');
+						//$u.toast('Phone # updated successfully!');
 
 						$('#phone-update-modal-error-warning-container').children().remove();
 						$('#phone-update-modal-field').css({border:''});
