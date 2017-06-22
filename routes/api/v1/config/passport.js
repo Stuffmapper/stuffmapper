@@ -38,6 +38,13 @@ passport.use(new LocalStrategy(
 			if (user && !user.verified_email) return done(null, false, { message: 'Please verify your email address' });
 			User.validatePassword(password, user.password, function(err, res) {
 				if(err || !res) return done(null, false, { message: 'Incorrect password.' });
+
+				delete user.password;
+				delete user.password_reset_token;
+				delete user.verify_email_token;
+				delete user.admin;
+				delete user.verify_phone_token;
+
 				return done(null, user);
 			});
 		});
@@ -56,6 +63,11 @@ function(req, accessToken, refreshToken, profile, done) {
 		// console.log(err, user);
 		if (err) return done(err);
 		if (!user) return done(null, false);
+		delete user.password;
+		delete user.password_reset_token;
+		delete user.verify_email_token;
+		delete user.admin;
+		delete user.verify_phone_token;
 		return done(null, user);
 	});
 }));
@@ -73,6 +85,11 @@ function(req, accessToken, refreshToken, profile, done) {
 		console.log(err, user);
 		if (err) return done(err);
 		if (!user) return done(null, false);
+		delete user.password;
+		delete user.password_reset_token;
+		delete user.verify_email_token;
+		delete user.admin;
+		delete user.verify_phone_token;
 		return done(null, user);
 	});
 }));

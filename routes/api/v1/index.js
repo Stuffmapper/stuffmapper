@@ -833,8 +833,6 @@ router.post('/account/verify/phone', function(req,res) {
 				delete result.rows[0].password_reset_token;
 				delete result.rows[0].verify_email_token;
 				delete result.rows[0].admin;
-				delete result.rows[0].google_id;
-				delete result.rows[0].facebook_id;
 				delete result.rows[0].verify_phone_token;
 
 				req.logIn(result.rows[0], function(err) {
@@ -958,8 +956,6 @@ router.post('/account/confirmation/phone', function(req, res) {
 			delete result.rows[0].password_reset_token;
 			delete result.rows[0].verify_email_token;
 			delete result.rows[0].admin;
-			delete result.rows[0].google_id;
-			delete result.rows[0].facebook_id;
 			delete result.rows[0].verify_phone_token;
 
 			req.logIn(result.rows[0], function (err) {
@@ -1008,8 +1004,6 @@ router.post('/account/login', function(req, res, next) {
 		delete user.password_reset_token;
 		delete user.verify_email_token;
 		delete user.admin;
-		delete user.google_id;
-		delete user.facebook_id;
 		delete user.verify_phone_token;
 
 		req.logIn(user, function(err) {
@@ -1078,21 +1072,43 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 });
 
 router.post('/account/login/phone/update/code',isAuthenticated, function (req, res) {
-
-	console.log(JSON.stringify(req.body));
-
-	var query = [
-		'select * from users',
-		'WHERE phone_number = $1 AND email = $2 AND verify_phone_token = $3'
-	].join(' ');
-	queryServer(res, query, [req.body.phone_number, req.body.email, req.body.phone_token], function (result) {
+	var phone_number = req.body.phone_number;
+	var email = req.body.email;
+	var phone_token = req.body.phone_token;
+	var query = '';
+	var values = '';
+	if(phone_number && email && phone_token) {
+		query = [
+			'select * from users',
+			'WHERE phone_number = $1 AND email = $2 AND verify_phone_token = $3'
+		].join(' ');
+		values = [phone_number, email, phone_token];
+	} else {
+		query = [
+			'select * from users',
+			'WHERE phone_number = $1 AND verify_phone_token = $2'
+		].join(' ');
+		values = [phone_number, phone_token];
+	}
+	queryServer(res, query, values, function (result) {
 		if (result.rows.length >= 1) {
-			query = [
-				'UPDATE users SET verified_phone = true, verify_phone_token = $4',
-				'WHERE phone_number = $1 AND email = $2 AND verify_phone_token = $3',
-				'RETURNING *'
-			].join(' ');
-			queryServer(res, query, [req.body.phone_number, req.body.email, req.body.phone_token, randomize('0', 6)], function (result) {
+			if(phone_number && email && phone_token) {
+				query = [
+					'UPDATE users SET verified_phone = true, verify_phone_token = $4',
+					'WHERE phone_number = $1 AND email = $2 AND verify_phone_token = $3',
+					'RETURNING *'
+				].join(' ');
+				values = [phone_number, email, phone_token, randomize('0', 6)];
+			} else {
+				query = [
+					'UPDATE users SET verified_phone = true, verify_phone_token = $3',
+					'WHERE phone_number = $1 AND verify_phone_token = $2',
+					'RETURNING *'
+				].join(' ');
+				values = [phone_number, phone_token, randomize('0', 6)];
+			}
+
+			queryServer(res, query, values, function (result) {
 				if (result.rows.length == 0) {
 					return res.send({
 						err: null,
@@ -1101,6 +1117,7 @@ router.post('/account/login/phone/update/code',isAuthenticated, function (req, r
 						}
 					});
 				} else if (result.rows.length >= 1) {
+					req.logIn(result.rows[0], function(err) { });
 					return res.send({
 						err: null,
 						res: {
@@ -1146,6 +1163,11 @@ router.get('/account/login/facebook', function(req, res, next) {next();}, passpo
 
 router.get('/account/info', isAuthenticated, function(req, res) {
 	queryServer(res, 'SELECT * FROM users WHERE id = $1', [req.session.passport.user.id], function(result) {
+		delete result.rows[0].password;
+		delete result.rows[0].password_reset_token;
+		delete result.rows[0].verify_email_token;
+		delete result.rows[0].admin;
+		delete result.rows[0].verify_phone_token;
 		res.send({
 			err: null,
 			res: result.rows[0]
@@ -1244,15 +1266,13 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 					}
 					if(req.body.verified_phone == 'false'){
 						var phone_number = req.body.phone_number;
-						var sms_message = 'Your Stuffmapper\'s phone number is changed. You need to verify it on next login.'
+						var sms_message = result.rows[0].verify_phone_token + ' is your Stuffmapper verification code!'
 						sms.sendSMS(phone_number, sms_message);
 					}
 					delete result.rows[0].password;
 					delete result.rows[0].password_reset_token;
 					delete result.rows[0].verify_email_token;
 					delete result.rows[0].admin;
-					delete result.rows[0].google_id;
-					delete result.rows[0].facebook_id;
 					delete result.rows[0].verify_phone_token;
 
 					req.logIn(result.rows[0], function(err) { });

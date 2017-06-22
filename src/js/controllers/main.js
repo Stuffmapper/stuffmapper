@@ -621,7 +621,7 @@ function MainController() {
 					$state.go($scope.redirectState);
 					$scope.redirectState = '';
 				}
-				$u.toast('Welcome!');
+
 				if (config.ionic.isIonic) {
 					$ionicPlatform.ready(function () {
 						// $cordovaPush.register({
@@ -645,6 +645,8 @@ function MainController() {
 				}
 				if (!data.res.user.phone_number) {
 					$u.modal.open('phone-update-modal');
+				} else {
+					$u.toast('Welcome!');
 				}
 			});
 		}
@@ -811,6 +813,91 @@ function MainController() {
 						$u.modal.close('phone-update-modal');
 						$('#phone-update-confirm-modal-step').addClass('hidden-modal').removeClass('active');
 						$('#phone-update-step').addClass('hidden-modal').removeClass('active');
+						$u.toast('Welcome!');
+					} else if (!data.res.verified_phone) {
+						$('#phone-update-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">This phone # can not verified. Either confirm code or phone # is incorrect. Pleae try again.</div>');
+					}
+				});
+		}
+	}
+
+	$scope.userSettingPhoneVerificationCodeKeyUp = function () {
+		$('#user-setting-phone-update-confirm-error-warning-container').children().remove();
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_token: $('#user-setting-phone-update-confirm-code').val(),
+			phone_number: $userData.getPhone()
+		};
+		$('#user-setting-phone-update-confirm-code').css({border:''});
+		if (!fd.phone_token) {
+			valid = false;
+			// $('#phone-update-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		else if (fd.phone_token.length > 6) {
+			valid = false;
+			// $('#phone-update-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		} else if (fd.phone_token.length < 6) {
+			valid = false;
+			// $('#phone-update-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		if (!valid) {
+			$('#user-setting-phone-update-confirm-modal-button').addClass('sm-button-ghost-light-solid');
+			//$('#user-setting-phone-update-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#user-setting-phone-update-confirm-modal-button').removeClass('sm-button-ghost-light-solid');
+		}
+	};
+
+	$scope.userSettingPhoneVerificationCode = function () {
+		$('#user-setting-phone-update-confirm-error-warning-container').children().remove();
+		$('#user-setting-phone-update-confirm-code').css({border:''});
+
+		var userPhone = $userData.getPhone();
+
+		var valid = true;
+		var message = '';
+		var fd = {
+			phone_number: userPhone,
+			phone_token: $('#user-setting-phone-update-confirm-code').val(),
+		};
+
+		if (!fd.phone_token) {
+			valid = false;
+			// $('#phone-update-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		else if (fd.phone_token.length > 6) {
+			valid = false;
+			// $('#phone-update-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		} else if (fd.phone_token.length < 6) {
+			valid = false;
+			// $('#phone-update-confirm-code').css({border: '1px solid red'});
+			message = 'please insert 6-digit confirmation code';
+		}
+		if (!valid) {
+			$('#phone-update-confirm-modal-button').addClass('sm-button-ghost-light-solid');
+			//$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
+		} else {
+			$('#phone-update-confirm-modal-button').removeClass('sm-button-ghost-light-solid');
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/login/phone/update/code', fd,
+				{
+					headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+					transformRequest: function (data) {
+						return $.param(data);
+					}
+				})
+				.success(function (data) {
+					if (data.err) return $('#user-setting-phone-update-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err || data.message || "" + '</div>');
+					else if (data.res.verified_phone) {
+						$userData.setPhoneVerified(true);
+						$u.toast('Phone # verified successfully!');
+						$u.modal.close('user-setting-phone-update-modal');
+						$state.reload();
 
 					} else if (!data.res.verified_phone) {
 						$('#phone-update-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">This phone # can not verified. Either confirm code or phone # is incorrect. Pleae try again.</div>');
@@ -818,17 +905,17 @@ function MainController() {
 				});
 		}
 	}
-	
+
 	$scope.logout = function() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/logout')
 		.success(function(data) {
 			$('html').removeClass('loggedIn');
-			$userData.clearData();
 			$userData.setLoggedIn(false);
 			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
 				$state.go('stuff.get');
 				$state.reload();
 				$u.toast('You\'ve been logged out. See you next time, <i>'+$userData.getUserName()+'</i>!');
+				$userData.clearData();
 				setTimeout(function() {
 					$('#tab-container .stuff-tabs li a').removeClass('selected');
 					$('#tab-container .stuff-tabs .'+(window.location.pathname.indexOf('/stuff/get') >= 0 ?'get':(window.location.pathname.indexOf('/stuff/my') >= 0 ?'my':(window.location.pathname.indexOf('/stuff/give') >= 0 ?'give':'no')))+'-stuff-tab a').addClass('selected');

@@ -73,6 +73,12 @@ module.exports = (function() {
 					else if(!row.verified_email) return cb('please verify your email address');
 					else if(!row.password) return cb('<a href="/api/v1/account/resetpassword">forgot your password?</a>');
 					return cb(null, row);
+					/*var query = 'update users set last_sign_in = now() WHERE '+loginType+' = $1';
+					var values = login.email || login.uname;
+					client.query(query, [values], function(err, result) {
+						row = result.rows[0] || row;
+						return cb(null, row);
+					});*/
 				});
 			});
 		}
@@ -117,59 +123,12 @@ module.exports = (function() {
 						if (result.rows.length) {
 							client.end();
 							return cb(null, result.rows[0]);
-							/*var rows = result.rows[0];
-							if (!rows[type + '_id']) {
-								query = 'SELECT password, google_id, facebook_id FROM users WHERE email = $1';
-								values = [
-									email
-								];
-								client.query(query, values, function (err, result) {
-									console.log('2: ', err, result.rows);
-									if (!result.rows.length || (req.session && req.session.passport && req.session.passport.user)) {
-										query = 'UPDATE users SET ' + type + '_id = $1 where email = $2 RETURNING *';
-										values = [
-											profile.id,
-											email
-										];
-										client.query(query, values, function (err, result) {
-											console.log('3: ', err, result);
-											client.end();
-											if (err) return cb(err, null);
-											cb(null, result.rows[0]);
-										});
-									} else	if (result.rows[0].password) {
-										cb({
-											message: 'account exists',
-											type: 'standard',
-											otherType: type,
-											email: email
-										}, null);
-										client.end();
-									}
-									else if (result.rows[0].google_id) {
-										cb({
-											message: 'account exists',
-											type: 'google',
-											otherType: type,
-											email: email
-										}, null);
-										client.end();
-									}
-									else if (result.rows[0].facebook_id) {
-										cb({
-											message: 'account exists',
-											type: 'facebook',
-											otherType: type,
-											email: email
-										}, null);
-										client.end();
-									}
-								});
-							}
-							else {
-								client.end();
-								return cb(null, rows);
-							}*/
+							/*var query = 'update users set last_sign_in = now() WHERE  ' + type + '_id = $1';
+							 var values = [profile.id];
+							 client.query(query, values, function(err, result) {
+							 row = result.rows[0] || row;
+							 return cb(null, row);
+							 });*/
 						} else {
 							query = 'SELECT * FROM users WHERE email = $1';
 							values = [ email ];
@@ -201,11 +160,10 @@ module.exports = (function() {
 											true
 										];
 										client.query(query, values, function (err, result) {
+											client.end();
 											if (err) {
-												client.end();
 												return cb(err, null);
 											} else {
-												client.end();
 												return cb(null, result.rows[0]);
 											}
 										});
