@@ -52,16 +52,16 @@
 				label.control-label.input-label.requiredField(for='setting-phone')
 					| Connected Accounts
 				.btn-toolbar
-					button.btn.btn-lg.pull-left(type='button', ng-click="googleOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%;", ng-show="!settings.google_id")
+					button.btn.btn-lg.pull-left(type='button', ng-click="googleOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%; border: 1px solid #DD4B39;", ng-show="!settings.google_id")
 						i.fa.fa-google-plus-square(style="color: white")
 						|  <span style="color: white">&nbsp;Google</span>
-					button.btn.btn-lg.pull-left(type='button', style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%;", ng-show="settings.google_id")
+					button.btn.btn-lg.pull-left(type='button', style="border-radius: 0px;height:52px; background-color: #DD4B39;width: 46%;", ng-show="settings.google_id")
 						i.fa.fa-google-plus-square(style="color: white")
 						|  <span style="color: white">&nbsp;Connected</span>
-					button.btn.btn-lg.pull-right(type='button', ng-click="facebookOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%;", ng-show="!settings.facebook_id")
+					button.btn.btn-lg.pull-right(type='button', ng-click="facebookOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%;border: 1px solid #4966B6;", ng-show="!settings.facebook_id")
 						i.fa.fa-facebook-square(style="color: white")
 						|  <span style="color: white">&nbsp;Facebook</span>
-					button.btn.btn-lg.pull-right(type='button', style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%;", ng-show="settings.facebook_id")
+					button.btn.btn-lg.pull-right(type='button', style="border-radius: 0px;height:52px; background-color: #4966B6;width: 46%;", ng-show="settings.facebook_id")
 						i.fa.fa-facebook-square(style="color: white")
 						|  <span style="color: white">&nbsp;Connected</span>
 				span#social-button-help-text(class="fa fa-info-circle info-icon help-block",aria-hidden="true")
