@@ -164,6 +164,7 @@ module.exports = (function() {
 											if (err) {
 												return cb(err, null);
 											} else {
+												result.rows[0].firstTime = true;
 												return cb(null, result.rows[0]);
 											}
 										});

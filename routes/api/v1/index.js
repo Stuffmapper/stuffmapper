@@ -1137,6 +1137,56 @@ router.post('/account/login/phone/update/code',isAuthenticated, function (req, r
 	});
 });
 
+router.post('/account/login/addaccount/update',isAuthenticated, function(req,res) {
+	var email = req.body.email;
+	var new_letter = req.body.new_letter == 'true';
+
+
+	if(email || new_letter) {
+		var query = "select * from users where email = $1";
+		var values = [email];
+		queryServer(res, query, values, function (dupresult) {
+			if (dupresult.rows.length == 0) {
+				var query = [
+					'UPDATE users SET news_letter = $1, email = $2 WHERE id = $1 RETURNING *'
+				].join(' ');
+				var values = [
+					new_letter,
+					email,
+					req.session.passport.user.id
+				];
+				queryServer(res, query, values, function (result) {
+					if (!result.rows.length){
+						return res.send({
+							err: true,
+							message: 'Your settings are not updated. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
+						});
+					}
+					sendTemplate(
+						'email-verification',
+						'Stuffmapper needs your confirmation!',
+						{[result.rows[0].uname]: result.rows[0].email},
+						{
+							'FIRSTNAME': result.rows[0].uname,
+							'CONFIRMEMAIL': config.subdomain + '/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
+							'ITEMIMAGE': config.subdomain + '/img/give-pic-©-01.png'
+						}
+					);
+					res.send({
+						err: null,
+						res: result.rows[0]
+					});
+				});
+			} else {
+				res.send({
+					err: true,
+					message: 'Email already belongs to another account. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
+				});
+			}
+		});
+	}
+});
+
 router.post('/account/logout', isAuthenticated, function(req, res) {
 	db.setEvent(2, '{{user}} signed out', req.session.passport.user.id);
 	req.logout();

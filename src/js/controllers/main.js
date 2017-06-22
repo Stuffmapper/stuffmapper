@@ -19,7 +19,7 @@ function MainController() {
 	// var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
 	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[10] : undefined;
 	// var $cordovaPush = (typeof arguments[10] !== 'function') ? arguments[12] : undefined;
-	var vm = this;
+	$scope.user = {};
 
 	$scope.delaySignIn = delaySignIn;
 	$("#sign-in-up-phone-number, #phone-update-modal-field").intlTelInput({
@@ -199,6 +199,11 @@ function MainController() {
 			$userData.setBraintreeToken(data.res.user.braintree_token);
 			$userData.setUserName(data.res.user.uname);
 			$userData.setLoggedIn(true);
+			$userData.setEmail(data.res.user.email);
+			$userData.setPhone(data.res.user.phone_number);
+			$userData.setPhoneVerified(data.res.user.verified_phone);
+			$userData.setEmailVerified(data.res.user.verified_email);
+			$scope.user = data.res.user;
 		}
 		if(data.res && data.res.messages) {
 			setTimeout(function() {
@@ -402,6 +407,7 @@ function MainController() {
 			$userData.setUserName(data.res.user.uname);
 			$userData.setLoggedIn(true);
 			$userData.setPhone(data.res.user.phone_number);
+			$scope.user = data.res.user;
 			if(window.location.pathname.indexOf('/login-setup1') > -1) $scope.redirectState = 'stuff.get';
 			if(!$scope.redirectState){
 				$state.reload();
@@ -614,6 +620,7 @@ function MainController() {
 				$userData.setLoggedIn(true);
 				$userData.setEmail(data.res.user.email);
 				$userData.setPhone(data.res.user.phone_number);
+				$scope.user = data.res.user;
 				$scope.hideModal('sign-in-up-modal');
 				location.hash = '';
 				if (!$scope.redirectState) $state.reload();
@@ -813,7 +820,12 @@ function MainController() {
 						$u.modal.close('phone-update-modal');
 						$('#phone-update-confirm-modal-step').addClass('hidden-modal').removeClass('active');
 						$('#phone-update-step').addClass('hidden-modal').removeClass('active');
-						$u.toast('Welcome!');
+
+						if($scope.user.hasOwnProperty('firstTime')){
+							$u.modal.open('add-accounts-update-modal');
+						} else {
+							$u.toast('Welcome!');
+						}
 					} else if (!data.res.verified_phone) {
 						$('#phone-update-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">This phone # can not verified. Either confirm code or phone # is incorrect. Pleae try again.</div>');
 					}
@@ -904,6 +916,40 @@ function MainController() {
 					}
 				});
 		}
+	};
+
+	$scope.emailPattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+	$scope.updateAddAccount = function () {
+		var email = $('#add-accounts-update-email').val();
+		var emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+		var new_letter = $('#add-accounts-email-news').val();
+		var valid = true;
+		var fd = {
+			emailInput : $('#add-accounts-update-email').val(),
+		 	new_letter : $('#add-accounts-email-news').is(":checked")
+		}
+		var message = '';
+		if(!fd.email && !fd.new_letter){
+			$u.modal.close('add-accounts-update-modal');
+			return;
+		}
+
+		if(!fd.email || !emailRe.test(fd.email)) {
+			valid = false;
+			// $('#add-accounts-update-email').css({border:'1px solid red'});
+			message = 'invalid email address';
+		} else {
+			$http.post(config.api.host + '/api/v' + config.api.version + '/account/login/addaccount/update', fd,
+				{headers:{'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest:function(data){return $.param(data);}})
+				.success(function(data) {
+					if (data.err) return $('#add-accounts-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
+					$u.modal.close('add-accounts-update-modal');
+				});
+		}
+	}
+	
+	$scope.closeAddAccount = function () {
+		$u.modal.close('add-accounts-update-modal');
 	}
 
 	$scope.logout = function() {
@@ -916,6 +962,7 @@ function MainController() {
 				$state.reload();
 				$u.toast('You\'ve been logged out. See you next time, <i>'+$userData.getUserName()+'</i>!');
 				$userData.clearData();
+				$scope.user = {};
 				setTimeout(function() {
 					$('#tab-container .stuff-tabs li a').removeClass('selected');
 					$('#tab-container .stuff-tabs .'+(window.location.pathname.indexOf('/stuff/get') >= 0 ?'get':(window.location.pathname.indexOf('/stuff/my') >= 0 ?'my':(window.location.pathname.indexOf('/stuff/give') >= 0 ?'give':'no')))+'-stuff-tab a').addClass('selected');
