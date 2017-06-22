@@ -482,7 +482,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									li You'll get timely alerts from messaging
 									li It's an easier and more secure way to log in.
 									li Verifies identity, making Stuffmapper safer for everyone.
-
 							b.sm-text-m.sm-full-width Enter your phone number to continue.
 							div.sm-full-width
 								label.input-label.sm-full-width.sm-text-m(for='phone-update-modal-field', style="padding-bottom: 0;margin: 15px 2px 0px;") phone number
@@ -526,6 +525,50 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									|    <span style="cursor: text;">I agree to </span><a href="/useragreement" target="_blank">terms & conditions</a>.
 							#user-setting-phone-update-confirm-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#user-setting-phone-update-confirm-modal-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Continue" ng-click="updatePhoneVerification()")
+			#add-accounts-update-modal.modal-window.update-social-news-letter-modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('add-accounts-update-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#add-accounts-update-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Add accounts
+							div.update-social-news-letter
+								p()
+									b Account Confirmed
+								| You can use your phone number <b>{{settings.phone}}</b> to access your account in future.
+								br
+								p(style="margin: 10px 0 10px")
+									| You can also add your Google, Facebook, or email account if you want the ability sign in using those options. <b>You can also add them later in your profile settings</b>.
+							.container-fluid
+								.form-group
+									label.control-label.input-label.requiredField
+										| Connect Accounts
+									p
+										button.btn.btn-lg.btn-block(type='button', ng-click="googleOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;")
+											i.fa.fa-google-plus-square.pull-left(style="color: white")
+											|  <span style="color: white">&nbsp;Connect to Google</span>
+										button.btn.btn-lg.btn-block(type='button', ng-click="facebookOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;margin-top:15px")
+											i.fa.fa-facebook-square.pull-left(style="color: white")
+											|  <span style="color: white">&nbsp;Connect to Facebook</span>
+								.form-group
+									label.control-label.input-label.requiredField(for='update-email')
+										| Email address
+									input#update-email.form-control.sm-text-input.sm-text-m(ng-model="settings.email",name="email" placeholder='example@stuffmapper.com', type='text',ng-pattern="emailPattern",ng-keyup="checkValidEmail(settings.email)")
+									span#setting-email-progress(class="fa fa-exclamation-circle warning-icon help-block",aria-hidden="true")
+										i.input-help
+											| &nbsp; You still need to verify that this is your email address. Check your email for verification link.
+								.checkbox.checkbox-info
+									input#setting-news.styled(type='checkbox', checked='',ng-model="settings.news_letter")
+									label(for='setting-news')
+										| Receive news and announcement from Stuffmapper
+								.form-group
+									div#add-accounts-warning-container(ng-bind-html="errorHtml")
+								.form-group
+									div.text-center
+										//input#setting-button1.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;position: absolute;", value="I'll do this later!", data-ng-click='updateUser();', ng-if="!settingForm.$dirty")
+										button#setting-button1.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;", value="I'll do this later!", data-ng-click='updateUser();')
+										input#setting-button3.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;", value="Done!",data-ng-click='updateUser();')
 			#dibs-info-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
 				.sm-modal-content

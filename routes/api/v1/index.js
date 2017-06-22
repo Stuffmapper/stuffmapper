@@ -32,10 +32,10 @@ var sms = require('./config/sms');
 
 var util = require('./../../../util.js');
 var db = new util.db();
-
+var gateway = "";
 
 if(stage==='production' || stage==='development') {
-	var gateway = braintree.connect({
+	gateway = braintree.connect({
 		environment: braintree.Environment.Production,
 		merchantId: '7t82byzdjdbkwp8m',
 		publicKey: '5hnt7srpm7x5d2qp',
@@ -43,7 +43,7 @@ if(stage==='production' || stage==='development') {
 	});
 }
 else if(stage==='test') {
-	var gateway = braintree.connect({
+	gateway = braintree.connect({
 		environment: braintree.Environment.Sandbox,
 		merchantId: 'jbp33kzvs7tp3djq',
 		publicKey: 'swm4xbv63c7rgt7v',
@@ -990,7 +990,7 @@ router.post('/account/login', function(req, res, next) {
 	passport.authenticate('local', function(err, user, info) {
 		if (err) {
 			return res.send({
-				err: err,
+				err: err || info.message,
 				res: {
 					isValid: false
 				}

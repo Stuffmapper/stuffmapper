@@ -4212,6 +4212,22 @@ html.ionic.ios {
   color: $charcoal-dark;
 }
 
+.update-social-news-letter {
+  display: block;
+  position: relative;
+  width: 100%;
+  text-align: left;
+  padding: 10px 20px 10px;
+  margin-bottom: 20px;
+  background-color: rgba(159,214,97,0.5);
+  color: $charcoal-dark;
+}
+
+.update-social-news-letter-modal-window {
+  height: 650px;
+  max-height: 667px;
+}
+
 #phone-update-step {
   ul, li {
     margin: 5px 0px;

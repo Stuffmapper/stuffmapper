@@ -723,7 +723,7 @@ function MainController() {
 						$('#phone-update-confirm-modal-step').removeClass('hidden-modal').addClass('active');
 
 					} else if (!data.res.inserted) {
-						$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">This phone # is already associated with an other account.</div>');
+						$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">This phone # is already associated with another account.</div>');
 					}
 				});
 		}
@@ -752,47 +752,6 @@ function MainController() {
 			valid = false;
 			// $('#phone-update-confirm-code').css({border: '1px solid red'});
 			message = 'please insert 6-digit confirmation code';
-		} else if (!$('#phone-update-confirm-confirm-terms input[type="checkbox"]').prop('checked')) {
-			valid = false;
-			// $('#phone-update-confirm-confirm-terms').css({border: '1px solid red'});
-			message = 'please check terms & conditions';
-		}
-		if (!valid) {
-			$('#phone-update-confirm-modal-button').addClass('sm-button-ghost-light-solid');
-			//$('#phone-update-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
-		} else {
-			$('#phone-update-confirm-modal-button').removeClass('sm-button-ghost-light-solid');
-		}
-	};
-
-	$scope.updatePhoneVerificationTermsKeyUp = function () {
-
-		$('#phone-update-confirm-error-warning-container').children().remove();
-		var valid = true;
-		var message = '';
-		var fd = {
-			phone_token: $('#phone-update-confirm-code').val(),
-			phone_number: $userData.getPhone()
-		};
-		$('#phone-update-confirm-code').css({border:''});
-		$('#sign-up-phone-confirm-terms').css({border:''});
-		if (!fd.phone_token) {
-			valid = false;
-			// $('#phone-update-confirm-code').css({border: '1px solid red'});
-			message = 'please insert 6-digit confirmation code';
-		}
-		else if (fd.phone_token.length > 6) {
-			valid = false;
-			// $('#phone-update-confirm-code').css({border: '1px solid red'});
-			message = 'please insert 6-digit confirmation code';
-		} else if (fd.phone_token.length < 6) {
-			valid = false;
-			// $('#phone-update-confirm-code').css({border: '1px solid red'});
-			message = 'please insert 6-digit confirmation code';
-		} else if (!$('#phone-update-confirm-confirm-terms input[type="checkbox"]').prop('checked')) {
-			valid = false;
-			// $('#phone-update-confirm-confirm-terms').css({border: '1px solid red'});
-			message = 'please check terms & conditions';
 		}
 		if (!valid) {
 			$('#phone-update-confirm-modal-button').addClass('sm-button-ghost-light-solid');
@@ -831,12 +790,7 @@ function MainController() {
 			valid = false;
 			// $('#phone-update-confirm-code').css({border: '1px solid red'});
 			message = 'please insert 6-digit confirmation code';
-		} else if (!$('#phone-update-confirm-confirm-terms input[type="checkbox"]').prop('checked')) {
-			valid = false;
-			// $('#phone-update-confirm-confirm-terms').css({border: '1px solid red'});
-			message = 'please check terms & conditions';
 		}
-
 		if (!valid) {
 			$('#phone-update-confirm-modal-button').addClass('sm-button-ghost-light-solid');
 			//$('#phone-update-modal-error-warning-container').html('<div class="sm-full-width sm-negative-warning">'+message+'</div>');
@@ -869,6 +823,7 @@ function MainController() {
 		$http.post(config.api.host + '/api/v' + config.api.version + '/account/logout')
 		.success(function(data) {
 			$('html').removeClass('loggedIn');
+			$userData.clearData();
 			$userData.setLoggedIn(false);
 			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
 				$state.go('stuff.get');
