@@ -942,7 +942,7 @@ function MainController() {
 			$http.post(config.api.host + '/api/v' + config.api.version + '/account/login/addaccount/update', fd,
 				{headers:{'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},transformRequest:function(data){return $.param(data);}})
 				.success(function(data) {
-					if (data.err) return $('#add-accounts-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err+'</div>');
+					if (data.err) return $('#add-accounts-warning-container').html('<div class="sm-full-width sm-negative-warning">'+data.err.message || data.message || ""+'</div>');
 					$u.modal.close('add-accounts-update-modal');
 				});
 		}
