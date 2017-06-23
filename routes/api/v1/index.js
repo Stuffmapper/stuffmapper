@@ -1756,7 +1756,7 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 							);
                             var sms_message = "Lister of "+result1.rows[0].title.trim()+" has cancelled your Dibs. "+emoji.get(':neutral_face:')+" You will be automatically refunded within 2 business days.";
                             var dibber_phone = result4.rows[0].phone_number;
-                            sms.sendSMS(dibber_phone, sms_message);
+                            sms.sendSMS(dibber_phone, sms_message, result4.rows[0].dibs_reject_notify);
 						});
 					});
 				});
