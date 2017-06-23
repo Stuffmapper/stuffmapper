@@ -418,8 +418,11 @@ function MainController() {
 			else {
 				$state.go($scope.redirectState);
 				$scope.redirectState = '';
+				if(!data.res.user.phone_number){
+					$u.modal.open('phone-update-modal');
+				}
 			}
-			$u.toast('Welcome!');
+			//$u.toast('Welcome!');
 
 			// 	if(config.ionic.isIonic) {
 			// 		// $ionicPlatform.ready(function () {
@@ -926,7 +929,7 @@ function MainController() {
 		var valid = true;
 		var fd = {
 			email : $('#add-accounts-update-email').val(),
-		 	new_letter : $('#add-accounts-email-news').is(":checked")
+			news_letter : $('#add-accounts-email-news').prop('checked')
 		}
 		var message = '';
 		if(!fd.email && !fd.new_letter){
@@ -1393,12 +1396,7 @@ function MainController() {
 						$userData.setLoggedIn(true);
 						$scope.hideModal('sign-in-up-modal');
 						location.hash = '';
-						if (!$scope.redirectState) $state.reload();
-						else {
-							$state.go($scope.redirectState);
-							$scope.redirectState = '';
-						}
-						$u.toast('Welcome!');
+						$u.modal.open('add-accounts-update-modal');
 					}
 
 				});
