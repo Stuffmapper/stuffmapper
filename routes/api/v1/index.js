@@ -1661,8 +1661,8 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 				});
 				queryServer(res, 'select posts.attended from posts where id = $1', [req.params.id], function (result6) {
 					if(result6.rows[0].attended) {
-						queryServer(res, 'SELECT phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result7) {
-							queryServer(res, 'SELECT uname, email, dibs_cancel_notify FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
+						queryServer(res, 'SELECT phone_number, dibs_cancel_notify FROM users WHERE id = $1', [req.session.passport.user.id], function (result7) {
+							queryServer(res, 'SELECT phone_number, uname, email, dibs_cancel_notify FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
 								queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function (result5) {
 									var emailTo = {[result4.rows[0].uname]: result4.rows[0].email};
 									sendTemplate(
@@ -1678,9 +1678,15 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 										},
 										result4.rows[0].dibs_cancel_notify
 									);
+
 									var sms_message = result1.rows[0].title.trim() + " has been unDibs\'d "+emoji.get(':neutral_face:')+" But no worries! It will be relisted so someone else can give it a new home! "+emoji.get(':heart_eyes:')+" "+emoji.get(':house_with_garden:');
 									var dibber_phone = result7.rows[0].phone_number;
 									sms.sendSMS(dibber_phone, sms_message);
+
+
+									sms_message = result1.rows[0].title.trim() + " has been unDibs\'d "+emoji.get(':neutral_face:')+" But no worries! It will be relisted so someone else can give it a new home! "+emoji.get(':heart_eyes:')+" "+emoji.get(':house_with_garden:');
+									var lister_phone = result4.rows[0].phone_number;
+									sms.sendSMS(lister_phone, sms_message, result4.rows[0].dibs_cancel_notify);
 
 								});
 							});
