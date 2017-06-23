@@ -653,8 +653,11 @@ function MainController() {
 						// });
 					});
 				}
-				if (!data.res.user.phone_number) {
+				if (!data.res.user.phone_number || data.res.user.verified_phone) {
 					$u.modal.open('phone-update-modal');
+					if(data.res.phone_number){
+						$("#phone-update-modal-field").intlTelInput("setNumber", data.res.phone_number);
+					}
 				} else {
 					$u.toast('Welcome!');
 				}
@@ -826,6 +829,9 @@ function MainController() {
 
 						if($scope.user.hasOwnProperty('firstTime')){
 							$u.modal.open('add-accounts-update-modal');
+							$scope.$apply(function(){
+								$scope.user = data.res.user;
+							});
 						} else {
 							$u.toast('Welcome!');
 						}

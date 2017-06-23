@@ -854,7 +854,14 @@ router.post('/account/verify/phone', function(req,res) {
 					});
 				});
 			}
-			else res.send({err:'invalid code',res:null});
+			else {
+				return res.send({
+					err: true,
+					res: {
+						isValid: false
+					}
+				});
+			}
 		});
 });
 
@@ -1006,6 +1013,16 @@ router.post('/account/login', function(req, res, next) {
 		delete user.admin;
 		delete user.verify_phone_token;
 
+		if(!user.phone_number || !user.verified_phone){
+			return res.send({
+				err:err,
+				res:{
+					user:user,
+					isValid:true
+				}
+			});
+		}
+
 		req.logIn(user, function(err) {
 			if (err) {
 				return res.send({
@@ -1113,7 +1130,7 @@ router.post('/account/login/phone/update/code',isAuthenticated, function (req, r
 					return res.send({
 						err: null,
 						res: {
-							verified_phone: false
+							verified_phone: false,
 						}
 					});
 				} else if (result.rows.length >= 1) {
@@ -1121,7 +1138,8 @@ router.post('/account/login/phone/update/code',isAuthenticated, function (req, r
 					return res.send({
 						err: null,
 						res: {
-							verified_phone: true
+							verified_phone: true,
+							user: result.rows[0]
 						}
 					});
 				}
@@ -1142,12 +1160,12 @@ router.post('/account/login/addaccount/update',isAuthenticated, function(req,res
 	var news_letter = req.body.news_letter == 'true';
 
 	if(email || news_letter) {
-		var query = "select * from users where email = $1";
-		var values = [email];
+		var query = "select * from users where email = $1 and not id = $2";
+		var values = [email, req.session.passport.user.id];
 		queryServer(res, query, values, function (dupresult) {
 			if (dupresult.rows.length == 0) {
 				var query = [
-					'UPDATE users SET news_letter = $1, email = $2 WHERE id = $3 RETURNING *'
+					'UPDATE users SET news_letter = $1, email = $2 WHERE id = $3  RETURNING *'
 				].join(' ');
 				var values = [
 					news_letter,

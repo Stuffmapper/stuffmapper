@@ -374,8 +374,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									| &nbsp; Check your SMS messages for the confirmation code to verify your account.
 								hr
 							div.sm-full-width.checkbox.checkbox-info#sign-up-phone-confirm-terms
-								input(type='checkbox', value='', ng-click="signUpPhoneConfirmTermsKeyUp()")
-								label
+								input#sign-up-phone-confirm-terms-label(type='checkbox', value='', ng-click="signUpPhoneConfirmTermsKeyUp()")
+								label(for="sign-up-phone-confirm-terms-label")
 									|	<span style="cursor: text;">I agree to </span><a href="/useragreement" target="_blank">terms & conditions</a>.
 							#sign-up-phone-confirm-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#sm-sign-up-phone-confirm-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign up" ng-click="signUpPhoneConfirm()")
@@ -530,7 +530,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							div.update-social-news-letter
 								p
 									b Account Confirmed
-								| You can use your phone number <b>{{user.phone_number}}</b> to access your account in future.
+								| You can use your phone number <b ng-bind="user.phone_number"></b> to access your account in future.
 								br
 								p(style="margin: 10px 0 10px")
 									| You can also add your Google, Facebook, or email account if you want the ability sign in using those options. <b>You can also add them later in your profile settings</b>.
@@ -571,9 +571,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 										div#add-accounts-warning-container
 									.form-group
 										div.text-center
-											input#add-accounts-button1.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;", value="I'll do this later!", data-ng-click='closeAddAccount();', ng-if="!addAccountForm.$dirty")
+											input#add-accounts-button1.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;position: absolute;max-width: 370px;", value="I'll do this later!", data-ng-click='closeAddAccount();', ng-if="!addAccountForm.$dirty")
 											//input#add-accounts-button2.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;", value="Done!",data-ng-click='updateAddAccount();', ng-if="addAccountForm.$dirty && (settings.email == null)?false:settingForm.email.$valid")
-											input#add-accounts-button3.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;", value="Done!",data-ng-click='updateAddAccount();', ng-if="addAccountForm.$dirty")
+											input#add-accounts-button3.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;position: absolute;max-width: 370px;", value="Done!",data-ng-click='updateAddAccount();', ng-if="addAccountForm.$dirty")
 			#dibs-info-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
 				.sm-modal-content
