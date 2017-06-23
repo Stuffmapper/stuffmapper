@@ -92,6 +92,7 @@ module.exports = (function() {
 					client.end();
 					return cb(err, null);
 				}
+				console.log(JSON.stringify(profile));
 				var email = profile.email || profile.emails[0].value;
 				email = email.toLowerCase();
 				if (req.session.passport && req.session.passport.user) {
@@ -119,7 +120,7 @@ module.exports = (function() {
 					email = email.toLowerCase();
 					var values = [ profile.id	];
 					client.query(query, values, function (err, result) {
-						console.log('1: ', err, result);
+						console.log('1: ', err, result.rows);
 						if (result.rows.length) {
 							client.end();
 							return cb(null, result.rows[0]);
@@ -133,12 +134,13 @@ module.exports = (function() {
 							query = 'SELECT * FROM users WHERE email = $1';
 							values = [ email ];
 							client.query(query, values, function (err, result) {
+								console.log('2: ', err, result.rows);
 								if (!result.rows.length) {
 									gateway.clientToken.generate({}, function (err, response) {
 										var query = [
 											'INSERT INTO users',
 											'(fname, lname, uname, ' + type + '_email, ' + type + '_id, braintree_token, email, verified_email)',
-											'VALUES ($1, $2, $3, $4, $5, $6, $7)',
+											'VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
 											'RETURNING *'
 										].join(' ');
 										var adjectives = ['friendly', 'amicable', 'emotional', 'strategic', 'informational', 'formative', 'formal', 'sweet', 'spicy', 'sour', 'bitter', 'determined', 'committed', 'wide', 'narrow', 'deep', 'profound', 'amusing', 'sunny', 'cloudy', 'windy', 'breezy', 'organic', 'incomparable', 'healthy', 'understanding', 'reasonable', 'rational', 'lazy', 'energetic', 'exceptional', 'sleepy', 'relaxing', 'delicious', 'fragrant', 'fun', 'marvelous', 'enchanted', 'magical', 'hot', 'cold', 'rough', 'smooth', 'wet', 'dry', 'super', 'polite', 'cheerful', 'exuberant', 'spectacular', 'intelligent', 'witty', 'soaked', 'beautiful', 'handsome', 'oldschool', 'metallic', 'enlightened', 'lucky', 'historic', 'grand', 'polished', 'speedy', 'realistic', 'inspirational', 'dusty', 'happy', 'fuzzy', 'crunchy'];
@@ -162,6 +164,7 @@ module.exports = (function() {
 										client.query(query, values, function (err, result) {
 											client.end();
 											if (err) {
+												console.log(err)
 												return cb(err, null);
 											} else {
 												result.rows[0].firstTime = true;
@@ -170,6 +173,7 @@ module.exports = (function() {
 										});
 									});
 								} else {
+									console.log('account exist');
 									client.end();
 									if (result.rows[0].password) {
 										cb({

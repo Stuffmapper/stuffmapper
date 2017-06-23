@@ -925,7 +925,7 @@ function MainController() {
 		var new_letter = $('#add-accounts-email-news').val();
 		var valid = true;
 		var fd = {
-			emailInput : $('#add-accounts-update-email').val(),
+			email : $('#add-accounts-update-email').val(),
 		 	new_letter : $('#add-accounts-email-news').is(":checked")
 		}
 		var message = '';
