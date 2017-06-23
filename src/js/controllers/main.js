@@ -910,7 +910,8 @@ function MainController() {
 					if (data.err) return $('#user-setting-phone-update-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err || data.message || "" + '</div>');
 					else if (data.res.verified_phone) {
 						$userData.setPhoneVerified(true);
-						$u.toast('Phone # verified successfully!');
+						$u.toast('Changes have been saved.');
+						$('#user-setting-phone-update-confirm-code').val('');
 						$u.modal.close('user-setting-phone-update-modal');
 						$state.reload();
 

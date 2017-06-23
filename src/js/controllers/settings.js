@@ -257,9 +257,11 @@ function SettingsController() {
 						$userData.setUserName(data.res.uname);
 						$userData.setEmail(data.res.email);
 						$userData.setPhone(data.res.phone_number);
-						$u.toast('Changes have been saved.');
 						if(!$scope.settings.verified_phone)
 							$u.modal.open('user-setting-phone-update-modal');
+						else{
+							$u.toast('Changes have been saved.');
+						}
 					}
 				});
 			};

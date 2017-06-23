@@ -557,16 +557,16 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 										label.control-label.input-label.requiredField(for='add-accounts-update-email')
 											| Email address
 										input#add-accounts-update-email.form-control.sm-text-input.sm-text-m(ng-model="user.email",name="email" placeholder='example@stuffmapper.com', type='text',ng-pattern="emailPattern")
-										span#add-accounts-email-progress(class="fa fa-exclamation-circle warning-icon help-block",aria-hidden="true", ng-show="user.email.length")
-											i.input-help
-												| &nbsp; You still need to verify that this is your email address. Check your email for verification link.
+										//span#add-accounts-email-progress(class="fa fa-exclamation-circle warning-icon help-block",aria-hidden="true", ng-show="(user.email.length != 0")
+										//	i.input-help
+										//		| &nbsp; You still need to verify that this is your email address. Check your email for verification link.
 										span#add-accounts-email-invalid(class="fa fa-times-circle-o danger-icon help-block", aria-hidden="true",ng-show="addAccountForm.email.$error.pattern")
 											i.input-help
 												| &nbsp; Email address is invalid.
 									.checkbox.checkbox-info
 										input#add-accounts-email-news.styled(type='checkbox', checked='',ng-model="user.news_letter")
 										label(for='add-accounts-email-news')
-											| Receive news and announcement from Stuffmapper
+											| Receive news and announcements from Stuffmapper
 									.form-group
 										div#add-accounts-warning-container
 									.form-group
