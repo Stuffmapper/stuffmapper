@@ -840,7 +840,8 @@ router.post('/account/verify/phone', function(req,res) {
 						return res.send({
 							err: err,
 							res: {
-								isValid: false
+								isValid: false,
+								message: 'Problem with creating session'
 							}
 						});
 					}
@@ -858,7 +859,8 @@ router.post('/account/verify/phone', function(req,res) {
 				return res.send({
 					err: true,
 					res: {
-						isValid: false
+						isValid: false,
+						message: 'Please enter correct 6-digit confirmation code'
 					}
 				});
 			}

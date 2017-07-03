@@ -1392,7 +1392,7 @@ function MainController() {
 				})
 				.success(function (data) {
 					$('#sm-sign-up-phone-confirm-button').removeAttr('disabled');
-					if (data.err) return $('#sign-up-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err + '</div>');
+					if (data.err) return $('#sign-up-phone-confirm-error-warning-container').html('<div class="sm-full-width sm-negative-warning">' + data.err || data.res.message + '</div>');
 					else {
 						location.hash = '';
 						resetAllInputsIn('#modal-windows');
@@ -1493,7 +1493,6 @@ function MainController() {
 						}
 						$u.toast('Welcome!');
 					}
-
 				});
 		}
 	}
