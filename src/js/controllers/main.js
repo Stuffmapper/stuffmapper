@@ -415,6 +415,9 @@ function MainController() {
 				$state.reload();
 				if(!data.res.user.phone_number){
 					$u.modal.open('phone-update-modal');
+					if(data.res.user.hasOwnProperty('firstTime')) {
+						localStorage.setItem('firstTime', data.res.user.firstTime);
+					}
 				}
 			}
 			else {
@@ -422,6 +425,9 @@ function MainController() {
 				$scope.redirectState = '';
 				if(!data.res.user.phone_number){
 					$u.modal.open('phone-update-modal');
+					if(data.res.user.hasOwnProperty('firstTime')) {
+						localStorage.setItem('firstTime', data.res.user.firstTime);
+					}
 				}
 			}
 			//$u.toast('Welcome!');
@@ -829,7 +835,7 @@ function MainController() {
 						$('#phone-update-confirm-modal-step').addClass('hidden-modal').removeClass('active');
 						$('#phone-update-step').addClass('hidden-modal').removeClass('active');
 
-						if($scope.user.hasOwnProperty('firstTime')){
+						if(localStorage.getItem('firstTime') === "true"){
 							$scope.user = data.res.user;
 							$u.modal.open('add-accounts-update-modal');
 						} else {

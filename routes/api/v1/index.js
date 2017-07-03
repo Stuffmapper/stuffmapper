@@ -1132,7 +1132,7 @@ router.post('/account/login/phone/update/code',isAuthenticated, function (req, r
 					return res.send({
 						err: null,
 						res: {
-							verified_phone: false,
+							verified_phone: false
 						}
 					});
 				} else if (result.rows.length >= 1) {
