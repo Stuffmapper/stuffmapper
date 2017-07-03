@@ -535,7 +535,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								p(style="margin: 10px 0 10px")
 									| You can also add your Google, Facebook, or email account if you want the ability sign in using those options. <b>You can also add them later in your profile settings</b>.
 							.container-fluid
-								.form-group
+								span(ng-form="addAccountForm", novalidate)
+									.form-group
 									label.control-label.input-label.requiredField
 										| Connect Accounts
 									p
@@ -552,7 +553,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 										button.btn.btn-lg.btn-block(type='button', style="border-radius: 0px;height:52px; background-color: #4966b6;margin-top:15px", ng-show="user.facebook_id")
 											i.fa.fa-facebook-square.pull-left(style="color: white")
 											|  <span style="color: white">&nbsp;Connected</span>
-								span(ng-form="addAccountForm", novalidate)
 									.form-group
 										label.control-label.input-label.requiredField(for='add-accounts-update-email')
 											| Email address
@@ -573,7 +573,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 										div.text-center
 											input#add-accounts-button1.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;position: absolute;max-width: 370px;", value="I'll do this later!", data-ng-click='closeAddAccount();', ng-if="!addAccountForm.$dirty")
 											//input#add-accounts-button2.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;", value="Done!",data-ng-click='updateAddAccount();', ng-if="addAccountForm.$dirty && (settings.email == null)?false:settingForm.email.$valid")
-											input#add-accounts-button3.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;position: absolute;max-width: 370px;", value="Done!",data-ng-click='updateAddAccount();', ng-if="addAccountForm.$dirty")
+											input#add-accounts-button3.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;position: absolute;max-width: 370px;", value="Done!",data-ng-click='updateAddAccount();', ng-if="addAccountForm.$dirty || user.google_id || user.facebook_id")
 			#dibs-info-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
 				.sm-modal-content

@@ -204,6 +204,8 @@ function MainController() {
 			$userData.setPhoneVerified(data.res.user.verified_phone);
 			$userData.setEmailVerified(data.res.user.verified_email);
 			$scope.user = data.res.user;
+			console.log(JSON.stringify($scope.user));
+
 		}
 		if(data.res && data.res.messages) {
 			setTimeout(function() {
@@ -828,10 +830,8 @@ function MainController() {
 						$('#phone-update-step').addClass('hidden-modal').removeClass('active');
 
 						if($scope.user.hasOwnProperty('firstTime')){
+							$scope.user = data.res.user;
 							$u.modal.open('add-accounts-update-modal');
-							$scope.$apply(function(){
-								$scope.user = data.res.user;
-							});
 						} else {
 							$u.toast('Welcome!');
 						}
@@ -1403,6 +1403,7 @@ function MainController() {
 						$userData.setLoggedIn(true);
 						$scope.hideModal('sign-in-up-modal');
 						location.hash = '';
+						$scope.user = data.res.user;
 						$u.modal.open('add-accounts-update-modal');
 					}
 
