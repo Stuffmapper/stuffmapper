@@ -838,6 +838,7 @@ function MainController() {
 						if(localStorage.getItem('firstTime') === "true"){
 							$scope.user = data.res.user;
 							$u.modal.open('add-accounts-update-modal');
+							localStorage.setItem('firstTime', false);
 						} else {
 							$u.toast('Welcome!');
 						}
