@@ -106,8 +106,8 @@ function MyItemsController() {
 						'</div>',
 						'	<div class="sm-text-m sm-full-width">Title</div>',
 						'	<input id="edit-item-title" value="'+$scope.listItem.title.trim()+'" class="sm-text-input-full-width sm-text-input" type="text">',
-						'	<div class="sm-text-m sm-full-width">Description</div>',
-						'	<textarea id="edit-item-description" class="sm-text-input-full-width sm-text-input">'+$scope.listItem.description+'</textarea>',
+						//'	<div class="sm-text-m sm-full-width">Description</div>',
+						//'	<textarea id="edit-item-description" class="sm-text-input-full-width sm-text-input">'+$scope.listItem.description+'</textarea>',
 						'	<div class="sm-text-m sm-full-width" style="margin-bottom: 0px;">Category</div>',
 						'		<div class="sm-select fa fa-chevron-down sm-select-full-width ng-not-empty" id="give-category-selector" placeholder="Choose a category..." full-width="true" ng-model="category" options="categories">',
 						'			<select id="edit-item-category" class="ng-pristine ng-valid ng-not-empty ng-touched">',
@@ -125,6 +125,12 @@ function MyItemsController() {
 						'				<option label="Recreation &amp; Sporting Goods" value="10">Recreation & Sporting Goods</option>',
 						'			</select>',
 						'		</div>',
+						'	<div class="checkbox checkbox-primary sm-full-width">',
+						'		<input class="styled" id="edit-item-outside" type="checkbox"/>',
+						'		<label for="edit-item-outside">This item is outside <span class="sm-text-s">(do not contact me about this item)</span></label>',
+						'	</div>',
+						'	<div class="sm-text-m sm-full-width">Description</div>',
+						'	<textarea id="edit-item-description" class="sm-text-input-full-width sm-text-input">'+$scope.listItem.description+'</textarea>',
 						'	<div class="sm-button-group" style="width: 100%;display:block;position:relative;">',
 						'		<div class="sm-button-group-2 sm-button-group-left" style="width:calc(50% - 20px);display:inline-block;float:left;margin-left:10px;">',
 						'			<input id="my-item-edit-cancel" class="sm-button sm-button-cancel sm-text-m animate-250" type="button" value="Cancel" style="margin:20px 10px;width:calc(100% - 10px);" />',
@@ -321,6 +327,7 @@ function MyItemsController() {
 						fd.append('lng', values.lng);
 						if(imageSet) fd.append('test', $('#give-image-canvas-uploader')[0].toDataURL());
 						fd.append('category', values.category);
+						fd.append('attended', $('#edit-item-outside').is(':checked')?false:true);
 						$http.post(config.api.host + '/api/v' + config.api.version + '/stuff/' + $scope.listItem.id, fd, {
 							transformRequest: angular.identity,
 							headers: {'Content-Type': undefined}
@@ -333,6 +340,7 @@ function MyItemsController() {
 								$scope.listItem.category_id = values.category;
 								$scope.listItem.category = $('#edit-item-category option:selected').text();
 								$scope.listItem.dateEdited = dateFormat(new Date(), "ddd, mmm d, h:MM TT");
+								$scope.listItem.attended = $('#edit-item-outside').is(':checked')?false:true
 							}
 							$u.toast('Changes have been saved.');
 							$('#my-item-header-text').text(values.title);
@@ -573,6 +581,11 @@ function MyItemsController() {
 					$(this).removeAttr('selected');
 				});
 				$('#edit-item-category').val($scope.listItem.category_id);
+
+				if(!$scope.listItem.attended) {
+					$('#edit-item-outside').prop('checked', true);
+				}
+
 				$('.edit-item-single-details-container').removeClass('sm-hidden');
 				$scope.editContainerHeader.css({
 					'opacity':1,

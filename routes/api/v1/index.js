@@ -454,7 +454,7 @@ router.post('/stuff/:id', isAuthenticated, function(req, res) {
 	db.setEvent(3,'{{user}} updated {{post}}',req.session.passport.user.id, req.params.id);
 	var query = [
 		'UPDATE posts SET title = $2, description = $3, lat = $4, lng = $5,',
-		'category_id = $6, date_edited = current_timestamp WHERE id = $7 AND user_id = $1',
+		'category_id = $6, attended = $8, date_edited = current_timestamp WHERE id = $7 AND user_id = $1',
 		'RETURNING id'
 	].join(' ');
 	var values = [
@@ -464,7 +464,8 @@ router.post('/stuff/:id', isAuthenticated, function(req, res) {
 		req.body.lat,
 		req.body.lng,
 		req.body.category,
-		req.params.id
+		req.params.id,
+		req.body.attended
 	];
 	queryServer(res, query, values, function(result) {
 		if(req.body.test) {
