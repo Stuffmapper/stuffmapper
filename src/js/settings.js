@@ -2,7 +2,7 @@ function setDefaultSettings() {
 	var isIonic = $('html').hasClass('ionic');
 	var isElectron = $('html').hasClass('electron');
 	var isDev = $('html').hasClass('dev') || $('html').hasClass('test');
-	var modules = ['ui.router', 'ngAnimate', 'ui.utils'];
+	var modules = ['ui.router', 'ngAnimate', 'ui.utils', 'ngSanitize'];
 	var providers = {
 		stuff : {
 			url: '/stuff',

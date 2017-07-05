@@ -3,7 +3,7 @@ var db;
 var stuffMapp = angular
 .module('stuffMapp', config.modules)
 .factory('$userData', function() {
-	var data = { loggedIn: $('html').hasClass('loggedIn'), braintreeToken: '', FirstName: '', LastName: '', email: '', userId: 0, userName: '', phoneNumber: '' };
+	var data = { loggedIn: $('html').hasClass('loggedIn'), braintreeToken: '', FirstName: '', LastName: '', email: '', userId: 0, userName: '', phoneNumber: '',phoneVerified: '', emailVerified: '' };
 	return {
 		isLoggedIn: function () { return data.loggedIn; },
 		setLoggedIn: function (loggedIn) { data.loggedIn = loggedIn; },
@@ -17,12 +17,16 @@ var stuffMapp = angular
 		setUserId: function (userId) { data.UserId = userId; },
 		getEmail: function () { return data.Email; },
 		setEmail: function (email) { data.Email = email; },
+		getEmailVerified: function () { return data.emailVerified; },
+		setEmailVerified: function (emailVerify) { data.emailVerified = emailVerify; },
 		getPhone: function () { return data.phoneNumber; },
 		setPhone: function (phone) { data.phoneNumber = phone; },
+		getPhoneVerified: function () { return data.phoneVerified; },
+		setPhoneVerified: function (phoneVerify) { data.phoneVerified = phoneVerify; },
 		getBraintreeToken: function () { return data.braintreeToken; },
 		setBraintreeToken: function (braintreeToken) { data.braintreeToken = braintreeToken; },
 		clearData: function () {
-			data = { FirstName: '', LastName: '', email: '', userId: 0, braintreeToken: '', userName: '', phoneNumber: '' };
+			data = { FirstName: '', LastName: '', email: '', userId: 0, braintreeToken: '', userName: '', phoneNumber: '', phoneVerified: '', emailVerified: '' };
 		}
 	};
 })

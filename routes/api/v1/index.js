@@ -32,10 +32,10 @@ var sms = require('./config/sms');
 
 var util = require('./../../../util.js');
 var db = new util.db();
-
+var gateway = "";
 
 if(stage==='production' || stage==='development') {
-	var gateway = braintree.connect({
+	gateway = braintree.connect({
 		environment: braintree.Environment.Production,
 		merchantId: '7t82byzdjdbkwp8m',
 		publicKey: '5hnt7srpm7x5d2qp',
@@ -43,7 +43,7 @@ if(stage==='production' || stage==='development') {
 	});
 }
 else if(stage==='test') {
-	var gateway = braintree.connect({
+	gateway = braintree.connect({
 		environment: braintree.Environment.Sandbox,
 		merchantId: 'jbp33kzvs7tp3djq',
 		publicKey: 'swm4xbv63c7rgt7v',
@@ -412,7 +412,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 
 									if(req.body.attended === 'true') {
 										queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result.rows[0].id], function (result5) {
-											queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
+											queryServer(res, 'SELECT uname, email, phone_number, item_listed_notify FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
 												sendTemplate(
 													'item-listed',
 													'Your ' + req.body.title + ' has been mapped!',
@@ -421,13 +421,14 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 														'FIRSTNAME': result0.rows[0].uname,
 														'ITEMTITLE': req.body.title,
 														'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
-													}
+													},
+													result0.rows[0].item_listed_notify
 												);
 
 												var emoji_message = emoji.get(':star2:') + "" + emoji.get(':rainbow:') + "" + emoji.get(':sparkles:');
 												var sms_message = emoji_message + "\nYour " + req.body.title + " has been mapped! We will notify you via text when someone Dibs your item.";
 												var phone_number = result0.rows[0].phone_number;
-												sms.sendSMS(phone_number, sms_message);
+												sms.sendSMS(phone_number, sms_message, result0.rows[0].item_listed_notify);
 											});
 										});
 									}
@@ -827,15 +828,24 @@ router.post('/account/verify/phone', function(req,res) {
 		queryServer(res, query, values, function(result) {
 			if(result.rows.length >= 1) {
 				db.setEvent(1,'{{user}} verified their account',result.rows[0].id);
+
+				delete result.rows[0].password;
+				delete result.rows[0].password_reset_token;
+				delete result.rows[0].verify_email_token;
+				delete result.rows[0].admin;
+				delete result.rows[0].verify_phone_token;
+
 				req.logIn(result.rows[0], function(err) {
 					if (err) {
 						return res.send({
 							err: err,
 							res: {
-								isValid: false
+								isValid: false,
+								message: 'Problem with creating session'
 							}
 						});
 					}
+
 					return res.send({
 						err: null,
 						res:{
@@ -845,7 +855,15 @@ router.post('/account/verify/phone', function(req,res) {
 					});
 				});
 			}
-			else res.send({err:'invalid code',res:null});
+			else {
+				return res.send({
+					err: true,
+					res: {
+						isValid: false,
+						message: 'Please enter correct 6-digit confirmation code'
+					}
+				});
+			}
 		});
 });
 
@@ -942,6 +960,13 @@ router.post('/account/confirmation/phone', function(req, res) {
 				}
 			});
 		} else if (result.rows.length >= 1) {
+
+			delete result.rows[0].password;
+			delete result.rows[0].password_reset_token;
+			delete result.rows[0].verify_email_token;
+			delete result.rows[0].admin;
+			delete result.rows[0].verify_phone_token;
+
 			req.logIn(result.rows[0], function (err) {
 				if (err) {
 					return res.send({
@@ -970,7 +995,7 @@ router.post('/account/login', function(req, res, next) {
 	passport.authenticate('local', function(err, user, info) {
 		if (err) {
 			return res.send({
-				err: err,
+				err: err || info.message,
 				res: {
 					isValid: false
 				}
@@ -984,6 +1009,22 @@ router.post('/account/login', function(req, res, next) {
 				}
 			});
 		}
+		delete user.password;
+		delete user.password_reset_token;
+		delete user.verify_email_token;
+		delete user.admin;
+		delete user.verify_phone_token;
+
+		if(!user.phone_number || !user.verified_phone){
+			return res.send({
+				err:err,
+				res:{
+					user:user,
+					isValid:true
+				}
+			});
+		}
+
 		req.logIn(user, function(err) {
 			if (err) {
 				return res.send({
@@ -993,6 +1034,7 @@ router.post('/account/login', function(req, res, next) {
 					}
 				});
 			}
+
 			return res.send({
 				err:err,
 				res:{
@@ -1012,11 +1054,11 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 	queryServer(res, query, [req.body.phone_number], function (result) {
 		if (result.rows.length == 0) {
 			query = [
-				'UPDATE users SET phone_number = $1',
-				'WHERE email = $2',
+				'UPDATE users SET phone_number = $1, verify_phone_token = $2',
+				'WHERE email = $3',
 				'RETURNING *'
 			].join(' ');
-			queryServer(res, query, [req.body.phone_number, req.body.email], function (result) {
+			queryServer(res, query, [req.body.phone_number, randomize('0', 6), req.body.email], function (result) {
 				if (result.rows.length == 0) {
 					return res.send({
 						err: null,
@@ -1025,12 +1067,16 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 						}
 					});
 				} else if (result.rows.length >= 1) {
-					return res.send({
+					res.send({
 						err: null,
 						res: {
 							inserted: true
 						}
 					});
+					sms.sendSMS(
+						result.rows[0].phone_number,
+						result.rows[0].verify_phone_token + ' is your Stuffmapper verification code!'
+					);
 				}
 			});
 		} else if (result.rows.length >= 1) {
@@ -1042,6 +1088,124 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 			});
 		}
 	});
+});
+
+router.post('/account/login/phone/update/code',isAuthenticated, function (req, res) {
+	var phone_number = req.body.phone_number;
+	var email = req.body.email;
+	var phone_token = req.body.phone_token;
+	var query = '';
+	var values = '';
+	if(phone_number && email && phone_token) {
+		query = [
+			'select * from users',
+			'WHERE phone_number = $1 AND email = $2 AND verify_phone_token = $3'
+		].join(' ');
+		values = [phone_number, email, phone_token];
+	} else {
+		query = [
+			'select * from users',
+			'WHERE phone_number = $1 AND verify_phone_token = $2'
+		].join(' ');
+		values = [phone_number, phone_token];
+	}
+	queryServer(res, query, values, function (result) {
+		if (result.rows.length >= 1) {
+			if(phone_number && email && phone_token) {
+				query = [
+					'UPDATE users SET verified_phone = true, verify_phone_token = $4',
+					'WHERE phone_number = $1 AND email = $2 AND verify_phone_token = $3',
+					'RETURNING *'
+				].join(' ');
+				values = [phone_number, email, phone_token, randomize('0', 6)];
+			} else {
+				query = [
+					'UPDATE users SET verified_phone = true, verify_phone_token = $3',
+					'WHERE phone_number = $1 AND verify_phone_token = $2',
+					'RETURNING *'
+				].join(' ');
+				values = [phone_number, phone_token, randomize('0', 6)];
+			}
+
+			queryServer(res, query, values, function (result) {
+				if (result.rows.length == 0) {
+					return res.send({
+						err: null,
+						res: {
+							verified_phone: false
+						}
+					});
+				} else if (result.rows.length >= 1) {
+					req.logIn(result.rows[0], function(err) { });
+					return res.send({
+						err: null,
+						res: {
+							verified_phone: true,
+							user: result.rows[0]
+						}
+					});
+				}
+			});
+		} else if (result.rows.length == 0) {
+			return res.send({
+				err: null,
+				res: {
+					verified_phone: false
+				}
+			});
+		}
+	});
+});
+
+router.post('/account/login/addaccount/update',isAuthenticated, function(req,res) {
+	var email = req.body.email;
+	var news_letter = req.body.news_letter == 'true';
+
+	if(email || news_letter) {
+		var query = "select * from users where email = $1 and not id = $2";
+		var values = [email, req.session.passport.user.id];
+		queryServer(res, query, values, function (dupresult) {
+			if (dupresult.rows.length == 0) {
+				var query = [
+					'UPDATE users SET news_letter = $1, email = $2 WHERE id = $3  RETURNING *'
+				].join(' ');
+				var values = [
+					news_letter,
+					email,
+					req.session.passport.user.id
+				];
+				queryServer(res, query, values, function (result) {
+					if (!result.rows.length){
+						return res.send({
+							err: true,
+							message: 'Your settings are not updated. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
+						});
+					}
+					if(email) {
+						sendTemplate(
+							'email-verification',
+							'Stuffmapper needs your confirmation!',
+							{[result.rows[0].uname]: result.rows[0].email},
+							{
+								'FIRSTNAME': result.rows[0].uname,
+								'CONFIRMEMAIL': config.subdomain + '/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
+								'ITEMIMAGE': config.subdomain + '/img/give-pic-©-01.png'
+							}
+						);
+					}
+					res.send({
+						err: null,
+						res: result.rows[0]
+					});
+				});
+			} else {
+				res.send({
+					err: true,
+					message: 'Email already belongs to another account. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
+				});
+			}
+		});
+	}
 });
 
 router.post('/account/logout', isAuthenticated, function(req, res) {
@@ -1070,6 +1234,11 @@ router.get('/account/login/facebook', function(req, res, next) {next();}, passpo
 
 router.get('/account/info', isAuthenticated, function(req, res) {
 	queryServer(res, 'SELECT * FROM users WHERE id = $1', [req.session.passport.user.id], function(result) {
+		delete result.rows[0].password;
+		delete result.rows[0].password_reset_token;
+		delete result.rows[0].verify_email_token;
+		delete result.rows[0].admin;
+		delete result.rows[0].verify_phone_token;
 		res.send({
 			err: null,
 			res: result.rows[0]
@@ -1078,30 +1247,119 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 });
 
 router.put('/account/info', isAuthenticated, function(req, res) {
-	var query = [
-		'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
-		'phone_number = $5, email = $6, address = $7, city = $8, ',
-		'state = $9, zip_code = $10, country = $11 ',
-		'WHERE id = $1'
-	].join('');
-	var values = [
-		req.session.passport.user.id,
-		req.body.uname,
-		req.body.fname,
-		req.body.lname,
-		req.body.phone_number,
-		req.body.email,
-		req.body.address,
-		req.body.city,
-		req.body.state,
-		req.body.zip_code,
-		req.body.country
-	];
-	queryServer(res, query, values, function(result) {
-		res.send({
-			err: null,
-			res: result
-		});
+	var query = "select * from users where (uname = $1 OR email = $2 OR phone_number = $3) AND not id = $4";
+	var values = [req.body.uname, req.body.email, req.body.phone_number, req.session.passport.user.id];
+	queryServer(res, query, values, function (dupresult) {
+		if (dupresult.rows.length > 0) {
+			var query1 = "select * from users where (uname = $1) AND not id = $2";
+			var values1 = [req.body.uname, req.session.passport.user.id];
+			queryServer(res, query1, values1, function (dupresult) {
+				if (dupresult.rows.length == 0) {
+					var query2 = "select * from users where (phone_number = $1) AND not id = $2";
+					var values2 = [req.body.phone_number, req.session.passport.user.id];
+					queryServer(res, query2, values2, function (dupresult) {
+						if (dupresult.rows.length == 0) {
+							var query3 = "select * from users where (email = $1) AND not id = $2";
+							var values3 = [req.body.email, req.session.passport.user.id];
+							queryServer(res, query3, values3, function (dupresult) {
+								res.send({
+									err: true,
+									message: 'Email already belongs to another account. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
+								});
+							});
+						} else {
+							res.send({
+								err: true,
+								message: 'Phone # already belongs to another account. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
+							});
+						}
+					});
+				} else {
+					res.send({
+						err: true,
+						message: 'Username already belongs to another account. If you think this is an error, contact <a href="mailto:support@stuffmapper.com" target="_top">support@stuffmapper.com</a>'
+					});
+				}
+			});
+		} else {
+			var addInupdateQuery = [];
+			if(req.body.verified_email == 'false'){
+				addInupdateQuery.push('verify_email_token = md5((random())::text), verified_email = false, ');
+			}
+			if(req.body.verified_phone == 'false'){
+				addInupdateQuery.push('verify_phone_token = ((floor((random() * (1000000)::double precision)))::text), verified_phone = false, ');
+			}
+
+			query = [
+				'UPDATE users SET uname = $2, fname = $3, lname = $4, ',
+				'phone_number = $5, email = $6, address = $7, city = $8, ',
+				'state = $9, zip_code = $10, country = $11, ',
+				'notification_id = $12, chat_message_notify = $13, item_listed_notify = $14, ',
+				addInupdateQuery.join(''),
+				'dibs_cancel_notify = $15, dibs_reject_notify = $16, dibs_expire_notify = $17, ',
+				'news_letter = $18 ',
+				'WHERE id = $1 ',
+				'RETURNING *'
+			].join('');
+			values = [
+				req.session.passport.user.id,
+				req.body.uname,
+				req.body.fname,
+				req.body.lname,
+				req.body.phone_number,
+				req.body.email,
+				req.body.address,
+				req.body.city,
+				req.body.state,
+				req.body.zip_code,
+				req.body.country,
+				parseInt(req.body.notification_id),
+				parseInt(req.body.chat_message_notify),
+				parseInt(req.body.item_listed_notify),
+				parseInt(req.body.dibs_cancel_notify),
+				parseInt(req.body.dibs_reject_notify),
+				parseInt(req.body.dibs_expire_notify),
+				req.body.news_letter == 'true' ? true : false
+			];
+			queryServer(res, query, values, function (result) {
+				if(result.rows.length > 0){
+					if (req.body.verified_email == 'false') {
+						sendTemplate(
+							'email-verification',
+							'Stuffmapper needs your confirmation!',
+							{[req.body.uname]: req.body.email},
+							{
+								'FIRSTNAME': req.body.uname,
+								'CONFIRMEMAIL': config.subdomain + '/stuff/get?email_verification_token=' + result.rows[0].verify_email_token,
+								'ITEMIMAGE': config.subdomain + '/img/give-pic-©-01.png'
+							}
+						);
+					}
+					if(req.body.verified_phone == 'false'){
+						var phone_number = req.body.phone_number;
+						var sms_message = result.rows[0].verify_phone_token + ' is your Stuffmapper verification code!'
+						sms.sendSMS(phone_number, sms_message);
+					}
+					delete result.rows[0].password;
+					delete result.rows[0].password_reset_token;
+					delete result.rows[0].verify_email_token;
+					delete result.rows[0].admin;
+					delete result.rows[0].verify_phone_token;
+
+					req.logIn(result.rows[0], function(err) { });
+
+					res.send({
+						err: null,
+						res: result.rows[0]
+					});
+				} else {
+					res.send({
+						err: true,
+						message: "User is not updated"
+					});
+				}
+			});
+		}
 	});
 });
 
@@ -1423,8 +1681,8 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 				});
 				queryServer(res, 'select posts.attended from posts where id = $1', [req.params.id], function (result6) {
 					if(result6.rows[0].attended) {
-						queryServer(res, 'SELECT phone_number FROM users WHERE id = $1', [req.session.passport.user.id], function (result7) {
-							queryServer(res, 'SELECT uname, email FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
+						queryServer(res, 'SELECT phone_number, dibs_cancel_notify FROM users WHERE id = $1', [req.session.passport.user.id], function (result7) {
+							queryServer(res, 'SELECT phone_number, uname, email, dibs_cancel_notify FROM users WHERE id = $1', [result1.rows[0].user_id], function (result4) {
 								queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function (result5) {
 									var emailTo = {[result4.rows[0].uname]: result4.rows[0].email};
 									sendTemplate(
@@ -1437,11 +1695,18 @@ router.post('/undib/:id', isAuthenticated, function(req, res) {
 											'MYSTUFFLINK': 'http://' + config.subdomain + '/stuff/my/items/' + result1.rows[0].id,
 											'ITEMTITLE': result1.rows[0].title,
 											'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
-										}
+										},
+										result4.rows[0].dibs_cancel_notify
 									);
+
 									var sms_message = result1.rows[0].title.trim() + " has been unDibs\'d "+emoji.get(':neutral_face:')+" But no worries! It will be relisted so someone else can give it a new home! "+emoji.get(':heart_eyes:')+" "+emoji.get(':house_with_garden:');
 									var dibber_phone = result7.rows[0].phone_number;
 									sms.sendSMS(dibber_phone, sms_message);
+
+
+									sms_message = result1.rows[0].title.trim() + " has been unDibs\'d "+emoji.get(':neutral_face:')+" But no worries! It will be relisted so someone else can give it a new home! "+emoji.get(':heart_eyes:')+" "+emoji.get(':house_with_garden:');
+									var lister_phone = result4.rows[0].phone_number;
+									sms.sendSMS(lister_phone, sms_message, result4.rows[0].dibs_cancel_notify);
 
 								});
 							});
@@ -1494,7 +1759,7 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 							'res3': result3.rows
 						}
 					});
-					queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result0.rows[0].dibber_id], function(result4) {
+					queryServer(res, 'SELECT uname, email, phone_number, dibs_reject_notify FROM users WHERE id = $1', [result0.rows[0].dibber_id], function(result4) {
 						queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [req.params.id], function(result5) {
 							sendTemplate(
 								'dibs-declined',
@@ -1506,11 +1771,12 @@ router.delete('/dibs/reject/:id', isAuthenticated, function(req, res) {
 									'ITEMNAME':result1.rows[0].title,
 									'ITEMIMAGE':'https://cdn.stuffmapper.com'+result5.rows[0].image_url,
 									'GETSTUFFLINK':config.subdomain
-								}
+								},
+								result4.rows[0].dibs_reject_notify
 							);
                             var sms_message = "Lister of "+result1.rows[0].title.trim()+" has cancelled your Dibs. "+emoji.get(':neutral_face:')+" You will be automatically refunded within 2 business days.";
                             var dibber_phone = result4.rows[0].phone_number;
-                            sms.sendSMS(dibber_phone, sms_message);
+                            sms.sendSMS(dibber_phone, sms_message, result4.rows[0].dibs_reject_notify);
 						});
 					});
 				});
@@ -1572,7 +1838,7 @@ router.post('/messages', isAuthenticated, function(req, res) {
 		queryServer(res, 'SELECT conversations.lister_id, conversations.dibber_id, messages.user_id, conversations.post_id FROM messages, conversations where conversations.id = $1 and messages.conversation_id = $1 and conversations.dibber_id = messages.user_id', [parseInt(req.body.conversation_id)], function(result1) {
 			console.log(result1.rows);
 			if(result1.rows.length === 1 && parseInt(result1.rows[0].lister_id) !== parseInt(req.session.passport.user.id)) {
-				queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
+				queryServer(res, 'SELECT uname, email, phone_number, chat_message_notify FROM users WHERE id = $1', [result1.rows[0].lister_id], function(result2){
 					queryServer(res, 'SELECT uname, email, phone_number FROM users WHERE id = $1', [result1.rows[0].dibber_id], function(result0){
 						queryServer(res, 'SELECT * FROM posts WHERE id = $1', [result1.rows[0].post_id],function(result3) {
 							queryServer(res, 'SELECT image_url FROM images WHERE post_id = $1 AND main = true', [result1.rows[0].post_id], function(result4) {
@@ -1593,12 +1859,13 @@ router.post('/messages', isAuthenticated, function(req, res) {
 											'ITEMNAME' : result3.rows[0].title,
 											'ITEMIMAGE' : 'https://cdn.stuffmapper.com'+result4.rows[0].image_url,
 											'CHATLINK' : config.subdomain+'/stuff/my/items/'+result1.rows[0].post_id+'/messages'
-										}
+										},
+										result2.rows[0].chat_message_notify
 									);
 									if(result3.rows[0].attended) {
 										var sms_message = emoji.get(':balloon:') + " Someone Dibs\’d your " + result3.rows[0].title.trim() + "!" + emoji.get(':balloon:') + " Reply now!:\n" + messages.join('\n') + '\n' + config.subdomain + '/stuff/my/items/' + result1.rows[0].post_id + '/messages';
 										var lister_phone = result2.rows[0].phone_number;
-										sms.sendSMS(lister_phone, sms_message);
+										sms.sendSMS(lister_phone, sms_message, result2.rows[0].chat_message_notify);
 									}
 								});
 							});
@@ -1836,7 +2103,7 @@ router.delete('/watchlist/:id', isAuthenticated, function(req, res) {
 /* WATCHLIST MANAGEMENT -  END  */
 
 /* SETTINGS - START */
-router.get('/account/info', isAuthenticated, function(req, res) {
+router.get('old/account/info', isAuthenticated, function(req, res) {
 	var query = [
 		'SELECT * FROM users WHERE id = $1'
 	].join('');
@@ -1851,7 +2118,7 @@ router.get('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-router.put('/account/info', isAuthenticated, function(req, res) {
+router.put('old/account/info', isAuthenticated, function(req, res) {
 	var query = [
 		'UPDATE users SET uname = $2, fname = $3, lname = $4,',
 		'phone_number = $5, email = $6, address = $7, city = $8,',
@@ -1879,7 +2146,7 @@ router.put('/account/info', isAuthenticated, function(req, res) {
 	});
 });
 
-router.delete('/account/info', isAuthenticated, function(req, res) {
+router.delete('old/account/info', isAuthenticated, function(req, res) {
 	// ARCHIVE DO NOT DELETE
 	var id = req.session.passport.user.id;
 
@@ -1908,48 +2175,65 @@ function queryServer(res, query, values, cb) {
 	});
 }
 
-
-
-function sendTemplate(template, subject, to, args) {
-	var mandrill = require('mandrill-api/mandrill');
-	var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
-	var template_name = template;
-	var template_content = [];
-	Object.keys(args).forEach(function(e) {
-		template_content.push({
-			'name' : e,
-			'content' : args[e]
-		});
-	});
-	var emailTo = [];
-	Object.keys(to).forEach(function(e) {
-		if(!_.isEmpty(to[e])) {
-			emailTo.push({
-				'email': to[e],
-				'name': e,
-				'type': 'to'
-			});
-		}
-	});
-	if(!emailTo.length){
-		console.log('Can\'t send email, No email is defined');
-		return;
+function emailPermission(code) {
+	if(code == undefined || code == null){
+		return true;
+	} else if(code == 2 || code == 3){
+		return true;
+	} else {
+		return false;
 	}
-	var message = {
-		'subject': subject,
-		'from_email': 'support@stuffmapper.com',
-		'from_name': 'Stuffmapper Support',
-		'to': emailTo,
-		'headers': { 'Reply-To': 'no_reply@stuffmapper.com' },
-		'merge': true,
-		'merge_language': 'mailchimp',
-		'global_merge_vars': template_content
-	};
-	mandrill_client.messages.sendTemplate({'template_name': template_name, 'template_content': template_content, 'message': message, 'async': false, 'ip_pool': 'Main Pool'}, function(result) {
-		console.log(result);
-	}, function(e) {
-		console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
-	});
+}
+
+function sendTemplate(template, subject, to, args, sendingCode) {
+
+	if(emailPermission(sendingCode)) {
+		var mandrill = require('mandrill-api/mandrill');
+		var mandrill_client = new mandrill.Mandrill('eecqPlsFBCU6tPAyNb6MLg');
+		var template_name = template;
+		var template_content = [];
+		Object.keys(args).forEach(function (e) {
+			template_content.push({
+				'name': e,
+				'content': args[e]
+			});
+		});
+		var emailTo = [];
+		Object.keys(to).forEach(function (e) {
+			if (!_.isEmpty(to[e])) {
+				emailTo.push({
+					'email': to[e],
+					'name': e,
+					'type': 'to'
+				});
+			}
+		});
+		if (!emailTo.length) {
+			console.log('Can\'t send email, No email is defined');
+			return;
+		}
+		var message = {
+			'subject': subject,
+			'from_email': 'support@stuffmapper.com',
+			'from_name': 'Stuffmapper Support',
+			'to': emailTo,
+			'headers': {'Reply-To': 'no_reply@stuffmapper.com'},
+			'merge': true,
+			'merge_language': 'mailchimp',
+			'global_merge_vars': template_content
+		};
+		mandrill_client.messages.sendTemplate({
+			'template_name': template_name,
+			'template_content': template_content,
+			'message': message,
+			'async': false,
+			'ip_pool': 'Main Pool'
+		}, function (result) {
+			console.log(result);
+		}, function (e) {
+			console.log('A mandrill error occurred: ' + e.name + ' - ' + e.message);
+		});
+	}
 }
 
 

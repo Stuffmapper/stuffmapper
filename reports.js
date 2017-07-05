@@ -147,8 +147,9 @@ function startReportJob() {
 		var to = {
 			'Stuffmapper': 'support@stuffmapper.com',
 			'Benjamin Zuercher': 'bbzuercher1@gmail.com',
-			'Christine Day': 'good4artseattle@gmail.com'
-			// 'Arsalan Bilal': 'mabc224@gmail.com'
+			'Christine Day': 'good4artseattle@gmail.com',
+			// 'Arsalan Bilal': 'mabc224@gmail.com',
+			'Swathi Shastry': 'swathishastry@gmail.com'
 		};
 		Object.keys(to).forEach(function (e) {
 			emailTo.push({

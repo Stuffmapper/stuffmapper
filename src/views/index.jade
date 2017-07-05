@@ -66,6 +66,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		else
 			base(href="/")
 			if config.subdomain == 'https://www.stuffmapper.com'
+				meta(name='description', content='Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
+				meta(property='og:title', content='Stuffmapper')
+				meta(name='og:description', content='Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
 				//- Hotjar Tracking Code for www.stuffmapper.com
 				script.
 					(function(h,o,t,j,a,r){
@@ -371,14 +374,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									| &nbsp; Check your SMS messages for the confirmation code to verify your account.
 								hr
 							div.sm-full-width.checkbox.checkbox-info#sign-up-phone-confirm-terms
-								input(type='checkbox', value='', ng-click="signUpPhoneConfirmTermsKeyUp()")
-								label
+								input#sign-up-phone-confirm-terms-label(type='checkbox', value='', ng-click="signUpPhoneConfirmTermsKeyUp()")
+								label(for="sign-up-phone-confirm-terms-label")
 									|	<span style="cursor: text;">I agree to </span><a href="/useragreement" target="_blank">terms & conditions</a>.
-								//label
-								//	input(type='checkbox', value='', ng-click="signUpPhoneConfirmTermsKeyUp()")
-								//	span.cr
-								//		i.cr-icon.glyphicon.glyphicon-ok
-								//	|             <span style="cursor: text;">I agree to </span><a href="/useragreement" target="_blank">terms & conditions</a>.
 							#sign-up-phone-confirm-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#sm-sign-up-phone-confirm-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign up" ng-click="signUpPhoneConfirm()")
 							//input#sm-sign-up-phone-confirm-button(ng-class="{'sm-button-ghost-light-solid' : signUpPhoneConfirmForm.phone_number.$invalid, 'sm-button-default' : signUpPhoneConfirmForm.phone_number.$valid}").sm-button.sm-text-l.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign up" ng-click="signUpPhoneConfirm()")
@@ -393,7 +391,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								i.input-help-text
 									| &nbsp; Check your SMS messages for your sign in code.
 							#sign-in-phone-confirm-error-warning-container(style="width:100%;display:block;position:relative;")
-							input#sm-sign-in-phone-confirm-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign in" ng-click="signInPhoneConfirm()")
+							input#sm-sign-in-phone-confirm-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Sign in" ng-click="signInPhoneConfirm()")
 						#sign-up-step.modal-step.animate-250.hidden-modal
 							h2.sm-modal-title Sign Up
 							.modal-back-button(ng-click="signUpBack()")
@@ -484,7 +482,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									li You'll get timely alerts from messaging
 									li It's an easier and more secure way to log in.
 									li Verifies identity, making Stuffmapper safer for everyone.
-
 							b.sm-text-m.sm-full-width Enter your phone number to continue.
 							div.sm-full-width
 								label.input-label.sm-full-width.sm-text-m(for='phone-update-modal-field', style="padding-bottom: 0;margin: 15px 2px 0px;") phone number
@@ -495,6 +492,96 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 									| &nbsp; You'll verify your account and receive notifications through SMS.
 							#phone-update-modal-error-warning-container(style="width:100%;display:block;position:relative;")
 							input#phone-update-modal-update-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-ghost-light-solid.sm-button-full-width(style="position: absolute;bottom: 0px;" type="button" value="Continue" ng-click="updatePhone();")
+						#phone-update-confirm-modal-step.modal-step.animate-250.hidden-modal
+							h2.sm-modal-title Complete sign in
+							.modal-back-button(ng-click="phoneUpdateModalBack()")
+							label.input-label.sm-full-width.sm-text-m(for='sign-up-phone-confirm-code', style="padding-bottom: 0;margin: 15px 22px 0px;") confirmation code:
+							input#phone-update-confirm-code.sm-text-input.sm-text-m.sm-text-input-full-width(ng-keyup="updatePhoneVerificationKeyUp()",type="text" placeholder="######", style="margin: 0px 20px;", minlength="6", maxlength="6", ui-keypress="{enter:'updatePhoneVerification()'}", pattern="[0-9]*")
+							div.sm-full-width.sm-text-s
+								span(class="fa fa-info-circle info-icon",aria-hidden="true")
+								i.input-help-text
+									| &nbsp; Check your SMS messages for the confirmation code to verify your account.
+							#phone-update-confirm-error-warning-container(style="width:100%;display:block;position:relative;")
+							input#phone-update-confirm-modal-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Continue" ng-click="updatePhoneVerification()")
+			#user-setting-phone-update-modal.modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('user-setting-phone-update-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#user-setting-phone-update-confirm-modal-step.modal-step.animate-250.active
+							h2.sm-modal-title Update phone #
+							label.input-label.sm-full-width.sm-text-m(for='user-setting-phone-update-confirm-code', style="padding-bottom: 0;margin: 15px 22px 0px;") confirmation code:
+							input#user-setting-phone-update-confirm-code.sm-text-input.sm-text-m.sm-text-input-full-width(ng-keyup="userSettingPhoneVerificationCodeKeyUp()",type="text" placeholder="######", style="margin: 0px 20px;", minlength="6", maxlength="6", ui-keypress="{enter:'userSettingPhoneVerificationCode()'}", pattern="[0-9]*")
+							div.sm-full-width.sm-text-s
+								span(class="fa fa-info-circle info-icon",aria-hidden="true")
+								i.input-help-text
+									| &nbsp; Check your SMS messages for the confirmation code to verify your account.
+							#user-setting-phone-update-confirm-error-warning-container(style="width:100%;display:block;position:relative;")
+							input#user-setting-phone-update-confirm-modal-button.sm-button.sm-button-default.sm-text-l.sm-button-ghost-light-solid.sm-button-full-width(style="bottom: 0px;text-align: center;position: absolute;", type="button" value="Continue" ng-click="userSettingPhoneVerificationCode()")
+			#add-accounts-update-modal.modal-window.update-social-news-letter-modal-window.modal-window-hidden.animate-500
+				.modal-header
+				.modal-close(ng-click="hideModal('add-accounts-update-modal')")
+					i.fa.fa-close
+				.sm-modal-content
+					.modal-steps
+						#add-accounts-update-step.modal-step.animate-250.active
+							h2.sm-modal-title.animate-250 Add accounts
+							div.update-social-news-letter
+								p
+									b Account Confirmed
+								| You can use your phone number <b ng-bind="user.phone_number"></b> to access your account in future.
+								br
+								p(style="margin: 10px 0 10px")
+									| You can also add your Google, Facebook, or email account if you want the ability sign in using those options. <b>You can also add them later in your profile settings</b>.
+							.container-fluid
+								span(ng-form="addAccountForm", novalidate)
+									.form-group
+									label.control-label.input-label.requiredField
+										| Connect Accounts
+									p
+										button.btn.btn-lg.btn-block(type='button', ng-click="googleOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;", ng-show="!user.google_id")
+											i.fa.fa-google-plus-square.pull-left(style="color: white")
+											|  <span style="color: white">&nbsp;Connect to Google</span>
+										button.btn.btn-lg.btn-block(type='button', style="border-radius: 0px;height:52px; background-color: #dd4b39;", ng-show="user.google_id")
+											i.fa.fa-google-plus-square.pull-left(style="color: white")
+											|  <span style="color: white">&nbsp;Connected</span>
+									p
+										button.btn.btn-lg.btn-block(type='button', ng-click="facebookOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;margin-top:15px", ng-show="!user.facebook_id")
+											i.fa.fa-facebook-square.pull-left(style="color: white")
+											|  <span style="color: white">&nbsp;Connect to Facebook</span>
+										button.btn.btn-lg.btn-block(type='button', style="border-radius: 0px;height:52px; background-color: #4966b6;margin-top:15px", ng-show="user.facebook_id")
+											i.fa.fa-facebook-square.pull-left(style="color: white")
+											|  <span style="color: white">&nbsp;Connected</span>
+									.form-group
+										label.control-label.input-label.requiredField(for='add-accounts-update-email')
+											| Email address
+										input#add-accounts-update-email.form-control.sm-text-input.sm-text-m(ng-model="user.email",name="email" placeholder='example@stuffmapper.com', type='text',ng-pattern="emailPattern")
+										//span#add-accounts-email-progress(class="fa fa-exclamation-circle warning-icon help-block",aria-hidden="true", ng-show="(user.email.length != 0")
+										//	i.input-help
+										//		| &nbsp; You still need to verify that this is your email address. Check your email for verification link.
+										span#add-accounts-email-invalid(class="fa fa-times-circle-o danger-icon help-block", aria-hidden="true",ng-show="addAccountForm.email.$error.pattern")
+											i.input-help
+												| &nbsp; Email address is invalid.
+									.checkbox.checkbox-info
+										input#add-accounts-email-news.styled(type='checkbox', checked='',ng-model="user.news_letter")
+										label(for='add-accounts-email-news')
+											| Receive news and announcements from Stuffmapper
+									.form-group
+										div#add-accounts-warning-container
+									.form-group
+										div.text-center
+											input#add-accounts-button1.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;position: absolute;max-width: 370px;", value="I'll do this later!", data-ng-click='closeAddAccount();', ng-if="!addAccountForm.$dirty")
+											//input#add-accounts-button2.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;", value="Done!",data-ng-click='updateAddAccount();', ng-if="addAccountForm.$dirty && (settings.email == null)?false:settingForm.email.$valid")
+											input#add-accounts-button3.btn.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="bottom: 0px;text-align: center;margin: 0px 0px 15px 0px;position: absolute;max-width: 370px;", value="Done!",data-ng-click='updateAddAccount();', ng-if="addAccountForm.$dirty || user.google_id || user.facebook_id")
+			#dibs-info-modal.modal-window.modal-window-hidden.animate-250
+				.modal-header
+				.sm-modal-content
+					h2.sm-modal-title.animate-250 Dibs stuff to get it!
+					#dibs-info-modal-container.step-container
+						#dibs-info-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%; text-align: left;")
+							| Want this? Exchanges begin with Dibs.<br /><br />Dibs to hide stuff from everyone else on map and get exclusive communication with lister to complete exchange of item. If applicable, you will be automatically refunded if your Dibs is rejected or your Dibs is unfulfilled by the lister. <br />[For more on refunds see <a href="/faq#sm-faq-refund-policy" target="_blank">FAQ</a>]
+						button#dibs-info-modal-button.sm-button.sm-button-default.sm-text-m.sm-button-full-width(style="position: absolute;bottom: 0px;" type="button") Ok
 			#undibs-confirm-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header
 				.sm-modal-content
@@ -589,15 +676,15 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				//- li
 				//- 	i.fa.fa-clock-o
 				//- 	span(ng-click="secureState('stuff.my.watchlist')") Watchlist
-				li(ui-sref="stuff.get")
-					i.fa.fa-home
-					span Home
+				//li(ui-sref="stuff.get")
+				//	i.fa.fa-home
+				//	span Home
 				li(ui-sref="about")
 					i.fa.fa-rocket
 					span About Us
 				li(ng-click="secureState('stuff.my.settings')")
 					i.fa.fa-cog
-					span Settings
+					span Profile & Settings
 				li(ng-click="openLockScreen()")
 					i.fa.fa-graduation-cap
 					span Tutorial
@@ -635,7 +722,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			//- 		span Watchlist
 			li.side-menu-item
 				a.side-menu-link(ng-click="secureState('stuff.my.settings');toggleSideMenu();")
-					.side-menu-icon.fa.fa-wrench
+					.side-menu-icon.fa.fa-cog
 					span Profile & Settings
 			li.side-menu-item
 				a.side-menu-link(ng-click="toggleSideMenu();openLockScreen()")
@@ -644,7 +731,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			li.side-menu-item
 				a.side-menu-link(ui-sref="faq", ng-click="toggleSideMenu()")
 					.side-menu-icon.fa.fa-question
-					span FAQ/Help
+					span FAQ
 			li#side-menu-logout.side-menu-item(style="display:none;")
 				a.side-menu-link(ng-click="logout(); toggleSideMenu();")
 					.side-menu-icon.fa.fa-sign-out

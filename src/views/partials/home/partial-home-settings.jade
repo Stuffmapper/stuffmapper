@@ -1,51 +1,182 @@
 .settings(style="pointer-events: all")
 	.success All changes have been saved!
 	.settings-header
-		h1 Your profile &amp; settings
-	form.settings-form(data-ng-submit='save({users: users})' name="userSettings" novalidate)
-		ul.edit-profile(data-ng-cloak)
-			p.sm-text-input-full-width Username
-			li
-				input#setting-uname.sm-text-input.sm-text-input-full-width(name="uname" type='text', data-ng-model='users.uname', placeholder='{{ users.uname }}' data-ng-required="true")
-			p.sm-text-input-full-width Phone #
-			li.sm-full-width
-				input#setting-phone.sm-text-input.sm-text-input-full-width(name="phone" type="text", data-initial-country="us", ng-intl-tel-input, data-ng-required="true")
-			p.sm-text-input-full-width Email
-			li
-				input#setting-email.sm-text-input.sm-text-input-full-width(name="email" type='email', data-ng-model='users.email', placeholder='{{ users.email }}' data-ng-required="true")
-			#setting-error-warning-container(style="width:100%;display:block;position:relative;")
-			input.sm-button.sm-button-default.sm-button-full-width.sm-text-m(type='submit' value="Update Profile" data-ng-click='update(users); showSuccess()')
-			//-
-				br
-				p.sm-text-input-full-width First Name
-				li
-					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
-				p.sm-text-input-full-width Last Name
-				li
-					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
-				p.sm-text-input-full-width Address
-				li
-					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
-				p.sm-text-input-full-width City
-				li
-					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
-				p.sm-text-input-full-width State
-				li
-					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
-				p.sm-text-input-full-width Zipcode
-				li
-					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.zip_code', placeholder='{{ users.zip_code }}')
-				p.sm-text-input-full-width Country
-				li
-					input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
-				li
-					#sm-settings-google.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
-						img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
-						span.social-sign-in-text.sm-text-s Connect to Google
-				li
-					#sm-settings-facebook.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
-						img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
-						span.social-sign-in-text.sm-text-s Connect to Facebook
+		h1.input-label Profile &amp; Settings
+	.container-fluid
+		span(ng-form="settingForm", novalidate)
+			.form-group
+				label.control-label.input-label.requiredField(for='setting-uname')
+					| Username
+					span.asteriskField
+						| &nbsp;*
+				input#setting-uname.form-control.sm-text-input.sm-text-m(ng-model="settings.uname", name="uname", type='text', required)
+				span#setting-uname-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="!settings.uname")
+					i.input-help
+						| &nbsp; You must enter a username.
+			.form-group
+				label.control-label.input-label.requiredField(for='setting-phone')
+					| Phone #
+					span.asteriskField
+						| &nbsp;*
+				input#setting-phone.form-control.sm-text-input.sm-text-m(ng-model="settings.phone_number", name="phone" placeholder='(###) ###-####',ng-keyup="checkValidPhone(settings.phone_number)", type='tel', required)
+				span#setting-phone-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settingForm.phone.$error.required")
+					i.input-help
+						| &nbsp; You must enter a valid phone #.
+				span#setting-phone-verified(class="fa fa-check-circle success-icon help-block",aria-hidden="true",ng-show="settings.verified_phone")
+					i.input-help
+						| &nbsp; Your mobile phone number has been verified
+				span#setting-phone-progress(class="fa fa-info-circle info-icon help-block",aria-hidden="true",ng-hide="settings.verified_phone")
+					i.input-help
+						| &nbsp; You will need to verify any changes made to your phone number via SMS.
+			.form-group
+				label.control-label.input-label.requiredField(for='setting-email')
+					| Email address
+				input#setting-email.form-control.sm-text-input.sm-text-m(ng-model="settings.email",name="email" placeholder='example@stuffmapper.com', type='text',ng-pattern="emailPattern",ng-keyup="checkValidEmail(settings.email)")
+				span#setting-email-required(class="fa fa-times-circle-o danger-icon help-block", aria-hidden="true",ng-show="settingForm.email.$error.pattern")
+					i.input-help
+						| &nbsp; Email address is invalid.
+				span#setting-email-error(class="fa fa-times-circle-o danger-icon help-block",aria-hidden="true",ng-show="settings.email.length == 0")
+					i.input-help
+						| &nbsp; Email address is empty (optional).
+				span#setting-email-progress(class="fa fa-exclamation-circle warning-icon help-block",aria-hidden="true",ng-show="!settings.verified_email && settings.email.length")
+					i.input-help
+						| &nbsp; You still need to verify that this is your email address. Check your email for verification link.
+				span#setting-email-verifiied(class="fa fa-check-circle success-icon help-block",aria-hidden="true",ng-show="settings.verified_email")
+					i.input-help
+						| &nbsp; Your email has been verified.
+			.checkbox.checkbox-info
+				input#setting-news.styled(type='checkbox', checked='',ng-model="settings.news_letter")
+				label(for='setting-news')
+					| Receive news and announcements from Stuffmapper
+			.form-group
+				label.control-label.input-label.requiredField(for='setting-phone')
+					| Connected Accounts
+				.btn-toolbar
+					button.btn.btn-lg.pull-left(type='button', ng-click="googleOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%; border: 1px solid #DD4B39;", ng-show="!settings.google_id")
+						i.fa.fa-google-plus-square(style="color: white")
+						|  <span style="color: white">&nbsp;Google</span>
+					button.btn.btn-lg.pull-left(type='button', style="border-radius: 0px;height:52px; background-color:#dd4b39;width: 46%;", ng-show="settings.google_id")
+						i.fa.fa-google-plus-square(style="color: white")
+						|  <span style="color: white">&nbsp;Connected</span>
+					button.btn.btn-lg.pull-right(type='button', ng-click="facebookOAuth()", style="border-radius: 0px;height:52px; background-color: #AAB2BE;width: 46%;border: 1px solid #4966B6;", ng-show="!settings.facebook_id")
+						i.fa.fa-facebook-square(style="color: white")
+						|  <span style="color: white">&nbsp;Facebook</span>
+					button.btn.btn-lg.pull-right(type='button', style="border-radius: 0px;height:52px; background-color:#4966b6;width: 46%;", ng-show="settings.facebook_id")
+						i.fa.fa-facebook-square(style="color: white")
+						|  <span style="color: white">&nbsp;Connected</span>
+				span#social-button-help-text(class="fa fa-info-circle info-icon help-block",aria-hidden="true")
+					i.input-help
+						| &nbsp; Lets you sign in with other services
+			.form-group
+				label.control-label.input-label(for='setting-notification')
+					| Notification settings
+				select#setting-notification.select.form-control(ng-model="settings.notification_id",ng-change="notificationChange()" style="width:100%;height: 38px; font-size: 16px;")
+					option(value='1')
+						| SMS only
+					option(value='2', ng-show="settings.verified_email && settings.verified_phone")
+						| SMS and email
+					option(value='5')
+						| Custom settings
+				span.hidden#setting-notification-info(class="fa fa-info-circle info-icon help-block",aria-hidden="true")
+					i.input-help
+						| &nbsp; Customize your notification settings below, or choose a method for all notifications.
+			div#setting-notification-custom(ng-show="settings.notification_id=='5'")
+				.form-group
+					label.control-label.input-label(for='setting-notification-message')
+						| When I receive a chat message
+					select#setting-notification-message.select.form-control(ng-model="settings.chat_message_notify", style="width:100%;height: 38px; font-size: 16px;")
+						option(value='1')
+							| SMS only
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
+							| SMS and email
+				.form-group
+					label.control-label.input-label(for='setting-notification-item-listed')
+						| When my item has been listed
+					select#setting-notification-item-listed.select.form-control(ng-model="settings.item_listed_notify", style="width:100%;height: 38px; font-size: 16px;")
+						option(value='1')
+							| SMS only
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
+							| SMS and email
+						option(value='3', ng-show="settings.verified_email")
+							| Email only
+						option(value='4')
+							| No notification
+				.form-group
+					label.control-label.input-label(for='setting-notification-dib-cancel')
+						| If a Dibber cancels their Dibs on my item
+					select#setting-notification-dib-cancel.select.form-control(ng-model="settings.dibs_cancel_notify", style="width:100%;height: 38px; font-size: 16px;")
+						option(value='1')
+							| SMS only
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
+							| SMS and email
+						option(value='3', ng-show="settings.verified_email")
+							| Email only
+				.form-group
+					label.control-label.input-label(for='setting-notification-dib-reject')
+						| If my Dibs is rejected
+					select#setting-notification-dib-reject.select.form-control(ng-model="settings.dibs_reject_notify", style="width:100%;height: 38px; font-size: 16px;")
+						option(value='1')
+							| SMS only
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
+							| SMS and email
+						option(value='3', ng-show="settings.verified_email")
+							| Email only
+				.form-group
+					label.control-label.input-label(for='setting-notification-dib-expire')
+						| If my Dibs expires
+					select#setting-notification-dib-expire.select.form-control(ng-model="settings.dibs_expire_notify", style="width:100%;height: 38px; font-size: 16px;")
+						option(value='1')
+							| SMS only
+						option(value='2', ng-show="settings.verified_email && settings.verified_phone")
+							| SMS and email
+						option(value='3', ng-show="settings.verified_email")
+							| Email only
+			.form-group
+				div#setting-error-warning-container(ng-bind-html="errorHtml")
+			.form-group
+				div
+					input#setting-button1.sm-button.sm-button-default.sm-text-l.btn-block.sm-button-ghost-light-solid(type='button', style="margin: 0px;", value="Update Profile", data-ng-click='updateUser();', ng-if="!settingForm.$dirty")
+					input#setting-button2.sm-button.sm-button-default.sm-text-l.btn-block(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-if="settingForm.$dirty && (settingForm.uname.$error.required?false:true && (settings.phone_number == null)?false:settings.phone_number.length && (settings.email == null)?false:settingForm.email.$valid)")
+					input#setting-button3.sm-button.sm-button-default.sm-text-l.btn-block.sm-button-ghost-light-solid(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-if="settingForm.$dirty && !(settingForm.uname.$error.required?false:true && (settings.phone_number == null)?false:settings.phone_number.length && (settings.email == null)?false:settingForm.email.$valid)")
+					//input#setting-button4.sm-button.sm-button-default.sm-text-l.btn-block.sm-button-ghost-light-solid(type='button', style="margin: 0px;", value="Update Profile",data-ng-click='updateUser();', ng-class="{'sm-button-ghost-light-solid': settingForm.$dirty && !(settingForm.uname.$error.required?false:true && (settings.phone_number == null)?false:settings.phone_number.length && (settings.email == null)?false:settingForm.email.$valid)}")
+					//button.btn.btn-primary(name='submit', type='submit', value='Update Profile', data-ng-click='update(users); showSuccess()')
+						| Submit
+				//.form-group
+				//	div
+				//		input.sm-button.sm-button-default.sm-button-full-width.sm-text-m(type='submit',value="Update Profile",data-ng-click='update(users); showSuccess()')
+						//button.btn.btn-primary(name='submit', type='submit', value='Update Profile', data-ng-click='update(users); showSuccess()')
+							| Submit
+				//-
+					br
+					p.sm-text-input-full-width First Name
+					li
+						input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.fname', placeholder='{{ users.fname }}')
+					p.sm-text-input-full-width Last Name
+					li
+						input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.lname', placeholder='{{ users.lname }}')
+					p.sm-text-input-full-width Address
+					li
+						input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.address', placeholder='{{ users.address }}')
+					p.sm-text-input-full-width City
+					li
+						input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.city', placeholder='{{ users.city }}')
+					p.sm-text-input-full-width State
+					li
+						input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.state', placeholder='{{ users.state }}')
+					p.sm-text-input-full-width Zipcode
+					li
+						input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.zip_code', placeholder='{{ users.zip_code }}')
+					p.sm-text-input-full-width Country
+					li
+						input.sm-text-input.sm-text-input-full-width(type='text', data-ng-model='users.country', placeholder='{{ users.country }}')
+					li
+						#sm-settings-google.sign-in-up-input.social-button.google-plus-sign-in(ng-click="googleOAuth()")
+							img.social-sign-in-icon.social-sign-in-icon-google(src="img/google-g-logo.svg")
+							span.social-sign-in-text.sm-text-s Connect to Google
+					li
+						#sm-settings-facebook.sign-in-up-input.social-button.facebook-sign-in(ng-click="facebookOAuth()")
+							img.social-sign-in-icon.social-sign-in-icon-facebook(src="img/facebook-f-logo.svg")
+							span.social-sign-in-text.sm-text-s Connect to Facebook
 
 		//- ul.connections 
 		//- 	li 
@@ -61,4 +192,4 @@
 		//- 			span.social-sign-in-icon.social-sign-in-icon-facebook
 		//- 				i.fa.fa-facebook
 		//- 			span.social-sign-in-text Connect to Facebook
-		//- 	
+		//-

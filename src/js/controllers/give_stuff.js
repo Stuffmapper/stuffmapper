@@ -201,7 +201,7 @@ function GiveController() {
 								fd.append('lng', $scope.lng);
 								fd.append('test', $('#give-image-canvas-uploader')[0].toDataURL());
 								//fd.append('original', reader.result);
-								fd.append('category', ($scope.category==="General"?7:$scope.category));
+								fd.append('category', ($("#give-category-selector option:selected").text()==="Choose a category..."?7:$scope.category));
 								$http.post(config.api.host+'/api/v'+config.api.version+'/stuff', fd, {
 									transformRequest: angular.identity,
 									headers: {'Content-Type': undefined}

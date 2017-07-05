@@ -36,7 +36,13 @@ CREATE TABLE users (
 	state varchar(32),
 	zip_code varchar(10),
 	address varchar(64),
-	braintree_token text
+	braintree_token text,
+	notification_id integer REFERENCES notifications(id) default 1,
+	chat_message_notify integer REFERENCES notifications(id) default 1,
+	item_listed_notify integer REFERENCES notifications(id) default 1,
+	dibs_cancel_notify integer REFERENCES notifications(id) default 1,
+	dibs_reject_notify integer REFERENCES notifications(id) default 1,
+	dibs_expire_notify integer REFERENCES notifications(id) default 1
 );
 
 CREATE TABLE ip_addresses (
@@ -221,6 +227,20 @@ INSERT INTO categories (category) VALUES
 ('General'),
 ('Kids & Babies'),
 ('Recreation');
+
+CREATE TABLE notifications (
+	id BIGSERIAL PRIMARY KEY,
+	type varchar(32) NOT NULL
+);
+
+INSERT INTO notifications (type) VALUES
+('SMS only'),
+('SMS and email'),
+('Email only'),
+('No notification'),
+('Custom settings');
+
+
 
 -- INSERT INTO event_message (message) VALUES
 -- ('{{title}} was dibs\'d by {{dibber}}'),
