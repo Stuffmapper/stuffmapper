@@ -661,7 +661,7 @@ function MainController() {
 						// });
 					});
 				}
-				if (!data.res.user.phone_number || data.res.user.verified_phone) {
+				if (!data.res.user.phone_number || !data.res.user.verified_phone) {
 					$u.modal.open('phone-update-modal');
 					if(data.res.phone_number){
 						$("#phone-update-modal-field").intlTelInput("setNumber", data.res.phone_number);

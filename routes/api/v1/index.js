@@ -1046,7 +1046,7 @@ router.post('/account/login', function(req, res, next) {
 	})(req, res, next);
 });
 
-router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
+router.post('/account/login/phone/update', function (req, res) {
 	var query = [
 		'select * from users',
 		'WHERE phone_number = $1'
@@ -1090,7 +1090,7 @@ router.post('/account/login/phone/update',isAuthenticated, function (req, res) {
 	});
 });
 
-router.post('/account/login/phone/update/code',isAuthenticated, function (req, res) {
+router.post('/account/login/phone/update/code', function (req, res) {
 	var phone_number = req.body.phone_number;
 	var email = req.body.email;
 	var phone_token = req.body.phone_token;
