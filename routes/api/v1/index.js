@@ -1049,9 +1049,9 @@ router.post('/account/login', function(req, res, next) {
 router.post('/account/login/phone/update', function (req, res) {
 	var query = [
 		'select * from users',
-		'WHERE phone_number = $1'
+		'WHERE phone_number = $1 and not email = $2'
 	].join(' ');
-	queryServer(res, query, [req.body.phone_number], function (result) {
+	queryServer(res, query, [req.body.phone_number, req.body.email], function (result) {
 		if (result.rows.length == 0) {
 			query = [
 				'UPDATE users SET phone_number = $1, verify_phone_token = $2',

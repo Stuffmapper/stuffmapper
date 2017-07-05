@@ -632,6 +632,7 @@ function MainController() {
 				$userData.setEmail(data.res.user.email);
 				$userData.setPhone(data.res.user.phone_number);
 				$scope.user = data.res.user;
+				// $u.modal.close('sign-in-up-modal');
 				$scope.hideModal('sign-in-up-modal');
 				location.hash = '';
 				if (!$scope.redirectState) $state.reload();
@@ -840,6 +841,7 @@ function MainController() {
 							$u.modal.open('add-accounts-update-modal');
 							localStorage.setItem('firstTime', false);
 						} else {
+							$u.modal.close('sign-in-up-modal');
 							$u.toast('Welcome!');
 						}
 					} else if (!data.res.verified_phone) {
