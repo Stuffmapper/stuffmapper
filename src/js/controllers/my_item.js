@@ -174,13 +174,13 @@ function MyItemsController() {
 					].join('\n'));
 
 					$scope.detailsContainer.html([
-						((!data.res.attended)?'<div class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':''),
+						((!$scope.listItem.attended)?'<div id="get-item-is-unattended" class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':'<div id="get-item-is-unattended" class="get-item-is-unattended sm-full-width" style="display:none; text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>'),
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
 						($scope.listItem.type === 'dibber')?'<button id="my-item-undibs-big'+$stateParams.id+'" class=" sm-button sm-text-l sm-button-ghost sm-button-ghost-solid sm-button-negative sm-button-full-width animate-250">unDibs</button>':'',
-						($scope.listItem.dibbed && data.res.attended && $scope.listItem.type === 'dibber')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the lister. Send a message to learn exact location, time to meet, etc.</div>':'',
-						($scope.listItem.dibbed && data.res.attended && $scope.listItem.type === 'lister')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the Dibber.</div>':'',
-						($scope.listItem.dibbed || !data.res.attended)?'<button id="my-item-complete-body'+$stateParams.id+'" class="sm-button sm-text-l sm-button-positive sm-button-full-width" style="color:#fff;">Mark as Picked Up</button>':'',
+						($scope.listItem.dibbed && $scope.listItem.attended && $scope.listItem.type === 'dibber')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the lister. Send a message to learn exact location, time to meet, etc.</div>':'',
+						($scope.listItem.dibbed && $scope.listItem.attended && $scope.listItem.type === 'lister')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the Dibber.</div>':'',
+						($scope.listItem.dibbed || !$scope.listItem.attended)?'<button id="my-item-complete-body'+$stateParams.id+'" class="sm-button sm-text-l sm-button-positive sm-button-full-width" style="color:#fff;">Mark as Picked Up</button>':'',
 						// ((!$scope.listItem.attended)?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Click the map below to find your stuff!</div>':''),
 						($scope.listItem.type === 'lister' && !$scope.listItem.dibbed && $scope.listItem.attended)?'<div class="sm-text-s sm-full-width">You will be notified when someone Dibs your stuff!</div>':'',
 						((!$scope.listItem.attended)?'<a href="https://maps.google.com/maps?q='+$scope.listItem.lat+','+$scope.listItem.lng+'" target="_blank"><img style="width: 100%;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" /></a>':'<img style="width: 100%; padding-top: 10px;" src="'+$scope.googleMapStaticUrl.replace('{lat}', $scope.listItem.lat).replace('{lng}', $scope.listItem.lng)+'" />'),
@@ -340,7 +340,7 @@ function MyItemsController() {
 								$scope.listItem.category_id = values.category;
 								$scope.listItem.category = $('#edit-item-category option:selected').text();
 								$scope.listItem.dateEdited = dateFormat(new Date(), "ddd, mmm d, h:MM TT");
-								$scope.listItem.attended = $('#edit-item-outside').is(':checked')?false:true
+								$scope.listItem.attended = $('#edit-item-outside').is(':checked')?false:true;
 							}
 							$u.toast('Changes have been saved.');
 							$('#my-item-header-text').text(values.title);
@@ -350,6 +350,12 @@ function MyItemsController() {
 							//$('#get-item-single-'+$stateParams.id+' div a').attr('href', 'https://maps.google.com/maps?q='+values.lat+','+values.lng);
 							$('#get-item-single-'+$stateParams.id+' div a img').attr('src', 'https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C'+values.lat+','+values.lng+'&key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U');
 							$('#get-item-single-'+$stateParams.id+' div .my-item-update').text('Item last updated on '+$scope.listItem.dateEdited);
+							if ($('#edit-item-outside').is(':checked')) {
+								$('#get-item-is-unattended').css({'display': ''})
+							} else {
+								$('#get-item-is-unattended').css({'display': 'none'})
+							}
+
 							if(imageSet) {
 								$('#my-item-single-container-'+$stateParams.id).attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
 								$('#post-item-'+$stateParams.id+' img').attr('src', $('#give-image-canvas-uploader')[0].toDataURL());
