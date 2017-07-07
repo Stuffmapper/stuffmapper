@@ -383,6 +383,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 								Body: data,
 								ContentEncoding: 'base64',
 								ContentType:'image/png',
+								CacheControl: 'max-age=86400',
 								ACL: 'public-read'
 							}, function(err, data) {
 								if (err) {
@@ -491,6 +492,7 @@ router.post('/stuff/:id', isAuthenticated, function(req, res) {
 							Body: data,
 							ContentEncoding: 'base64',
 							ContentType:'image/png',
+							CacheControl: 'max-age=86400',
 							ACL: 'public-read'
 						}, function(err, data) {
 							if (err) {
