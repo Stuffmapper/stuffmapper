@@ -22,6 +22,8 @@ var multerS3 = require('multer-s3');
 var braintree = require('braintree');
 var proxy = require('express-http-proxy');
 var _ = require('lodash');
+var gzipStatic = require('connect-gzip-static');
+var compression = require('compression');
 var sms = require('./routes/api/v1/config/sms');
 var pg = require('pg');
 var pgUser = config.db.user;
@@ -92,11 +94,10 @@ app.use(logger('dev'));
 app.use(bodyParser.json({ limit: '15mb', type: 'application/vnd.api+json' }));
 app.use(methodOverride());
 app.use(bodyParser.urlencoded({ limit: '15mb', extended: true }));
-app.use('/', express.static(path.join(__dirname, 'favicons')));
-app.use('/', express.static(path.join(__dirname, 'web')));
-
+app.use('/', gzipStatic(path.join(__dirname, 'favicons')));
+app.use('/', gzipStatic(path.join(__dirname, 'web')));
+app.use(compression());
 require(path.join(__dirname, '/routes/api/v1/config/passport'));
-
 app.use(passport.initialize());
 app.use(passport.session());
 

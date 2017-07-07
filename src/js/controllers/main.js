@@ -204,7 +204,6 @@ function MainController() {
 			$userData.setPhoneVerified(data.res.user.verified_phone);
 			$userData.setEmailVerified(data.res.user.verified_email);
 			$scope.user = data.res.user;
-			console.log(JSON.stringify($scope.user));
 
 		}
 		if(data.res && data.res.messages) {
@@ -976,7 +975,9 @@ function MainController() {
 		.success(function(data) {
 			$('html').removeClass('loggedIn');
 			$userData.setLoggedIn(false);
-			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
+			/* var patternRe = /\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/; */
+			var pattern = /\/stuff\/(give|mine|settings|messages|messages|watchlist|)/;
+			if (patternRe.test($location.$$path)) {
 				$state.go('stuff.get');
 				$state.reload();
 				$u.toast('You\'ve been logged out. See you next time, <i>'+$userData.getUserName()+'</i>!');
