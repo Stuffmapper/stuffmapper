@@ -117,17 +117,18 @@ gulp.task('jade', function(done) {
 
 gulp.task('images', function(done){
 	gulp.src('./src/img/**/*')
-	.pipe(imagemin([
-		imagemin.gifsicle({interlaced: true}),
-		imagemin.jpegtran({progressive: true}),
-		imagemin.optipng({optimizationLevel: 5}),
-		imagemin.svgo({plugins: [{removeViewBox: true}]})
-	]))
+	.pipe(imagemin())
 	.pipe(multistream(
 		gulp.dest('./web/img'),
 		gulp.dest('./www/img'),
 		gulp.dest('./electron/img')
 	)).on('end', done);
+	// [
+	// 	imagemin.gifsicle({interlaced: true}),
+	// 	imagemin.jpegtran({progressive: true}),
+	// 	imagemin.optipng({optimizationLevel: 5}),
+	// 	imagemin.svgo({plugins: [{removeViewBox: true}]})
+	// ]
 	// gulp.src('./src/js/lib/intl-tel-input/build/img/*', {base: './src/js/lib/intl-tel-input/build/img'})
 	// 	.pipe(multistream(
 	// 		gulp.dest('./web/img'),
@@ -152,9 +153,8 @@ gulp.task('jsConcat', function() {
 			'./src/js/lib/masonry/dist/masonry.pkgd.js',
 			'./src/js/lib/swiper/dist/js/swiper.min.js',
 			'./src/js/lib/isotope/dist/isotope.pkgd.min.js',
-			'./src/js/lib/intl-tel-input/build/js/utils.js',
 			'./src/js/lib/intl-tel-input/build/js/intlTelInput.min.js',
-			/*'./src/js/lib/fancyBox/dist/jquery.fancybox.min.js',*/
+			'./src/js/lib/fancyBox/dist/jquery.fancybox.min.js',
 			'./src/js/lib/select2/dist/js/select2.full.min.js',
 			'./src/js/lib/javascript-load-image/js/load-image.all.min.js',
 			'./src/js/app.js',
@@ -172,7 +172,22 @@ gulp.task('jsConcat', function() {
 			gulp.dest('./www/js'),
 			gulp.dest('./electron/js')
 		))
-		//.on('end', done);
+		.on('end', function () {
+			gulp.src('./src/js/lib/intl-tel-input/build/js/utils.js')
+				.pipe(uglify())
+				.pipe(rename('utils.min.js'))
+				.pipe(multistream(
+					gulp.dest('./web/js'),
+					gulp.dest('./www/js'),
+					gulp.dest('./electron/js')
+				))
+				.pipe(gzip())
+				.pipe(multistream(
+					gulp.dest('./web/js'),
+					gulp.dest('./www/js'),
+					gulp.dest('./electron/js')
+				))
+		});
 		gulp.src(['./src/js/lib/ionic/**/*','./src/js/lib/ngCordova/dist/*.js'], {base: './src/js/lib/'})
 		.pipe(gulp.dest('./www/lib/'));
 		// gulp.src(['./src/js/lib/animate.css/animate.min.css'])

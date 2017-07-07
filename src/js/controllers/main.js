@@ -24,7 +24,7 @@ function MainController() {
 	$scope.delaySignIn = delaySignIn;
 	$("#sign-in-up-phone-number, #phone-update-modal-field").intlTelInput({
 		getNumberType: "MOBILE",
-		utilsScript: $.fn.intlTelInput.loadUtils("js/lib/intl-tel-input/build/js/utils.js"),
+		utilsScript: $.fn.intlTelInput.loadUtils("js/utils.min.js"),
 		preferredCountries: ["us", "ca"]
 		// separateDialCode: true
 		// autoHideDialCode: false

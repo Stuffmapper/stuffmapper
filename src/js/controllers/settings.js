@@ -9,7 +9,7 @@ function SettingsController() {
 
 	$("#setting-phone").intlTelInput({
 		getNumberType: "MOBILE",
-		utilsScript: $.fn.intlTelInput.loadUtils("js/lib/intl-tel-input/build/js/utils.js"),
+		utilsScript: $.fn.intlTelInput.loadUtils("js/utils.min.js"),
 		preferredCountries: ["us", "ca"]
 	});
 	$(".intl-tel-input").css({ 'width' : ''});
