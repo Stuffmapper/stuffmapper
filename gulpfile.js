@@ -17,6 +17,7 @@ var ngAnnotate = require('gulp-ng-annotate');
 var imagemin = require('gulp-imagemin');
 var clean = require('gulp-clean');
 var merge = require('merge-stream');
+var htmlmin = require('gulp-htmlmin');
 var stage = process.env.STAGE || 'development';
 var config = require('./config')[stage];
 
