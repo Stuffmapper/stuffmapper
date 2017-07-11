@@ -86,6 +86,7 @@ gulp.task('jade', function(done) {
 		pretty : true,
 		doctype: 'html'
 	}))
+	.pipe(htmlmin({collapseWhitespace: true}))
 	.pipe(gulp.dest('./www/'))
 	.on('end', function(){
 		done();
@@ -101,6 +102,7 @@ gulp.task('jade', function(done) {
 		pretty : true,
 		doctype: 'html'
 	}))
+	.pipe(htmlmin({collapseWhitespace: true}))
 	.pipe(gulp.dest('./electron/'));
 
 	gulp.src('./src/views/index.jade')
@@ -112,6 +114,7 @@ gulp.task('jade', function(done) {
 		pretty : true,
 		doctype: 'html'
 	}))
+	.pipe(htmlmin({collapseWhitespace: true}))
 	.pipe(gulp.dest('./web/'));
 });
 

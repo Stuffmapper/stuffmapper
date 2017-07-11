@@ -3,8 +3,8 @@ stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider)
 	/*else*/
 
 	/*$locationProvider.html5Mode(config.html5);*/
-    $locationProvider.html5Mode(true);
-    $urlRouterProvider.otherwise('/stuff/get');
+	$locationProvider.html5Mode(true).hashPrefix('');
+	$urlRouterProvider.otherwise('/stuff/get' );
     $stateProvider
 	.state('stuff', config.providers.stuff)
 	.state('stuff.get', config.providers.getStuff)
