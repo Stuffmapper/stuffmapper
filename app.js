@@ -207,7 +207,20 @@ io.on('disconnect', function(socket) {
     console.log('a user disconnected');
 });
 app.use('/api/v1', require('./routes/api/v1/index'));
-app.use('*', function(req, res) {
+
+// catch 404 and forward to error handler /* can't enable it due to html5 routing on frontend*/
+// app.use(function (req, res, next) {
+//     var err = new Error('Not Found');
+//     return res.status(404).json({error: true, message: err.message });
+// });
+
+// error handler
+app.use(function (err, req, res, next) {
+    if(!err) return next();
+    return res.status(err.statusCode || 500).json({error: true, message: [err.message] || [] });
+});
+
+app.use('/*', function(req, res) {
     res.render('index', {
         loggedIn: req.isAuthenticated(),
         isDev: true,

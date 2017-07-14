@@ -4,7 +4,11 @@ stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider)
 
 	/*$locationProvider.html5Mode(config.html5);*/
 	$locationProvider.html5Mode(true).hashPrefix('');
-	$urlRouterProvider.otherwise('/stuff/get' );
+	$urlRouterProvider.otherwise(function ($injector, $location) {
+		var $state = $injector.get('$state');
+		$state.go('stuff.get');
+	});
+
     $stateProvider
 	.state('stuff', config.providers.stuff)
 	.state('stuff.get', config.providers.getStuff)
