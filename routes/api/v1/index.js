@@ -21,6 +21,7 @@ var pgHost = config.db.host;
 var pgPort = config.db.port;
 var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':'+pgPort+'/'+pgDb;
 var braintree = require('braintree');
+var debug = require('debug')('stuffmapper:routes');
 var AWS = require('aws-sdk');
 AWS.config.update( {
 	accessKeyId     : config.aws.accessKeyId,

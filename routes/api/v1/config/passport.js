@@ -1,4 +1,5 @@
 var passport = require('passport');
+var debug = require('debug')('stuffmapper:passport');
 var GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 var FacebookStrategy = require( 'passport-facebook' ).Strategy;
 var LocalStrategy = require('passport-local').Strategy;

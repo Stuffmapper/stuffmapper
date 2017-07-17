@@ -23,6 +23,7 @@ var braintree = require('braintree');
 var proxy = require('express-http-proxy');
 var _ = require('lodash');
 var gzipStatic = require('connect-gzip-static');
+var debug = require('debug')('stuffmapper:app.js');
 var sms = require('./routes/api/v1/config/sms');
 var pg = require('pg');
 var pgUser = config.db.user;
