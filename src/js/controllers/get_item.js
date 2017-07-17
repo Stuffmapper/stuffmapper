@@ -1,4 +1,4 @@
-stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', '$state', GetItemController]);
+stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', '$state', '$log', GetItemController]);
 function GetItemController() {
 	'use strict';
 	var $scope = arguments[0];
@@ -6,6 +6,7 @@ function GetItemController() {
 	var $stateParams = arguments[2];
 	var $userData = arguments[3];
 	var $state = arguments[4];
+	var $log = arguments[5];
 	var singleItemTemplateMap;
 	$('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
 	$('#filter-container > .filter-content-container').addClass('sm-hidden');

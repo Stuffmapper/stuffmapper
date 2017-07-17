@@ -2,6 +2,7 @@ var stuffControllerArgs = [];
 stuffControllerArgs.push('$scope');
 stuffControllerArgs.push('$userData');
 stuffControllerArgs.push('$http');
+stuffControllerArgs.push('$log');
 if(config.ionic) stuffControllerArgs.push('authenticator');
 stuffControllerArgs.push(StuffController);
 stuffMapp.controller('stuffController', stuffControllerArgs);
@@ -9,7 +10,8 @@ function StuffController() {
 	var $scope = arguments[0];
 	var $userData = arguments[1];
 	var $http = arguments[2];
-	var authenticated = (typeof arguments[3] !== 'function' && typeof arguments[3] !== 'undefined')?arguments[3]:undefined;
+	var $log = arguments[3];
+	var authenticated = (typeof arguments[4] !== 'function' && typeof arguments[4] !== 'undefined')?arguments[3]:undefined;
 
 	if(typeof authenticated !== 'undefined') {
 		// check login

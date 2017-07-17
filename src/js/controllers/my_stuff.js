@@ -1,4 +1,4 @@
-stuffMapp.controller('myStuffController', ['$scope', '$http', '$userData', 'authenticator', '$state', '$sce', MyStuffController]);
+stuffMapp.controller('myStuffController', ['$scope', '$http', '$userData', 'authenticator', '$state', '$sce', '$log', MyStuffController]);
 function MyStuffController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
@@ -6,6 +6,7 @@ function MyStuffController() {
 	var authenticator = arguments[3];
 	var $state = arguments[4];
 	var $sce = arguments[5];
+	var $log = arguments[6];
 
 	$scope.markers = [];
 	if($('#center-marker').hasClass('dropped')) {

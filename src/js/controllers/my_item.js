@@ -2,7 +2,7 @@ var locationOpen = false;
 $('#my-container').css({
 	'overflow':''
 });
-stuffMapp.controller('myItemsController', ['$scope', '$http', 'authenticator', '$stateParams', '$userData', '$state', '$timeout', MyItemsController]);
+stuffMapp.controller('myItemsController', ['$scope', '$http', 'authenticator', '$stateParams', '$userData', '$state', '$timeout', '$log', MyItemsController]);
 function MyItemsController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
@@ -11,6 +11,7 @@ function MyItemsController() {
 	var $userData = arguments[4];
 	var $state = arguments[5];
 	var $timeout = arguments[6];
+	var $log = arguments[7];
 	var data = {};
 	$('#my-stuff-container').addClass('in-my-item');
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(result){

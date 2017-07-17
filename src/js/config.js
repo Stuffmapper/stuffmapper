@@ -1,8 +1,9 @@
-stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider) {
+stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider, $logProvider) {
 	/*if(config.ionic.isIonic || config.electron.isElectron) $urlRouterProvider.otherwise('/login-steps');*/
 	/*else*/
 
 	/*$locationProvider.html5Mode(config.html5);*/
+	$logProvider.debugEnabled(false);
 	$locationProvider.html5Mode(true).hashPrefix('');
 	$urlRouterProvider.otherwise(function ($injector, $location) {
 		var $state = $injector.get('$state');

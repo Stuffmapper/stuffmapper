@@ -1,4 +1,4 @@
-stuffMapp.controller('conversationController', ['$scope', '$http', '$stateParams', '$state', 'authenticator', '$stuffTabs', ConversationController]);
+stuffMapp.controller('conversationController', ['$scope', '$http', '$stateParams', '$state', 'authenticator', '$stuffTabs', '$log', ConversationController]);
 function ConversationController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
@@ -6,6 +6,7 @@ function ConversationController() {
 	var $state = arguments[3];
 	var authenticator = arguments[4];
 	// var $stuffTabs = arguments[5];
+	var $log = arguments[6];
 	var firstMessage = false;
 	$('#my-stuff-container').addClass('in-conversation');
 	function backToEditItem(id) {

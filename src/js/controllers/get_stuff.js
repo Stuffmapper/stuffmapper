@@ -1,10 +1,11 @@
-stuffMapp.controller('getStuffController', ['$scope', '$http', '$state', '$timeout', '$userData', '$stuffTabs', GetStuffController]);
+stuffMapp.controller('getStuffController', ['$scope', '$http', '$state', '$timeout', '$userData', '$stuffTabs', '$log', GetStuffController]);
 function GetStuffController() {
     var $scope = arguments[0];
     var $http = arguments[1];
     var $state = arguments[2];
     var $timeout = arguments[3];
     var $userData = arguments[4];
+    var $log = arguments[6];
 
     $scope.listItems = [];
     $scope.markers = [];

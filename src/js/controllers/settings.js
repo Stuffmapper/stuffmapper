@@ -6,6 +6,7 @@ function SettingsController() {
 	var authenticator = arguments[2];
 	var $state = arguments[3];
 	var $userData = arguments[4];
+	var $log = arguments[5];
 
 	$("#setting-phone").intlTelInput({
 		getNumberType: "MOBILE",

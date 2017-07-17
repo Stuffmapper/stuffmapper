@@ -1,8 +1,9 @@
-stuffMapp.controller('myController', ['$scope', '$state', '$location', MyController]);
+stuffMapp.controller('myController', ['$scope', '$state', '$location', '$log', MyController]);
 function MyController() {
 	var $scope = arguments[0];
 	var $state = arguments[1];
 	var $location = arguments[2];
+	var $log = arguments[3];
 	// var authenticator = arguments[3];
 	// var $http = arguments[4];
 	// $http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){

@@ -1,4 +1,4 @@
-var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window','$stuffTabs'];
+var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window', '$log','$stuffTabs'];
 if (config.ionic.isIonic) {
 	// mainControllerArgs.push('$cordovaOauth');
 	mainControllerArgs.push('$ionicPlatform');
@@ -15,9 +15,11 @@ function MainController() {
 	var $location = arguments[5];
 	var $rootScope = arguments[6];
 	var $window = arguments[7];
-	// var $stuffTabs = arguments[8];
+	var $log = arguments[8];
+	// var $stuffTabs = arguments[9];
+
 	// var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
-	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[10] : undefined;
+	var $ionicPlatform = (typeof arguments[10] !== 'function') ? arguments[10] : undefined;
 	// var $cordovaPush = (typeof arguments[10] !== 'function') ? arguments[12] : undefined;
 	$scope.user = {};
 

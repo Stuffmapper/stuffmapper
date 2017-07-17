@@ -1,4 +1,4 @@
-stuffMapp.controller('giveController', ['$scope', '$http', '$timeout', '$state', '$location', '$stuffTabs', 'authenticator', GiveController]);
+stuffMapp.controller('giveController', ['$scope', '$http', '$timeout', '$state', '$location', '$stuffTabs', 'authenticator', '$log', GiveController]);
 function GiveController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
@@ -7,6 +7,7 @@ function GiveController() {
 	var $location = arguments[4];
 	// var $stuffTabs = arguments[5];
 	var authenticator = arguments[6];
+	var $log = arguments[7];
 	var givePostId = 0;
 	fbq('trackCustom', 'GiveStuff');
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status').success(function(data){
