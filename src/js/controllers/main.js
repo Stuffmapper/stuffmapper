@@ -35,9 +35,7 @@ function MainController() {
 		$('#tab-container .stuff-tabs .'+((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no')))+'-stuff-tab a').addClass('selected');
 	},250);
 
-	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState) {
-		console.log(toState);
-		console.log(fromState);
+/*	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState) {
 		if(window.location.hash == 'signin'){
 			return;
 		} else if(fromState.name == "" && toState.name == 'stuff.get'){
@@ -45,7 +43,7 @@ function MainController() {
 		} else if(fromState.name == "" && toState.name == ''){
 			return;
 		}
-	});
+	});*/
 
 	$rootScope.$on('$locationChangeSuccess', function() {
 		$('#tab-container .stuff-tabs li a').removeClass('selected');

@@ -145,11 +145,11 @@ gulp.task('jsConcat', function() {
 	try {
 		gulp.src([
 			'./src/js/lib/angular/angular.min.js',
+			'./src/js/lib/jquery/dist/jquery.min.js',
 			'./src/js/lib/angular-ui-router/release/angular-ui-router.min.js',
 			'./src/js/lib/angular-ui-utils/ui-utils.js',
 			'./src/js/lib/angular-sanitize/angular-sanitize.min.js',
 			'./src/js/lib/angular-animate/angular-animate.min.js',
-			'./src/js/lib/jquery/dist/jquery.min.js',
 			'./src/js/lib/lodash/dist/lodash.min.js',
 			'./src/js/custom/counter_flipper.js',
 			'./src/js/lib/imagesloaded/imagesloaded.pkgd.min.js',
@@ -223,7 +223,7 @@ gulp.task('jsMin', ['jsConcat'], function() {
 		//.on('end', done);
 })
 
-gulp.task('jsGzip', ['jsConcat','jsMin'], function(done) {
+gulp.task('jsGzip', ['jsConcat','jsMin'], function() {
 	gulp.src('./web/js/all.min.js')
 		.pipe(gzip())
 		// .pipe(rename('all.min.js.gzip'))
@@ -232,7 +232,7 @@ gulp.task('jsGzip', ['jsConcat','jsMin'], function(done) {
 			gulp.dest('./www/js'),
 			gulp.dest('./electron/js')
 		))
-		.on('end', done);
+		//.on('end', done);
 })
 
 // gulp.task('js', gulpSequence('jsConcat', 'jsMin', 'jsGzip'));
