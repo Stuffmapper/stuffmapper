@@ -16,10 +16,14 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			if ((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
 				if (navigator.userAgent.indexOf("Safari") !== -1) {
 					content = "user-scalable=no, shrink-to-fit=no";
+					document.documentElement.addEventListener('gesturestart', function (event) {
+						event.preventDefault();
+					}, false);
 				}
 			}
 			viewportMeta.content = content;
 			document.getElementsByTagName("head")[0].appendChild(viewportMeta);
+			
 		meta(name="theme-color" content="#9FD661")
 		link(rel='apple-touch-icon', sizes='57x57', href='/apple-icon-57x57.png')
 		link(rel='apple-touch-icon', sizes='60x60', href='/apple-icon-60x60.png')
