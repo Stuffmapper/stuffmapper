@@ -15,7 +15,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			viewportMeta.name = "viewport";
 			if ((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
 				if (navigator.userAgent.indexOf("Safari") !== -1) {
-					content = "";
+					content = "user-scalable=no, shrink-to-fit=no";
 				}
 			}
 			viewportMeta.content = content;
