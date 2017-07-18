@@ -23,8 +23,8 @@
 			}
 		},
 		"aws" : {
-			"accessKeyId": "AKIAJQZ2JZJQHGJV7UBQ",
-			"secretAccessKey": "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",
+			"accessKeyId": "AKIAI623VHXYWOR56L4Q",
+			"secretAccessKey": "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",
 			"region": "us-west-2",
 			"bucket": "stuffmapper-v2"
 		},
@@ -57,8 +57,8 @@
 			}
 		},
 		"aws" : {
-			"accessKeyId": "AKIAJQZ2JZJQHGJV7UBQ",
-			"secretAccessKey": "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",
+			"accessKeyId": "AKIAI623VHXYWOR56L4Q",
+			"secretAccessKey": "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",
 			"region": "us-west-2",
 			"bucket": "stuffmapper-v2"
 		},
@@ -91,8 +91,8 @@
 			}
 		},
 		"aws" : {
-			"accessKeyId": "AKIAJQZ2JZJQHGJV7UBQ",
-			"secretAccessKey": "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",
+			"accessKeyId": "AKIAI623VHXYWOR56L4Q",
+			"secretAccessKey": "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",
 			"region": "us-west-2",
 			"bucket": "stuffmapper-v2"
 		},
