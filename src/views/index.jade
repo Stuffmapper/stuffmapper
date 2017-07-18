@@ -44,7 +44,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		meta(name='theme-color', content='#ffffff')
 		//- link(rel="icon" sizes="192x192" href="nice-highres.png")
 		script var subdomain = "#{config.subdomain}";
-		title Stuffmapper
+		//title Stuffmapper
+		title(ng-bind='MetaTags.title') Stuffmapper
 		//- Facebook Pixel Code
 		script.
 			!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -79,11 +80,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				section.insertBefore(base, section.firstChild);
 			link(href="css/iconic.app.min.css" rel="stylesheet")
 		else
-			base(href="/")
 			if config.subdomain == 'https://www.stuffmapper.com'
-				meta(name='description', content='Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
-				meta(property='og:title', content='Stuffmapper')
-				meta(name='og:description', content='Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
+				meta(name='description', content='{{MetaTags.description}}')
+				meta(name='keywords', content='{{MetaTags.keywords}}')
+				meta(ng-repeat='(key, value) in MetaTags.properties', property='{{key}}', content='{{value}}')
 				//- Hotjar Tracking Code for www.stuffmapper.com
 				script.
 					(function(h,o,t,j,a,r){
@@ -108,7 +108,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 								+ '//call.chatra.io/chatra.js';
 						if (d.head) d.head.appendChild(s);
 					})(document, window, 'Chatra');
-
 		//link(href="js/lib/normalize-css/normalize.css" rel="stylesheet")
 		//link(href="js/lib/swiper/dist/css/swiper.min.css" rel="stylesheet")
 		//- link(href="js/lib/intl-tel-input/build/css/intlTelInput.css" rel="stylesheet")
@@ -173,7 +172,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script(async,src="https://use.typekit.net/lrm3jdv.js")
 		script.
 			try{Typekit.load({ async: true });}catch(e){}
-		script(async,defer,src="js/all.min.js")
+		script(async,defer,src="js/all.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
 		script(id="templates/blank.html" type="text/ng-template").

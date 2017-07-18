@@ -1,4 +1,4 @@
-stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', '$state', '$log', GetItemController]);
+stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', '$state', '$log', 'item', GetItemController]);
 function GetItemController() {
 	'use strict';
 	var $scope = arguments[0];
@@ -7,12 +7,14 @@ function GetItemController() {
 	var $userData = arguments[3];
 	var $state = arguments[4];
 	var $log = arguments[5];
+	var item = arguments[6];
+	var data = item.data;
 	var singleItemTemplateMap;
 	$('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
 	$('#filter-container > .filter-content-container').addClass('sm-hidden');
-	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function (data) {
+	//$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function (data) {
 		if (data.err) {
-			console.log('item not found')
+			$log.info('item not found');
 			$scope.container = $('<div>', {
 				id: 'get-item-single-undefined',
 				class: 'get-item-single-container animate-250'
@@ -200,7 +202,7 @@ function GetItemController() {
 				});
 			});
 		}
-	});
+	//});
 
 	// $scope.dibsInfoModal = function() {
 	// 	$('#dibs-info-modal-button').on('click', dibsInfoModalOk);

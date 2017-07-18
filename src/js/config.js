@@ -1,8 +1,20 @@
-stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider, $logProvider) {
+stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider, $logProvider, UIRouterMetatagsProvider) {
 	/*if(config.ionic.isIonic || config.electron.isElectron) $urlRouterProvider.otherwise('/login-steps');*/
 	/*else*/
 
-	/*$locationProvider.html5Mode(config.html5);*/
+	UIRouterMetatagsProvider
+		.setDefaultTitle('Stuffmapper')
+		.setDefaultDescription('Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!')
+		.setDefaultKeywords('stuffmapper, free stuff, give stuff, reusable stuff, get stuff')
+		.setStaticProperties({
+			'og:title': 'Stuffmapper',
+			'og:description': 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
+			'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+			'og:url': 'https://www.stuffmapper.com',
+			'og:type': 'website'
+		})
+		.setOGURL(true);
+
 	$logProvider.debugEnabled(false);
 	$locationProvider.html5Mode(true).hashPrefix('');
 	$urlRouterProvider.otherwise(function ($injector, $location) {
@@ -32,4 +44,6 @@ stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider,
 		.state('setup2', config.providers.loginSetupTwo)
 		.state('login-page', config.providers.loginPage);
 	}*/
-});
+}).run(['$rootScope', 'MetaTags', function ($rootScope, MetaTags) {
+	$rootScope.MetaTags = MetaTags;
+}]);

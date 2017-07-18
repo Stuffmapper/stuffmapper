@@ -2,7 +2,7 @@ function setDefaultSettings() {
 	var isIonic = $('html').hasClass('ionic');
 	var isElectron = $('html').hasClass('electron');
 	var isDev = $('html').hasClass('dev') || $('html').hasClass('test');
-	var modules = ['ui.router', 'ngAnimate', 'ui.utils', 'ngSanitize'];
+	var modules = ['ui.router', 'ngAnimate', 'ui.utils', 'ngSanitize', 'ui.router.metatags'];
 	var providers = {
 		stuff : {
 			url: '/stuff',
@@ -12,11 +12,40 @@ function setDefaultSettings() {
 		getStuff : {
 			url: '/get',
 			templateUrl: 'templates/partial-home-getstuff.html',
-			controller: 'getStuffController'
+			controller: 'getStuffController',
+			metaTags: {
+				title: 'Get Stuff - Stuffmapper',
+				description: 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
+				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
+				properties: {
+					'og:title': 'Get Stuff - Stuffmapper',
+					'og:description': 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
+					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:url': 'https://www.stuffmapper.com/stuff/get',
+					'og:type': 'website'
+				}
+			}
 		},
 		getItem : {
 			url: '/:id',
-			controller: 'getItemController'
+			controller: 'getItemController',
+			resolve: {
+				/* @ngInject */
+				item: function ($stateParams, $http) {
+					return $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id)
+				}
+			},
+			metaTags: {
+				title: function (item) { return  item.data.res.title.trim()?item.data.res.title.trim()+' - Stuffmapper': 'No Item Found'+' - Stuffmapper' },
+				description: function (item) { return item.data.res.description.trim()?item.data.res.description.trim():'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!'},
+				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
+				properties: {
+					'og:title': function (item) { return item.data.res.title?item.data.res.title.trim(): 'No Item Found'+' - Stuffmapper' },
+					'og:description': function (item) { return item.data.res.description.trim()?item.data.res.description.trim():'' },
+					'og:image': function (item) { return item.data.res.image_url?'https://www.stuffmapper.com/img'+item.data.res.image_url:'' },
+					'og:url': function (item) { return item.data.res.id?'https://www.stuffmapper.com/stuff/get'+item.data.res.id: '' }
+				}
+			}
 		},
 		giveStuff : {
 			url: '/give',
@@ -26,6 +55,17 @@ function setDefaultSettings() {
 				authenticated: ['authenticator', function (authenticated) {
 					return authenticated;
 				}]
+			},
+			metaTags: {
+				title: 'Give Stuff - Stuffmapper',
+				description: 'Get ready to give stuff!',
+				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
+				properties: {
+					'og:title': 'Give Stuff - Stuffmapper',
+					'og:description': 'Get ready to give stuff!',
+					'og:image': 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
+					'og:url': 'https://www.stuffmapper.com/stuff/give'
+				}
 			}
 		},
 		my : {
@@ -42,7 +82,19 @@ function setDefaultSettings() {
 			url: '/items',
 			cache: false,
 			templateUrl: 'templates/partial-home-mystuff.html',
-			controller: 'myStuffController'
+			controller: 'myStuffController',
+			metaTags: {
+				title: 'My Stuff - Stuffmapper',
+				description: 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
+				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
+				properties: {
+					'og:title': 'My Stuff - Stuffmapper',
+					'og:description': 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
+					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:url': 'https://www.stuffmapper.com/stuff/my/items',
+					'og:type': 'website'
+				}
+			}
 		},
 		myItem : {
 			url: '/:id',
@@ -86,21 +138,65 @@ function setDefaultSettings() {
 		},
 		about : {
 			url: '/about',
-			templateUrl: 'templates/partial-about.html'
+			templateUrl: 'templates/partial-about.html',
+			metaTags: {
+				title: 'About - Stuffmapper',
+				description: 'Our mission is to save millions of items from landfills everywhere and our vision is to support and grow the free reusable stuff movement.',
+				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
+				properties: {
+					'og:title': 'About - Stuffmapper',
+					'og:description': 'Our mission is to save millions of items from landfills everywhere and our vision is to support and grow the free reusable stuff movement.',
+					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:url': 'https://www.stuffmapper.com/about'
+				}
+			}
 		},
 		privacy : {
 			url: '/privacy',
-			templateUrl: 'templates/partial-privacy.html'
+			templateUrl: 'templates/partial-privacy.html',
+			metaTags: {
+				title: 'Privacy Policy - Stuffmapper',
+				description: 'Stuffmapper SPC ("Stuffmapper") is committed to creating and maintaining a trusted community, and takes precautions to prevent unauthorized access to or misuse of data about you. Stuffmapper does not share personally identifiable user data with third parties.',
+				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
+				properties: {
+					'og:title': 'Privacy Policy - Stuffmapper',
+					'og:description': 'Stuffmapper SPC ("Stuffmapper") is committed to creating and maintaining a trusted community, and takes precautions to prevent unauthorized access to or misuse of data about you. Stuffmapper does not share personally identifiable user data with third parties.',
+					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:url': 'https://www.stuffmapper.com/privacy'
+				}
+			}
 		},
 		faq : {
 			url: '/faq',
 			templateUrl: 'templates/partial-faq.html',
-			controller: 'faqController'
+			controller: 'faqController',
+			metaTags: {
+				title: 'What is Stuffmapper?',
+				description: 'Our goal is to save millions of items from landfills everywhere and to support and grow the free reusable stuff movement by connecting people who want to give and get free reusable items.',
+				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
+				properties: {
+					'og:title': 'What is Stuffmapper?',
+					'og:description': 'Our goal is to save millions of items from landfills everywhere and to support and grow the free reusable stuff movement by connecting people who want to give and get free reusable items.',
+					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:url': 'https://www.stuffmapper.com/faq',
+				}
+			}
 		},
 		useragreement : {
 			url: '/useragreement',
 			templateUrl: 'templates/partial-useragreement.html',
-			controller: 'userAgreementController'
+			controller: 'userAgreementController',
+			metaTags: {
+				title: 'Terms of Service - Stuffmapper',
+				description: 'Our goal is to save millions of items from landfills everywhere and to support and grow the free reusable stuff movement by connecting people who want to give and get free reusable items.',
+				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
+				properties: {
+					'og:title': 'Terms of Service - Stuffmapper',
+					'og:description': 'Our goal is to save millions of items from landfills everywhere and to support and grow the free reusable stuff movement by connecting people who want to give and get free reusable items.',
+					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:url': 'https://www.stuffmapper.com/useragreement'
+				}
+			}
 		}
 	};
 	if(isIonic) {
