@@ -46,6 +46,9 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script var subdomain = "#{config.subdomain}";
 		//title Stuffmapper
 		title(ng-bind='MetaTags.title') Stuffmapper
+		meta(name='description', content='{{MetaTags.description}}')
+		meta(name='keywords', content='{{MetaTags.keywords}}')
+		meta(ng-repeat='(key, value) in MetaTags.properties', property='{{key}}', content='{{value}}')
 		//- Facebook Pixel Code
 		script.
 			!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -81,9 +84,6 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			link(href="css/iconic.app.min.css" rel="stylesheet")
 		else
 			if config.subdomain == 'https://www.stuffmapper.com'
-				meta(name='description', content='{{MetaTags.description}}')
-				meta(name='keywords', content='{{MetaTags.keywords}}')
-				meta(ng-repeat='(key, value) in MetaTags.properties', property='{{key}}', content='{{value}}')
 				//- Hotjar Tracking Code for www.stuffmapper.com
 				script.
 					(function(h,o,t,j,a,r){
