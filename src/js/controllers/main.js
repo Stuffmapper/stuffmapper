@@ -1,4 +1,4 @@
-var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window','$stuffTabs'];
+var mainControllerArgs = ['$scope', '$http', '$timeout', '$userData', '$state', '$location', '$rootScope','$window', '$log','$stuffTabs'];
 if (config.ionic.isIonic) {
 	// mainControllerArgs.push('$cordovaOauth');
 	mainControllerArgs.push('$ionicPlatform');
@@ -15,16 +15,18 @@ function MainController() {
 	var $location = arguments[5];
 	var $rootScope = arguments[6];
 	var $window = arguments[7];
-	// var $stuffTabs = arguments[8];
+	var $log = arguments[8];
+	// var $stuffTabs = arguments[9];
+
 	// var $cordovaOauth = (typeof arguments[8] !== 'function') ? arguments[9] : undefined;
-	var $ionicPlatform = (typeof arguments[8] !== 'function') ? arguments[10] : undefined;
+	var $ionicPlatform = (typeof arguments[10] !== 'function') ? arguments[10] : undefined;
 	// var $cordovaPush = (typeof arguments[10] !== 'function') ? arguments[12] : undefined;
 	$scope.user = {};
 
 	$scope.delaySignIn = delaySignIn;
 	$("#sign-in-up-phone-number, #phone-update-modal-field").intlTelInput({
 		getNumberType: "MOBILE",
-		utilsScript: $.fn.intlTelInput.loadUtils("js/lib/intl-tel-input/build/js/utils.js"),
+		utilsScript: $.fn.intlTelInput.loadUtils("js/utils.min.js"),
 		preferredCountries: ["us", "ca"]
 		// separateDialCode: true
 		// autoHideDialCode: false
@@ -34,6 +36,17 @@ function MainController() {
 		$('#tab-container .stuff-tabs li a').removeClass('selected');
 		$('#tab-container .stuff-tabs .'+((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no')))+'-stuff-tab a').addClass('selected');
 	},250);
+
+/*	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState) {
+		if(window.location.hash == 'signin'){
+			return;
+		} else if(fromState.name == "" && toState.name == 'stuff.get'){
+			return;
+		} else if(fromState.name == "" && toState.name == ''){
+			return;
+		}
+	});*/
+
 	$rootScope.$on('$locationChangeSuccess', function() {
 		$('#tab-container .stuff-tabs li a').removeClass('selected');
 		// console.log(((window.location.pathname.indexOf('stuff/get') > -1)?'get':((window.location.pathname.indexOf('stuff/my') > -1)?'my':((window.location.pathname.indexOf('stuff/give') > -1)?'give':'no'))));
@@ -204,7 +217,6 @@ function MainController() {
 			$userData.setPhoneVerified(data.res.user.verified_phone);
 			$userData.setEmailVerified(data.res.user.verified_email);
 			$scope.user = data.res.user;
-			console.log(JSON.stringify($scope.user));
 
 		}
 		if(data.res && data.res.messages) {
@@ -976,7 +988,9 @@ function MainController() {
 		.success(function(data) {
 			$('html').removeClass('loggedIn');
 			$userData.setLoggedIn(false);
-			if (/\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/.test($location.$$path)) {
+			/* var patternRe = /\/stuff\/(give|mine|mine\/*|settings|messages|messages\/*|watchlist|)/; */
+			var pattern = /\/stuff\/(give|mine|settings|messages|messages|watchlist|)/;
+			if (patternRe.test($location.$$path)) {
 				$state.go('stuff.get');
 				$state.reload();
 				$u.toast('You\'ve been logged out. See you next time, <i>'+$userData.getUserName()+'</i>!');

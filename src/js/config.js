@@ -1,8 +1,16 @@
-stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider) {
-	if(config.ionic.isIonic || config.electron.isElectron) $urlRouterProvider.otherwise('/login-steps');
-	else $urlRouterProvider.otherwise('/stuff/get');
-	$locationProvider.html5Mode(config.html5);
-	$stateProvider
+stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider, $logProvider) {
+	/*if(config.ionic.isIonic || config.electron.isElectron) $urlRouterProvider.otherwise('/login-steps');*/
+	/*else*/
+
+	/*$locationProvider.html5Mode(config.html5);*/
+	$logProvider.debugEnabled(false);
+	$locationProvider.html5Mode(true).hashPrefix('');
+	$urlRouterProvider.otherwise(function ($injector, $location) {
+		var $state = $injector.get('$state');
+		$state.go('stuff.get');
+	});
+
+    $stateProvider
 	.state('stuff', config.providers.stuff)
 	.state('stuff.get', config.providers.getStuff)
 	.state('stuff.get.item', config.providers.getItem)
@@ -17,11 +25,11 @@ stuffMapp.config(function($locationProvider, $stateProvider, $urlRouterProvider)
 	.state('useragreement', config.providers.useragreement)
 	.state('faq', config.providers.faq)
 	.state('about', config.providers.about);
-	if(config.ionic.isIonic) {
+/*	if(config.ionic.isIonic) {
 		$stateProvider
 		.state('login', config.providers.loginSteps)
 		.state('setup1', config.providers.loginSetupOne)
 		.state('setup2', config.providers.loginSetupTwo)
 		.state('login-page', config.providers.loginPage);
-	}
+	}*/
 });

@@ -1,10 +1,11 @@
-stuffMapp.controller('watchlistController', ['$scope', '$http', '$location', '$state', 'authenticator', WatchListController]);
+stuffMapp.controller('watchlistController', ['$scope', '$http', '$location', '$state', 'authenticator', '$log', WatchListController]);
 function WatchListController() {
 	var $scope = arguments[0];
 	var $http = arguments[1];
 	var $location = arguments[2];
 	var $state = arguments[3];
 	var authenticator = arguments[4];
+	var $log = arguments[5];
 	$http.post(config.api.host + '/api/v' + config.api.version + '/account/status?nocache='+new Date().getTime()).success(function(data){
 		if(!data.res.user) {
 			$state.go('stuff.get', {'#':'signin'});

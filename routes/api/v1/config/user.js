@@ -1,4 +1,5 @@
 var bcrypt = require('bcryptjs');
+var debug = require('debug')('stuffmapper:user');
 var pg = require('pg');
 var path = require('path');
 var stage = process.env.STAGE || 'development';

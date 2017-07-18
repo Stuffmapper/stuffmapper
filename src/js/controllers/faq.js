@@ -1,5 +1,5 @@
-stuffMapp.controller('faqController', ['$scope','$document', FaqController]);
-function FaqController($scope, $document) {
+stuffMapp.controller('faqController', ['$scope','$document', '$log', FaqController]);
+function FaqController($scope, $document, $log) {
 
     $scope.gotoElement = function (id) {
         $('.faq-container').animate({

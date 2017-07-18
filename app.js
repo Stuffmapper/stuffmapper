@@ -22,6 +22,8 @@ var multerS3 = require('multer-s3');
 var braintree = require('braintree');
 var proxy = require('express-http-proxy');
 var _ = require('lodash');
+var gzipStatic = require('connect-gzip-static');
+var debug = require('debug')('stuffmapper:app.js');
 var sms = require('./routes/api/v1/config/sms');
 var pg = require('pg');
 var pgUser = config.db.user;
@@ -92,11 +94,9 @@ app.use(logger('dev'));
 app.use(bodyParser.json({ limit: '15mb', type: 'application/vnd.api+json' }));
 app.use(methodOverride());
 app.use(bodyParser.urlencoded({ limit: '15mb', extended: true }));
-app.use('/', express.static(path.join(__dirname, 'favicons')));
-app.use('/', express.static(path.join(__dirname, 'web')));
-
+app.use('/', gzipStatic(path.join(__dirname, 'favicons')));
+app.use('/', gzipStatic(path.join(__dirname, 'web')));
 require(path.join(__dirname, '/routes/api/v1/config/passport'));
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -208,7 +208,20 @@ io.on('disconnect', function(socket) {
     console.log('a user disconnected');
 });
 app.use('/api/v1', require('./routes/api/v1/index'));
-app.use('*', function(req, res) {
+
+// catch 404 and forward to error handler /* can't enable it due to html5 routing on frontend*/
+// app.use(function (req, res, next) {
+//     var err = new Error('Not Found');
+//     return res.status(404).json({error: true, message: err.message });
+// });
+
+// error handler
+app.use(function (err, req, res, next) {
+    if(!err) return next();
+    return res.status(err.statusCode || 500).json({error: true, message: [err.message] || [] });
+});
+
+app.use('/*', function(req, res) {
     res.render('index', {
         loggedIn: req.isAuthenticated(),
         isDev: true,

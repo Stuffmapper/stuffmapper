@@ -8,7 +8,22 @@ doctype html
 html(lang="en" class= htmlClassList ng-app="stuffMapp")
 	head
 		meta(charset="utf-8")
-		meta(name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, height=device-height")
+		base(href="/")
+		script(type='text/javascript').
+			var viewportMeta = document.createElement("meta");
+			var content = "initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width, height=device-height";
+			viewportMeta.name = "viewport";
+			if ((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
+				if (navigator.userAgent.indexOf("Safari") !== -1) {
+					content = "user-scalable=no, shrink-to-fit=no";
+					document.documentElement.addEventListener('gesturestart', function (event) {
+						event.preventDefault();
+					}, false);
+				}
+			}
+			viewportMeta.content = content;
+			document.getElementsByTagName("head")[0].appendChild(viewportMeta);
+			
 		meta(name="theme-color" content="#9FD661")
 		link(rel='apple-touch-icon', sizes='57x57', href='/apple-icon-57x57.png')
 		link(rel='apple-touch-icon', sizes='60x60', href='/apple-icon-60x60.png')
@@ -62,7 +77,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				var base = document.createElement('base');
 				base.href = path
 				section.insertBefore(base, section.firstChild);
-			link(href="css/main.min.css" rel="stylesheet")
+			link(href="css/iconic.app.min.css" rel="stylesheet")
 		else
 			base(href="/")
 			if config.subdomain == 'https://www.stuffmapper.com'
@@ -95,10 +110,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					})(document, window, 'Chatra');
 
 		//link(href="js/lib/normalize-css/normalize.css" rel="stylesheet")
-		link(href="js/lib/swiper/dist/css/swiper.min.css" rel="stylesheet")
+		//link(href="js/lib/swiper/dist/css/swiper.min.css" rel="stylesheet")
 		//- link(href="js/lib/intl-tel-input/build/css/intlTelInput.css" rel="stylesheet")
 		//- link(href="js/lib/animate.css/animate.min.css" rel="stylesheet")
-		link(href="css/main.app.min.css" rel="stylesheet")
+		link(href="css/styles.min.css" rel="stylesheet")
 		//- link(href="js/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet")
 		style.
 			html {
@@ -126,10 +141,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				margin-bottom: 5px;
 				font-weight: 700;
 			}
-		link(href="css/font-awesome.min.css" rel="stylesheet")
+		//link(href="css/font-awesome.min.css" rel="stylesheet")
 		//- script(src="https://maps.google.com/maps/api/js")
 		//- script(src="https://maps.google.com/maps/api/js?libraries=geometry")
-		script(src="https://maps.google.com/maps/api/js?key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U&libraries=geometry")
+		script(async,defer,src="https://maps.google.com/maps/api/js?key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U&libraries=geometry")
 		//- ?key=AIzaSyC9wZTqNMPxl86PtJuR4Dq3TzS_hByOs3U")
 		script.
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -152,13 +167,13 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		else if electron
 			script(src="https://#{config.subdomain}.stuffmapper.com/socket.io/socket.io.js")
 		else
-			script(src="socket.io/socket.io.js")
-			script(src="js/angular.js")
-		script(src="https://js.braintreegateway.com/js/braintree-2.26.0.min.js")
-		script(src="https://use.typekit.net/lrm3jdv.js")
+			script(async,src="socket.io/socket.io.js")
+			//script(src="js/lib/angular/angular.min.js")
+		script(async,src="https://js.braintreegateway.com/js/braintree-2.26.0.min.js")
+		script(async,src="https://use.typekit.net/lrm3jdv.js")
 		script.
 			try{Typekit.load({ async: true });}catch(e){}
-		script(src="js/all.js")
+		script(async,defer,src="js/all.min.js")
 		script(id="templates/partial-home-getstuff.html" type="text/ng-template")
 			include ./partials/home/partial-home-getstuff
 		script(id="templates/blank.html" type="text/ng-template").
@@ -278,6 +293,10 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 			#sign-in-up-modal.modal-window.modal-window-hidden.animate-500
 				#swiper-container.swiper-container(style="transition:opacity 250ms;-webkit-transition:opacity 250ms;-moz-transition:opacity 250ms;-ms-transition:opacity 250ms;-o-transition:opacity 250ms;display:none;z-index:4;background-color:rgba(139, 195, 74, 1.0);opacity:1;pointer-events:all;width:100%;height:100%;position:absolute;top:0px;left:0px;")
 					.swiper-wrapper
+						.swiper-slide(style="background-color:rgba(51, 174, 220, 1.0);")
+							.sm-full-width(style="text-align:center;margin-top: 40px;color:#fff;font-size:20px;") Allow location! Stuffmapper works best when it’s local!
+							img(src="/img/location-image.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")
+							.sm-full-width(style="text-align:center;color:#fff;font-size:16px;") Allow location in your browser to exchange stuff in your area!
 						.swiper-slide(style="background-color:rgba(139, 195, 74, 1.0);")
 							.sm-full-width(style="text-align:center;margin-top: 40px;color:#fff;font-size:20px;") Free reusable stuff lives on<br />Stuffmapper!
 							img(src="/img/sharing_is_caring.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")

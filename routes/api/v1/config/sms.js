@@ -3,6 +3,7 @@
  */
 
 var path = require('path');
+var debug = require('debug')('stuffmapper:sms');
 var stage = process.env.STAGE || 'development';
 var config = require(path.join(__dirname, '/../../../../config'))[stage];
 var _ = require('lodash');

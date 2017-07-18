@@ -1,3 +1,3 @@
-function AboutController($scope, $userData) {
+function AboutController($scope, $userData, $log) {
 
 }

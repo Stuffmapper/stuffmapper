@@ -21,6 +21,7 @@ var pgHost = config.db.host;
 var pgPort = config.db.port;
 var conString = 'postgres://'+pgUser+':'+pgPass+'@'+pgHost+':'+pgPort+'/'+pgDb;
 var braintree = require('braintree');
+var debug = require('debug')('stuffmapper:routes');
 var AWS = require('aws-sdk');
 AWS.config.update( {
 	accessKeyId     : config.aws.accessKeyId,
@@ -383,6 +384,7 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 								Body: data,
 								ContentEncoding: 'base64',
 								ContentType:'image/png',
+								CacheControl: 'max-age=86400',
 								ACL: 'public-read'
 							}, function(err, data) {
 								if (err) {
@@ -491,6 +493,7 @@ router.post('/stuff/:id', isAuthenticated, function(req, res) {
 							Body: data,
 							ContentEncoding: 'base64',
 							ContentType:'image/png',
+							CacheControl: 'max-age=86400',
 							ACL: 'public-read'
 						}, function(err, data) {
 							if (err) {
