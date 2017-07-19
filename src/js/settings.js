@@ -42,7 +42,7 @@ function setDefaultSettings() {
 					'og:title': ['item', function (item) { return item.data.err?'':(item.data.res.title?item.data.res.title.trim(): 'No Item Found'+' - Stuffmapper') }],
 					'og:description': ['item', function (item) { return item.data.err?'':(item.data.res.description.trim()?item.data.res.description.trim():'') }],
 					'og:image': ['item', function (item) { return item.data.err?'':(item.data.res.image_url?'https://cdn.stuffmapper.com'+item.data.res.image_url:'') }],
-					'og:url': ['item', function (item) { return item.data.err?'':(item.data.res.id?'https://www.stuffmapper.com/stuff/get'+item.data.res.id: '') }]
+					'og:url': ['item', function (item) { return item.data.err?'':(item.data.res.id?'https://www.stuffmapper.com/stuff/get/'+item.data.res.id: '') }]
 				}
 			}
 		},
