@@ -41,7 +41,7 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': ['item', function (item) { return item.data.err?'':(item.data.res.title?item.data.res.title.trim(): 'No Item Found'+' - Stuffmapper') }],
 					'og:description': ['item', function (item) { return item.data.err?'':(item.data.res.description.trim()?item.data.res.description.trim():'') }],
-					'og:image': ['item', function (item) { return item.data.err?'':(item.data.res.image_url?'https://www.stuffmapper.com/img'+item.data.res.image_url:'') }],
+					'og:image': ['item', function (item) { return item.data.err?'':(item.data.res.image_url?'https://cdn.stuffmapper.com'+item.data.res.image_url:'') }],
 					'og:url': ['item', function (item) { return item.data.err?'':(item.data.res.id?'https://www.stuffmapper.com/stuff/get'+item.data.res.id: '') }]
 				}
 			}
@@ -177,7 +177,7 @@ function setDefaultSettings() {
 					'og:title': 'What is Stuffmapper?',
 					'og:description': 'Our goal is to save millions of items from landfills everywhere and to support and grow the free reusable stuff movement by connecting people who want to give and get free reusable items.',
 					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
-					'og:url': 'https://www.stuffmapper.com/faq',
+					'og:url': 'https://www.stuffmapper.com/faq'
 				}
 			}
 		},
