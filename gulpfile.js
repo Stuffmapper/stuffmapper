@@ -172,11 +172,10 @@ gulp.task('jsConcat', function() {
 		.pipe(plumber())
 		.pipe(concat('all.js', { newLine: '\n;' }))
 		.pipe(sourcemaps.write())
-		.pipe(multistream(
-			gulp.dest('./web/js'),
-			gulp.dest('./www/js'),
-			gulp.dest('./electron/js')
-		))
+		.pipe(gulp.dest('./web/js'))
+		.pipe(gulp.dest('./www/js'))
+		.pipe(gulp.dest('./electron/js'))
+		.pipe(rename('all.min.js'))
 		.pipe(ngAnnotate({
 			add: true
 		}))
@@ -184,7 +183,6 @@ gulp.task('jsConcat', function() {
 		.on('error', function(err){
 			console.log(err)
 		})
-		.pipe(rename('all.min.js'))
 		.pipe(multistream(
 			gulp.dest('./web/js'),
 			gulp.dest('./www/js'),
