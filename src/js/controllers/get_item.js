@@ -412,7 +412,7 @@ function GetItemController() {
 				width: 626,
 				height: 636
 			},
-			shareUrl: subdomain+'/stuff/get/126',
+			shareUrl: subdomain+'/stuff/get/'+data.id,
 			title: data.title || 'No Item Found',
 			description: data.description || '',
 			media: 'https://cdn.stuffmapper.com' + data.image_url || ''
