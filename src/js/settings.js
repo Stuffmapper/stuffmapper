@@ -40,8 +40,8 @@ function setDefaultSettings() {
 				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
 				properties: {
 					'og:title': ['item', function (item) { return item.data.err?'':(item.data.res.title?item.data.res.title.trim(): 'No Item Found'+' - Stuffmapper') }],
-					'og:description': ['item', function (item) { return item.data.err?'':(item.data.res.description.trim()?item.data.res.description.trim():'') }],
-					'og:image': ['item', function (item) { return item.data.err?'':(item.data.res.image_url?'https://cdn.stuffmapper.com'+item.data.res.image_url:'') }],
+					'og:description': ['item', function (item) { return item.data.err?'':(item.data.res.description.trim()?item.data.res.description.trim():'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!') }],
+					'og:image': ['item', function (item) { return item.data.err?'':(item.data.res.image_url?'https://cdn.stuffmapper.com'+item.data.res.image_url:'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!') }],
 					'og:url': ['item', function (item) { return item.data.err?'':(item.data.res.id?subdomain+'/stuff/get/'+item.data.res.id: '') }]
 				}
 			}
