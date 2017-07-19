@@ -34,7 +34,10 @@ router.get('/stuff/get/:id', function(req, res) {
         'quora link preview',
         'showyoubot',
         'outbrain',
-        'pinterest'
+        'pinterest',
+        'twitterbot',
+        'facebookexternalhit/1.0',
+        'facebookexternalhit/1.1'
     ];
 
     var userAgent = req.headers['user-agent'];
