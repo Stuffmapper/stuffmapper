@@ -85,7 +85,7 @@ router.get('/stuff/get/:id', function(req, res, next) {
                     title: result.rows[0].title.trim(),
                     description: result.rows[0].description || 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
                     image_url: 'https://cdn.stuffmapper.com'+ result.rows[0].image_url,
-                    url: 'https://www.stuffmapper.com/stuff/get/'+result.rows[0].id
+                    url: config.subdomain+'/stuff/get/'+result.rows[0].id
                 });
             });
         }

@@ -46,8 +46,8 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 		script var subdomain = "#{config.subdomain}";
 		//title Stuffmapper
 		title(ng-bind='MetaTags.title') Stuffmapper
-		meta(name='description', content='{{MetaTags.description?MetaTags.description:"Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!"}}')
-		meta(name='keywords', content='{{MetaTags.keywords?MetaTags.keywords:"stuffmapper, free stuff, give stuff, reusable stuff, get stuff"}}')
+		meta(name='description', content='{{MetaTags.description}}')
+		meta(name='keywords', content='{{MetaTags.keywords}}')
 		meta(ng-repeat='(key, value) in MetaTags.properties', property='{{key}}', content='{{value}}')
 		//- Facebook Pixel Code
 		script.
