@@ -106,7 +106,7 @@ function MyItemsController() {
 						'		</div>',
 						'</div>',
 						'	<div class="sm-text-m sm-full-width">Title</div>',
-						'	<input id="edit-item-title" value="'+$scope.listItem.title.trim()+'" class="sm-text-input-full-width sm-text-input" type="text">',
+						'	<input id="edit-item-title" maxlength="31" value="'+$scope.listItem.title.trim()+'" class="sm-text-input-full-width sm-text-input" type="text">',
 						//'	<div class="sm-text-m sm-full-width">Description</div>',
 						//'	<textarea id="edit-item-description" class="sm-text-input-full-width sm-text-input">'+$scope.listItem.description+'</textarea>',
 						'	<div class="sm-text-m sm-full-width" style="margin-bottom: 0px;">Category</div>',
