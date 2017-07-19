@@ -18,7 +18,7 @@ var debug = require('debug')('stuffmapper:fbshare-route');
 var url = require('url');
 var jade = require('jade');
 
-router.get('/stuff/get/:id', function(req, res) {
+router.get('/stuff/get/:id', function(req, res, next) {
 
     var crawlerUserAgents = [
 //        'googlebot',
