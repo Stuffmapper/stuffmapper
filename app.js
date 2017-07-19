@@ -208,6 +208,7 @@ io.on('disconnect', function(socket) {
     console.log('a user disconnected');
 });
 app.use('/api/v1', require('./routes/api/v1/index'));
+app.use('/', require('./routes/api/v1/fbshare'));;
 
 // catch 404 and forward to error handler /* can't enable it due to html5 routing on frontend*/
 // app.use(function (req, res, next) {
