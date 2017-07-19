@@ -22,7 +22,7 @@ var stage = process.env.STAGE || 'development';
 var config = require('./config')[stage];
 
 gulp.task('default', ['sass', 'fonts', 'jade', 'images', 'js']);
-gulp.task('js', ['jsConcat', 'jsMin', 'jsGzip']);
+gulp.task('js', ['jsConcat']);
 
 gulp.task('fonts', function (done) {
 	gulp.src(['./src/js/lib/font-awesome/fonts/*', './src/js/lib/bootstrap/dist/fonts/*'])
@@ -172,6 +172,25 @@ gulp.task('jsConcat', function() {
 		.pipe(plumber())
 		.pipe(concat('all.js', { newLine: '\n;' }))
 		.pipe(sourcemaps.write())
+		.pipe(multistream(
+			gulp.dest('./web/js'),
+			gulp.dest('./www/js'),
+			gulp.dest('./electron/js')
+		))
+		.pipe(ngAnnotate({
+			add: true
+		}))
+		.pipe(uglify())
+		.on('error', function(err){
+			console.log(err)
+		})
+		.pipe(rename('all.min.js'))
+		.pipe(multistream(
+			gulp.dest('./web/js'),
+			gulp.dest('./www/js'),
+			gulp.dest('./electron/js')
+		))
+		.pipe(gzip())
 		.pipe(multistream(
 			gulp.dest('./web/js'),
 			gulp.dest('./www/js'),

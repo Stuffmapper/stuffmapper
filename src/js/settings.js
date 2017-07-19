@@ -30,20 +30,19 @@ function setDefaultSettings() {
 			url: '/:id',
 			controller: 'getItemController',
 			resolve: {
-				/* @ngInject */
-				item: function ($stateParams, $http) {
-					return $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id)
-				}
+				item: ['$stateParams', '$http', function ($stateParams, $http) {
+					return $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id);
+				}]
 			},
 			metaTags: {
-				title: function (item) { return  item.data.res.title.trim()?item.data.res.title.trim()+' - Stuffmapper': 'No Item Found'+' - Stuffmapper' },
-				description: function (item) { return item.data.res.description.trim()?item.data.res.description.trim():'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!'},
+				title: ['item', function (item) { return item.data.res.title.trim()?item.data.res.title.trim()+' - Stuffmapper': 'No Item Found'+' - Stuffmapper' }],
+				description: ['item', function (item) { return item.data.res.description.trim()?item.data.res.description.trim():'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!'}],
 				keywords: 'stuffmapper, free stuff, give stuff, reusable stuff, get stuff',
 				properties: {
-					'og:title': function (item) { return item.data.res.title?item.data.res.title.trim(): 'No Item Found'+' - Stuffmapper' },
-					'og:description': function (item) { return item.data.res.description.trim()?item.data.res.description.trim():'' },
-					'og:image': function (item) { return item.data.res.image_url?'https://www.stuffmapper.com/img'+item.data.res.image_url:'' },
-					'og:url': function (item) { return item.data.res.id?'https://www.stuffmapper.com/stuff/get'+item.data.res.id: '' }
+					'og:title': ['item', function (item) { return item.data.res.title?item.data.res.title.trim(): 'No Item Found'+' - Stuffmapper' }],
+					'og:description': ['item', function (item) { return item.data.res.description.trim()?item.data.res.description.trim():'' }],
+					'og:image': ['item', function (item) { return item.data.res.image_url?'https://www.stuffmapper.com/img'+item.data.res.image_url:'' }],
+					'og:url': ['item', function (item) { return item.data.res.id?'https://www.stuffmapper.com/stuff/get'+item.data.res.id: '' }]
 				}
 			}
 		},
