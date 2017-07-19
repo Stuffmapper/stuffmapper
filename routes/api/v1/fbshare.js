@@ -78,7 +78,7 @@ router.get('/stuff/get/:id', function(req, res, next) {
                         title: 'Item not found',
                         description: 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
                         image_url: 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
-                        url: 'https://www.stuffmapper.com/stuff/get/'
+                        url: config.subdomain+'/stuff/get/'
                     });
                 }
                 res.render('fb-share', {
