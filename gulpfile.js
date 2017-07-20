@@ -142,8 +142,7 @@ gulp.task('images', function(done){
 });
 
 gulp.task('jsConcat', function() {
-	try {
-		gulp.src([
+		return gulp.src([
 			'./src/js/lib/angular/angular.min.js',
 			'./src/js/lib/jquery/dist/jquery.min.js',
 			'./src/js/lib/angular-ui-router/release/angular-ui-router.min.js',
@@ -172,9 +171,9 @@ gulp.task('jsConcat', function() {
 		.pipe(plumber())
 		.pipe(concat('all.js', { newLine: '\n;' }))
 		.pipe(sourcemaps.write())
+		.pipe(gulp.dest('./www/js'))
 		.pipe(multistream(
 			gulp.dest('./web/js'),
-			gulp.dest('./www/js'),
 			gulp.dest('./electron/js')
 		))
 		// .pipe(rename('all.min.js'))
@@ -197,7 +196,7 @@ gulp.task('jsConcat', function() {
 		// 	gulp.dest('./electron/js')
 		// ))
 		.on('end', function () {
-			gulp.src('./src/js/lib/intl-tel-input/build/js/utils.js')
+			return gulp.src('./src/js/lib/intl-tel-input/build/js/utils.js')
 				.pipe(uglify())
 				.pipe(rename('utils.min.js'))
 				.pipe(multistream(
@@ -210,23 +209,22 @@ gulp.task('jsConcat', function() {
 					gulp.dest('./web/js'),
 					gulp.dest('./www/js'),
 					gulp.dest('./electron/js')
-				))
+				)).on('end', function () {
+					return gulp.src(['./src/js/lib/ionic/**/*','./src/js/lib/ngCordova/dist/*.js'], {base: './src/js/lib/'})
+					.pipe(gulp.dest('./www/lib/'));
+				})
 		});
-		gulp.src(['./src/js/lib/ionic/**/*','./src/js/lib/ngCordova/dist/*.js'], {base: './src/js/lib/'})
-		.pipe(gulp.dest('./www/lib/'));
+
 		// gulp.src(['./src/js/lib/animate.css/animate.min.css'])
 		// .pipe(multistream(
 		// 	gulp.dest('./web/js/lib/animate.css/'),
 		// 	gulp.dest('./electron/js/lib/animate.css/'),
 		// 	gulp.dest('./www/js/lib/animate.css/')
 		// ));
-	} catch (e) {
-		console.log('error while concat')
-	}
 });
 
 gulp.task('jsMin', ['jsConcat'], function() {
-	gulp.src('./web/js/all.js')
+	return gulp.src('./www/js/all.js')
 		.pipe(ngAnnotate({
 			add: true
 		}))
@@ -235,18 +233,18 @@ gulp.task('jsMin', ['jsConcat'], function() {
 			console.log(err)
 		})
 		.pipe(rename('all.min.js'))
+		.pipe(gulp.dest('./www/js'))
 		.pipe(multistream(
 			gulp.dest('./web/js'),
-			gulp.dest('./www/js'),
 			gulp.dest('./electron/js')
 		))
 		//.on('end', done);
 })
 
-gulp.task('jsGzip', ['jsConcat','jsMin'], function() {
-	gulp.src('./web/js/all.min.js')
+gulp.task('jsGzip', ['jsMin'], function() {
+	return gulp.src('./www/js/all.min.js')
 		.pipe(gzip())
-		// .pipe(rename('all.min.js.gzip'))
+		.pipe(gulp.dest('./www/js'))
 		.pipe(multistream(
 			gulp.dest('./web/js'),
 			gulp.dest('./www/js'),

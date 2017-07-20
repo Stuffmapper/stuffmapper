@@ -43,8 +43,6 @@ function setDefaultSettings() {
 					'og:description': ['item', function (item) { return item.data.err?'':(item.data.res.description.trim()?item.data.res.description.trim():'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!') }],
 					'og:image': ['item', function (item) { return item.data.err?'':(item.data.res.image_url?'https://cdn.stuffmapper.com'+item.data.res.image_url:'https://cdn.stuffmapper.com/stuffmapper-logo.png') }],
 					'og:url': ['item', function (item) { return item.data.err?'':(item.data.res.id?subdomain+'/stuff/get/'+item.data.res.id: '') }]
-					'og:image:width': '200',
-					'og:image:height': '200'
 				}
 			}
 		},
@@ -65,9 +63,7 @@ function setDefaultSettings() {
 					'og:title': 'Give Stuff - Stuffmapper',
 					'og:description': 'Get ready to give stuff!',
 					'og:image': 'https://cdn.stuffmapper.com/give-pic-empty-01.png',
-					'og:url': subdomain+'/stuff/give',
-					'og:image:width': '200',
-					'og:image:height': '200'
+					'og:url': subdomain+'/stuff/give'
 				}
 			}
 		},
