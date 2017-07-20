@@ -21,8 +21,7 @@ function setDefaultSettings() {
 					'og:title': 'Get Stuff - Stuffmapper',
 					'og:description': 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
 					'og:image': 'https://cdn.stuffmapper.com/stuffmapper-logo.png',
-					'og:url': subdomain+'/stuff/get',
-					'og:type': 'website'
+					'og:url': subdomain+'/stuff/get'
 				}
 			}
 		},
@@ -90,8 +89,7 @@ function setDefaultSettings() {
 					'og:title': 'My Stuff - Stuffmapper',
 					'og:description': 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
 					'og:image': 'https://cdn.stuffmapper.com/stuffmapper-logo.png',
-					'og:url': subdomain+'/stuff/my/items',
-					'og:type': 'website'
+					'og:url': subdomain+'/stuff/my/items'
 				}
 			}
 		},
