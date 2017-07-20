@@ -20,7 +20,7 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': 'Get Stuff - Stuffmapper',
 					'og:description': 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
-					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:image': 'https://cdn.stuffmapper.com/stuffmapper-logo.png',
 					'og:url': subdomain+'/stuff/get',
 					'og:type': 'website'
 				}
@@ -41,8 +41,10 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': ['item', function (item) { return item.data.err?'':(item.data.res.title?item.data.res.title.trim(): 'No Item Found'+' - Stuffmapper') }],
 					'og:description': ['item', function (item) { return item.data.err?'':(item.data.res.description.trim()?item.data.res.description.trim():'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!') }],
-					'og:image': ['item', function (item) { return item.data.err?'':(item.data.res.image_url?'https://cdn.stuffmapper.com'+item.data.res.image_url:'https://www.stuffmapper.com/img/stuffmapper-logo.png') }],
+					'og:image': ['item', function (item) { return item.data.err?'':(item.data.res.image_url?'https://cdn.stuffmapper.com'+item.data.res.image_url:'https://cdn.stuffmapper.com/stuffmapper-logo.png') }],
 					'og:url': ['item', function (item) { return item.data.err?'':(item.data.res.id?subdomain+'/stuff/get/'+item.data.res.id: '') }]
+					'og:image:width': '200',
+					'og:image:height': '200'
 				}
 			}
 		},
@@ -62,8 +64,10 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': 'Give Stuff - Stuffmapper',
 					'og:description': 'Get ready to give stuff!',
-					'og:image': 'https://www.stuffmapper.com/img/give-pic-empty-01.png',
-					'og:url': subdomain+'/stuff/give'
+					'og:image': 'https://cdn.stuffmapper.com/give-pic-empty-01.png',
+					'og:url': subdomain+'/stuff/give',
+					'og:image:width': '200',
+					'og:image:height': '200'
 				}
 			}
 		},
@@ -89,7 +93,7 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': 'My Stuff - Stuffmapper',
 					'og:description': 'Map stuff to give it! Dibs Stuff to get it! Get it done fast! Let\'s save millions of items from landfills everywhere and support and grow the free reusable stuff movement!',
-					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:image': 'https://cdn.stuffmapper.com/stuffmapper-logo.png',
 					'og:url': subdomain+'/stuff/my/items',
 					'og:type': 'website'
 				}
@@ -145,7 +149,7 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': 'About - Stuffmapper',
 					'og:description': 'Our mission is to save millions of items from landfills everywhere and our vision is to support and grow the free reusable stuff movement.',
-					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:image': 'https://cdn.stuffmapper.com/stuffmapper-logo.png',
 					'og:url': subdomain+'/about'
 				}
 			}
@@ -160,7 +164,7 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': 'Privacy Policy - Stuffmapper',
 					'og:description': 'Stuffmapper SPC ("Stuffmapper") is committed to creating and maintaining a trusted community, and takes precautions to prevent unauthorized access to or misuse of data about you. Stuffmapper does not share personally identifiable user data with third parties.',
-					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:image': 'https://cdn.stuffmapper.com/stuffmapper-logo.png',
 					'og:url': subdomain+'/privacy'
 				}
 			}
@@ -176,7 +180,7 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': 'What is Stuffmapper?',
 					'og:description': 'Our goal is to save millions of items from landfills everywhere and to support and grow the free reusable stuff movement by connecting people who want to give and get free reusable items.',
-					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:image': 'https://cdn.stuffmapper.com/stuffmapper-logo.png',
 					'og:url': subdomain+'/faq'
 				}
 			}
@@ -192,7 +196,7 @@ function setDefaultSettings() {
 				properties: {
 					'og:title': 'Terms of Service - Stuffmapper',
 					'og:description': 'Our goal is to save millions of items from landfills everywhere and to support and grow the free reusable stuff movement by connecting people who want to give and get free reusable items.',
-					'og:image': 'https://www.stuffmapper.com/img/stuffmapper-logo.png',
+					'og:image': 'https://cdn.stuffmapper.com/stuffmapper-logo.png',
 					'og:url': subdomain+'/useragreement'
 				}
 			}
