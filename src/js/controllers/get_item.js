@@ -196,7 +196,7 @@ function GetItemController() {
 					requestAnimationFrame(function () {
 						$('.get-single-item-description, .get-single-item-dibs-button').removeClass('sm-hidden');
 						$('#get-stuff-back-button-container').removeClass('sm-hidden');
-						$('#get-item-share').click(function(){openFbShae($scope.listItem)});
+						$('#get-item-share').click(function(){openFbShare($scope.listItem)});
 						$('#get-stuff-item-title').text($scope.listItem.title);
 						setTimeout(function () {
 							$('.get-stuff-back-button').removeClass('sm-hidden');
@@ -403,7 +403,7 @@ function GetItemController() {
 		});
 	}
 
-	function openFbShae(data) {
+	function openFbShare(data) {
 
 		console.log(JSON.stringify(data));
 		var fbShare = {
