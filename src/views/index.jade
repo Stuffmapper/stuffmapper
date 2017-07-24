@@ -300,10 +300,14 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 							.sm-full-width(style="text-align:center;margin-top: 40px;color:#fff;font-size:20px;") Allow location! Stuffmapper works best when it’s local!
 							img(src="/img/location-image.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")
 							.sm-full-width(style="text-align:center;color:#fff;font-size:16px;") Allow location in your browser to exchange stuff in your area!
-						.swiper-slide(style="background-color:rgba(139, 195, 74, 1.0);")
-							.sm-full-width(style="text-align:center;margin-top: 40px;color:#fff;font-size:20px;") Free reusable stuff lives on<br />Stuffmapper!
-							img(src="/img/sharing_is_caring.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")
-							.sm-full-width(style="text-align:center;color:#fff;font-size:16px;") Stuffmapper is for givers and getters of donated stuff who want a secure and anonymous reliable exchange.
+						.swiper-slide(style="background-color:rgba(59, 175, 218, 1.0);")
+							.sm-full-width(style="color: #fff;margin-top: 40px;font-size: 20px;text-align: center;") Free reusable stuff lives on<br>Stuffmapper!
+							img(src="/img/give-get.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")
+							.sm-full-width1(style="border-radius: 75px 75px 0px 0px;position: relative;display: block;margin: 0px;height:100%;width:100%;color:#fff;text-align:center;font-size:16px;background-color:rgba(139, 195, 74, 1.0);") <br><br>Stuffmapper is for givers and getters of <br>donated stuff who want a secure and <br>anonymous reliable exchange.
+						//.swiper-slide(style="background-color:rgba(139, 195, 74, 1.0);")
+						//	.sm-full-width(style="text-align:center;margin-top: 40px;color:#fff;font-size:20px;") Free reusable stuff lives on<br />Stuffmapper!
+						//	img(src="/img/sharing_is_caring.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")
+						//	.sm-full-width(style="text-align:center;color:#fff;font-size:16px;") Stuffmapper is for givers and getters of donated stuff who want a secure and anonymous reliable exchange.
 						.swiper-slide(style="background-color:#8065B9;")
 							.sm-full-width(style="text-align:center;margin-top: 40px;color:#fff;font-size:20px;") Find perfectly good reusable items and reserve it with Dibs!
 							img(src="/img/dibs-img.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")
@@ -503,7 +507,7 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 					.modal-steps
 						#phone-update-step.modal-step.animate-250.active
 							h2.sm-modal-title.animate-250 Update account
-							div.update-phone-number
+							div.update-phone-number(style="background-color: #FFDB80;")
 								p(style="margin: 10px 0 10px")
 									b Signing into Stuffmapper just got better!
 								| What are benefits?
@@ -607,9 +611,25 @@ html(lang="en" class= htmlClassList ng-app="stuffMapp")
 				.modal-header
 				.sm-modal-content
 					h2.sm-modal-title.animate-250 Dibs stuff to get it!
+					//#dibs-info-modal-container.step-container
+					//	#dibs-info-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%; text-align: left;")
+					//		| Want this? Exchanges begin with Dibs.<br /><br />Dibs to hide stuff from everyone else on map and get exclusive communication with lister to complete exchange of item. If applicable, you will be automatically refunded if your Dibs is rejected or your Dibs is unfulfilled by the lister. <br />[For more on refunds see <a href="/faq#sm-faq-refund-policy" target="_blank">FAQ</a>]
+					//	button#dibs-info-modal-button.sm-button.sm-button-default.sm-text-m.sm-button-full-width(style="position: absolute;bottom: 0px;" type="button") Ok
 					#dibs-info-modal-container.step-container
-						#dibs-info-modal-body.give-location-text(style="top:45%;transform: translate(-50%, -50%); max-width: 95%; left:50%; text-align: left;")
-							| Want this? Exchanges begin with Dibs.<br /><br />Dibs to hide stuff from everyone else on map and get exclusive communication with lister to complete exchange of item. If applicable, you will be automatically refunded if your Dibs is rejected or your Dibs is unfulfilled by the lister. <br />[For more on refunds see <a href="/faq#sm-faq-refund-policy" target="_blank">FAQ</a>]
+						#dibs-info-modal-body
+							div.get-item-message-lister
+								img(src="/img/dibs-img.png" style="max-height: 250px;margin: 0 auto;position: relative;display: block;")
+							//| Want this? Exchanges begin with Dibs.<br /><br />Dibs to hide stuff from everyone else on map and get exclusive communication with lister to complete exchange of item. If applicable, you will be automatically refunded if your Dibs is rejected or your Dibs is unfulfilled by the lister. <br />[For more on refunds see <a href="/faq#sm-faq-refund-policy" target="_blank">FAQ</a>]
+							div.update-phone-number
+								p(style="margin: 10px 0 10px")
+									b Want this item? Start your exchange with Dibs!
+								| Dibs this item to:
+								ul
+									li hide it from everyone else on the map
+									li get exclusive communication with the lister
+									li start an exchange of this item
+								br
+								| <a href="/faq#sm-faq-refund-policy" target="_blank">Learn more about Dibs ></a>
 						button#dibs-info-modal-button.sm-button.sm-button-default.sm-text-m.sm-button-full-width(style="position: absolute;bottom: 0px;" type="button") Ok
 			#undibs-confirm-modal.modal-window.modal-window-hidden.animate-250
 				.modal-header

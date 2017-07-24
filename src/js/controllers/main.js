@@ -1596,7 +1596,7 @@ function MainController() {
 }
 
 function dibsInfoModal() {
-	$('#dibs-info-modal-button').on('click', dibsInfoModalOk);
+	// $('#dibs-info-modal-button').on('click', dibsInfoModalOk);
 	$u.modal.open('dibs-info-modal', function() {
 		$('#dibs-info-modal-button').off('click', dibsInfoModalOk);
 	});
