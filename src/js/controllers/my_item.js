@@ -769,10 +769,11 @@ function MyItemsController() {
 
 				$log.info(JSON.stringify(data));
 				var fbShare = {
-					fburl: 'https://www.facebook.com/sharer/sharer.php?s=100&p[title]={{title}}&p[summary]={{description}}&p[url]={{url}}&p[images][0]={{media}}',
+					// fburl: 'https://www.facebook.com/sharer/sharer.php?s=100&p[title]={{title}}&p[summary]={{description}}&p[url]={{url}}&p[images][0]={{media}}',
+					fburl: 'https://www.facebook.com/sharer/sharer.php?u={{url}}&t={{title}}',
 					popup: {
-						width: 426,
-						height: 436
+						width: 626,
+						height: 636
 					},
 					shareUrl: subdomain+'/stuff/get/'+data.id,
 					title: data.title || 'No Item Found',
@@ -781,9 +782,9 @@ function MyItemsController() {
 				};
 
 				var url = fbShare.fburl.replace(/{{url}}/g, encodeURIComponent(fbShare.shareUrl))
-					.replace(/{{title}}/g, encodeURIComponent(fbShare.title))
-					.replace(/{{description}}/g, encodeURIComponent(fbShare.description))
-					.replace(/{{media}}/g, encodeURIComponent(fbShare.media));
+					.replace(/{{title}}/g, encodeURIComponent(fbShare.title));
+					// .replace(/{{description}}/g, encodeURIComponent(fbShare.description))
+					// .replace(/{{media}}/g, encodeURIComponent(fbShare.media));
 
 				var left = (window.innerWidth/2) - (fbShare.popup.width/2),
 					top = (window.innerHeight/2) - (fbShare.popup.height/2);
