@@ -405,7 +405,7 @@ function GetItemController() {
 
 	function openFbShare(data) {
 
-		$log.info(JSON.stringify(data));
+		// $log.info(JSON.stringify(data));
 		var fbShare = {
 			// fburl: 'https://www.facebook.com/sharer/sharer.php?s=100&p[title]={{title}}&p[summary]={{description}}&p[url]={{url}}&p[images][0]={{media}}',
 			fburl: 'https://www.facebook.com/sharer/sharer.php?u={{url}}&t={{title}}',
@@ -462,7 +462,7 @@ function GetItemController() {
 	}
 	function completeConfirm() {
 		$u.modal.close('complete-confirm-modal');
-		console.log("completeConfirm  "+$scope.listItem.id)
+		$log.info("completeConfirm  "+$scope.listItem.id)
 		$u.api.completeStuffById($scope.listItem.id, function() {
 			$('#post-item-'+$scope.listItem.id).parent().parent().remove();
 			$u.toast('Dibs for <i>'+$scope.listItem.title+'</i> has been completed!');

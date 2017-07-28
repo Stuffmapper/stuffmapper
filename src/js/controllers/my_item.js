@@ -767,7 +767,7 @@ function MyItemsController() {
 
 			function openFbShareMyStuff(data) {
 
-				$log.info(JSON.stringify(data));
+				// $log.info(JSON.stringify(data));
 				var fbShare = {
 					// fburl: 'https://www.facebook.com/sharer/sharer.php?s=100&p[title]={{title}}&p[summary]={{description}}&p[url]={{url}}&p[images][0]={{media}}',
 					fburl: 'https://www.facebook.com/sharer/sharer.php?u={{url}}&t={{title}}',

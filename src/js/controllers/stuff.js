@@ -25,12 +25,12 @@ function StuffController() {
 	var styledMap = new google.maps.StyledMapType(style[0], {name: "Styled Map"});
 	var zoomLevel;
 	var mapOptions = {
-		zoom: 12,
+		zoom: 6,
 		center: {
 			lat: 47.608013,
 			lng: -122.335167
 		},
-		minZoom: 10,
+		minZoom: 5,
 		maxZoom: 17,
 		zoomControl: false,
 		mapTypeControl: false,
@@ -52,9 +52,9 @@ function StuffController() {
 		});
 	});
 	setTimeout(function(){
-		var zoomLevel = 13;
+		var zoomLevel = 5;
 		$('#sm-map-zoom-out').click(function() {
-			if(zoomLevel-1 >= 12) $scope.map.setZoom(--zoomLevel);
+			if(zoomLevel-1 >= 5) $scope.map.setZoom(--zoomLevel);
 		});
 		$('#sm-map-zoom-in').click(function() {
 			if(zoomLevel+1 <= 17) $scope.map.setZoom(++zoomLevel);

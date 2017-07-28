@@ -135,7 +135,7 @@ function GetStuffController() {
             e.setMap(null);
             $scope.markers = [];
         });
-        var maxZoom = 20;
+        var maxZoom = 17;
         var mapZoom = $scope.map.getZoom();
         var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
         var mapAnchor = mapSize / 2;
@@ -145,6 +145,7 @@ function GetStuffController() {
                     lat: e.lat,
                     lng: e.lng
                 },
+                title: e.title,
                 icon: {
                     url: 'img/Marker-all.png',
                     scaledSize: new google.maps.Size(mapSize, mapSize),
@@ -157,28 +158,37 @@ function GetStuffController() {
                 $state.go('stuff.get.item', {id: this.data.id});
             });
         });
-        oldMarkers.forEach(function (e) {
-            if (e.data.selected) {
-                $scope.markers.forEach(function (f, i) {
-                    if ($scope.markers[i].data.id === e.data.id) {
-                        f.data.selected = true;
-                        $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
-                        resizeMarkers();
-                    }
-                });
-            }
-            else {
-                $scope.markers.forEach(function (f, i) {
-                    if (f.data.id === e.data.id) {
-                        $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
-                    }
-                });
-            }
-        });
+        var mcOptions = {gridSize: 50, maxZoom: 17, imagePath: 'https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m'};
+        // {imagePath: 'https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m'}
+        // https://cdn.stuffmapper.com/oval-cluster.png
+        var markerCluster = new MarkerClusterer($scope.map, $scope.markers, mcOptions);
+
+        // oldMarkers.forEach(function (e) {
+        //     if (e.data.selected) {
+        //         $scope.markers.forEach(function (f, i) {
+        //             if ($scope.markers[i].data.id === e.data.id) {
+        //                 f.data.selected = true;
+        //                 $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
+        //                 resizeMarkers();
+        //             }
+        //         });
+        //     }
+        //     else {
+        //         $scope.markers.forEach(function (f, i) {
+        //             if (f.data.id === e.data.id) {
+        //                 $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
+        //             }
+        //         });
+        //     }
+        // });
     }
 
     $scope.geoLocation = undefined;
     $scope.getLocation = function (callback) {
+        if (!navigator.geolocation){
+            alert('Geolocation is not supported by your browser');
+            return;
+        }
         if ($scope.geoLocation) {
             $scope.map.setCenter($scope.geoLocation);
             if (typeof callback === 'function') callback($scope.geoLocation);
