@@ -25,13 +25,13 @@ function StuffController() {
 	var styledMap = new google.maps.StyledMapType(style[0], {name: "Styled Map"});
 	var zoomLevel;
 	var mapOptions = {
-		zoom: 6,
+		zoom: 13,
 		center: {
 			lat: 47.608013,
 			lng: -122.335167
 		},
-		minZoom: 5,
-		maxZoom: 17,
+		minZoom: 10,
+		maxZoom: 16,
 		zoomControl: false,
 		mapTypeControl: false,
 		scaleControl: false,
@@ -52,12 +52,12 @@ function StuffController() {
 		});
 	});
 	setTimeout(function(){
-		var zoomLevel = 5;
+		var zoomLevel = 10;
 		$('#sm-map-zoom-out').click(function() {
-			if(zoomLevel-1 >= 5) $scope.map.setZoom(--zoomLevel);
+			if(zoomLevel-1 >= 10) $scope.map.setZoom(--zoomLevel);
 		});
 		$('#sm-map-zoom-in').click(function() {
-			if(zoomLevel+1 <= 17) $scope.map.setZoom(++zoomLevel);
+			if(zoomLevel+1 <= 16) $scope.map.setZoom(++zoomLevel);
 		});
 	},1200);
 }

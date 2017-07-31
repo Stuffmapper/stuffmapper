@@ -9,6 +9,7 @@ function GetStuffController() {
 
     $scope.listItems = [];
     $scope.markers = [];
+    $scope.markerCluster = null;
     $('#content').removeClass('fre');
     var initResize = false;
     var gotActualLocation = false;
@@ -18,7 +19,7 @@ function GetStuffController() {
             $('#center-marker').removeClass('dropped');
             $timeout(function () {
                 requestAnimationFrame(function () {
-                    $('#center-marker').css({'display': 'none'});
+                    $('#center-marker').css({ 'display': 'none' });
                 });
             }, 250);
         }
@@ -102,26 +103,26 @@ function GetStuffController() {
                     $('#loading-get-stuff').addClass('sm-hidden');
                     $('#get-stuff-empty-list').addClass('sm-hidden');
                 }
-                    $scope.listItems = data.res;
-                    if ($('.masonry-grid').hasClass('isotope')) {
-                        $('.masonry-grid').isotope('reloadItems');
-                        $('.masonry-grid').isotope({
-                            columnWidth: $('.masonry-grid').width() / 2,
-                            itemSelector: '.masonry-grid-item',
-                            getSortData: {
-                                number: '.number parseInt'
-                            },
-                            sortBy: 'number',
-                            isAnimated: false,
-                            layoutMode: 'masonry',
-                            transitionDuration: 0,
-                            animationOptions: {
-                                duration: 0,
-                                queue: false
-                            }
-                        });
-                    }
-                    initMarkers();
+                $scope.listItems = data.res;
+                if ($('.masonry-grid').hasClass('isotope')) {
+                    $('.masonry-grid').isotope('reloadItems');
+                    $('.masonry-grid').isotope({
+                        columnWidth: $('.masonry-grid').width() / 2,
+                        itemSelector: '.masonry-grid-item',
+                        getSortData: {
+                            number: '.number parseInt'
+                        },
+                        sortBy: 'number',
+                        isAnimated: false,
+                        layoutMode: 'masonry',
+                        transitionDuration: 0,
+                        animationOptions: {
+                            duration: 0,
+                            queue: false
+                        }
+                    });
+                }
+                initMarkers();
             });
         });
     });
@@ -133,8 +134,11 @@ function GetStuffController() {
         var oldMarkers = $scope.markers;
         $scope.markers.forEach(function (e) {
             e.setMap(null);
-            $scope.markers = [];
         });
+        if ($scope.markerCluster) {
+            $scope.markerCluster.clearMarkers();
+        }
+        $scope.markers = [];
         var maxZoom = 17;
         var mapZoom = $scope.map.getZoom();
         var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
@@ -155,37 +159,48 @@ function GetStuffController() {
                 data: e
             }));
             $scope.markers[i].addListener('click', function (event) {
-                $state.go('stuff.get.item', {id: this.data.id});
+                $state.go('stuff.get.item', { id: this.data.id });
             });
         });
-        var mcOptions = {gridSize: 50, maxZoom: 17, imagePath: 'https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m'};
-        // {imagePath: 'https://raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m'}
+        var mcOptions = {
+            styles: [{
+                textColor: 'white',
+                url: 'http://stuffmapper-v2.s3.amazonaws.com/ovelcluster.png',
+                height: 100,
+                width: 100,
+                textSize: 28
+            }]
+        };
         // https://cdn.stuffmapper.com/oval-cluster.png
-        var markerCluster = new MarkerClusterer($scope.map, $scope.markers, mcOptions);
+        $scope.markerCluster = new MarkerClusterer($scope.map, $scope.markers, mcOptions);
 
-        // oldMarkers.forEach(function (e) {
-        //     if (e.data.selected) {
-        //         $scope.markers.forEach(function (f, i) {
-        //             if ($scope.markers[i].data.id === e.data.id) {
-        //                 f.data.selected = true;
-        //                 $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
-        //                 resizeMarkers();
-        //             }
-        //         });
-        //     }
-        //     else {
-        //         $scope.markers.forEach(function (f, i) {
-        //             if (f.data.id === e.data.id) {
-        //                 $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
-        //             }
-        //         });
-        //     }
-        // });
+        google.maps.event.addListener($scope.markerCluster, 'click', function (cluster) {
+            alert(cluster.getCenter());
+        });
+
+        oldMarkers.forEach(function (e) {
+            if (e.data.selected) {
+                $scope.markers.forEach(function (f, i) {
+                    if ($scope.markers[i].data.id === e.data.id) {
+                        f.data.selected = true;
+                        $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
+                        resizeMarkers();
+                    }
+                });
+            }
+            else {
+                $scope.markers.forEach(function (f, i) {
+                    if (f.data.id === e.data.id) {
+                        $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
+                    }
+                });
+            }
+        });
     }
 
     $scope.geoLocation = undefined;
     $scope.getLocation = function (callback) {
-        if (!navigator.geolocation){
+        if (!navigator.geolocation) {
             alert('Geolocation is not supported by your browser');
             return;
         }
@@ -234,6 +249,7 @@ function GetStuffController() {
         var mapZoom = $scope.map.getZoom();
         var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
         var mapAnchor = mapSize / 2;
+
         $scope.markers.forEach(function (e) {
             e.setIcon({
                 url: e.data.selected ? 'img/marker-selected.png' : 'img/Marker-all.png',
@@ -256,11 +272,11 @@ function GetStuffController() {
 
     $('.search-stuff-container .fa-search').click(function () {
         $('#filter-pane').removeClass('open-filter-pane');
-        $('.search-stuff-container .fa-map', '.search-stuff-container .toggle-stuff').css({'display': ''});
-        $('.stuff-input').css({'width': '', 'left': ''});
-        $('.search-stuff-container .fa-search').css({'margin-left': '', 'display': ''});
-        $('#get-stuff-container .settings-header').css({'display': '', 'height': ''});
-        $('.fa-map').css({'display': ''});
+        $('.search-stuff-container .fa-map', '.search-stuff-container .toggle-stuff').css({ 'display': '' });
+        $('.stuff-input').css({ 'width': '', 'left': '' });
+        $('.search-stuff-container .fa-search').css({ 'margin-left': '', 'display': '' });
+        $('#get-stuff-container .settings-header').css({ 'display': '', 'height': '' });
+        $('.fa-map').css({ 'display': '' });
     });
 
     $scope.toggleSwitch = function () {
@@ -270,13 +286,13 @@ function GetStuffController() {
     $scope.mapIsOpen = false;
     $scope.toggleMap = function () {
         if ($scope.mapIsOpen) {
-            $('#tab-content-container').css({'pointer-events': 'all'});
+            $('#tab-content-container').css({ 'pointer-events': 'all' });
             $('#get-stuff-container').removeClass('hide-masonry-container');
             $('#masonry-container').removeClass('hide-masonry-container');
             $('#map-toggle-switch').removeClass('fa-th-large').addClass('fa-map');
         }
         else {
-            $('#tab-content-container').css({'pointer-events': 'none'});
+            $('#tab-content-container').css({ 'pointer-events': 'none' });
             $('#get-stuff-container').addClass('hide-masonry-container');
             $('#masonry-container').addClass('hide-masonry-container');
             $('#map-toggle-switch').removeClass('fa-map').addClass('fa-th-large');
@@ -287,10 +303,10 @@ function GetStuffController() {
     $scope.toggleMap();
 
     $scope.watchSize = function () {
-        if ($(document).width() > 436) $('#tab-content-container').css({'pointer-events': 'all'});
+        if ($(document).width() > 436) $('#tab-content-container').css({ 'pointer-events': 'all' });
         else {
-            if ($scope.mapIsOpen) $('#tab-content-container').css({'pointer-events': 'none'});
-            else $('#tab-content-container').css({'pointer-events': 'all'});
+            if ($scope.mapIsOpen) $('#tab-content-container').css({ 'pointer-events': 'none' });
+            else $('#tab-content-container').css({ 'pointer-events': 'all' });
         }
     };
 
@@ -302,7 +318,7 @@ function GetStuffController() {
         $('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
         $('#filter-container > .filter-content-container').addClass('sm-hidden');
         $(window).off('resize', $scope.watchSize);
-        $('#tab-content-container').css({'pointer-events': 'all'});
+        $('#tab-content-container').css({ 'pointer-events': 'all' });
         if ($scope.mapbox) $scope.map.removeLayer('markers');
         else {
             $scope.markers.forEach(function (e) {
@@ -344,7 +360,7 @@ function GetStuffController() {
                         new google.maps.LatLng(e.lat, e.lng)
                     );
 
-                    if(radius <= convertValue) {
+                    if (radius <= convertValue) {
                         var matches = false;
                         // TODO: investigate this further
                         if (!searchQuery.toLowerCase().trim() || e.title.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1 || e.description.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1) matches = true;
@@ -357,18 +373,18 @@ function GetStuffController() {
                         var b = e.category.toLowerCase();
                         if ((matches && (a.indexOf(b) > -1) &&
                             ((e.attended && attended) || (!e.attended && unattended) || both))) {
-                            $('#post-item-' + e.id).parent().parent().css({'display': ''});
+                            $('#post-item-' + e.id).parent().parent().css({ 'display': '' });
                             matchCount++;
-                            $scope.markers.forEach(function (m,i) {
+                            $scope.markers.forEach(function (m, i) {
                                 if (m.data.id === e.id) {
                                     m.setVisible(true);
                                 }
                             });
                         } else {
-                            $('#post-item-' + e.id).parent().parent().css({'display': 'none'});
+                            $('#post-item-' + e.id).parent().parent().css({ 'display': 'none' });
                         }
                     } else {
-                        $('#post-item-' + e.id).parent().parent().css({'display': 'none'});
+                        $('#post-item-' + e.id).parent().parent().css({ 'display': 'none' });
                         //$scope.markers[$scope.markers.length - 1].setMap(null);
                     }
                 });
@@ -386,7 +402,7 @@ function GetStuffController() {
         }
         else {
             $scope.listItems.forEach(function (e) {
-                $('#post-item-' + e.id).parent().parent().css({'display': ''});
+                $('#post-item-' + e.id).parent().parent().css({ 'display': '' });
             });
             setTimeout(function () {
                 $(window).resize();
@@ -419,7 +435,7 @@ function GetStuffController() {
         $('#select-all .fa.fa-check').removeClass('select-deselect-checked');
         $('#deselect-all .fa.fa-times').removeClass('select-deselect-checked');
 
-        $('.masonry-grid-item').css({'display': 'block'});
+        $('.masonry-grid-item').css({ 'display': 'block' });
         if ($('.masonry-grid').hasClass('isotope')) {
             $('.masonry-grid').isotope('reloadItems');
             $('.masonry-grid').isotope({
@@ -453,14 +469,14 @@ function GetStuffController() {
         str = str.substring(0, maxLength).split(' ');
         str.pop();
         str.pop();
-        if (str[str.length - 1] === ',')str.pop();
-        if (str[str.length - 1] === ',')str.pop();
-        if (str[str.length - 1] === ' ')str.pop();
-        if (str[str.length - 1] === ' ')str.pop();
-        if (str[str.length - 1] === '')str.pop();
-        if (str[str.length - 1] === '')str.pop();
-        if (str[str.length - 1] === ' ')str.pop();
-        if (str[str.length - 1] === ' ')str.pop();
+        if (str[str.length - 1] === ',') str.pop();
+        if (str[str.length - 1] === ',') str.pop();
+        if (str[str.length - 1] === ' ') str.pop();
+        if (str[str.length - 1] === ' ') str.pop();
+        if (str[str.length - 1] === '') str.pop();
+        if (str[str.length - 1] === '') str.pop();
+        if (str[str.length - 1] === ' ') str.pop();
+        if (str[str.length - 1] === ' ') str.pop();
         str = str.join(' ');
         return str + ' ...';
     };
