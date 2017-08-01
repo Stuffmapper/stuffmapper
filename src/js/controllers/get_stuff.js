@@ -173,10 +173,6 @@ function GetStuffController() {
         };
         $scope.markerCluster = new MarkerClusterer($scope.map, $scope.markers, mcOptions);
 
-        google.maps.event.addListener($scope.markerCluster, 'click', function (cluster) {
-            alert(cluster.getCenter());
-        });
-
         oldMarkers.forEach(function (e) {
             if (e.data.selected) {
                 $scope.markers.forEach(function (f, i) {
