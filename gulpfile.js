@@ -150,6 +150,7 @@ gulp.task('jsConcat', function() {
 			'./src/js/lib/angular-sanitize/angular-sanitize.min.js',
 			'./src/js/lib/angular-animate/angular-animate.min.js',
 			'./src/js/lib/ui-router-metatags/dist/ui-router-metatags.min.js',
+			// './src/js/lib/js-marker-clusterer/src/markerclusterer_compiled.js',
 			'./src/js/lib/lodash/dist/lodash.min.js',
 			'./src/js/custom/counter_flipper.js',
 			'./src/js/lib/imagesloaded/imagesloaded.pkgd.min.js',
