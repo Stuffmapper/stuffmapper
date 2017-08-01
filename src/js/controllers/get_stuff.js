@@ -165,13 +165,12 @@ function GetStuffController() {
         var mcOptions = {
             styles: [{
                 textColor: 'white',
-                url: 'http://stuffmapper-v2.s3.amazonaws.com/ovelcluster.png',
+                url: 'https://cdn.stuffmapper.com/ovelcluster.png',
                 height: 100,
                 width: 100,
                 textSize: 28
             }]
         };
-        // https://cdn.stuffmapper.com/oval-cluster.png
         $scope.markerCluster = new MarkerClusterer($scope.map, $scope.markers, mcOptions);
 
         google.maps.event.addListener($scope.markerCluster, 'click', function (cluster) {
