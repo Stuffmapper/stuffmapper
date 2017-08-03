@@ -608,6 +608,151 @@ hr {
 
 
 
+//marker cluster
+#cluster-marker-div {
+	float:left;
+	height:auto;
+	max-height: 400px !important;
+	width: 100% !important;
+	max-width: 345px !important;
+	// transform: translate3d(-50%, -50%, 0);
+	// position: fixed;
+	background-color: #fff;
+	// left: 50%;
+	// top: 50%;
+	z-index: 999;
+	padding: 5px 5px 10px 10px;
+}
+#cluster-marker-div::after {
+    content:'';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -50px;
+    width: 0;
+    height: 0;
+    border-top: solid 30px #fff;
+    border-left: solid 30px transparent;
+    border-right: solid 30px transparent;
+}	
+
+#cluster-marker-div hr {
+	margin: 5px 0px 10px 0px;
+}
+
+#cluster-marker-header {
+	height: 30px;
+	font-size: 16px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	display: inline-block;
+	color: #737373;
+	font-weight: bold;
+}
+
+#cluster-marker-content {
+	overflow-y: scroll; 
+	overflow-x: hidden;
+	height: auto; 
+	max-height: 340px;
+	margin: 5px 0px;
+}
+
+#cluster-marker-content .cluster-item {
+	width: 316px;
+	height: 110px;
+	display: inline-block;
+	// padding: 5px 0px 5px 0px;
+	margin:0px auto;
+	position:relative;
+}
+
+#cluster-marker-content hr {
+	margin: 0px 10px 10px 0px;
+}
+
+#cluster-marker-content .cluster-item-image {
+	width: 100px;
+	height: 100px;
+	float: left;
+	border: 1px solid black;
+}
+
+#cluster-marker-content .cluster-item-content {
+	width: 205px;
+	height: 100px;
+	float: left;
+	padding-left: 10px;
+}
+
+#cluster-marker-content .cluster-item-content-title {
+	font-size: 16px;
+	//font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
+	font-weight:bold;
+	white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#cluster-marker-content .cluster-item-content-desc {
+	top: 10px;
+	position: relative;
+	font-size: 16px;
+	//font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
+	font-weight:normal;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#cluster-marker-content .cluster-item-content-cat {
+	position: absolute;
+	font-size: 16px;
+	//font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
+	font-weight:normal;
+	color: #3C3B3D;
+	background: #CCD1D9;
+	padding: 5px;
+	text-align: center;
+	bottom: 10px;
+	white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#cluster-marker-content .char-overlay {
+  font-family: 'Helvetica'; /* Your font family */
+  font-weight: bold;
+}
+
+//scrollbar styling
+#cluster-marker-content::-webkit-scrollbar {
+	width: 8px;
+	background-color: #D8D8D8;
+}
+ 
+#cluster-marker-content::-webkit-scrollbar-track {
+	background-color: #fff;
+}
+ 
+#cluster-marker-content::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+	//-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+	background-color: #D8D8D8;
+}
+
+#cluster-marker-item {
+	float: left;
+	width: 100%;
+	height: 50px;
+	padding:5px;
+}
+
+
 
 
 
@@ -617,4 +762,5 @@ hr {
 		top: 74px;
 		height: calc(100% - 74px);
 	}
+
 }
