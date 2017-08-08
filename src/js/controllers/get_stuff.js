@@ -93,7 +93,42 @@ function GetStuffController() {
 
         // }
 
+        google.maps.event.addListenerOnce($scope.map, 'idle', function () {
+            $log.info('idle map');
+            var c = this.getCenter();
+            $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/' + c.lat() + '/' + c.lng() + '/').success(function (data) {
+                if (!data.res || !data.res.length) {
+                    $('#loading-get-stuff').addClass('sm-hidden');
+                    $('#get-stuff-empty-list').removeClass('sm-hidden');
+                }
+                else {
+                    $('#loading-get-stuff').addClass('sm-hidden');
+                    $('#get-stuff-empty-list').addClass('sm-hidden');
+                }
+                $scope.listItems = data.res;
+                if ($('.masonry-grid').hasClass('isotope')) {
+                    $('.masonry-grid').isotope('reloadItems');
+                    $('.masonry-grid').isotope({
+                        columnWidth: $('.masonry-grid').width() / 2,
+                        itemSelector: '.masonry-grid-item',
+                        getSortData: {
+                            number: '.number parseInt'
+                        },
+                        sortBy: 'number',
+                        isAnimated: false,
+                        layoutMode: 'masonry',
+                        transitionDuration: 0,
+                        animationOptions: {
+                            duration: 0,
+                            queue: false
+                        }
+                    });
+                }
+                initMarkers();
+            });
+        });
         google.maps.event.addListener($scope.map, 'dragend', function () {
+            $log.info('dragend map');
             var c = this.getCenter();
             $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/' + c.lat() + '/' + c.lng() + '/').success(function (data) {
                 if (!data.res || !data.res.length) {
