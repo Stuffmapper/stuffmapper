@@ -1,4 +1,4 @@
-stuffMapp.controller('getStuffController', ['$scope', '$http', '$state', '$timeout', '$userData', '$stuffTabs', '$log', GetStuffController]);
+stuffMapp.controller('getStuffController', ['$scope', '$http', '$state', '$timeout', '$userData', '$stuffTabs', '$log', '$rootScope', GetStuffController]);
 function GetStuffController() {
     var $scope = arguments[0];
     var $http = arguments[1];
@@ -6,6 +6,7 @@ function GetStuffController() {
     var $timeout = arguments[3];
     var $userData = arguments[4];
     var $log = arguments[6];
+    var $rootScope = arguments[7];
 
     $scope.listItems = [];
     $scope.markers = [];
@@ -176,17 +177,15 @@ function GetStuffController() {
         };
         $scope.markerCluster = new MarkerClusterer($scope.map, $scope.markers, mcOptions);
 
-        // google.maps.event.addListener($scope.markerCluster, 'click', function (event) {
         google.maps.event.addListener($scope.markerCluster, 'clusterclick', function (cluster) {
-            // $log.info(cluster.getMarkers());
             var markersArr = cluster.getMarkers();
             var center = cluster.getCenter();
             var size = cluster.getSize();
             var htmlToAppend = [];
 
             markersArr.forEach(function (i) {
-                var htmldiv = [
-                    '<div class="cluster-item">',
+                var innerdiv = [
+                    '<div class="cluster-item" id="'+i.data.id+'">',
                         '<img class="cluster-item-image" src="https://cdn.stuffmapper.com' + i.data.image_url + '"/>',
                         '<div class="cluster-item-content">',
                             '<div class="cluster-item-content-title">' + i.data.title + '</div>',
@@ -195,11 +194,8 @@ function GetStuffController() {
                         '</div>',
                     '</div>',
                     '<hr/>'].join('');
-                htmlToAppend.push(htmldiv);
+                htmlToAppend.push(innerdiv);
             });
-            // $('#cluster-marker-count').html(markersArr.length);
-            // $('#cluster-modal-container').html(htmlToAppend);
-
             var htmlStatic = [
                 '<div class="animate-500" id="cluster-marker-div">',
                     '<div>',
@@ -244,6 +240,9 @@ function GetStuffController() {
                 }
             });
         }
+    $(document).on('click', '#cluster-modal-container > .cluster-item', function (event) {
+        $state.go('stuff.get.item', { id: $(this).attr("id") });
+    });
 
     $scope.geoLocation = undefined;
         $scope.getLocation = function (callback) {
@@ -371,6 +370,10 @@ function GetStuffController() {
                 $scope.markers.forEach(function (e) {
                     e.setMap(null);
                 });
+            }
+            if ($scope.markerCluster) {
+                $scope.markerCluster.clearMarkers();
+                $scope.markerCluster = null;
             }
         });
 

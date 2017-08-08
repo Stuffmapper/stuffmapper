@@ -10,6 +10,7 @@ function GetItemController() {
 	var item = arguments[6];
 	var data = item.data;
 	var singleItemTemplateMap;
+	setTimeout(function () {
 	$('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
 	$('#filter-container > .filter-content-container').addClass('sm-hidden');
 	//$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function (data) {
@@ -209,6 +210,7 @@ function GetItemController() {
 				});
 			});
 		}
+		}, 850);
 	//});
 
 	// $scope.dibsInfoModal = function() {
@@ -504,7 +506,7 @@ function GetItemController() {
 			setTimeout(function() {
 				singleItemTemplateMap.remove();
 				singleItemTemplateMap = undefined;
-			}, 250);
+			}, 25);
 		}
 		$('#masonry-container').css({'visibility': 'visible'});
 		$('#get-item-not-found').addClass('sm-hidden');
@@ -536,6 +538,6 @@ function GetItemController() {
 					$('iframe#braintree-dropin-modal-frame').remove();
 				});
 			});
-		}, 250);
+		}, 25);
 	});
 }

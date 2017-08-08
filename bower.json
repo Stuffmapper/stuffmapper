@@ -31,8 +31,7 @@
     "lodash": "^4.17.4",
     "angular-ui-utils": "bower",
     "ui-router-metatags": "^1.0.3",
-    "intl-tel-input": "^12.0.0",
-    "js-marker-clusterer": "*"
+    "intl-tel-input": "^12.0.0"
   },
   "resolutions": {
     "angular-animate": "1.5.3",
