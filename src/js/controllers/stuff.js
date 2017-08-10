@@ -52,9 +52,9 @@ function StuffController() {
 		});
 	});
 	setTimeout(function(){
-		var zoomLevel = 13;
+		var zoomLevel = 10;
 		$('#sm-map-zoom-out').click(function() {
-			if(zoomLevel-1 >= 12) $scope.map.setZoom(--zoomLevel);
+			if(zoomLevel-1 >= 10) $scope.map.setZoom(--zoomLevel);
 		});
 		$('#sm-map-zoom-in').click(function() {
 			if(zoomLevel+1 <= 17) $scope.map.setZoom(++zoomLevel);

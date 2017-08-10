@@ -71,6 +71,11 @@ function MyItemsController() {
 					// && ($userData.getUserId() != $scope.listItem.dibber_id)
 					// && $scope.listItem.dibbed);
 
+					var shareMyStuffButton = ['<button type="button" id="my-item-share" style="border-radius: 0px;height:52px;background-color: white;border: 2px solid #3B7ADB;" class="sm-button sm-button-default sm-text-l sm-button-full-width">',
+						'<i style="color: #2B5CA6;" class="fa fa-facebook-square"></i>',
+						'<span style="color: #2B5CA6;">&nbsp;Share on Facebook</span>',
+						'</button>'].join('\n');
+
 					$scope.googleMapStaticUrl = [
 						'https://maps.googleapis.com/maps/api/staticmap?',
 						'zoom=13&size=600x300&maptype=roadmap&',
@@ -106,7 +111,7 @@ function MyItemsController() {
 						'		</div>',
 						'</div>',
 						'	<div class="sm-text-m sm-full-width">Title</div>',
-						'	<input id="edit-item-title" value="'+$scope.listItem.title.trim()+'" class="sm-text-input-full-width sm-text-input" type="text">',
+						'	<input id="edit-item-title" maxlength="31" value="'+$scope.listItem.title.trim()+'" class="sm-text-input-full-width sm-text-input" type="text">',
 						//'	<div class="sm-text-m sm-full-width">Description</div>',
 						//'	<textarea id="edit-item-description" class="sm-text-input-full-width sm-text-input">'+$scope.listItem.description+'</textarea>',
 						'	<div class="sm-text-m sm-full-width" style="margin-bottom: 0px;">Category</div>',
@@ -177,6 +182,7 @@ function MyItemsController() {
 					$scope.detailsContainer.html([
 						((!$scope.listItem.attended)?'<div id="get-item-is-unattended" class="get-item-is-unattended sm-full-width" style="text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>':'<div id="get-item-is-unattended" class="get-item-is-unattended sm-full-width" style="display:none; text-align: center;margin-top: 5px; margin-bottom: 5px;">This item is <a href="/faq#sm-faq-attended-unattended-item-explanation-for-dibber" target="_blank">unattended</a>.</div>'),
 						'<p style="white-space: pre-wrap;" class="sm-text-m sm-full-width">'+data.res.description+'</p>',
+						shareMyStuffButton,
 						($scope.listItem.attended && $scope.listItem.dibbed)?'<button id="get-single-item-conversation-button'+$stateParams.id+'" class="sm-button sm-text-l sm-button-default sm-button-full-width">Go to Conversation</button>':'',
 						($scope.listItem.type === 'dibber')?'<button id="my-item-undibs-big'+$stateParams.id+'" class=" sm-button sm-text-l sm-button-ghost sm-button-ghost-solid sm-button-negative sm-button-full-width animate-250">unDibs</button>':'',
 						($scope.listItem.dibbed && $scope.listItem.attended && $scope.listItem.type === 'dibber')?'<div class="sm-text-s sm-full-width" style="margin-bottom:0px;text-align:center;">Coordinate pick-up with the lister. Send a message to learn exact location, time to meet, etc.</div>':'',
@@ -466,6 +472,7 @@ function MyItemsController() {
 					$('#my-item-complete'+$stateParams.id+', #my-item-complete-body'+$stateParams.id).on('click', openCompleteModal);
 					$('#my-item-complete-unattended-'+$stateParams.id).on('click', openCompleteUnattendedModal);
 					// $('#my-item-complete-unattended-'+$stateParams.id).on('click', openCompleteUnattendedModal);
+					$('#my-item-share').click(function(){openFbShareMyStuff($scope.listItem)});
 
 					//$('#get-single-item-conversation-button'+$stateParams.id)
 					$('#give-image-select').change(function(event) {
@@ -758,6 +765,33 @@ function MyItemsController() {
 				});
 			}
 
+			function openFbShareMyStuff(data) {
+
+				// $log.info(JSON.stringify(data));
+				var fbShare = {
+					// fburl: 'https://www.facebook.com/sharer/sharer.php?s=100&p[title]={{title}}&p[summary]={{description}}&p[url]={{url}}&p[images][0]={{media}}',
+					fburl: 'https://www.facebook.com/sharer/sharer.php?u={{url}}&t={{title}}',
+					popup: {
+						width: 626,
+						height: 636
+					},
+					shareUrl: subdomain+'/stuff/get/'+data.id,
+					title: data.title || 'No Item Found',
+					description: data.description || '',
+					media: 'https://cdn.stuffmapper.com' + data.image_url || ''
+				};
+
+				var url = fbShare.fburl.replace(/{{url}}/g, encodeURIComponent(fbShare.shareUrl))
+					.replace(/{{title}}/g, encodeURIComponent(fbShare.title));
+					// .replace(/{{description}}/g, encodeURIComponent(fbShare.description))
+					// .replace(/{{media}}/g, encodeURIComponent(fbShare.media));
+
+				var left = (window.innerWidth/2) - (fbShare.popup.width/2),
+					top = (window.innerHeight/2) - (fbShare.popup.height/2);
+
+				return window.open(url, '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + fbShare.popup.width + ', height=' + fbShare.popup.height + ', top=' + top + ', left=' + left);
+			}
+
 			$scope.$on('$destroy', function() {
 				if($scope.listItem) {
 					$('#my-stuff-container').css({overflow: ''});
@@ -786,6 +820,7 @@ function MyItemsController() {
 					// $('#get-stuff-back-button-container').addClass('sm-hidden');
 					// $('.get-stuff-back-button').addClass('sm-hidden');
 					// $('#get-stuff-item-title').addClass('sm-hidden');
+					$("#my-item-share").off('click');
 					$scope.container.addClass('sm-hidden');
 					setTimeout(function () {
 						requestAnimationFrame(function () {

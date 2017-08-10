@@ -1,4 +1,4 @@
-stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', '$state', '$log', GetItemController]);
+stuffMapp.controller('getItemController', ['$scope', '$http', '$stateParams', '$userData', '$state', '$log', 'item', GetItemController]);
 function GetItemController() {
 	'use strict';
 	var $scope = arguments[0];
@@ -7,12 +7,15 @@ function GetItemController() {
 	var $userData = arguments[3];
 	var $state = arguments[4];
 	var $log = arguments[5];
+	var item = arguments[6];
+	var data = item.data;
 	var singleItemTemplateMap;
+	setTimeout(function () {
 	$('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
 	$('#filter-container > .filter-content-container').addClass('sm-hidden');
-	$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function (data) {
+	//$http.get(config.api.host + '/api/v' + config.api.version + '/stuff/id/' + $stateParams.id).success(function (data) {
 		if (data.err) {
-			console.log('item not found')
+			$log.info('item not found');
 			$scope.container = $('<div>', {
 				id: 'get-item-single-undefined',
 				class: 'get-item-single-container animate-250'
@@ -102,6 +105,11 @@ function GetItemController() {
 			if(pickUpInit)	$scope.pickUpMessage.appendTo($scope.container);
 
 
+			var shareButton = ['<button type="button" id="get-item-share" style="border-radius: 0px;height:52px;background-color: white;border: 2px solid #3B7ADB;" class="sm-button sm-button-default sm-text-l sm-button-full-width">',
+									'<i style="color: #2B5CA6;" class="fa fa-facebook-square"></i>',
+									'<span style="color: #2B5CA6;">&nbsp;Share on Facebook</span>',
+								'</button>'].join('\n');
+
 			var attachedItem = "";
 			if($scope.listItem.attended && !$userData.isLoggedIn()){
 				attachedItem = '<button id="get-single-item-dibs-button' + $stateParams.id + '" class="sm-button sm-button-default sm-text-l sm-button-full-width">Dibs!</button>';
@@ -148,6 +156,7 @@ function GetItemController() {
 				'</div>',
 				'<div class="sm-text-s sm-full-width">All stuff is free!&nbsp;<span class="fa fa-info-circle info-icon",aria-hidden="true" style="cursor: pointer" onclick="dibsInfoModal()"></div>',
 				attachedItem,
+				shareButton,
 				'<div class="">',
 				'	<div class="get-item-single-category"></div><div class="get-item-single-time"></div>',
 				'</div>',
@@ -188,6 +197,7 @@ function GetItemController() {
 					requestAnimationFrame(function () {
 						$('.get-single-item-description, .get-single-item-dibs-button').removeClass('sm-hidden');
 						$('#get-stuff-back-button-container').removeClass('sm-hidden');
+						$('#get-item-share').click(function(){openFbShare($scope.listItem)});
 						$('#get-stuff-item-title').text($scope.listItem.title);
 						setTimeout(function () {
 							$('.get-stuff-back-button').removeClass('sm-hidden');
@@ -200,7 +210,8 @@ function GetItemController() {
 				});
 			});
 		}
-	});
+		}, 850);
+	//});
 
 	// $scope.dibsInfoModal = function() {
 	// 	$('#dibs-info-modal-button').on('click', dibsInfoModalOk);
@@ -394,6 +405,33 @@ function GetItemController() {
 		});
 	}
 
+	function openFbShare(data) {
+
+		// $log.info(JSON.stringify(data));
+		var fbShare = {
+			// fburl: 'https://www.facebook.com/sharer/sharer.php?s=100&p[title]={{title}}&p[summary]={{description}}&p[url]={{url}}&p[images][0]={{media}}',
+			fburl: 'https://www.facebook.com/sharer/sharer.php?u={{url}}&t={{title}}',
+			popup: {
+				width: 626,
+				height: 636
+			},
+			shareUrl: subdomain+'/stuff/get/'+data.id,
+			title: data.title || 'No Item Found',
+			description: data.description || '',
+			media: 'https://cdn.stuffmapper.com' + data.image_url || ''
+		};
+
+		var url = fbShare.fburl.replace(/{{url}}/g, encodeURIComponent(fbShare.shareUrl))
+			.replace(/{{title}}/g, encodeURIComponent(fbShare.title));
+			// .replace(/{{description}}/g, encodeURIComponent(fbShare.description))
+			// .replace(/{{media}}/g, encodeURIComponent(fbShare.media));
+
+		var left = (window.innerWidth/2) - (fbShare.popup.width/2),
+			top = (window.innerHeight/2) - (fbShare.popup.height/2);
+
+		return window.open(url, '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + fbShare.popup.width + ', height=' + fbShare.popup.height + ', top=' + top + ', left=' + left);
+	}
+
 	function checkScroll() {
 		var div = $scope.detailsContainer[0];
 		var hasVerticalScrollbar = div.scrollHeight > div.clientHeight;
@@ -426,7 +464,7 @@ function GetItemController() {
 	}
 	function completeConfirm() {
 		$u.modal.close('complete-confirm-modal');
-		console.log("completeConfirm  "+$scope.listItem.id)
+		$log.info("completeConfirm  "+$scope.listItem.id)
 		$u.api.completeStuffById($scope.listItem.id, function() {
 			$('#post-item-'+$scope.listItem.id).parent().parent().remove();
 			$u.toast('Dibs for <i>'+$scope.listItem.title+'</i> has been completed!');
@@ -468,7 +506,7 @@ function GetItemController() {
 			setTimeout(function() {
 				singleItemTemplateMap.remove();
 				singleItemTemplateMap = undefined;
-			}, 250);
+			}, 25);
 		}
 		$('#masonry-container').css({'visibility': 'visible'});
 		$('#get-item-not-found').addClass('sm-hidden');
@@ -481,6 +519,7 @@ function GetItemController() {
 		$('#get-single-item-dibs-button'+$stateParams.id).off('click', dibs);
 		$('#get-single-item-conversation-button' + $scope.listItem.id).off('click', goToConversation);
 		$('#get-item-complete'+$scope.listItem.id+', #get-item-complete-body'+$scope.listItem.id).off('click', openCompleteModal);
+		$("#get-item-share").off('click');
 		if($scope.listItem) {
 			$scope.markers.forEach(function (e) {
 				if (e.data.id === $scope.listItem.id) {
@@ -499,6 +538,6 @@ function GetItemController() {
 					$('iframe#braintree-dropin-modal-frame').remove();
 				});
 			});
-		}, 250);
+		}, 25);
 	});
 }
