@@ -11,6 +11,8 @@ var session = require('express-session');
 var redis = require('redis');
 var redisStore = require('connect-redis')(session);
 var client = redis.createClient();
+// var apicache = require('apicache');
+// let cacheWithRedis = apicache.options({ redisClient: client }).middleware;
 var sharedsession = require('express-socket.io-session');
 var passport = require('passport');
 var User = require('./routes/api/v1/config/user');
@@ -209,6 +211,7 @@ io.on('disconnect', function(socket) {
 });
 app.use('/', require('./routes/api/v1/botshare'));
 app.use('/api/v1', require('./routes/api/v1/index'));
+// app.use('/api/v1',cacheWithRedis('5 minutes'), require('./routes/api/v1/index'));
 
 // catch 404 and forward to error handler /* can't enable it due to html5 routing on frontend*/
 // app.use(function (req, res, next) {

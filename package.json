@@ -5,6 +5,7 @@
   "private": true,
   "main": "electron.js",
   "dependencies": {
+    "apicache": "^0.8.7",
     "apn": "^1.7.8",
     "aws-sdk": "^2.41.0",
     "bcryptjs": "^2.4.3",
