@@ -206,9 +206,13 @@ function ConversationController() {
 					});
 				};
 				$('#conversation-input div textarea').on('focus', function(e) {
-					$('html, body').animate({ scrollTop: $(document).height() }, 250);
-					$('#conversation-messages').animate({ scrollTop: $(document).height() }, 250);
+					// $('html, body').animate({ scrollTop: $(document).height() }, 250);
+					// $('#conversation-messages').animate({ scrollTop: $(document).height() }, 250);
 					console.log('focus');
+					var messageWindow = $('#conversation-messages');
+					var scrollHeight = messageWindow.prop("scrollHeight");
+					var scrollBottom = messageWindow.prop("scrollTop") + messageWindow.height();
+					messageWindow.stop().animate({ scrollTop: scrollHeight }, 250);
 				});
 				$scope.$on('$destroy', function() {
 					$('#conversation-input').off('focus');
@@ -224,17 +228,21 @@ function ConversationController() {
 			});
 			var out = document.getElementById('conversation-messages');
 			$scope.insertMessage = function(type, message) {
-				var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+				// var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
 				$('#conversation-messages').append([
 					'<li class="conversation-message-container" ng-repeat="message in conversation | reverse"><div class="conversation-message conversation-'+type+'-message">',
 					message.trim(),
 					'</div></li>'
 				].join(''));
-				if(isScrolledToBottom) {
-					$(out).animate({
-						scrollTop: out.scrollHeight - out.clientHeight
-					}, 250);
-				}
+				// if(isScrolledToBottom) {
+				// 	$(out).animate({
+				// 		scrollTop: out.scrollHeight - out.clientHeight
+				// 	}, 250);
+				// }
+				var messageWindow = $('#conversation-messages');
+				var scrollHeight = messageWindow.prop("scrollHeight");
+				var scrollBottom = messageWindow.prop("scrollTop") + messageWindow.height();
+				messageWindow.stop().animate({ scrollTop: scrollHeight }, 250);
 			};
 			$('#conversation-input textarea').on('keyup', calcTextArea);
 

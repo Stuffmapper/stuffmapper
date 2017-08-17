@@ -354,8 +354,8 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 	].join(' ');
 	var values = [
 		req.session.passport.user.id,
-		req.body.title,
-		req.body.description || " ",
+		req.body.title.trim(),
+		req.body.description.trim() || " ",
 		req.body.lat,
 		req.body.lng,
 		req.body.attended,
@@ -417,18 +417,18 @@ router.post('/stuff', isAuthenticated, function(req, res) {
 											queryServer(res, 'SELECT uname, email, phone_number, item_listed_notify FROM users WHERE id = $1', [req.session.passport.user.id], function (result0) {
 												sendTemplate(
 													'item-listed',
-													'Your ' + req.body.title + ' has been mapped!',
+													'Your ' + req.body.title.trim() + ' has been mapped!',
 													{[result0.rows[0].uname]: result0.rows[0].email},
 													{
 														'FIRSTNAME': result0.rows[0].uname,
-														'ITEMTITLE': req.body.title,
+														'ITEMTITLE': req.body.title.trim(),
 														'ITEMIMAGE': 'https://cdn.stuffmapper.com' + result5.rows[0].image_url
 													},
 													result0.rows[0].item_listed_notify
 												);
 
 												var emoji_message = emoji.get(':star2:') + "" + emoji.get(':rainbow:') + "" + emoji.get(':sparkles:');
-												var sms_message = emoji_message + "\nYour " + req.body.title + " has been mapped! We will notify you via text when someone Dibs your item.";
+												var sms_message = emoji_message + "\nYour " + req.body.title.trim() + " has been mapped! We will notify you via text when someone Dibs your item.";
 												var phone_number = result0.rows[0].phone_number;
 												sms.sendSMS(phone_number, sms_message, result0.rows[0].item_listed_notify);
 											});
