@@ -15,6 +15,7 @@ pids
 *.iws
 .idea_modules/
 atlassian-ide-plugin.xml
+.vscode
 
 # Vagrant
 .vagrant

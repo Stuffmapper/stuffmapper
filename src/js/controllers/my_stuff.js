@@ -244,7 +244,7 @@ function MyStuffController() {
     }
 
     $(document).on('click', '#my-cluster-modal-container > .cluster-item', function(event) {
-        $state.go('stuff.my.items.item', { id: this.data.id });
+        $state.go('stuff.my.items.item', { id: $(this).attr("id") });
     });
 
 
