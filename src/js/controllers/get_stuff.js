@@ -180,9 +180,9 @@ function GetStuffController() {
                     anchor: new google.maps.Point(mapAnchor, mapAnchor)
                 });
             });
-            if ($scope.markerCluster) {
-                $scope.markerCluster.redraw();
-            }
+            // if ($scope.markerCluster) {
+            //     $scope.markerCluster.redraw();
+            // }
         });
     function initMarkers() {
         var oldMarkers = $scope.markers;
@@ -222,7 +222,7 @@ function GetStuffController() {
             });
         });
         var mcOptions = {
-            maxZoom: 14,
+            maxZoom: 13,
             zoomOnClick: false,
             minimumClusterSize: 2,
             styles: [{
