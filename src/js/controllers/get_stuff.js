@@ -92,38 +92,40 @@ function GetStuffController() {
         initMarkers();
 
         // }
-        google.maps.event.addListener($scope.map, 'dragend', function () {
-            var c = this.getCenter();
-            $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/' + c.lat() + '/' + c.lng() + '/').success(function (data) {
-                if (!data.res || !data.res.length) {
-                    $('#loading-get-stuff').addClass('sm-hidden');
-                    $('#get-stuff-empty-list').removeClass('sm-hidden');
-                }
-                else {
-                    $('#loading-get-stuff').addClass('sm-hidden');
-                    $('#get-stuff-empty-list').addClass('sm-hidden');
-                }
-                $scope.listItems = data.res;
-                if ($('.masonry-grid').hasClass('isotope')) {
-                    $('.masonry-grid').isotope('reloadItems');
-                    $('.masonry-grid').isotope({
-                        columnWidth: $('.masonry-grid').width() / 2,
-                        itemSelector: '.masonry-grid-item',
-                        getSortData: {
-                            number: '.number parseInt'
-                        },
-                        sortBy: 'number',
-                        isAnimated: false,
-                        layoutMode: 'masonry',
-                        transitionDuration: 0,
-                        animationOptions: {
-                            duration: 0,
-                            queue: false
-                        }
-                    });
-                }
-                initMarkers();
-            });
+       google.maps.event.addListener($scope.map, 'dragend', function () {
+                var c = this.getCenter();
+                $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/' + c.lat() + '/' + c.lng() + '/').success(function (data) {
+                    if (!data.res || !data.res.length) {
+                        $('#loading-get-stuff').addClass('sm-hidden');
+                        $('#get-stuff-empty-list').removeClass('sm-hidden');
+                    }
+                    else {
+                        $('#loading-get-stuff').addClass('sm-hidden');
+                        $('#get-stuff-empty-list').addClass('sm-hidden');
+                    }
+                    $scope.listItems = data.res;
+                    if ($('.masonry-grid').hasClass('isotope')) {
+                        $('.masonry-grid').isotope('reloadItems');
+                        $('.masonry-grid').isotope({
+                            columnWidth: $('.masonry-grid').width() / 2,
+                            itemSelector: '.masonry-grid-item',
+                            getSortData: {
+                                number: '.number parseInt'
+                            },
+                            sortBy: 'number',
+                            isAnimated: false,
+                            layoutMode: 'masonry',
+                            transitionDuration: 0,
+                            animationOptions: {
+                                duration: 0,
+                                queue: false
+                            }
+                        });
+                    }
+                    initMarkers();
+                
+                
+                });
         });
     });
     google.maps.event.addListenerOnce($scope.map, 'idle', function () {
@@ -169,13 +171,18 @@ function GetStuffController() {
     $scope.map.addListener('zoom_changed', resizeMarkers);
     function initMarkers() {
         var oldMarkers = $scope.markers;
-        $scope.markers.forEach(function (e) {
-            e.setMap(null);
-        });
-        if ($scope.markerCluster) {
-            $scope.markerCluster.clearMarkers();
+        // $scope.markers.forEach(function (e) {
+        //     e.setMap(null);
+        //     console.log('setting marker null get stuff')
+        // });        
+        for (var singlemarker=0; singlemarker < $scope.markers.length; singlemarker++) {
+            $scope.markers[singlemarker].setMap(null)
         }
         $scope.markers = [];
+        if ($scope.markerCluster) {
+            $scope.markerCluster.clearMarkers();
+            $scope.markerCluster = null;
+        }        
         var maxZoom = 17;
         var mapZoom = $scope.map.getZoom();
         var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
@@ -257,40 +264,67 @@ function GetStuffController() {
             }
         });
 
-            oldMarkers.forEach(function (e) {
-                if (e.data.selected) {
-                    $scope.markers.forEach(function (f, i) {
-                        if ($scope.markers[i].data.id === e.data.id) {
-                            f.data.selected = true;
-                            $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
-                            resizeMarkers();
-                        }
-                    });
-                }
-                else {
-                    $scope.markers.forEach(function (f, i) {
-                        if (f.data.id === e.data.id) {
-                            $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
-                        }
-                    });
-                }
-            });
+        oldMarkers.forEach(function (e) {
+            if (e.data.selected) {
+                $scope.markers.forEach(function (f, i) {
+                    if ($scope.markers[i].data.id === e.data.id) {
+                        f.data.selected = true;
+                        $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
+                        resizeMarkers();
+                    }
+                });
+            }
+            else {
+                $scope.markers.forEach(function (f, i) {
+                    if (f.data.id === e.data.id) {
+                        $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
+                    }
+                });
+            }
+        });
+        for (var singlemarker = 0; singlemarker < oldMarkers.length; singlemarker++) {
+            oldMarkers[singlemarker].setMap(null)
+        }
+        // $scope.callDragEnd = false;
         }
     $(document).on('click', '#cluster-modal-container > .cluster-item', function (event) {
         $state.go('stuff.get.item', { id: $(this).attr("id") });
     });
+
+        $scope.$on('$destroy', function () {
+            $('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
+            $('#filter-container > .filter-content-container').addClass('sm-hidden');
+            $(window).off('resize', $scope.watchSize);
+            $('#tab-content-container').css({ 'pointer-events': 'all' });
+         
+
+            // $scope.markers.forEach(function (e) {
+            //     e.setMap(null);
+            // });
+            for (var singlemarker = 0; singlemarker < $scope.markers.length; singlemarker++) {
+                $scope.markers[singlemarker].setMap(null)
+            }
+
+            $scope.markers = [];
+            if ($scope.markerCluster) {
+                $scope.markerCluster.clearMarkers();
+                $scope.markerCluster = null;
+            }           
+           google.maps.event.clearListeners($scope.map, 'dragend'); 
+           
+        //    google.maps.event.clearListeners('zoom_changed');
+        });    
 
     $scope.geoLocation = undefined;
         $scope.getLocation = function (callback) {
             if (!navigator.geolocation) {
                 alert('Geolocation is not supported by your browser');
                 return;
-            }
-            if ($scope.geoLocation) {
+            } 
+            if($scope.geoLocation) {
                 $scope.map.setCenter($scope.geoLocation);
-                if (typeof callback === 'function') callback($scope.geoLocation);
-            }
-            else if (navigator.geolocation) {
+                if (typeof callback === 'function') return callback($scope.geoLocation);
+            } else if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
                     gotActualLocation = true;
                     $scope.geoLocation = {
@@ -299,7 +333,7 @@ function GetStuffController() {
                     };
                     $scope.map.setCenter($scope.geoLocation);
                     if (typeof callback === "function") {
-                        callback({
+                        return callback({
                             lat: position.coords.latitude,
                             lng: position.coords.longitude
                         });
@@ -319,9 +353,12 @@ function GetStuffController() {
                 }, function () {
                     //handleLocationError(true, infoWindow, map.getCenter());
                 });
-            } else {
-                //handleLocationError(false, infoWindow, map.getCenter());
             }
+            
+            // } else {
+            //     //handleLocationError(false, infoWindow, map.getCenter());
+                
+            // }
         };
         $scope.setGetStuff = function () {
             $state.go('stuff.get');
@@ -339,6 +376,9 @@ function GetStuffController() {
                     anchor: new google.maps.Point(mapAnchor, mapAnchor)
                 });
             });
+            if ($scope.markerCluster) {
+                $scope.markerCluster.redraw();
+            }
         }
 
         $('#search-stuff').focus(function () {
@@ -395,24 +435,6 @@ function GetStuffController() {
         $(window).on('resize', $scope.watchSize);
 
         $scope.watchSize();
-
-        $scope.$on('$destroy', function () {
-            $('#filter-container > .sm-background-semi-opaque').addClass('sm-hidden');
-            $('#filter-container > .filter-content-container').addClass('sm-hidden');
-            $(window).off('resize', $scope.watchSize);
-            $('#tab-content-container').css({ 'pointer-events': 'all' });
-            if ($scope.mapbox) $scope.map.removeLayer('markers');
-            else {
-                $scope.markers.forEach(function (e) {
-                    e.setMap(null);
-                });
-            }
-            if ($scope.markerCluster) {
-                $scope.markerCluster.clearMarkers();
-                $scope.markerCluster = null;
-            }
-            $scope.markers = [];
-        });
 
         $scope.filterSearch = function () {
             var searchQuery = $('#search-stuff').val().toLowerCase();
