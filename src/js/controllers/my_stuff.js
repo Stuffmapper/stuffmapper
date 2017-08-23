@@ -24,6 +24,14 @@ function MyStuffController() {
             $state.go('stuff.get', { '#': 'signin' });
             $scope.openModal('modal');
         } else {
+            for (var singlemarker = 0; singlemarker < $scope.markers.length; singlemarker++) {
+                $scope.markers[singlemarker].setMap(null)
+            }
+            $scope.markers = [];
+            if ($scope.markerCluster) {
+                $scope.markerCluster.clearMarkers();
+                $scope.markerCluster = null;
+            }    
             $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my').success(function(data) {
                 $scope.dibbedItems = [];
                 $scope.givedItems = [];
@@ -49,14 +57,19 @@ function MyStuffController() {
                 initMarkers();
 
                 // $('#mystuff a').addClass('selected');
-                $scope.$on('$destroy', function() {
-                    $scope.markers.forEach(function(e) {
-                        e.setMap(null);
-                    });
+                $scope.$on('$destroy', function() {           
+                    // $scope.markers.forEach(function(e) {
+                    //     console.log('setting marker null my stuff')
+                    //     e.setMap(null);
+                    // });
+                    for (var singlemarker = 0; singlemarker < $scope.markers.length; singlemarker++) {
+                        $scope.markers[singlemarker].setMap(null)
+                    }
+                    $scope.markers = [];
                     if ($scope.markerCluster) {
                         $scope.markerCluster.clearMarkers();
                         $scope.markerCluster = null;
-                    }
+                    }                              
                     // $('#mystuff a').removeClass('selected');
                 });
                 $scope.initMasonry = function() {
@@ -116,6 +129,10 @@ function MyStuffController() {
         }
     });
 
+    // google.maps.event.addListener($scope.map, 'dragend', function () {
+    //     console.log('my stuff dragend');
+    // });
+
     $scope.map.addListener('zoom_changed', resizeMarkers);
 
     function resizeMarkers() {
@@ -129,17 +146,24 @@ function MyStuffController() {
                 anchor: new google.maps.Point(mapAnchor, mapAnchor)
             });
         });
+        if ($scope.markerCluster) {
+            $scope.markerCluster.redraw();
+        }
     }
 
     function initMarkers() {
-        var oldMarkers = $scope.markers;
-        $scope.markers.forEach(function(e) {
-            e.setMap(null);
-        });
+        var oldMarkers = $scope.markers;     
+        // $scope.markers.forEach(function(e) {
+        //     e.setMap(null);
+        // });
+        for (var singlemarker=0; singlemarker < $scope.markers.length; singlemarker++) {
+            $scope.markers[singlemarker].setMap(null)
+        }        
+        $scope.markers = [];
         if ($scope.markerCluster) {
             $scope.markerCluster.clearMarkers();
-        }
-        $scope.markers = [];
+            $scope.markerCluster = null;
+        }           
         var maxZoom = 20;
         var mapZoom = $scope.map.getZoom();
         var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
@@ -163,7 +187,7 @@ function MyStuffController() {
             });
         });
         var mcOptions = {
-            maxZoom: 13,
+            maxZoom: 14,
             zoomOnClick: false,
             minimumClusterSize: 2,
             styles: [{
@@ -221,26 +245,6 @@ function MyStuffController() {
                 infoWindow.open($scope.map);
             }
         });
-
-        // oldMarkers.forEach(function(e) {
-        //     if (e.data.selected) {
-        //         $scope.markers.forEach(function(f, i) {
-        //             if ($scope.markers[i].data.id === e.data.id) {
-        //                 f.data.selected = true;
-        //                 $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
-        //                 resizeMarkers();
-        //             }
-        //         });
-        //     } else {
-        //         $scope.markers.forEach(function(f, i) {
-        //             if (f.data.id === e.data.id) {
-        //                 $scope.markers[i].setPosition(new google.maps.LatLng(e.position.lat(), e.position.lng()));
-        //             }
-        //         });
-        //     }
-        // });
-
-
     }
 
     $(document).on('click', '#my-cluster-modal-container > .cluster-item', function(event) {
@@ -255,7 +259,7 @@ function MyStuffController() {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 });
-                if (callback) {
+                if (typeof callback === "function") {
                     callback({
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
