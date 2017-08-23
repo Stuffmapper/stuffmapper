@@ -411,6 +411,7 @@ function GetStuffController() {
                 $scope.markerCluster.clearMarkers();
                 $scope.markerCluster = null;
             }
+            $scope.markers = [];
         });
 
         $scope.filterSearch = function () {
