@@ -390,9 +390,9 @@ function GetStuffController() {
                     anchor: new google.maps.Point(mapAnchor, mapAnchor)
                 });
             });
-            if ($scope.markerCluster) {
-                $scope.markerCluster.redraw();
-            }
+            // if ($scope.markerCluster) {
+            //     $scope.markerCluster.redraw();
+            // }
         }
 
         $('#search-stuff').focus(function () {

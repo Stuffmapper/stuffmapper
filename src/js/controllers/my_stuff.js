@@ -161,9 +161,9 @@ function MyStuffController() {
                 anchor: new google.maps.Point(mapAnchor, mapAnchor)
             });
         });
-        if ($scope.markerCluster) {
-            $scope.markerCluster.redraw();
-        }
+        // if ($scope.markerCluster) {
+        //     $scope.markerCluster.redraw();
+        // }
     }
 
     function initMarkers() {
