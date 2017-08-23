@@ -70,6 +70,7 @@ function MyStuffController() {
                         $scope.markerCluster.clearMarkers();
                         $scope.markerCluster = null;
                     }                              
+                    google.maps.event.clearListeners('zoom_changed');
                     // $('#mystuff a').removeClass('selected');
                 });
                 $scope.initMasonry = function() {
@@ -133,7 +134,21 @@ function MyStuffController() {
     //     console.log('my stuff dragend');
     // });
 
-    $scope.map.addListener('zoom_changed', resizeMarkers);
+    google.maps.event.addListener($scope.map, 'zoom_changed', function () {
+        var mapZoom = $scope.map.getZoom();
+        var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
+        var mapAnchor = mapSize / 2;
+        $scope.markers.forEach(function(e) {
+            e.setIcon({
+                url: e.data.dibber_id ? (e.data.selected ? 'img/marker-dibsd-selected.png' : 'img/Marker-dibsd-all.png') : (e.data.selected ? 'img/marker-selected.png' : 'img/Marker-all.png'),
+                scaledSize: new google.maps.Size(mapSize, mapSize),
+                anchor: new google.maps.Point(mapAnchor, mapAnchor)
+            });
+        });
+        if ($scope.markerCluster) {
+            $scope.markerCluster.redraw();
+        }
+    });
 
     function resizeMarkers() {
         var mapZoom = $scope.map.getZoom();
