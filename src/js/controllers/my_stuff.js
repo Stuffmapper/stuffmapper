@@ -24,6 +24,8 @@ function MyStuffController() {
             $state.go('stuff.get', { '#': 'signin' });
             $scope.openModal('modal');
         } else {
+            /*
+            // for cluster
             for (var singlemarker = 0; singlemarker < $scope.markers.length; singlemarker++) {
                 $scope.markers[singlemarker].setMap(null)
             }
@@ -32,6 +34,7 @@ function MyStuffController() {
                 $scope.markerCluster.clearMarkers();
                 $scope.markerCluster = null;
             }    
+            */
             $http.get(config.api.host + '/api/v' + config.api.version + '/stuff/my').success(function(data) {
                 $scope.dibbedItems = [];
                 $scope.givedItems = [];
@@ -159,6 +162,8 @@ function MyStuffController() {
         // $scope.markers.forEach(function(e) {
         //     e.setMap(null);
         // });
+        /*
+        // for cluster
         for (var singlemarker=0; singlemarker < $scope.markers.length; singlemarker++) {
             $scope.markers[singlemarker].setMap(null)
         }        
@@ -166,7 +171,8 @@ function MyStuffController() {
         if ($scope.markerCluster) {
             $scope.markerCluster.clearMarkers();
             $scope.markerCluster = null;
-        }           
+        }    
+        */       
         var maxZoom = 20;
         var mapZoom = $scope.map.getZoom();
         var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
@@ -189,6 +195,8 @@ function MyStuffController() {
                 $state.go('stuff.my.items.item', { id: this.data.id });
             });
         });
+        /*
+        // for cluster
         var mcOptions = {
             maxZoom: 13,
             zoomOnClick: false,
@@ -248,11 +256,14 @@ function MyStuffController() {
                 infoWindow.open($scope.map);
             }
         });
+        */
     }
-
+    /*
+    // for cluster
     $(document).on('click', '#my-cluster-modal-container > .cluster-item', function(event) {
         $state.go('stuff.my.items.item', { id: $(this).attr("id") });
     });
+    */
 
 
     $scope.getLocation = function(callback) {
