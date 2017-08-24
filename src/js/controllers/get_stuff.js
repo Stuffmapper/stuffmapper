@@ -168,22 +168,7 @@ function GetStuffController() {
         });
         
     });
-    google.maps.event.addListener($scope.map, 'zoom_changed', function resizeMarkers() {
-            var mapZoom = $scope.map.getZoom();
-            var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
-            var mapAnchor = mapSize / 2;
-
-            $scope.markers.forEach(function (e) {
-                e.setIcon({
-                    url: e.data.selected ? 'img/marker-selected.png' : 'img/Marker-all.png',
-                    scaledSize: new google.maps.Size(mapSize, mapSize),
-                    anchor: new google.maps.Point(mapAnchor, mapAnchor)
-                });
-            });
-            // if ($scope.markerCluster) {
-            //     $scope.markerCluster.redraw();
-            // }
-        });
+    $scope.map.addListener($scope.map, 'zoom_changed', resizeMarkers);
     function initMarkers() {
         var oldMarkers = $scope.markers;
         // $scope.markers.forEach(function (e) {
@@ -326,7 +311,6 @@ function GetStuffController() {
                 $scope.markerCluster = null;
             }           
            google.maps.event.clearListeners($scope.map, 'dragend'); 
-           google.maps.event.clearListeners('zoom_changed');
         });    
 
     $scope.geoLocation = undefined;
@@ -379,20 +363,22 @@ function GetStuffController() {
         };
         $('#get-location').click($scope.getLocation);
         function resizeMarkers() {
-            var mapZoom = $scope.map.getZoom();
-            var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
-            var mapAnchor = mapSize / 2;
+            if ($state.current.name == 'stuff.get') {
+                var mapZoom = $scope.map.getZoom();
+                var mapSize = (mapZoom * mapZoom * 2) / (45 / mapZoom);
+                var mapAnchor = mapSize / 2;
 
-            $scope.markers.forEach(function (e) {
-                e.setIcon({
-                    url: e.data.selected ? 'img/marker-selected.png' : 'img/Marker-all.png',
-                    scaledSize: new google.maps.Size(mapSize, mapSize),
-                    anchor: new google.maps.Point(mapAnchor, mapAnchor)
+                $scope.markers.forEach(function (e) {
+                    e.setIcon({
+                        url: e.data.selected ? 'img/marker-selected.png' : 'img/Marker-all.png',
+                        scaledSize: new google.maps.Size(mapSize, mapSize),
+                        anchor: new google.maps.Point(mapAnchor, mapAnchor)
+                    });
                 });
-            });
-            // if ($scope.markerCluster) {
-            //     $scope.markerCluster.redraw();
-            // }
+                // if ($scope.markerCluster) {
+                //     $scope.markerCluster.redraw();
+                // }
+            }
         }
 
         $('#search-stuff').focus(function () {
